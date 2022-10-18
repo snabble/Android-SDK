@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 internal class StoresViewModel(
@@ -13,7 +12,7 @@ internal class StoresViewModel(
 ) : ViewModel() {
 
     private val _isCheckedInFlow = MutableStateFlow(false)
-    val isCheckedInFlow: StateFlow<Boolean> = _isCheckedInFlow.asStateFlow()
+    val isCheckedInFlow = _isCheckedInFlow.asStateFlow()
 
     private val isCheckedInObserver = Observer<Shop?> { shop: Shop? ->
         _isCheckedInFlow.tryEmit(shop != null)

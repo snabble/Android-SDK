@@ -7,18 +7,14 @@ import kotlinx.coroutines.flow.callbackFlow
 
 internal interface ToggleRepository {
 
-    suspend fun saveToggleState(key: String, isChecked: Boolean)
+    fun getToggleState(key: String): Flow<Boolean>
 
-    suspend fun getToggleState(key: String): Flow<Boolean>
+    fun saveToggleState(key: String, isChecked: Boolean)
 }
 
 internal class ToggleRepositoryImpl(private val sharedPrefs: SharedPreferences) : ToggleRepository {
 
-    override suspend fun saveToggleState(key: String, isChecked: Boolean) {
-        sharedPrefs.edit().putBoolean(key, isChecked).apply()
-    }
-
-    override suspend fun getToggleState(key: String): Flow<Boolean> = callbackFlow {
+    override fun getToggleState(key: String): Flow<Boolean> = callbackFlow {
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { prefs, changedKey ->
             if (changedKey == key) {
                 trySend(prefs.getBoolean(key, false))
@@ -31,5 +27,9 @@ internal class ToggleRepositoryImpl(private val sharedPrefs: SharedPreferences) 
         awaitClose {
             sharedPrefs.unregisterOnSharedPreferenceChangeListener(listener)
         }
+    }
+
+    override fun saveToggleState(key: String, isChecked: Boolean) {
+        sharedPrefs.edit().putBoolean(key, isChecked).apply()
     }
 }

@@ -6,15 +6,13 @@ import io.snabble.sdk.dynamicview.domain.model.Widget
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 open class DynamicViewModel : ViewModel() {
 
     private val _dynamicConfig = MutableStateFlow<DynamicConfig?>(null)
-    val dynamicConfig: StateFlow<DynamicConfig?> = _dynamicConfig.asStateFlow()
+    val dynamicConfig = _dynamicConfig.asStateFlow()
 
     fun setConfig(config: DynamicConfig?) {
         _dynamicConfig.tryEmit(config)
@@ -25,7 +23,7 @@ open class DynamicViewModel : ViewModel() {
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
-    val actions: SharedFlow<DynamicAction> = _actions.asSharedFlow()
+    val actions = _actions.asSharedFlow()
 
     internal fun sendAction(action: DynamicAction) {
         _actions.tryEmit(action)

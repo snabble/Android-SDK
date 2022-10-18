@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import io.snabble.sdk.widgets.snabble.locationpermission.domain.HasLocationPermissionUseCase
 import io.snabble.sdk.widgets.snabble.locationpermission.domain.UpdateCheckInManagerUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 internal class LocationPermissionViewModel(
     hasLocationPermission: HasLocationPermissionUseCase,
@@ -12,7 +12,7 @@ internal class LocationPermissionViewModel(
 ) : ViewModel() {
 
     private val _hasLocationPermission = MutableStateFlow(hasLocationPermission())
-    val hasLocationPermission: StateFlow<Boolean> = _hasLocationPermission
+    val hasLocationPermission = _hasLocationPermission.asStateFlow()
 
     internal fun update(hasPermission: Boolean) {
         updateLocationPermission(hasPermission)

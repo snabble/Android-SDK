@@ -4,8 +4,8 @@ import io.snabble.sdk.widgets.snabble.toggle.repository.ToggleRepository
 import io.snabble.sdk.widgets.snabble.toggle.repository.ToggleRepositoryImpl
 import io.snabble.sdk.widgets.snabble.toggle.usecases.GetToggleStateUseCase
 import io.snabble.sdk.widgets.snabble.toggle.usecases.GetToggleStateUseCaseImpl
-import io.snabble.sdk.widgets.snabble.toggle.usecases.SetToggleStateUseCase
-import io.snabble.sdk.widgets.snabble.toggle.usecases.SetToggleStateUseCaseImpl
+import io.snabble.sdk.widgets.snabble.toggle.usecases.SaveToggleStateUseCase
+import io.snabble.sdk.widgets.snabble.toggle.usecases.SaveToggleStateUseCaseImpl
 import io.snabble.sdk.widgets.snabble.toggle.viewmodel.ToggleViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.dsl.factoryOf
@@ -23,11 +23,11 @@ val toggleWidgetModule = module {
     } bind GetToggleStateUseCase::class
 
     factory { params ->
-        SetToggleStateUseCaseImpl(
+        SaveToggleStateUseCaseImpl(
             prefKey = params[0],
             toggleRepository = get(),
         )
-    } bind SetToggleStateUseCase::class
+    } bind SaveToggleStateUseCase::class
 
     viewModel { params -> ToggleViewModel(get { params }, get { params }) }
 }

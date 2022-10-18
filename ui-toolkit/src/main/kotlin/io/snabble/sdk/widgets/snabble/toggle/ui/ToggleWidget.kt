@@ -26,7 +26,7 @@ internal fun ToggleWidget(
         modifier = modifier,
         model = model,
         isChecked = isCheckedState.value,
-        onCheckedChange = { viewModel.setToggleState(isChecked = it) },
+        onCheckedChange = viewModel::saveToggleState,
         onAction = onAction,
     )
 }

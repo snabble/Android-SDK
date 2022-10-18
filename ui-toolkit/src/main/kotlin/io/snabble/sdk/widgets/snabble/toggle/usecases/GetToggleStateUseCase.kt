@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 internal interface GetToggleStateUseCase {
 
-    suspend operator fun invoke(): Flow<Boolean>
+    operator fun invoke(): Flow<Boolean>
 }
 
 internal class GetToggleStateUseCaseImpl(
@@ -13,5 +13,5 @@ internal class GetToggleStateUseCaseImpl(
     private val toggleRepository: ToggleRepository,
 ) : GetToggleStateUseCase {
 
-    override suspend fun invoke(): Flow<Boolean> = toggleRepository.getToggleState(key = prefKey)
+    override fun invoke(): Flow<Boolean> = toggleRepository.getToggleState(key = prefKey)
 }

@@ -10,8 +10,15 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-val purchaseWidgetModule = module {
+internal val purchaseWidgetModule = module {
     viewModelOf(::PurchaseViewModel)
-    factoryOf(::PurchasesRepositoryImpl) bind PurchasesRepository::class
+
+    factory {
+        PurchasesRepositoryImpl(
+            Snabble = get(),
+            timeFormatter = get(),
+        )
+    } bind PurchasesRepository::class
+
     factoryOf(::RelativeTimeStringFormatterImpl) bind RelativeTimeStringFormatter::class
 }
