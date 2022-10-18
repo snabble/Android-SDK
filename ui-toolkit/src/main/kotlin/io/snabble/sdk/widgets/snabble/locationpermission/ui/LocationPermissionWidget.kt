@@ -40,6 +40,6 @@ internal fun LocationPermissionWidget(
 
 @Composable
 private fun createActivityResultLauncher(viewModel: LocationPermissionViewModel) =
-    rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { _ ->
+    rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {
         viewModel.setHasAskedForPermission(hasAsked = true)
     }
