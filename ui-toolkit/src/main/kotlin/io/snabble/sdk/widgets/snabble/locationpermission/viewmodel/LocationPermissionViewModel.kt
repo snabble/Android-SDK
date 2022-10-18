@@ -14,8 +14,8 @@ internal class LocationPermissionViewModel(
     private val _hasLocationPermission = MutableStateFlow(hasLocationPermission())
     val hasLocationPermission = _hasLocationPermission.asStateFlow()
 
-    internal fun update(hasPermission: Boolean) {
-        updateLocationPermission(hasPermission)
+    internal fun setHasAskedForPermission(hasAsked: Boolean) {
+        updateLocationPermission(hasPermission = hasAsked)
         updateCheckInManager()
     }
 
