@@ -1,4 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+
     <style name="AppTheme" parent="@style/Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/snabbleBlue</item>
         <item name="colorOnPrimary">@color/white</item>
@@ -8,87 +9,44 @@
 
         <item name="colorSecondary">@color/snabbleBlue</item>
         <item name="colorOnSecondary">@color/white</item>
-        <item name="colorSecondaryContainer">@color/snabbleBlue</item>
-        <item name="colorOnSecondaryContainer">@color/white</item>
+        <item name="colorSecondaryContainer">@color/white</item>
+        <item name="colorOnSecondaryContainer">@color/black</item>
 
         <item name="colorTertiary">@color/snabbleBlue</item>
         <item name="colorOnTertiary">@color/white</item>
         <item name="colorTertiaryContainer">@color/snabbleBlue</item>
-        <item name="colorOnTertiaryContainer">@color/white</item>
+        <item name="colorOnTertiaryContainer">@color/grey</item>
+
+        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.Snabble.HeadlineLarge</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.Snabble.BodyLarge</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.Snabble.BodyMedium</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.Snabble.BodySmall</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.Snabble.TitleLarge</item>
     </style>
 
-<!--    <style name="AppTheme" parent="@style/Theme.Material3.DayNight.NoActionBar">-->
-<!--        <item name="colorPrimary">#880000</item>-->
-<!--        <item name="colorOnPrimary">@color/white</item>-->
+    <style name="TextAppearance.Snabble.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="android:textSize">40sp</item>
+    </style>
 
-<!--        <item name="textAppearanceTitleLarge">@style/TextAppearance.TitleLarge</item>-->
-<!--        <item name="textAppearanceTitleMedium">@style/TextAppearance.TitleMedium</item>-->
-<!--        <item name="textAppearanceTitleSmall">@style/TextAppearance.TitleSmall</item>-->
-<!--        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.HeadlineLarge</item>-->
-<!--        <item name="textAppearanceHeadlineMedium">@style/TextAppearance.HeadlineMedium</item>-->
-<!--        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.HeadlineSmall</item>-->
-<!--        <item name="textAppearanceBodyLarge">@style/TextAppearance.BodyLarge</item>-->
-<!--        <item name="textAppearanceBodyMedium">@style/TextAppearance.BodyMedium</item>-->
-<!--        <item name="textAppearanceBodySmall">@style/TextAppearance.BodySmall</item>-->
-<!--    </style>-->
+    <style name="TextAppearance.Snabble.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textSize">17sp</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="lineHeight">20.4sp</item>
+    </style>
 
-<!--    <style name="TextAppearance.HeadlineLarge" parent="TextAppearance.Material3.BodyLarge">-->
-<!--        <item name="fontFamily">@font/aovel_sans</item>-->
-<!--        <item name="android:fontFamily">@font/aovel_sans</item>-->
-<!--    </style>-->
+    <style name="TextAppearance.Snabble.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:letterSpacing">0</item>
+        <item name="lineHeight">16.8sp</item>
+    </style>
 
-<!--    <style name="TextAppearance.HeadlineMedium" parent="TextAppearance.Material3.BodyLarge">-->
-<!--        <item name="fontFamily">@font/aovel_sans</item>-->
-<!--        <item name="android:fontFamily">@font/aovel_sans</item>-->
-<!--    </style>-->
+    <style name="TextAppearance.Snabble.BodySmall" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:letterSpacing">0</item>
+    </style>
 
-<!--    <style name="TextAppearance.HeadlineSmall" parent="TextAppearance.Material3.BodyLarge">-->
-<!--        <item name="fontFamily">@font/aovel_sans</item>-->
-<!--        <item name="android:fontFamily">@font/aovel_sans</item>-->
-<!--    </style>-->
-
-<!--    <style name="TextAppearance.TitleLarge" parent="TextAppearance.Material3.BodyLarge">-->
-<!--        <item name="fontFamily">@font/aovel_sans</item>-->
-<!--        <item name="android:fontFamily">@font/aovel_sans</item>-->
-<!--    </style>-->
-
-<!--    <style name="TextAppearance.TitleMedium" parent="TextAppearance.Material3.BodyLarge">-->
-<!--        <item name="fontFamily">@font/aovel_sans</item>-->
-<!--        <item name="android:fontFamily">@font/aovel_sans</item>-->
-<!--    </style>-->
-
-<!--    <style name="TextAppearance.TitleSmall" parent="TextAppearance.Material3.BodyLarge">-->
-<!--        <item name="fontFamily">@font/aovel_sans</item>-->
-<!--        <item name="android:fontFamily">@font/aovel_sans</item>-->
-<!--    </style>-->
-
-<!--    <style name="TextAppearance.BodyLarge" parent="TextAppearance.Material3.BodyLarge">-->
-<!--        <item name="fontFamily">@font/aovel_sans</item>-->
-<!--        <item name="android:fontFamily">@font/aovel_sans</item>-->
-<!--    </style>-->
-
-<!--    <style name="TextAppearance.BodyMedium" parent="TextAppearance.Material3.BodyLarge">-->
-<!--        <item name="fontFamily">@font/aovel_sans</item>-->
-<!--        <item name="android:fontFamily">@font/aovel_sans</item>-->
-<!--    </style>-->
-
-<!--    <style name="TextAppearance.BodySmall" parent="TextAppearance.Material3.BodyLarge">-->
-<!--        <item name="fontFamily">@font/aovel_sans</item>-->
-<!--        <item name="android:fontFamily">@font/aovel_sans</item>-->
-<!--    </style>-->
-
-<!--    <style name="Snabble.Widget.MaterialComponents.Button" parent="Theme.Outlined.Button" />-->
-
-<!--    <style name="Theme.Outlined.Button" parent="@style/Widget.Material3.Button.OutlinedButton">-->
-<!--        <item name="strokeColor">@color/button_stroke_color</item>-->
-<!--        <item name="android:textColor">@color/button_stroke_color</item>-->
-<!--        <item name="android:backgroundTint">@color/button_background_color</item>-->
-<!--        <item name="fontFamily">@font/aovel_sans</item>-->
-<!--        <item name="android:fontFamily">@font/aovel_sans</item>-->
-<!--        <item name="android:textAllCaps">false</item>-->
-<!--        <item name="android:textSize">17sp</item>-->
-<!--        <item name="android:padding">13dp</item>-->
-<!--    </style>-->
+    <style name="TextAppearance.Snabble.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textSize">20sp</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
 
     <style name="LoadingTheme" parent="@style/AppTheme">
         <item name="android:statusBarColor">@color/white</item>

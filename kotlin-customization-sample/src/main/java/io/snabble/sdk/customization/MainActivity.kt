@@ -24,7 +24,7 @@ import com.google.gson.Gson
 import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.checkin.OnCheckInStateChangedListener
-import io.snabble.sdk.onboarding.entities.OnboardingModel
+import io.snabble.sdk.screens.onboarding.data.OnboardingModel
 import io.snabble.sdk.ui.SnabbleUI
 
 class MainActivity : AppCompatActivity() {

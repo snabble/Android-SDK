@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/frag_tos"
-        android:name="io.snabble.sdk.onboarding.terms.LegalFragment"
+        android:name="io.snabble.sdk.screens.onboarding.ui.terms.LegalFragment"
         android:label="Terms of service">
         <argument
             android:name="resId"
@@ -32,26 +32,42 @@
 
     <fragment
         android:id="@+id/frag_onboarding"
-        android:name="io.snabble.sdk.onboarding.OnboardingFragment"
+        android:name="io.snabble.sdk.screens.onboarding.ui.OnboardingFragment"
         android:label="OnboardingFragment"
         tools:layout="@layout/snabble_fragment_onboarding">
+
         <argument
             android:name="hideToolbar"
             android:defaultValue="true"
             app:argType="boolean" />
+
         <argument
             android:name="hideBottomNavigation"
             android:defaultValue="true"
             app:argType="boolean" />
+
         <argument
             android:name="@string/bundle_key_model"
-            app:argType="io.snabble.sdk.onboarding.entities.OnboardingModel" />
+            app:argType="io.snabble.sdk.screens.onboarding.data.OnboardingModel" />
+
     </fragment>
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="io.snabble.sdk.sample.HomeFragment"
-        android:label="@string/home" />
+        android:name="io.snabble.sdk.screens.home.ui.HomeFragment"
+        android:label="@string/home" >
+
+        <argument
+            android:name="hideToolbar"
+            android:defaultValue="true"
+            app:argType="boolean" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="io.snabble.sdk.screens.profile.ui.ProfileFragment"
+        android:label="@string/profile" />
 
     <fragment
         android:id="@+id/navigation_scanner"
@@ -70,23 +86,28 @@
     <navigation
         android:id="@+id/navigation_shop"
         app:startDestination="@id/navigation_shops">
+
         <fragment
             android:id="@+id/navigation_shops"
-            android:name="io.snabble.sdk.shopfinder.ShopListFragment">
+            android:name="io.snabble.sdk.screens.shopfinder.ShopListFragment"
+            android:label="@string/Snabble.Shop.Finder.title">
+
             <action
                 android:id="@+id/shop_details"
                 app:destination="@id/navigation_shops_details" />
+
+            <argument
+                android:name="hideToolbar"
+                android:defaultValue="false"
+                app:argType="boolean" />
+
         </fragment>
 
         <fragment
             android:id="@+id/navigation_shops_details"
-            android:name="io.snabble.sdk.shopfinder.ShopDetailsFragment" />
-    </navigation>
+            android:name="io.snabble.sdk.screens.shopfinder.ShopDetailsFragment" />
 
-    <fragment
-        android:id="@+id/navigation_dummy_cart"
-        android:name="io.snabble.sdk.sample.CustomShoppingCartDummy"
-        android:label="@string/shoppingCart" />
+    </navigation>
 
     <fragment
         android:id="@+id/navigation_barcode_search"

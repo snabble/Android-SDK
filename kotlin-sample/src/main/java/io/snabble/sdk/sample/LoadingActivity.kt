@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import io.snabble.sdk.Environment
 
 import io.snabble.sdk.InitializationState
 import io.snabble.sdk.Snabble
@@ -16,6 +17,8 @@ class LoadingActivity : AppCompatActivity() {
     }
 
     private fun initSdk() {
+        Snabble.userPreferences.environment = Environment.STAGING
+
         Snabble.setDebugLoggingEnabled(BuildConfig.DEBUG)
         Snabble.initializationState.observe(this) {
             when (it) {

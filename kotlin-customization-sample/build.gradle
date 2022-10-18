@@ -4,6 +4,8 @@ plugins {
 }
 
 android {
+    namespace 'io.snabble.sdk.customization'
+
     compileSdkVersion 33
 
     defaultConfig {

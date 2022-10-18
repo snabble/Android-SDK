@@ -1,17 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="io.snabble.sdk.ui.toolkit"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application>
         <activity
-            android:name="io.snabble.sdk.onboarding.OnboardingActivity"
+            android:name="io.snabble.sdk.screens.onboarding.ui.OnboardingActivity"
             android:exported="false" />
         <activity
-            android:name="io.snabble.sdk.shopfinder.ShopListActivity"
+            android:name="io.snabble.sdk.screens.shopfinder.ShopListActivity"
             android:exported="false" />
         <activity
-            android:name="io.snabble.sdk.shopfinder.ShopDetailsActivity"
+            android:name="io.snabble.sdk.screens.shopfinder.ShopDetailsActivity"
             android:exported="false" />
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+
+            <meta-data
+                android:name="io.snabble.sdk.di.KoinInitializer"
+                android:value="androidx.startup" />
+        </provider>
     </application>
 </manifest>

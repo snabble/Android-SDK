@@ -16,9 +16,9 @@ import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_ONBOARDING
 import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_ONBOARDING_DONE
 import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_SHOP_LIST
 import io.snabble.sdk.SnabbleUiToolkit.Event.START_NAVIGATION
-import io.snabble.sdk.onboarding.OnboardingActivity
-import io.snabble.sdk.shopfinder.ShopDetailsActivity
-import io.snabble.sdk.shopfinder.ShopListActivity
+import io.snabble.sdk.screens.onboarding.ui.OnboardingActivity
+import io.snabble.sdk.screens.shopfinder.ShopDetailsActivity
+import io.snabble.sdk.screens.shopfinder.ShopListActivity
 import io.snabble.sdk.ui.Action
 import io.snabble.sdk.ui.BaseFragmentActivity
 import io.snabble.sdk.ui.utils.UIUtils.getHostFragmentActivity
@@ -35,6 +35,7 @@ import kotlin.collections.set
  */
 @Suppress("unused")
 object SnabbleUiToolkit {
+
     const val DEEPLINK = "deeplink"
 
     enum class Event {
@@ -125,7 +126,8 @@ object SnabbleUiToolkit {
                 GO_BACK,
                 DETAILS_SHOP_BUTTON_ACTION,
                 START_NAVIGATION,
-                null -> Unit // unhandled actions
+                null,
+                -> Unit // unhandled actions
             }
         }
     }

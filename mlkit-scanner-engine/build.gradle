@@ -6,6 +6,8 @@ apply plugin: 'org.jetbrains.dokka'
 description = 'ML Kit Scanner Engine: The ML Kit scanner engine implementation for the snabble SDK'
 
 android {
+    namespace 'io.snabble.sdk.firebase'
+
     compileSdkVersion project.compileSdkVersion
 
     defaultConfig {
