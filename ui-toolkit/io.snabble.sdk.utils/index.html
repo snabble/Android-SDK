@@ -4,10 +4,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>io.snabble.sdk.utils</title>
 <link href="../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
-const savedDarkMode = storage ? JSON.parse(storage) : false
-if(savedDarkMode === true){
-    document.getElementsByTagName("html")[0].classList.add("theme-dark")
-}</script>
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
 <script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../styles/style.css" rel="Stylesheet">
 <link href="../../styles/jetbrains-mono.css" rel="Stylesheet">
@@ -18,7 +26,8 @@ if(savedDarkMode === true){
 <script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
 <script type="text/javascript" src="../../scripts/main.js" defer></script>
-<script type="text/javascript" src="../../scripts/prism.js" async></script></head>
+<script type="text/javascript" src="../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
 <div class="navigation-wrapper" id="navigation-wrapper">
     <div id="leftToggler"><span class="icon-toggler"></span></div>
@@ -38,87 +47,40 @@ if(savedDarkMode === true){
     </div>
     <div id="main">
 <div class="main-content" id="content" pageids="ui-toolkit::io.snabble.sdk.utils////PointingToDeclaration//1544899310">
-  <div class="breadcrumbs"><a href="../index.html">ui-toolkit</a><span class="delimiter">/</span><a href="index.html">io.snabble.sdk.utils</a></div>
+  <div class="breadcrumbs"><a href="../index.html">ui-toolkit</a><span class="delimiter">/</span><span class="current">io.snabble.sdk.utils</span></div>
   <div class="cover ">
-    <h1 class="cover"><span>Package io.</span><wbr><span>snabble.</span><wbr><span>sdk.</span><wbr><span>utils</span></h1>
+    <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
   </div>
   <div class="tabbedcontent">
-    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Types">Types</button><button class="section-tab" data-togglable="Functions">Functions</button></div>
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Functions">Functions</button></div>
     <div class="tabs-section-body">
-      <h2 class="">Types</h2>
-      <div class="table" data-togglable="Types"><a data-name="-711491176%2FClasslikes%2F1544899310" anchor-label="LinkClickListener" id="-711491176%2FClasslikes%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":ui-toolkit:dokkaHtmlPartial/release" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-link-click-listener/index.html"><span>Link</span><wbr><span>Click</span><wbr><span><span>Listener</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-711491176%2FClasslikes%2F1544899310"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui-toolkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-link-click-listener/index.html">LinkClickListener</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">onLinkClick<span class="token operator">: </span><span class="token punctuation">(</span><span class="token keyword"></span>url<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/net/Uri.html">Uri</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/text/method/LinkMovementMethod.html">LinkMovementMethod</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Handles url click events in a spannable string</p></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-1008374279%2FClasslikes%2F1544899310" anchor-label="ZoomOutPageTransformer" id="-1008374279%2FClasslikes%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":ui-toolkit:dokkaHtmlPartial/release" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="-zoom-out-page-transformer/index.html"><span>Zoom</span><wbr><span>Out</span><wbr><span>Page</span><wbr><span><span>Transformer</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1008374279%2FClasslikes%2F1544899310"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui-toolkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-zoom-out-page-transformer/index.html">ZoomOutPageTransformer</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">minScale<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span><span class="token constant">0.9f</span><span class="token punctuation">, </span></span><span class="parameter ">minAlpha<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a><span class="token operator"> = </span><span class="token constant">0.75f</span></span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/androidx/viewpager2/widget/ViewPager2.PageTransformer.html">ViewPager2.PageTransformer</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Zoom out animation for pages on swipe</p></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
       <h2 class="">Functions</h2>
-      <div class="table" data-togglable="Functions"><a data-name="23751445%2FFunctions%2F1544899310" anchor-label="log" id="23751445%2FFunctions%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
+      <div class="table" data-togglable="Functions"><a data-name="-928940962%2FFunctions%2F1544899310" anchor-label="logX" id="-928940962%2FFunctions%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
         <div class="table-row" data-filterable-current=":ui-toolkit:dokkaHtmlPartial/release" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release">
           <div class="main-subrow keyValue ">
             <div class=""><span class="inline-flex">
-                <div><a href="log.html"><span><span>log</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="23751445%2FFunctions%2F1544899310"></span>
+                <div><a href="log-x.html"><span>log</span><wbr><span><span>X</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-928940962%2FFunctions%2F1544899310"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui-toolkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="log.html"><span class="token function">log</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">message<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">vararg </span>args<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-toolkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="log-x.html"><span class="token function"><strike>logX</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">msg<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">tag<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">"xx"</span><span class="token punctuation">, </span></span><span class="parameter ">throwable<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html">Throwable</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
               </div>
             </div>
           </div>
         </div>
-<a data-name="247035646%2FFunctions%2F1544899310" anchor-label="logDebug" id="247035646%2FFunctions%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
+<a data-name="-2061555900%2FFunctions%2F1544899310" anchor-label="xx" id="-2061555900%2FFunctions%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
         <div class="table-row" data-filterable-current=":ui-toolkit:dokkaHtmlPartial/release" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release">
           <div class="main-subrow keyValue ">
             <div class=""><span class="inline-flex">
-                <div><a href="log-debug.html"><span>log</span><wbr><span><span>Debug</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="247035646%2FFunctions%2F1544899310"></span>
+                <div><a href="xx.html"><span><span>xx</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2061555900%2FFunctions%2F1544899310"></span>
                   <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui-toolkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="log-debug.html"><span class="token function">logDebug</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">message<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">vararg </span>args<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-<a data-name="-1189094935%2FFunctions%2F1544899310" anchor-label="logError" id="-1189094935%2FFunctions%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
-        <div class="table-row" data-filterable-current=":ui-toolkit:dokkaHtmlPartial/release" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release">
-          <div class="main-subrow keyValue ">
-            <div class=""><span class="inline-flex">
-                <div><a href="log-error.html"><span>log</span><wbr><span><span>Error</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1189094935%2FFunctions%2F1544899310"></span>
-                  <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                </span></span></div>
-            <div>
-              <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui-toolkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="log-error.html"><span class="token function">logError</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">message<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">vararg </span>args<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui-toolkit:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="xx.html">T</a><span class="token operator">&gt; </span><a href="xx.html">T</a><span class="token punctuation">.</span><a href="xx.html"><span class="token function"><strike>xx</strike></span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">msg<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">tag<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">"xx"</span><span class="token punctuation">, </span></span><span class="parameter ">throwable<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html">Throwable</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="xx.html">T</a></div></div></div>
               </div>
             </div>
           </div>

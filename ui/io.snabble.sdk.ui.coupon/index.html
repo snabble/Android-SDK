@@ -4,10 +4,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>io.snabble.sdk.ui.coupon</title>
 <link href="../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
-const savedDarkMode = storage ? JSON.parse(storage) : false
-if(savedDarkMode === true){
-    document.getElementsByTagName("html")[0].classList.add("theme-dark")
-}</script>
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
 <script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../styles/style.css" rel="Stylesheet">
 <link href="../../styles/jetbrains-mono.css" rel="Stylesheet">
@@ -18,7 +26,8 @@ if(savedDarkMode === true){
 <script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
 <script type="text/javascript" src="../../scripts/main.js" defer></script>
-<script type="text/javascript" src="../../scripts/prism.js" async></script></head>
+<script type="text/javascript" src="../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
 <div class="navigation-wrapper" id="navigation-wrapper">
     <div id="leftToggler"><span class="icon-toggler"></span></div>
@@ -38,9 +47,9 @@ if(savedDarkMode === true){
     </div>
     <div id="main">
 <div class="main-content" id="content" pageids="ui::io.snabble.sdk.ui.coupon////PointingToDeclaration//-587146753">
-  <div class="breadcrumbs"><a href="../index.html">ui</a><span class="delimiter">/</span><a href="index.html">io.snabble.sdk.ui.coupon</a></div>
+  <div class="breadcrumbs"><a href="../index.html">ui</a><span class="delimiter">/</span><span class="current">io.snabble.sdk.ui.coupon</span></div>
   <div class="cover ">
-    <h1 class="cover"><span>Package io.</span><wbr><span>snabble.</span><wbr><span>sdk.</span><wbr><span>ui.</span><wbr><span>coupon</span></h1>
+    <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Types">Types</button></div>
@@ -56,7 +65,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-coupon-detail-activity/index.html">CouponDetailActivity</a> : <a href="../io.snabble.sdk.ui/-base-fragment-activity/index.html">BaseFragmentActivity</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-coupon-detail-activity/index.html">CouponDetailActivity</a> : <a href="../io.snabble.sdk.ui/-base-fragment-activity/index.html">BaseFragmentActivity</a></div></div></div>
               </div>
             </div>
           </div>
@@ -71,7 +80,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-coupon-detail-fragment/index.html">CouponDetailFragment</a> : <a href="https://developer.android.com/reference/kotlin/androidx/fragment/app/Fragment.html">Fragment</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-coupon-detail-fragment/index.html">CouponDetailFragment</a> : <a href="https://developer.android.com/reference/kotlin/androidx/fragment/app/Fragment.html">Fragment</a></div></div></div>
               </div>
             </div>
           </div>
@@ -86,7 +95,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-coupon-item/index.html">CouponItem</a><span class="token punctuation">(</span><span class="parameters wrapped"><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;<span class="token keyword">val </span>projectId<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;<span class="token keyword">val </span>coupon<span class="token operator">: </span><a href="../../core/io.snabble.sdk.coupons/-coupon/index.html">Coupon</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;<span class="token keyword">val </span>mode<span class="token operator">: </span><a href="-coupon-item/-mode/index.html">CouponItem.Mode</a><span class="token operator"> = </span>Mode.Normal</span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-coupon-item/index.html">CouponItem</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>projectId<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>coupon<span class="token operator">: </span><a href="../../core/io.snabble.sdk.coupons/-coupon/index.html">Coupon</a><span class="token operator">?</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>mode<span class="token operator">: </span><a href="-coupon-item/-mode/index.html">CouponItem.Mode</a><span class="token operator"> = </span>Mode.Normal</span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a></div></div></div>
               </div>
             </div>
           </div>
@@ -101,7 +110,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-coupon-manager/index.html">CouponManager</a> : <a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-coupon-item/index.html">CouponItem</a><span class="token operator">&gt;</span><span class="token operator">&gt; </span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">A Coupon Manager which holds the current active Coupons as <a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a>. There are two ways to access them:</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-coupon-manager/index.html">CouponManager</a> : <a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="-coupon-item/index.html">CouponItem</a><span class="token operator">&gt;</span><span class="token operator">&gt; </span></div><div class="brief "><p class="paragraph">A Coupon Manager which holds the current active Coupons as <a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a>. There are two ways to access them:</p></div></div></div>
               </div>
             </div>
           </div>
@@ -116,7 +125,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-coupon-overview-view/index.html">CouponOverviewView</a>&nbsp;<span><span class="token annotation">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation">JvmOverloads</span></a>&nbsp;</span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters wrapped"><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;attrs<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/util/AttributeSet.html">AttributeSet</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;defStyleAttr<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">0</span></span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/widget/FrameLayout.html">FrameLayout</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Show the coupons for the given <a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a>, set via setCouponSource. The padding left and right is overwritten so that you can apply your own key lines so that the view can use the full width to display the coupon cards. You can control with hideWhenLoading and hideWhenEmpty if the view should be shown in that states.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-coupon-overview-view/index.html">CouponOverviewView</a>&nbsp;<span><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a>&nbsp;</span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">attrs<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/util/AttributeSet.html">AttributeSet</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">defStyleAttr<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">0</span></span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/widget/FrameLayout.html">FrameLayout</a></div><div class="brief "><p class="paragraph">Show the coupons for the given <a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a>, set via setCouponSource. The padding left and right is overwritten so that you can apply your own key lines so that the view can use the full width to display the coupon cards. You can control with hideWhenLoading and hideWhenEmpty if the view should be shown in that states.</p></div></div></div>
               </div>
             </div>
           </div>

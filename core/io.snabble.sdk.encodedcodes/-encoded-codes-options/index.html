@@ -4,10 +4,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>EncodedCodesOptions</title>
 <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
-const savedDarkMode = storage ? JSON.parse(storage) : false
-if(savedDarkMode === true){
-    document.getElementsByTagName("html")[0].classList.add("theme-dark")
-}</script>
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
 <script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../../styles/style.css" rel="Stylesheet">
 <link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
@@ -18,7 +26,8 @@ if(savedDarkMode === true){
 <script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
 <script type="text/javascript" src="../../../scripts/main.js" defer></script>
-<script type="text/javascript" src="../../../scripts/prism.js" async></script></head>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
 <div class="navigation-wrapper" id="navigation-wrapper">
     <div id="leftToggler"><span class="icon-toggler"></span></div>
@@ -38,10 +47,10 @@ if(savedDarkMode === true){
     </div>
     <div id="main">
 <div class="main-content" id="content" pageids="core::io.snabble.sdk.encodedcodes/EncodedCodesOptions///PointingToDeclaration//-27209644">
-  <div class="breadcrumbs"><a href="../../index.html">core</a><span class="delimiter">/</span><a href="../index.html">io.snabble.sdk.encodedcodes</a><span class="delimiter">/</span><a href="index.html">EncodedCodesOptions</a></div>
+  <div class="breadcrumbs"><a href="../../index.html">core</a><span class="delimiter">/</span><a href="../index.html">io.snabble.sdk.encodedcodes</a><span class="delimiter">/</span><span class="current">EncodedCodesOptions</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Encoded</span><wbr><span>Codes</span><wbr><span><span>Options</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">EncodedCodesOptions</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph">Class for configuring a encodes codes generator</p></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">EncodedCodesOptions</a></div><p class="paragraph">Class for configuring a encodes codes generator</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Types">Types</button><button class="section-tab" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Properties">Properties</button></div>
@@ -57,7 +66,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-builder/index.html">Builder</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief ">Builder for creating encoded codes options</div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-builder/index.html">Builder</a></div><div class="brief ">Builder for creating encoded codes options</div></div></div>
               </div>
             </div>
           </div>
@@ -72,7 +81,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-sorter/index.html">Sorter</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-sorter/index.html">Sorter</a></div></div></div>
               </div>
             </div>
           </div>
@@ -89,7 +98,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="from-json-object.html"><span class="token function">fromJsonObject</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">project<span class="token operator">: </span><a href="../../io.snabble.sdk/-project/index.html">Project</a><span class="token punctuation">, </span></span><span class="parameter ">jsonObject<span class="token operator">: </span><span data-unresolved-link="com.google.gson/JsonObject///PointingToDeclaration/">JsonObject</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">EncodedCodesOptions</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief ">Generate encoded codes options from a json definition.</div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="from-json-object.html"><span class="token function">fromJsonObject</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">project<span class="token operator">: </span><a href="../../io.snabble.sdk/-project/index.html">Project</a><span class="token punctuation">, </span></span><span class="parameter ">jsonObject<span class="token operator">: </span><span data-unresolved-link="com.google.gson/JsonObject///PointingToDeclaration/">JsonObject</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">EncodedCodesOptions</a></div><div class="brief ">Generate encoded codes options from a json definition.</div></div></div>
               </div>
             </div>
           </div>
@@ -106,7 +115,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="1721438002%2FProperties%2F-27209644" anchor-label="countSeparator" id="1721438002%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="count-separator.html">countSeparator</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="1721438002%2FProperties%2F-27209644" anchor-label="countSeparator" id="1721438002%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="count-separator.html">countSeparator</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></div></div></div>
               </div>
             </div>
           </div>
@@ -121,7 +130,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="1624332974%2FProperties%2F-27209644" anchor-label="DEFAULT_MAX_CHARS" id="1624332974%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-d-e-f-a-u-l-t_-m-a-x_-c-h-a-r-s.html">DEFAULT_MAX_CHARS</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="1624332974%2FProperties%2F-27209644" anchor-label="DEFAULT_MAX_CHARS" id="1624332974%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-d-e-f-a-u-l-t_-m-a-x_-c-h-a-r-s.html">DEFAULT_MAX_CHARS</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">2953</span></div></div></div>
               </div>
             </div>
           </div>
@@ -136,7 +145,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="1800787589%2FProperties%2F-27209644" anchor-label="DEFAULT_MAX_CODES" id="1800787589%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-d-e-f-a-u-l-t_-m-a-x_-c-o-d-e-s.html">DEFAULT_MAX_CODES</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="1800787589%2FProperties%2F-27209644" anchor-label="DEFAULT_MAX_CODES" id="1800787589%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="-d-e-f-a-u-l-t_-m-a-x_-c-o-d-e-s.html">DEFAULT_MAX_CODES</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">100</span></div></div></div>
               </div>
             </div>
           </div>
@@ -151,7 +160,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="692201583%2FProperties%2F-27209644" anchor-label="finalCode" id="692201583%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="final-code.html">finalCode</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="692201583%2FProperties%2F-27209644" anchor-label="finalCode" id="692201583%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="final-code.html">finalCode</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></div></div></div>
               </div>
             </div>
           </div>
@@ -166,7 +175,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="-56173258%2FProperties%2F-27209644" anchor-label="manualDiscountFinalCode" id="-56173258%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="manual-discount-final-code.html">manualDiscountFinalCode</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="-56173258%2FProperties%2F-27209644" anchor-label="manualDiscountFinalCode" id="-56173258%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="manual-discount-final-code.html">manualDiscountFinalCode</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></div></div></div>
               </div>
             </div>
           </div>
@@ -181,7 +190,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="-1313827185%2FProperties%2F-27209644" anchor-label="maxChars" id="-1313827185%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="max-chars.html">maxChars</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="-1313827185%2FProperties%2F-27209644" anchor-label="maxChars" id="-1313827185%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="max-chars.html">maxChars</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
               </div>
             </div>
           </div>
@@ -196,7 +205,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="-1137372570%2FProperties%2F-27209644" anchor-label="maxCodes" id="-1137372570%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="max-codes.html">maxCodes</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="-1137372570%2FProperties%2F-27209644" anchor-label="maxCodes" id="-1137372570%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="max-codes.html">maxCodes</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
               </div>
             </div>
           </div>
@@ -211,7 +220,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="1913000749%2FProperties%2F-27209644" anchor-label="maxSizeMm" id="1913000749%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="max-size-mm.html">maxSizeMm</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="1913000749%2FProperties%2F-27209644" anchor-label="maxSizeMm" id="1913000749%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="max-size-mm.html">maxSizeMm</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
               </div>
             </div>
           </div>
@@ -226,7 +235,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="1743197640%2FProperties%2F-27209644" anchor-label="nextCode" id="1743197640%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="next-code.html">nextCode</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="1743197640%2FProperties%2F-27209644" anchor-label="nextCode" id="1743197640%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="next-code.html">nextCode</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></div></div></div>
               </div>
             </div>
           </div>
@@ -241,7 +250,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="1882406032%2FProperties%2F-27209644" anchor-label="nextCodeWithCheck" id="1882406032%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="next-code-with-check.html">nextCodeWithCheck</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="1882406032%2FProperties%2F-27209644" anchor-label="nextCodeWithCheck" id="1882406032%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="next-code-with-check.html">nextCodeWithCheck</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></div></div></div>
               </div>
             </div>
           </div>
@@ -256,7 +265,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="1779236278%2FProperties%2F-27209644" anchor-label="prefix" id="1779236278%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="prefix.html">prefix</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="1779236278%2FProperties%2F-27209644" anchor-label="prefix" id="1779236278%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="prefix.html">prefix</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></div></div></div>
               </div>
             </div>
           </div>
@@ -271,7 +280,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="-1877751448%2FProperties%2F-27209644" anchor-label="prefixMap" id="-1877751448%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="prefix-map.html">prefixMap</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/util/SparseArray.html">SparseArray</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token operator">&gt;</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="-1877751448%2FProperties%2F-27209644" anchor-label="prefixMap" id="-1877751448%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="prefix-map.html">prefixMap</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/util/SparseArray.html">SparseArray</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token operator">&gt;</span></div></div></div>
               </div>
             </div>
           </div>
@@ -286,7 +295,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="1809513433%2FProperties%2F-27209644" anchor-label="project" id="1809513433%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="project.html">project</a><span class="token operator">: </span><a href="../../io.snabble.sdk/-project/index.html">Project</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="1809513433%2FProperties%2F-27209644" anchor-label="project" id="1809513433%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="project.html">project</a><span class="token operator">: </span><a href="../../io.snabble.sdk/-project/index.html">Project</a></div></div></div>
               </div>
             </div>
           </div>
@@ -301,7 +310,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="-1846692505%2FProperties%2F-27209644" anchor-label="repeatCodes" id="-1846692505%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="repeat-codes.html">repeatCodes</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="-1846692505%2FProperties%2F-27209644" anchor-label="repeatCodes" id="-1846692505%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="repeat-codes.html">repeatCodes</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
               </div>
             </div>
           </div>
@@ -316,7 +325,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="2061733965%2FProperties%2F-27209644" anchor-label="separator" id="2061733965%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="separator.html">separator</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="2061733965%2FProperties%2F-27209644" anchor-label="separator" id="2061733965%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="separator.html">separator</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></div></div></div>
               </div>
             </div>
           </div>
@@ -331,7 +340,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="-736281129%2FProperties%2F-27209644" anchor-label="suffix" id="-736281129%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="suffix.html">suffix</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":core:dokkaHtmlPartial/release"><a data-name="-736281129%2FProperties%2F-27209644" anchor-label="suffix" id="-736281129%2FProperties%2F-27209644" data-filterable-set=":core:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="suffix.html">suffix</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></div></div></div>
               </div>
             </div>
           </div>

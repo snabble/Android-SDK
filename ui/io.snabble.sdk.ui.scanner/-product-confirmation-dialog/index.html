@@ -4,10 +4,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>ProductConfirmationDialog</title>
 <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
-const savedDarkMode = storage ? JSON.parse(storage) : false
-if(savedDarkMode === true){
-    document.getElementsByTagName("html")[0].classList.add("theme-dark")
-}</script>
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
 <script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../../styles/style.css" rel="Stylesheet">
 <link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
@@ -18,7 +26,8 @@ if(savedDarkMode === true){
 <script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
 <script type="text/javascript" src="../../../scripts/main.js" defer></script>
-<script type="text/javascript" src="../../../scripts/prism.js" async></script></head>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
 <div class="navigation-wrapper" id="navigation-wrapper">
     <div id="leftToggler"><span class="icon-toggler"></span></div>
@@ -38,10 +47,10 @@ if(savedDarkMode === true){
     </div>
     <div id="main">
 <div class="main-content" id="content" pageids="ui::io.snabble.sdk.ui.scanner/ProductConfirmationDialog///PointingToDeclaration//-587146753">
-  <div class="breadcrumbs"><a href="../../index.html">ui</a><span class="delimiter">/</span><a href="../index.html">io.snabble.sdk.ui.scanner</a><span class="delimiter">/</span><a href="index.html">ProductConfirmationDialog</a></div>
+  <div class="breadcrumbs"><a href="../../index.html">ui</a><span class="delimiter">/</span><a href="../index.html">io.snabble.sdk.ui.scanner</a><span class="delimiter">/</span><span class="current">ProductConfirmationDialog</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Product</span><wbr><span>Confirmation</span><wbr><span><span>Dialog</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">ProductConfirmationDialog</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph">The product confirmation dialog with the option to enter discounts and change the quantity.</p></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">ProductConfirmationDialog</a></div><p class="paragraph">The product confirmation dialog with the option to enter discounts and change the quantity.</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Types">Types</button><button class="section-tab" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Inheritors">Inheritors</button></div>
@@ -57,7 +66,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-factory/index.html">Factory</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Simple abstract factory to inject a custom ProductConfirmationDialog implementation</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-factory/index.html">Factory</a></div><div class="brief "><p class="paragraph">Simple abstract factory to inject a custom ProductConfirmationDialog implementation</p></div></div></div>
               </div>
             </div>
           </div>
@@ -72,7 +81,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-on-dismiss-listener/index.html">OnDismissListener</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Interface used to allow the creator of a dialog to run some code when the dialog is dismissed.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-on-dismiss-listener/index.html">OnDismissListener</a></div><div class="brief "><p class="paragraph">Interface used to allow the creator of a dialog to run some code when the dialog is dismissed.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -87,7 +96,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-on-key-listener/index.html">OnKeyListener</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Interface definition for a callback to be invoked when a hardware key event is dispatched to this dialog. The callback will be invoked before the key event is given to the view. This is only useful for hardware keyboards; a software input method has no obligation to trigger this listener.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-on-key-listener/index.html">OnKeyListener</a></div><div class="brief "><p class="paragraph">Interface definition for a callback to be invoked when a hardware key event is dispatched to this dialog. The callback will be invoked before the key event is given to the view. This is only useful for hardware keyboards; a software input method has no obligation to trigger this listener.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -102,7 +111,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-on-show-listener/index.html">OnShowListener</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Interface used to allow the creator of a dialog to run some code when the dialog is shown.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token keyword">interface </span><a href="-on-show-listener/index.html">OnShowListener</a></div><div class="brief "><p class="paragraph">Interface used to allow the creator of a dialog to run some code when the dialog is shown.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -117,7 +126,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-view-model/index.html">ViewModel</a><span class="token punctuation">(</span><span class="parameters wrapped"><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;project<span class="token operator">: </span><a href="../../../core/io.snabble.sdk/-project/index.html">Project</a><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;<span class="token keyword">val </span>product<span class="token operator">: </span><a href="../../../core/io.snabble.sdk/-product/index.html">Product</a><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;scannedCode<span class="token operator">: </span><a href="../../../core/io.snabble.sdk.codes/-scanned-code/index.html">ScannedCode</a></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">The view model of the product confirmation dialog, should be helpful if you want to customize that dialog.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-view-model/index.html">ViewModel</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">project<span class="token operator">: </span><a href="../../../core/io.snabble.sdk/-project/index.html">Project</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>product<span class="token operator">: </span><a href="../../../core/io.snabble.sdk/-product/index.html">Product</a><span class="token punctuation">, </span></span><span class="parameter ">scannedCode<span class="token operator">: </span><a href="../../../core/io.snabble.sdk.codes/-scanned-code/index.html">ScannedCode</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">The view model of the product confirmation dialog, should be helpful if you want to customize that dialog.</p></div></div></div>
               </div>
             </div>
           </div>
@@ -134,7 +143,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="dismiss.html"><span class="token function">dismiss</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">addToCart<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Dismiss the product confirmation dialog</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="dismiss.html"><span class="token function">dismiss</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">addToCart<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Dismiss the product confirmation dialog</p></div></div></div>
               </div>
             </div>
           </div>
@@ -149,7 +158,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-on-dismiss-listener.html"><span class="token function">setOnDismissListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">onDismissListener<span class="token operator">: </span><a href="-on-dismiss-listener/index.html">ProductConfirmationDialog.OnDismissListener</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Set a dismiss listener</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-on-dismiss-listener.html"><span class="token function">setOnDismissListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">onDismissListener<span class="token operator">: </span><a href="-on-dismiss-listener/index.html">ProductConfirmationDialog.OnDismissListener</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Set a dismiss listener</p></div></div></div>
               </div>
             </div>
           </div>
@@ -164,7 +173,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-on-key-listener.html"><span class="token function">setOnKeyListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">onKeyListener<span class="token operator">: </span><a href="-on-key-listener/index.html">ProductConfirmationDialog.OnKeyListener</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Set a key listener</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-on-key-listener.html"><span class="token function">setOnKeyListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">onKeyListener<span class="token operator">: </span><a href="-on-key-listener/index.html">ProductConfirmationDialog.OnKeyListener</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Set a key listener</p></div></div></div>
               </div>
             </div>
           </div>
@@ -179,7 +188,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-on-show-listener.html"><span class="token function">setOnShowListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">onShowListener<span class="token operator">: </span><a href="-on-show-listener/index.html">ProductConfirmationDialog.OnShowListener</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Set a show listener</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="set-on-show-listener.html"><span class="token function">setOnShowListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">onShowListener<span class="token operator">: </span><a href="-on-show-listener/index.html">ProductConfirmationDialog.OnShowListener</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Set a show listener</p></div></div></div>
               </div>
             </div>
           </div>
@@ -194,7 +203,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="show.html"><span class="token function">show</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentActivity.html">FragmentActivity</a><span class="token punctuation">, </span></span><span class="parameter ">viewModel<span class="token operator">: </span><a href="-view-model/index.html">ProductConfirmationDialog.ViewModel</a></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><div class="brief "><p class="paragraph">Show the product confirmation dialog with the given view model.</p></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="show.html"><span class="token function">show</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentActivity.html">FragmentActivity</a><span class="token punctuation">, </span></span><span class="parameter ">viewModel<span class="token operator">: </span><a href="-view-model/index.html">ProductConfirmationDialog.ViewModel</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Show the product confirmation dialog with the given view model.</p></div></div></div>
               </div>
             </div>
           </div>

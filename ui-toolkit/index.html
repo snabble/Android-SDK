@@ -4,10 +4,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>ui-toolkit</title>
 <link href="../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
-const savedDarkMode = storage ? JSON.parse(storage) : false
-if(savedDarkMode === true){
-    document.getElementsByTagName("html")[0].classList.add("theme-dark")
-}</script>
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
 <script type="text/javascript" src="../scripts/sourceset_dependencies.js" async></script>
 <link href="../styles/style.css" rel="Stylesheet">
 <link href="../styles/jetbrains-mono.css" rel="Stylesheet">
@@ -18,7 +26,8 @@ if(savedDarkMode === true){
 <script type="text/javascript" src="../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../scripts/platform-content-handler.js" async></script>
 <script type="text/javascript" src="../scripts/main.js" defer></script>
-<script type="text/javascript" src="../scripts/prism.js" async></script></head>
+<script type="text/javascript" src="../scripts/prism.js" async></script>
+<script type="text/javascript" src="../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
 <div class="navigation-wrapper" id="navigation-wrapper">
     <div id="leftToggler"><span class="icon-toggler"></span></div>
@@ -57,13 +66,13 @@ if(savedDarkMode === true){
         <div></div>
       </div>
     </div>
-<a data-name="1924022568%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.onboarding" id="1924022568%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
+<a data-name="-2086241770%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.dynamicview.domain.model" id="-2086241770%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
     <div class="table-row" data-filterable-current=":ui-toolkit:dokkaHtmlPartial/release" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release">
       <div>
         <div class="main-subrow ">
           <div class=""><span class="inline-flex">
-              <div><a href="io.snabble.sdk.onboarding/index.html">io.snabble.sdk.onboarding</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1924022568%2FPackages%2F1544899310"></span>
+              <div><a href="io.snabble.sdk.dynamicview.domain.model/index.html">io.snabble.sdk.dynamicview.domain.model</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2086241770%2FPackages%2F1544899310"></span>
                 <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
               </span></span></div>
           <div class="pull-right"></div>
@@ -71,13 +80,13 @@ if(savedDarkMode === true){
         <div></div>
       </div>
     </div>
-<a data-name="1548647563%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.onboarding.entities" id="1548647563%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
+<a data-name="1488497963%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.dynamicview.ui" id="1488497963%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
     <div class="table-row" data-filterable-current=":ui-toolkit:dokkaHtmlPartial/release" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release">
       <div>
         <div class="main-subrow ">
           <div class=""><span class="inline-flex">
-              <div><a href="io.snabble.sdk.onboarding.entities/index.html">io.snabble.sdk.onboarding.entities</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1548647563%2FPackages%2F1544899310"></span>
+              <div><a href="io.snabble.sdk.dynamicview.ui/index.html">io.snabble.sdk.dynamicview.ui</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1488497963%2FPackages%2F1544899310"></span>
                 <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
               </span></span></div>
           <div class="pull-right"></div>
@@ -85,13 +94,13 @@ if(savedDarkMode === true){
         <div></div>
       </div>
     </div>
-<a data-name="1258868097%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.onboarding.terms" id="1258868097%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
+<a data-name="-1679861967%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.dynamicview.viewmodel" id="-1679861967%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
     <div class="table-row" data-filterable-current=":ui-toolkit:dokkaHtmlPartial/release" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release">
       <div>
         <div class="main-subrow ">
           <div class=""><span class="inline-flex">
-              <div><a href="io.snabble.sdk.onboarding.terms/index.html">io.snabble.sdk.onboarding.terms</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1258868097%2FPackages%2F1544899310"></span>
+              <div><a href="io.snabble.sdk.dynamicview.viewmodel/index.html">io.snabble.sdk.dynamicview.viewmodel</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1679861967%2FPackages%2F1544899310"></span>
                 <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
               </span></span></div>
           <div class="pull-right"></div>
@@ -99,13 +108,13 @@ if(savedDarkMode === true){
         <div></div>
       </div>
     </div>
-<a data-name="-1759560087%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.shopfinder" id="-1759560087%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
+<a data-name="-2087508109%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.screens.home.ui" id="-2087508109%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
     <div class="table-row" data-filterable-current=":ui-toolkit:dokkaHtmlPartial/release" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release">
       <div>
         <div class="main-subrow ">
           <div class=""><span class="inline-flex">
-              <div><a href="io.snabble.sdk.shopfinder/index.html">io.snabble.sdk.shopfinder</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1759560087%2FPackages%2F1544899310"></span>
+              <div><a href="io.snabble.sdk.screens.home.ui/index.html">io.snabble.sdk.screens.home.ui</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2087508109%2FPackages%2F1544899310"></span>
                 <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
               </span></span></div>
           <div class="pull-right"></div>
@@ -113,13 +122,13 @@ if(savedDarkMode === true){
         <div></div>
       </div>
     </div>
-<a data-name="2126806909%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.shopfinder.shoplist" id="2126806909%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
+<a data-name="-293848087%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.screens.home.viewmodel" id="-293848087%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
     <div class="table-row" data-filterable-current=":ui-toolkit:dokkaHtmlPartial/release" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release">
       <div>
         <div class="main-subrow ">
           <div class=""><span class="inline-flex">
-              <div><a href="io.snabble.sdk.shopfinder.shoplist/index.html">io.snabble.sdk.shopfinder.shoplist</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2126806909%2FPackages%2F1544899310"></span>
+              <div><a href="io.snabble.sdk.screens.home.viewmodel/index.html">io.snabble.sdk.screens.home.viewmodel</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-293848087%2FPackages%2F1544899310"></span>
                 <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
               </span></span></div>
           <div class="pull-right"></div>
@@ -127,13 +136,139 @@ if(savedDarkMode === true){
         <div></div>
       </div>
     </div>
-<a data-name="216259756%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.shopfinder.utils" id="216259756%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
+<a data-name="1005564557%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.screens.onboarding.data" id="1005564557%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
     <div class="table-row" data-filterable-current=":ui-toolkit:dokkaHtmlPartial/release" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release">
       <div>
         <div class="main-subrow ">
           <div class=""><span class="inline-flex">
-              <div><a href="io.snabble.sdk.shopfinder.utils/index.html">io.snabble.sdk.shopfinder.utils</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="216259756%2FPackages%2F1544899310"></span>
+              <div><a href="io.snabble.sdk.screens.onboarding.data/index.html">io.snabble.sdk.screens.onboarding.data</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1005564557%2FPackages%2F1544899310"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right"></div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="-783069897%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.screens.onboarding.ui" id="-783069897%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
+    <div class="table-row" data-filterable-current=":ui-toolkit:dokkaHtmlPartial/release" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="io.snabble.sdk.screens.onboarding.ui/index.html">io.snabble.sdk.screens.onboarding.ui</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-783069897%2FPackages%2F1544899310"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right"></div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="1043485264%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.screens.onboarding.ui.terms" id="1043485264%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
+    <div class="table-row" data-filterable-current=":ui-toolkit:dokkaHtmlPartial/release" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="io.snabble.sdk.screens.onboarding.ui.terms/index.html">io.snabble.sdk.screens.onboarding.ui.terms</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1043485264%2FPackages%2F1544899310"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right"></div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="-70138894%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.screens.onboarding.utils" id="-70138894%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
+    <div class="table-row" data-filterable-current=":ui-toolkit:dokkaHtmlPartial/release" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="io.snabble.sdk.screens.onboarding.utils/index.html">io.snabble.sdk.screens.onboarding.utils</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-70138894%2FPackages%2F1544899310"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right"></div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="1665853896%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.screens.onboarding.view" id="1665853896%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
+    <div class="table-row" data-filterable-current=":ui-toolkit:dokkaHtmlPartial/release" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="io.snabble.sdk.screens.onboarding.view/index.html">io.snabble.sdk.screens.onboarding.view</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1665853896%2FPackages%2F1544899310"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right"></div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="815318925%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.screens.profile.ui" id="815318925%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
+    <div class="table-row" data-filterable-current=":ui-toolkit:dokkaHtmlPartial/release" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="io.snabble.sdk.screens.profile.ui/index.html">io.snabble.sdk.screens.profile.ui</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="815318925%2FPackages%2F1544899310"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right"></div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="-893310321%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.screens.profile.viewmodel" id="-893310321%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
+    <div class="table-row" data-filterable-current=":ui-toolkit:dokkaHtmlPartial/release" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="io.snabble.sdk.screens.profile.viewmodel/index.html">io.snabble.sdk.screens.profile.viewmodel</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-893310321%2FPackages%2F1544899310"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right"></div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="1337364336%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.screens.shopfinder" id="1337364336%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
+    <div class="table-row" data-filterable-current=":ui-toolkit:dokkaHtmlPartial/release" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="io.snabble.sdk.screens.shopfinder/index.html">io.snabble.sdk.screens.shopfinder</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1337364336%2FPackages%2F1544899310"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right"></div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="1792697942%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.screens.shopfinder.shoplist" id="1792697942%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
+    <div class="table-row" data-filterable-current=":ui-toolkit:dokkaHtmlPartial/release" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="io.snabble.sdk.screens.shopfinder.shoplist/index.html">io.snabble.sdk.screens.shopfinder.shoplist</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1792697942%2FPackages%2F1544899310"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right"></div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="54922355%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.screens.shopfinder.utils" id="54922355%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
+    <div class="table-row" data-filterable-current=":ui-toolkit:dokkaHtmlPartial/release" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="io.snabble.sdk.screens.shopfinder.utils/index.html">io.snabble.sdk.screens.shopfinder.utils</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="54922355%2FPackages%2F1544899310"></span>
                 <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
               </span></span></div>
           <div class="pull-right"></div>
@@ -155,13 +290,41 @@ if(savedDarkMode === true){
         <div></div>
       </div>
     </div>
-<a data-name="2002835826%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.view" id="2002835826%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
+<a data-name="-161149754%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.widgets" id="-161149754%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
     <div class="table-row" data-filterable-current=":ui-toolkit:dokkaHtmlPartial/release" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release">
       <div>
         <div class="main-subrow ">
           <div class=""><span class="inline-flex">
-              <div><a href="io.snabble.sdk.view/index.html">io.snabble.sdk.view</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2002835826%2FPackages%2F1544899310"></span>
+              <div><a href="io.snabble.sdk.widgets/index.html">io.snabble.sdk.widgets</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-161149754%2FPackages%2F1544899310"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right"></div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="-1885418980%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.widgets.snabble.purchase" id="-1885418980%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
+    <div class="table-row" data-filterable-current=":ui-toolkit:dokkaHtmlPartial/release" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="io.snabble.sdk.widgets.snabble.purchase/index.html">io.snabble.sdk.widgets.snabble.purchase</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1885418980%2FPackages%2F1544899310"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right"></div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+<a data-name="2076602922%2FPackages%2F1544899310" anchor-label="io.snabble.sdk.widgets.snabble.purchase.ui" id="2076602922%2FPackages%2F1544899310" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release"></a>
+    <div class="table-row" data-filterable-current=":ui-toolkit:dokkaHtmlPartial/release" data-filterable-set=":ui-toolkit:dokkaHtmlPartial/release">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="io.snabble.sdk.widgets.snabble.purchase.ui/index.html">io.snabble.sdk.widgets.snabble.purchase.ui</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2076602922%2FPackages%2F1544899310"></span>
                 <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
               </span></span></div>
           <div class="pull-right"></div>

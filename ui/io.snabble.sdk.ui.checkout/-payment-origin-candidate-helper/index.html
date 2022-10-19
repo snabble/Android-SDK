@@ -4,10 +4,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>PaymentOriginCandidateHelper</title>
 <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
-const savedDarkMode = storage ? JSON.parse(storage) : false
-if(savedDarkMode === true){
-    document.getElementsByTagName("html")[0].classList.add("theme-dark")
-}</script>
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
 <script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../../styles/style.css" rel="Stylesheet">
 <link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
@@ -18,7 +26,8 @@ if(savedDarkMode === true){
 <script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
 <script type="text/javascript" src="../../../scripts/main.js" defer></script>
-<script type="text/javascript" src="../../../scripts/prism.js" async></script></head>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
 <div class="navigation-wrapper" id="navigation-wrapper">
     <div id="leftToggler"><span class="icon-toggler"></span></div>
@@ -38,10 +47,10 @@ if(savedDarkMode === true){
     </div>
     <div id="main">
 <div class="main-content" id="content" pageids="ui::io.snabble.sdk.ui.checkout/PaymentOriginCandidateHelper///PointingToDeclaration//-587146753">
-  <div class="breadcrumbs"><a href="../../index.html">ui</a><span class="delimiter">/</span><a href="../index.html">io.snabble.sdk.ui.checkout</a><span class="delimiter">/</span><a href="index.html">PaymentOriginCandidateHelper</a></div>
+  <div class="breadcrumbs"><a href="../../index.html">ui</a><span class="delimiter">/</span><a href="../index.html">io.snabble.sdk.ui.checkout</a><span class="delimiter">/</span><span class="current">PaymentOriginCandidateHelper</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Payment</span><wbr><span>Origin</span><wbr><span>Candidate</span><wbr><span><span>Helper</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RestrictTo.html"><span class="token annotation">RestrictTo</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><span class="token punctuation">[</span><span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RestrictTo.Scope.LIBRARY.html">RestrictTo.Scope.LIBRARY</a></span><wbr><span class="token punctuation">]</span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">class </span><a href="index.html">PaymentOriginCandidateHelper</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>project<span class="token operator">: </span><a href="../../../core/io.snabble.sdk/-project/index.html">Project</a></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RestrictTo.html"><span class="token annotation builtin">RestrictTo</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><span class="token punctuation">[</span><span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RestrictTo.Scope.LIBRARY.html">RestrictTo.Scope.LIBRARY</a></span><wbr><span class="token punctuation">]</span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">class </span><a href="index.html">PaymentOriginCandidateHelper</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>project<span class="token operator">: </span><a href="../../../core/io.snabble.sdk/-project/index.html">Project</a></span></span><span class="token punctuation">)</span></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Types">Types</button><button class="section-tab" data-togglable="Constructors">Constructors</button><button class="section-tab" data-togglable="Properties">Properties</button></div>
@@ -57,7 +66,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="-payment-origin-candidate-helper.html"><span class="token function">PaymentOriginCandidateHelper</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">project<span class="token operator">: </span><a href="../../../core/io.snabble.sdk/-project/index.html">Project</a></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="-payment-origin-candidate-helper.html"><span class="token function">PaymentOriginCandidateHelper</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">project<span class="token operator">: </span><a href="../../../core/io.snabble.sdk/-project/index.html">Project</a></span></span><span class="token punctuation">)</span></div></div></div>
               </div>
             </div>
           </div>
@@ -74,7 +83,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RestrictTo.html"><span class="token annotation">RestrictTo</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><span class="token punctuation">[</span><span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RestrictTo.Scope.LIBRARY.html">RestrictTo.Scope.LIBRARY</a></span><wbr><span class="token punctuation">]</span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">class </span><a href="-payment-origin-candidate/index.html">PaymentOriginCandidate</a> : <a href="https://developer.android.com/reference/kotlin/java/io/Serializable.html">Serializable</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RestrictTo.html"><span class="token annotation builtin">RestrictTo</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><span class="token punctuation">[</span><span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RestrictTo.Scope.LIBRARY.html">RestrictTo.Scope.LIBRARY</a></span><wbr><span class="token punctuation">]</span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">class </span><a href="-payment-origin-candidate/index.html">PaymentOriginCandidate</a> : <a href="https://developer.android.com/reference/kotlin/java/io/Serializable.html">Serializable</a></div></div></div>
               </div>
             </div>
           </div>
@@ -89,7 +98,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RestrictTo.html"><span class="token annotation">RestrictTo</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><span class="token punctuation">[</span><span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RestrictTo.Scope.LIBRARY.html">RestrictTo.Scope.LIBRARY</a></span><wbr><span class="token punctuation">]</span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">interface </span><a href="-payment-origin-candidate-available-listener/index.html">PaymentOriginCandidateAvailableListener</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RestrictTo.html"><span class="token annotation builtin">RestrictTo</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><span class="token punctuation">[</span><span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RestrictTo.Scope.LIBRARY.html">RestrictTo.Scope.LIBRARY</a></span><wbr><span class="token punctuation">]</span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">interface </span><a href="-payment-origin-candidate-available-listener/index.html">PaymentOriginCandidateAvailableListener</a></div></div></div>
               </div>
             </div>
           </div>
@@ -104,7 +113,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RestrictTo.html"><span class="token annotation">RestrictTo</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><span class="token punctuation">[</span><span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RestrictTo.Scope.LIBRARY.html">RestrictTo.Scope.LIBRARY</a></span><wbr><span class="token punctuation">]</span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">interface </span><a href="-promote-result/index.html">PromoteResult</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RestrictTo.html"><span class="token annotation builtin">RestrictTo</span></a><span class="token punctuation">(</span><span>value<span class="token operator"> = </span><span class="token punctuation">[</span><span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/RestrictTo.Scope.LIBRARY.html">RestrictTo.Scope.LIBRARY</a></span><wbr><span class="token punctuation">]</span></span><wbr><span class="token punctuation">)</span></div></div><span class="token keyword">interface </span><a href="-promote-result/index.html">PromoteResult</a></div></div></div>
               </div>
             </div>
           </div>
@@ -121,7 +130,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="-1522753196%2FProperties%2F-587146753" anchor-label="project" id="-1522753196%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="project.html">project</a><span class="token operator">: </span><a href="../../../core/io.snabble.sdk/-project/index.html">Project</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="-1522753196%2FProperties%2F-587146753" anchor-label="project" id="-1522753196%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="project.html">project</a><span class="token operator">: </span><a href="../../../core/io.snabble.sdk/-project/index.html">Project</a></div></div></div>
               </div>
             </div>
           </div>

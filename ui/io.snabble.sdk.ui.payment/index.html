@@ -4,10 +4,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>io.snabble.sdk.ui.payment</title>
 <link href="../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
-const savedDarkMode = storage ? JSON.parse(storage) : false
-if(savedDarkMode === true){
-    document.getElementsByTagName("html")[0].classList.add("theme-dark")
-}</script>
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
 <script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../styles/style.css" rel="Stylesheet">
 <link href="../../styles/jetbrains-mono.css" rel="Stylesheet">
@@ -18,7 +26,8 @@ if(savedDarkMode === true){
 <script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
 <script type="text/javascript" src="../../scripts/main.js" defer></script>
-<script type="text/javascript" src="../../scripts/prism.js" async></script></head>
+<script type="text/javascript" src="../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
 <div class="navigation-wrapper" id="navigation-wrapper">
     <div id="leftToggler"><span class="icon-toggler"></span></div>
@@ -38,9 +47,9 @@ if(savedDarkMode === true){
     </div>
     <div id="main">
 <div class="main-content" id="content" pageids="ui::io.snabble.sdk.ui.payment////PointingToDeclaration//-587146753">
-  <div class="breadcrumbs"><a href="../index.html">ui</a><span class="delimiter">/</span><a href="index.html">io.snabble.sdk.ui.payment</a></div>
+  <div class="breadcrumbs"><a href="../index.html">ui</a><span class="delimiter">/</span><span class="current">io.snabble.sdk.ui.payment</span></div>
   <div class="cover ">
-    <h1 class="cover"><span>Package io.</span><wbr><span>snabble.</span><wbr><span>sdk.</span><wbr><span>ui.</span><wbr><span>payment</span></h1>
+    <h1 class="cover"><span><span>Package-level</span></span> <span><span>declarations</span></span></h1>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="Types">Types</button><button class="section-tab" data-togglable="Functions">Functions</button><button class="section-tab" data-togglable="Properties">Properties</button></div>
@@ -56,7 +65,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-age-verification-input-activity/index.html">AgeVerificationInputActivity</a> : <a href="../io.snabble.sdk.ui/-base-fragment-activity/index.html">BaseFragmentActivity</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-age-verification-input-activity/index.html">AgeVerificationInputActivity</a> : <a href="../io.snabble.sdk.ui/-base-fragment-activity/index.html">BaseFragmentActivity</a></div></div></div>
               </div>
             </div>
           </div>
@@ -71,7 +80,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-age-verification-input-fragment/index.html">AgeVerificationInputFragment</a> : <a href="../io.snabble.sdk.ui/-base-fragment/index.html">BaseFragment</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-age-verification-input-fragment/index.html">AgeVerificationInputFragment</a> : <a href="../io.snabble.sdk.ui/-base-fragment/index.html">BaseFragment</a></div></div></div>
               </div>
             </div>
           </div>
@@ -86,7 +95,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-age-verification-input-view/index.html">AgeVerificationInputView</a> : <a href="https://developer.android.com/reference/kotlin/android/widget/FrameLayout.html">FrameLayout</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-age-verification-input-view/index.html">AgeVerificationInputView</a> : <a href="https://developer.android.com/reference/kotlin/android/widget/FrameLayout.html">FrameLayout</a></div></div></div>
               </div>
             </div>
           </div>
@@ -101,7 +110,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-credit-card-input-activity/index.html">CreditCardInputActivity</a> : <a href="../io.snabble.sdk.ui/-base-fragment-activity/index.html">BaseFragmentActivity</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-credit-card-input-activity/index.html">CreditCardInputActivity</a> : <a href="../io.snabble.sdk.ui/-base-fragment-activity/index.html">BaseFragmentActivity</a></div></div></div>
               </div>
             </div>
           </div>
@@ -116,7 +125,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-credit-card-input-fragment/index.html">CreditCardInputFragment</a> : <a href="../io.snabble.sdk.ui/-base-fragment/index.html">BaseFragment</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-credit-card-input-fragment/index.html">CreditCardInputFragment</a> : <a href="../io.snabble.sdk.ui/-base-fragment/index.html">BaseFragment</a></div></div></div>
               </div>
             </div>
           </div>
@@ -131,7 +140,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-credit-card-input-view/index.html">CreditCardInputView</a> : <a href="https://developer.android.com/reference/kotlin/android/widget/RelativeLayout.html">RelativeLayout</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-credit-card-input-view/index.html">CreditCardInputView</a> : <a href="https://developer.android.com/reference/kotlin/android/widget/RelativeLayout.html">RelativeLayout</a></div></div></div>
               </div>
             </div>
           </div>
@@ -146,7 +155,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-datatrans/index.html">Datatrans</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-datatrans/index.html">Datatrans</a></div></div></div>
               </div>
             </div>
           </div>
@@ -161,7 +170,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-paydirekt-input-activity/index.html">PaydirektInputActivity</a> : <a href="../io.snabble.sdk.ui/-base-fragment-activity/index.html">BaseFragmentActivity</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-paydirekt-input-activity/index.html">PaydirektInputActivity</a> : <a href="../io.snabble.sdk.ui/-base-fragment-activity/index.html">BaseFragmentActivity</a></div></div></div>
               </div>
             </div>
           </div>
@@ -176,7 +185,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-paydirekt-input-fragment/index.html">PaydirektInputFragment</a> : <a href="../io.snabble.sdk.ui/-base-fragment/index.html">BaseFragment</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-paydirekt-input-fragment/index.html">PaydirektInputFragment</a> : <a href="../io.snabble.sdk.ui/-base-fragment/index.html">BaseFragment</a></div></div></div>
               </div>
             </div>
           </div>
@@ -191,7 +200,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-paydirekt-input-view/index.html">PaydirektInputView</a> : <a href="https://developer.android.com/reference/kotlin/android/widget/FrameLayout.html">FrameLayout</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-paydirekt-input-view/index.html">PaydirektInputView</a> : <a href="https://developer.android.com/reference/kotlin/android/widget/FrameLayout.html">FrameLayout</a></div></div></div>
               </div>
             </div>
           </div>
@@ -206,7 +215,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-payment-credentials-list-activity/index.html">PaymentCredentialsListActivity</a> : <a href="../io.snabble.sdk.ui/-base-fragment-activity/index.html">BaseFragmentActivity</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-payment-credentials-list-activity/index.html">PaymentCredentialsListActivity</a> : <a href="../io.snabble.sdk.ui/-base-fragment-activity/index.html">BaseFragmentActivity</a></div></div></div>
               </div>
             </div>
           </div>
@@ -221,7 +230,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-payment-credentials-list-fragment/index.html">PaymentCredentialsListFragment</a> : <a href="../io.snabble.sdk.ui/-base-fragment/index.html">BaseFragment</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-payment-credentials-list-fragment/index.html">PaymentCredentialsListFragment</a> : <a href="../io.snabble.sdk.ui/-base-fragment/index.html">BaseFragment</a></div></div></div>
               </div>
             </div>
           </div>
@@ -236,7 +245,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-payment-credentials-list-view/index.html">PaymentCredentialsListView</a> : <a href="https://developer.android.com/reference/kotlin/android/widget/FrameLayout.html">FrameLayout</a>, <a href="../../core/io.snabble.sdk.payment/-payment-credentials-store/-callback/index.html">PaymentCredentialsStore.Callback</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-payment-credentials-list-view/index.html">PaymentCredentialsListView</a> : <a href="https://developer.android.com/reference/kotlin/android/widget/FrameLayout.html">FrameLayout</a>, <a href="../../core/io.snabble.sdk.payment/-payment-credentials-store/-callback/index.html">PaymentCredentialsStore.Callback</a></div></div></div>
               </div>
             </div>
           </div>
@@ -251,7 +260,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-payment-input-view-helper/index.html">PaymentInputViewHelper</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-payment-input-view-helper/index.html">PaymentInputViewHelper</a></div></div></div>
               </div>
             </div>
           </div>
@@ -266,7 +275,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-payment-options-activity/index.html">PaymentOptionsActivity</a> : <a href="../io.snabble.sdk.ui/-base-fragment-activity/index.html">BaseFragmentActivity</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-payment-options-activity/index.html">PaymentOptionsActivity</a> : <a href="../io.snabble.sdk.ui/-base-fragment-activity/index.html">BaseFragmentActivity</a></div></div></div>
               </div>
             </div>
           </div>
@@ -281,7 +290,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-payment-options-fragment/index.html">PaymentOptionsFragment</a> : <a href="../io.snabble.sdk.ui/-base-fragment/index.html">BaseFragment</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-payment-options-fragment/index.html">PaymentOptionsFragment</a> : <a href="../io.snabble.sdk.ui/-base-fragment/index.html">BaseFragment</a></div></div></div>
               </div>
             </div>
           </div>
@@ -296,7 +305,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-payment-options-view/index.html">PaymentOptionsView</a>&nbsp;<span><span class="token annotation">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation">JvmOverloads</span></a>&nbsp;</span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters wrapped"><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;attrs<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/util/AttributeSet.html">AttributeSet</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;defStyleAttr<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">0</span></span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/widget/FrameLayout.html">FrameLayout</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-payment-options-view/index.html">PaymentOptionsView</a>&nbsp;<span><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a>&nbsp;</span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">attrs<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/util/AttributeSet.html">AttributeSet</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">defStyleAttr<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">0</span></span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/widget/FrameLayout.html">FrameLayout</a></div></div></div>
               </div>
             </div>
           </div>
@@ -311,7 +320,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-payone/index.html">Payone</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">object </span><a href="-payone/index.html">Payone</a></div></div></div>
               </div>
             </div>
           </div>
@@ -326,7 +335,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-payone-input-activity/index.html">PayoneInputActivity</a> : <a href="../io.snabble.sdk.ui/-base-fragment-activity/index.html">BaseFragmentActivity</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-payone-input-activity/index.html">PayoneInputActivity</a> : <a href="../io.snabble.sdk.ui/-base-fragment-activity/index.html">BaseFragmentActivity</a></div></div></div>
               </div>
             </div>
           </div>
@@ -341,7 +350,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-payone-input-fragment/index.html">PayoneInputFragment</a> : <a href="../io.snabble.sdk.ui/-base-fragment/index.html">BaseFragment</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-payone-input-fragment/index.html">PayoneInputFragment</a> : <a href="../io.snabble.sdk.ui/-base-fragment/index.html">BaseFragment</a></div></div></div>
               </div>
             </div>
           </div>
@@ -356,7 +365,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-payone-input-view/index.html">PayoneInputView</a>&nbsp;<span><span class="token annotation">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation">JvmOverloads</span></a>&nbsp;</span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters wrapped"><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;attrs<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/util/AttributeSet.html">AttributeSet</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;defStyleAttr<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">0</span></span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/widget/FrameLayout.html">FrameLayout</a>, <a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LifecycleObserver.html">LifecycleObserver</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-payone-input-view/index.html">PayoneInputView</a>&nbsp;<span><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a>&nbsp;</span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">attrs<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/util/AttributeSet.html">AttributeSet</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">defStyleAttr<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">0</span></span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/widget/FrameLayout.html">FrameLayout</a>, <a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LifecycleObserver.html">LifecycleObserver</a></div></div></div>
               </div>
             </div>
           </div>
@@ -371,7 +380,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-project-payment-options-activity/index.html">ProjectPaymentOptionsActivity</a> : <a href="../io.snabble.sdk.ui/-base-fragment-activity/index.html">BaseFragmentActivity</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-project-payment-options-activity/index.html">ProjectPaymentOptionsActivity</a> : <a href="../io.snabble.sdk.ui/-base-fragment-activity/index.html">BaseFragmentActivity</a></div></div></div>
               </div>
             </div>
           </div>
@@ -386,7 +395,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-project-payment-options-fragment/index.html">ProjectPaymentOptionsFragment</a> : <a href="../io.snabble.sdk.ui/-base-fragment/index.html">BaseFragment</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-project-payment-options-fragment/index.html">ProjectPaymentOptionsFragment</a> : <a href="../io.snabble.sdk.ui/-base-fragment/index.html">BaseFragment</a></div></div></div>
               </div>
             </div>
           </div>
@@ -401,7 +410,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-project-payment-options-view/index.html">ProjectPaymentOptionsView</a>&nbsp;<span><span class="token annotation">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation">JvmOverloads</span></a>&nbsp;</span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters wrapped"><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;attrs<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/util/AttributeSet.html">AttributeSet</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter indented">&nbsp;&nbsp;&nbsp;&nbsp;defStyleAttr<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">0</span></span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/widget/FrameLayout.html">FrameLayout</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-project-payment-options-view/index.html">ProjectPaymentOptionsView</a>&nbsp;<span><span class="token annotation builtin">@</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.jvm/-jvm-overloads/index.html"><span class="token annotation builtin">JvmOverloads</span></a>&nbsp;</span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">, </span></span><span class="parameter ">attrs<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/util/AttributeSet.html">AttributeSet</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">defStyleAttr<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">0</span></span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/android/widget/FrameLayout.html">FrameLayout</a></div></div></div>
               </div>
             </div>
           </div>
@@ -416,7 +425,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-select-payment-method-fragment/index.html">SelectPaymentMethodFragment</a> : <span data-unresolved-link="com.google.android.material.bottomsheet/BottomSheetDialogFragment///PointingToDeclaration/">BottomSheetDialogFragment</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-select-payment-method-fragment/index.html">SelectPaymentMethodFragment</a> : <span data-unresolved-link="com.google.android.material.bottomsheet/BottomSheetDialogFragment///PointingToDeclaration/">BottomSheetDialogFragment</span></div></div></div>
               </div>
             </div>
           </div>
@@ -431,7 +440,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-s-e-p-a-card-input-activity/index.html">SEPACardInputActivity</a> : <a href="../io.snabble.sdk.ui/-base-fragment-activity/index.html">BaseFragmentActivity</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="-s-e-p-a-card-input-activity/index.html">SEPACardInputActivity</a> : <a href="../io.snabble.sdk.ui/-base-fragment-activity/index.html">BaseFragmentActivity</a></div></div></div>
               </div>
             </div>
           </div>
@@ -446,7 +455,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-s-e-p-a-card-input-fragment/index.html">SEPACardInputFragment</a> : <a href="../io.snabble.sdk.ui/-base-fragment/index.html">BaseFragment</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-s-e-p-a-card-input-fragment/index.html">SEPACardInputFragment</a> : <a href="../io.snabble.sdk.ui/-base-fragment/index.html">BaseFragment</a></div></div></div>
               </div>
             </div>
           </div>
@@ -461,7 +470,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-s-e-p-a-card-input-view/index.html">SEPACardInputView</a> : <a href="https://developer.android.com/reference/kotlin/android/widget/FrameLayout.html">FrameLayout</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-s-e-p-a-card-input-view/index.html">SEPACardInputView</a> : <a href="https://developer.android.com/reference/kotlin/android/widget/FrameLayout.html">FrameLayout</a></div></div></div>
               </div>
             </div>
           </div>
@@ -476,7 +485,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-s-e-p-a-legal-info-helper/index.html">SEPALegalInfoHelper</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="-s-e-p-a-legal-info-helper/index.html">SEPALegalInfoHelper</a></div></div></div>
               </div>
             </div>
           </div>
@@ -493,7 +502,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentActivity.html">FragmentActivity</a><span class="token punctuation">.</span><a href="run-on-ui-thread-when-resumed.html"><span class="token function">runOnUiThreadWhenResumed</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">task<span class="token operator">: </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentActivity.html">FragmentActivity</a><span class="token punctuation">.</span><a href="run-on-ui-thread-when-resumed.html"><span class="token function">runOnUiThreadWhenResumed</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">task<span class="token operator">: </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div></div></div>
               </div>
             </div>
           </div>
@@ -510,7 +519,7 @@ if(savedDarkMode === true){
                 </span></span></div>
             <div>
               <div class="title">
-                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-depenent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="2060699512%2FProperties%2F-587146753" anchor-label="icon" id="2060699512%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="../../core/io.snabble.sdk/-payment-method-descriptor/index.html">PaymentMethodDescriptor</a><span class="token punctuation">.</span><a href="icon.html">icon</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+                <div class="platform-hinted " data-platform-hinted="data-platform-hinted" data-togglable="Properties"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><a data-name="2060699512%2FProperties%2F-587146753" anchor-label="icon" id="2060699512%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="../../core/io.snabble.sdk/-payment-method-descriptor/index.html">PaymentMethodDescriptor</a><span class="token punctuation">.</span><a href="icon.html">icon</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
               </div>
             </div>
           </div>
