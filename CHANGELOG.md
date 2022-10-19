@@ -1,10 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [0.69.1] _(not yet released)_
+## [0.69.1-beta01]
 
 ### Added
 - DynamicView to build Screens by a _(JSON)_ Configuration
+- Handle conflict status code when creating a new process (#70)
 
 ## [0.69.0]
 
