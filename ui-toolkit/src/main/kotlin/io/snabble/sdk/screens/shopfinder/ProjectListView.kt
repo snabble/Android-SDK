@@ -13,13 +13,13 @@ import io.snabble.accessibility.setClickDescription
 import io.snabble.sdk.screens.shopfinder.shoplist.Item
 import io.snabble.sdk.screens.shopfinder.shoplist.ViewType
 import io.snabble.sdk.screens.shopfinder.utils.AssetHelper
-import io.snabble.sdk.screens.shopfinder.utils.OneShotClickListener
 import io.snabble.sdk.ui.toolkit.R
+import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.utils.setTextOrHide
 
 class ProjectListView @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet? = null
+    attrs: AttributeSet? = null,
 ) : LinearLayout(context, attrs) {
 
     private val itemAnimator = DefaultItemAnimator()
@@ -58,32 +58,30 @@ class ProjectListView @JvmOverloads constructor(
             chevron.rotation = 90f
         }
 
-        setOnClickListener(object : OneShotClickListener() {
-            override fun click() {
-                onToggle()
-                chevron.animate()
-                    .rotationBy(if (item.type == ViewType.CollapsedBrand) -180f else 180f)
-                    .setDuration(itemAnimator.addDuration)
-                    .start()
-                if (item.type == ViewType.ExpandedBrand) {
-                    announceForAccessibility(
-                        resources.getString(
-                            R.string.Snabble_Shop_List_EventShopExpanded_accessibility,
-                            item.name
-                        )
+        setOneShotClickListener {
+            onToggle()
+            chevron.animate()
+                .rotationBy(if (item.type == ViewType.CollapsedBrand) -180f else 180f)
+                .setDuration(itemAnimator.addDuration)
+                .start()
+            if (item.type == ViewType.ExpandedBrand) {
+                announceForAccessibility(
+                    resources.getString(
+                        R.string.Snabble_Shop_List_EventShopExpanded_accessibility,
+                        item.name
                     )
-                    accessibility.setClickAction(R.string.Snabble_Shop_List_Colapse_accessibility)
-                } else {
-                    accessibility.setClickAction(
-                        resources.getString(
-                            R.string.Snabble_Shop_List_EventShopColapsed_accessibility,
-                            item.name
-                        )
+                )
+                accessibility.setClickAction(R.string.Snabble_Shop_List_Colapse_accessibility)
+            } else {
+                accessibility.setClickAction(
+                    resources.getString(
+                        R.string.Snabble_Shop_List_EventShopColapsed_accessibility,
+                        item.name
                     )
-                    accessibility.setClickAction(R.string.Snabble_Shop_List_Expand_accessibility)
-                }
+                )
+                accessibility.setClickAction(R.string.Snabble_Shop_List_Expand_accessibility)
             }
-        })
+        }
         if (item.isCheckedIn) {
             youAreHereIndicator.isVisible = true
             distance.visibility = GONE

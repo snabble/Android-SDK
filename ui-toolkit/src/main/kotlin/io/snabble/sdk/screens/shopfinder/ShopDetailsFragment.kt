@@ -40,7 +40,6 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.checkin.CheckInLocationManager
 import io.snabble.sdk.screens.shopfinder.utils.ISO3Utils.getDisplayNameByIso3Code
-import io.snabble.sdk.screens.shopfinder.utils.OneShotClickListener
 import io.snabble.sdk.screens.shopfinder.utils.ShopFinderPreferences
 import io.snabble.sdk.screens.shopfinder.utils.distanceTo
 import io.snabble.sdk.screens.shopfinder.utils.formatDistance
@@ -105,8 +104,8 @@ open class ShopDetailsFragment : Fragment() {
 
     private val isCheckedInToShop: Boolean
         get() = Snabble.currentCheckedInShop.value != null
-            && Snabble.checkedInProject.value != null
-            && Snabble.currentCheckedInShop.value?.id == shop.id
+                && Snabble.checkedInProject.value != null
+                && Snabble.currentCheckedInShop.value?.id == shop.id
 
     init {
         val usWeekdays = DateFormatSymbols.getInstance(Locale.US).weekdays.drop(1)
@@ -154,22 +153,18 @@ open class ShopDetailsFragment : Fragment() {
         setUpMapViewPermissionLayout(savedInstanceState, view)
 
         mapPinHome = findViewById(R.id.map_pin_home)
-        mapPinHome.setOnClickListener(object : OneShotClickListener() {
-            override fun click() {
-                if (!homePinned) {
-                    zoomToHome()
-                }
+        mapPinHome.setOneShotClickListener {
+            if (!homePinned) {
+                zoomToHome()
             }
-        })
+        }
 
         mapPinShop = findViewById(R.id.map_pin_store)
-        mapPinShop.setOnClickListener(object : OneShotClickListener() {
-            override fun click() {
-                if (!storePinned) {
-                    zoomToShop(shop, true)
-                }
+        mapPinShop.setOneShotClickListener {
+            if (!storePinned) {
+                zoomToShop(shop, true)
             }
-        })
+        }
 
         mapPinNavigate = findViewById(R.id.map_directions)
         mapPinNavigate.setOneShotClickListener {
@@ -231,7 +226,6 @@ open class ShopDetailsFragment : Fragment() {
                         applyBottomSheetPeekHeight(view)
                     }
                 })
-
         }
     }
 
@@ -543,7 +537,6 @@ open class ShopDetailsFragment : Fragment() {
                 zoomToLocation(it.toLatLng(), true)
             }
         }
-
     }
 
     private fun zoomToShop(shop: Shop, animate: Boolean) {
