@@ -62,12 +62,12 @@ fun ButtonWidget(
 ) {
     Box(
         modifier = Modifier
-            .padding(padding.toPaddingValues())
-            .then(modifier),
+            .padding(padding.toPaddingValues()),
     ) {
         Button(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .then(modifier),
             onClick = { onAction(DynamicAction(widget)) },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = MaterialTheme.colorScheme.primaryContainer,

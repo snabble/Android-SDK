@@ -23,17 +23,17 @@
     {
       "type": "snabble.locationPermission",
       "id": "location",
-      "padding": [0, 8, 0, 0]
+      "padding": [0, 8, 5, 0]
     },
     {
       "type": "snabble.startShopping",
       "id": "start",
-      "padding": [0]
+      "padding": [0, 0, 5, 0]
     },
     {
       "type": "snabble.allStores",
       "id": "stores",
-      "padding": [0]
+      "padding": [0, 0, 5, 0]
     },
     {
       "type": "information",
