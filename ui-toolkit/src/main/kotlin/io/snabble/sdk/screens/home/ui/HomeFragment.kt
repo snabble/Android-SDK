@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.background
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -28,10 +29,12 @@ class HomeFragment : Fragment() {
                 setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
                 ThemeWrapper {
                     DynamicScreen(dynamicViewModel = viewModel,
-                        modifier = Modifier.background(
-                            Color(LocalContext.current.getComposeColor("home_background") ?: Color.Magenta.toArgb())
-                        ))
-
+                        modifier = Modifier
+                            .background(
+                                Color(LocalContext.current.getComposeColor("home_background")
+                                    ?: MaterialTheme.colorScheme.background.toArgb())
+                            )
+                    )
                 }
             }
         }
