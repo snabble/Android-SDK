@@ -26,8 +26,10 @@ import io.snabble.sdk.screens.onboarding.data.OnboardingModel
 import io.snabble.sdk.screens.onboarding.utils.ZoomOutPageTransformer
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.ui.utils.resolveImageOrHide
+import io.snabble.sdk.utils.resolveResourceString
 
 open class OnboardingFragment : Fragment() {
+
     private lateinit var viewPager: ViewPager2
 
     override fun onCreateView(
@@ -104,13 +106,17 @@ open class OnboardingFragment : Fragment() {
 
             override fun onPageSelected(position: Int) {
                 val item = model.items[position]
-                button.text = item.customButtonTitle ?: getString(
-                    if (position == model.items.lastIndex) {
-                        R.string.Snabble_Onboarding_done
-                    } else {
-                        R.string.Snabble_Onboarding_next
-                    }
-                )
+                if (item.customButtonTitle != null) {
+                    button.text = context?.resolveResourceString(item.customButtonTitle)
+                } else {
+                    button.text = getString(
+                        if (position == model.items.lastIndex) {
+                            R.string.Snabble_Onboarding_done
+                        } else {
+                            R.string.Snabble_Onboarding_next
+                        }
+                    )
+                }
                 firstRun = false
             }
         })
@@ -141,7 +147,6 @@ open class OnboardingFragment : Fragment() {
         return view
     }
 
-
     private fun getOnboardingModel() =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             arguments
@@ -168,6 +173,7 @@ private class StepAdapter(
     override fun getItemCount(): Int = onboardingModel.items.size
 
     class StepViewHolder(itemView: OnboardingStepView) : RecyclerView.ViewHolder(itemView) {
+
         fun bind(data: OnboardingItem) = (itemView as OnboardingStepView).bind(data)
     }
 }
