@@ -3,8 +3,10 @@ package io.snabble.sdk.widgets.snabble.locationpermission.ui
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebaslogen.resaca.viewModelScoped
@@ -28,7 +30,7 @@ internal fun LocationPermissionWidget(
     val hasLocationPermissionState = viewModel.hasLocationPermission.collectAsStateWithLifecycle()
     if (!hasLocationPermissionState.value) {
         LocationPermission(
-            modifier = modifier,
+            modifier = modifier.heightIn(48.dp),
             model = model,
             onAction = {
                 onAction(it)
