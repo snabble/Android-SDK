@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -33,7 +34,7 @@ class ProfileFragment : Fragment() {
                         modifier = Modifier
                             .background(
                                 Color(LocalContext.current.getComposeColor("profile_background")
-                                    ?: Color.Magenta.toArgb())
+                                    ?: MaterialTheme.colorScheme.background.toArgb())
                             )
                     )
                 }

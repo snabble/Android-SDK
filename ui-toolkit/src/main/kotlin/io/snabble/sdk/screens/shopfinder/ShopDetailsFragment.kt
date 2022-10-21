@@ -554,9 +554,17 @@ open class ShopDetailsFragment : Fragment() {
 
         mapView?.onStart()
 
+        setupActionBar()
+    }
+
+    private fun setupActionBar() {
+        val supportActionBar = (context as? AppCompatActivity)?.supportActionBar ?: return
+
         val toolbarTitle = resources.getText(R.string.Snabble_Shop_Detail_title)
             .let { it.ifBlank { shop.name } }
-        (context as? AppCompatActivity)?.supportActionBar?.title = toolbarTitle
+
+        supportActionBar.title = toolbarTitle
+        supportActionBar.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onResume() {
