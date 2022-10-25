@@ -6,7 +6,13 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.view.*
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.FrameLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -20,13 +26,16 @@ import io.snabble.accessibility.isTalkBackActive
 import io.snabble.accessibility.setClickDescription
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.codes.ScannedCode
-import io.snabble.sdk.ui.*
+import io.snabble.sdk.ui.AccessibilityPreferences
+import io.snabble.sdk.ui.BaseFragment
+import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.search.SearchHelper
 import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.utils.Dispatch
 
 open class SelfScanningFragment : BaseFragment() {
     companion object {
+
         const val ARG_SHOW_PRODUCT_CODE = "showProductCode"
     }
 
@@ -44,7 +53,7 @@ open class SelfScanningFragment : BaseFragment() {
     override fun onCreateActualView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         setHasOptionsMenu(false)
         return inflater.inflate(R.layout.snabble_fragment_selfscanning, container, false) as ViewGroup
@@ -66,13 +75,16 @@ open class SelfScanningFragment : BaseFragment() {
                 event += getString(R.string.Snabble_Scanner_Accessibility_hintCartIsEmpty)
             } else {
                 with(project) {
-                    event += getString(R.string.Snabble_Scanner_Accessibility_hintCartContent, shoppingCart.size(), priceFormatter.format(shoppingCart.totalPrice))
+                    event += getString(R.string.Snabble_Scanner_Accessibility_hintCartContent,
+                        shoppingCart.size(),
+                        priceFormatter.format(shoppingCart.totalPrice))
                 }
             }
             view.announceForAccessibility(event)
             explainScanner()
         } else {
-            view.announceForAccessibility(getString(R.string.Snabble_Scanner_Accessibility_eventScannerOpened) + " " + getString(R.string.Snabble_Scanner_Accessibility_hintPermission))
+            view.announceForAccessibility(getString(R.string.Snabble_Scanner_Accessibility_eventScannerOpened) + " " + getString(
+                R.string.Snabble_Scanner_Accessibility_hintPermission))
         }
     }
 
@@ -100,7 +112,7 @@ open class SelfScanningFragment : BaseFragment() {
         }
     }
 
-    open protected fun onSelfScanningViewCreated(selfScanningView: SelfScanningView) {}
+    protected open fun onSelfScanningViewCreated(selfScanningView: SelfScanningView) {}
 
     private fun createSelfScanningView() {
         if (selfScanningView == null) {
@@ -132,7 +144,7 @@ open class SelfScanningFragment : BaseFragment() {
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         if (grantResults.isNotEmpty()) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -174,7 +186,9 @@ open class SelfScanningFragment : BaseFragment() {
 
     private fun explainScanner() {
         if (requireContext().isTalkBackActive && selfScanningView != null && !AccessibilityPreferences.suppressScannerHint) {
-            with(Snackbar.make(requireNotNull(selfScanningView), R.string.Snabble_Scanner_firstScan, Snackbar.LENGTH_INDEFINITE)) {
+            with(Snackbar.make(requireNotNull(selfScanningView),
+                R.string.Snabble_Scanner_firstScan,
+                Snackbar.LENGTH_INDEFINITE)) {
                 view.fitsSystemWindows = false
                 ViewCompat.setOnApplyWindowInsetsListener(view, null)
                 setAction(R.string.Snabble_Scanner_Accessibility_actionUnderstood) {
@@ -221,15 +235,17 @@ open class SelfScanningFragment : BaseFragment() {
     }
 
     var Snackbar.gravity: Int?
-        get() = when(view.layoutParams) {
+        get() = when (view.layoutParams) {
             is CoordinatorLayout.LayoutParams -> (view.layoutParams as CoordinatorLayout.LayoutParams).gravity
             is FrameLayout.LayoutParams -> (view.layoutParams as FrameLayout.LayoutParams).gravity
             else -> null
         }
         set(value) {
-            when(view.layoutParams) {
-                is CoordinatorLayout.LayoutParams -> (view.layoutParams as CoordinatorLayout.LayoutParams).gravity = value ?: Gravity.NO_GRAVITY
-                is FrameLayout.LayoutParams -> (view.layoutParams as FrameLayout.LayoutParams).gravity = value ?: Gravity.NO_GRAVITY
+            when (view.layoutParams) {
+                is CoordinatorLayout.LayoutParams -> (view.layoutParams as CoordinatorLayout.LayoutParams).gravity =
+                    value ?: Gravity.NO_GRAVITY
+                is FrameLayout.LayoutParams -> (view.layoutParams as FrameLayout.LayoutParams).gravity =
+                    value ?: Gravity.NO_GRAVITY
             }
         }
 }
