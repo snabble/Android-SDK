@@ -55,7 +55,7 @@
     <fragment
         android:id="@+id/navigation_home"
         android:name="io.snabble.sdk.screens.home.ui.HomeFragment"
-        android:label="@string/home" >
+        android:label="@string/home">
 
         <argument
             android:name="hideToolbar"
@@ -71,17 +71,12 @@
 
     <fragment
         android:id="@+id/navigation_scanner"
-        android:name="io.snabble.sdk.ui.scanner.SelfScanningFragment"
+        android:name="io.snabble.sdk.ui.scanner.CombinedScannerFragment"
         android:label="@string/scanner">
         <argument
             android:name="showProductCode"
             app:argType="string" />
     </fragment>
-
-    <fragment
-        android:id="@+id/navigation_cart"
-        android:name="io.snabble.sdk.ui.cart.ShoppingCartFragment"
-        android:label="@string/shoppingCart" />
 
     <navigation
         android:id="@+id/navigation_shop"
@@ -171,7 +166,7 @@
     <action
         android:id="@+id/navigation_action_status"
         app:destination="@id/navigation_payment_status"
-        app:popUpTo="@id/navigation_cart"
+        app:popUpTo="@id/navigation_scanner"
         app:popUpToInclusive="true" />
 
 </navigation>

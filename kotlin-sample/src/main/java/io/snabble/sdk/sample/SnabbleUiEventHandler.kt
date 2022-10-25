@@ -28,7 +28,7 @@ fun setUpUiEvents(activity: AppCompatActivity, navController: NavController, bot
         activity,
         SnabbleUI.Event.SHOW_SHOPPING_CART
     ) { _, _ ->
-        bottomNavigationView.selectedItemId = R.id.navigation_cart
+        bottomNavigationView.selectedItemId = R.id.navigation_scanner
     }
     SnabbleUI.setUiAction(
         activity,
