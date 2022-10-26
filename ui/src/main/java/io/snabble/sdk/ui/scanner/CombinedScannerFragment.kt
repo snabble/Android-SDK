@@ -1,5 +1,6 @@
 package io.snabble.sdk.ui.scanner
 
+import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Gravity
@@ -9,6 +10,7 @@ import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -36,14 +38,7 @@ class CombinedScannerFragment : SelfScanningFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
         allowShowingHints = false
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        if (hasSelfScanningView) {
-            super.onCreateOptionsMenu(menu, inflater)
-        }
     }
 
     override fun onResume() {
@@ -69,13 +64,10 @@ class CombinedScannerFragment : SelfScanningFragment() {
                     selfScanningView.resume()
                 }
             }
+            scannerBottomSheetView.isVisible =
+                (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+                        == PackageManager.PERMISSION_GRANTED)
         }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        scannerBottomSheetView.isVisible = grantResults.getOrNull(0) == PackageManager.PERMISSION_GRANTED
     }
 
     override fun onCreateActualView(
@@ -83,16 +75,18 @@ class CombinedScannerFragment : SelfScanningFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        coordinatorView =
-            inflater.inflate(R.layout.snabble_fragment_combined_scanner, container, false) as CoordinatorLayout
+        coordinatorView = inflater
+            .inflate(R.layout.snabble_fragment_combined_scanner, container, false) as CoordinatorLayout
         coordinatorView.keepScreenOn = true
         return coordinatorView
     }
 
     override fun onActualViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onActualViewCreated(view, savedInstanceState)
-
         scannerBottomSheetView = view.findViewById(R.id.cart)
+        scannerBottomSheetView.isVisible =
+            (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+                    == PackageManager.PERMISSION_GRANTED)
         Snabble.checkedInProject.observe(viewLifecycleOwner) { project ->
             project?.let {
                 scannerBottomSheetView.cart = it.shoppingCart
@@ -118,7 +112,6 @@ class CombinedScannerFragment : SelfScanningFragment() {
         }
 
         if (cart?.isEmpty == true) {
-
             scanHint = SnackbarUtils.make(view, getString(R.string.Snabble_Scanner_firstScan), 30000)
                 .apply {
                     setAction(android.R.string.ok) { dismiss() }
@@ -173,17 +166,20 @@ class CombinedScannerFragment : SelfScanningFragment() {
 
     override fun onStart() {
         super.onStart()
+
         cart?.addListener(shoppingCartListener)
     }
 
     override fun onStop() {
         super.onStop()
+
         cart?.removeListener(shoppingCartListener)
     }
 }
 
-class ScannerBottomSheetBehavior(private val view: ScannerBottomSheetView) :
-    BottomSheetBehavior<ScannerBottomSheetView>(view.context, null) {
+class ScannerBottomSheetBehavior(
+    private val view: ScannerBottomSheetView,
+) : BottomSheetBehavior<ScannerBottomSheetView>(view.context, null) {
 
     private var slideSlop = 0f
     private var enableSlideSlop = false
@@ -241,11 +237,14 @@ class ScannerBottomSheetBehavior(private val view: ScannerBottomSheetView) :
     ): Boolean {
         peekHeight = view.peekHeight
 
-        return super.onMeasureChild(parent,
-            child, parentWidthMeasureSpec,
+        return super.onMeasureChild(
+            parent,
+            child,
+            parentWidthMeasureSpec,
             widthUsed,
             parentHeightMeasureSpec,
-            heightUsed)
+            heightUsed
+        )
     }
 }
 

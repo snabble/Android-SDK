@@ -15,11 +15,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.FrameLayout
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
+import androidx.lifecycle.Lifecycle
 import com.google.android.material.snackbar.Snackbar
 import io.snabble.accessibility.focusForAccessibility
 import io.snabble.accessibility.isTalkBackActive
@@ -33,11 +37,7 @@ import io.snabble.sdk.ui.search.SearchHelper
 import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.utils.Dispatch
 
-open class SelfScanningFragment : BaseFragment() {
-    companion object {
-
-        const val ARG_SHOW_PRODUCT_CODE = "showProductCode"
-    }
+open class SelfScanningFragment : BaseFragment(), MenuProvider {
 
     private var optionsMenu: Menu? = null
     var selfScanningView: SelfScanningView? = null
@@ -47,21 +47,36 @@ open class SelfScanningFragment : BaseFragment() {
     private var canAskAgain = false
     private var isStart = false
     var allowShowingHints = false
-    val hasSelfScanningView
-        get() = selfScanningView != null
+    val hasSelfScanningView get() = selfScanningView != null
+
+    private val activityResultLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            // Handle Permission granted/rejected
+            if (isGranted) {
+                createSelfScanningView()
+                requireView().announceForAccessibility(getString(R.string.Snabble_Scanner_Accessibility_eventBackInScanner))
+                explainScanner()
+            } else {
+                canAskAgain = ActivityCompat.shouldShowRequestPermissionRationale(
+                    requireActivity(),
+                    Manifest.permission.CAMERA
+                )
+                showPermissionRationale()
+            }
+        }
 
     override fun onCreateActualView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        setHasOptionsMenu(false)
         return inflater.inflate(R.layout.snabble_fragment_selfscanning, container, false) as ViewGroup
     }
 
     override fun onActualViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onActualViewCreated(view, savedInstanceState)
-
         rootView = view as ViewGroup
         selfScanningView = null
         permissionContainer = rootView.findViewById(R.id.permission_denied_container)
@@ -75,16 +90,26 @@ open class SelfScanningFragment : BaseFragment() {
                 event += getString(R.string.Snabble_Scanner_Accessibility_hintCartIsEmpty)
             } else {
                 with(project) {
-                    event += getString(R.string.Snabble_Scanner_Accessibility_hintCartContent,
+                    event += getString(
+                        R.string.Snabble_Scanner_Accessibility_hintCartContent,
                         shoppingCart.size(),
-                        priceFormatter.format(shoppingCart.totalPrice))
+                        priceFormatter.format(shoppingCart.totalPrice)
+                    )
                 }
             }
             view.announceForAccessibility(event)
             explainScanner()
         } else {
-            view.announceForAccessibility(getString(R.string.Snabble_Scanner_Accessibility_eventScannerOpened) + " " + getString(
-                R.string.Snabble_Scanner_Accessibility_hintPermission))
+            rootView.removeView(selfScanningView)
+            selfScanningView = null
+
+            showPermissionRationale()
+
+            view.announceForAccessibility(
+                getString(R.string.Snabble_Scanner_Accessibility_eventScannerOpened)
+                        + " "
+                        + getString(R.string.Snabble_Scanner_Accessibility_hintPermission)
+            )
         }
     }
 
@@ -95,7 +120,6 @@ open class SelfScanningFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-
         if (isReady) {
             if (isPermissionGranted) {
                 createSelfScanningView()
@@ -103,7 +127,7 @@ open class SelfScanningFragment : BaseFragment() {
                 rootView.removeView(selfScanningView)
                 selfScanningView = null
                 if (isAdded && isStart) {
-                    requestPermissions(arrayOf(Manifest.permission.CAMERA), 0)
+                    activityResultLauncher.launch(Manifest.permission.CAMERA)
                 } else {
                     showPermissionRationale()
                 }
@@ -115,15 +139,17 @@ open class SelfScanningFragment : BaseFragment() {
     protected open fun onSelfScanningViewCreated(selfScanningView: SelfScanningView) {}
 
     private fun createSelfScanningView() {
+        (activity as? MenuHost)?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         if (selfScanningView == null) {
             selfScanningView = SelfScanningView(context).apply {
                 setAllowShowingHints(allowShowingHints)
             }
-            rootView.addView(selfScanningView, 0, ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            ))
-            setHasOptionsMenu(true)
+            rootView.addView(
+                selfScanningView, 0, ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+            )
             onSelfScanningViewCreated(selfScanningView!!)
         }
         permissionContainer.visibility = View.GONE
@@ -137,36 +163,16 @@ open class SelfScanningFragment : BaseFragment() {
         }
     }
 
-    val isPermissionGranted: Boolean
+    private val isPermissionGranted: Boolean
         get() = (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED)
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray,
-    ) {
-        if (grantResults.isNotEmpty()) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                createSelfScanningView()
-                requireView().announceForAccessibility(getString(R.string.Snabble_Scanner_Accessibility_eventBackInScanner))
-                explainScanner()
-            } else {
-                canAskAgain = ActivityCompat.shouldShowRequestPermissionRationale(
-                    requireActivity(),
-                    permissions[0]
-                )
-                showPermissionRationale()
-            }
-        }
-    }
 
     private fun showPermissionRationale() {
         permissionContainer.visibility = View.VISIBLE
         if (canAskAgain) {
             askForPermission.text = getString(R.string.Snabble_askForPermission)
             askForPermission.setOneShotClickListener {
-                requestPermissions(arrayOf(Manifest.permission.CAMERA), 0)
+                activityResultLauncher.launch(Manifest.permission.CAMERA)
             }
         } else {
             askForPermission.text = getString(R.string.Snabble_goToSettings)
@@ -186,9 +192,13 @@ open class SelfScanningFragment : BaseFragment() {
 
     private fun explainScanner() {
         if (requireContext().isTalkBackActive && selfScanningView != null && !AccessibilityPreferences.suppressScannerHint) {
-            with(Snackbar.make(requireNotNull(selfScanningView),
-                R.string.Snabble_Scanner_firstScan,
-                Snackbar.LENGTH_INDEFINITE)) {
+            with(
+                Snackbar.make(
+                    requireNotNull(selfScanningView),
+                    R.string.Snabble_Scanner_firstScan,
+                    Snackbar.LENGTH_INDEFINITE
+                )
+            ) {
                 view.fitsSystemWindows = false
                 ViewCompat.setOnApplyWindowInsetsListener(view, null)
                 setAction(R.string.Snabble_Scanner_Accessibility_actionUnderstood) {
@@ -204,25 +214,6 @@ open class SelfScanningFragment : BaseFragment() {
                 }, 100)
             }
         }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.snabble_menu_scanner, menu)
-        optionsMenu = menu
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.snabble_action_search -> {
-                selfScanningView?.searchWithBarcode()
-            }
-            R.id.snabble_action_torch -> {
-                selfScanningView?.isTorchEnabled = !(selfScanningView?.isTorchEnabled ?: false)
-                updateTorchIcon()
-            }
-        }
-
-        return true
     }
 
     private fun updateTorchIcon() {
@@ -248,4 +239,28 @@ open class SelfScanningFragment : BaseFragment() {
                     value ?: Gravity.NO_GRAVITY
             }
         }
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.snabble_menu_scanner, menu)
+        optionsMenu = menu
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        when (menuItem.itemId) {
+            R.id.snabble_action_search -> {
+                selfScanningView?.searchWithBarcode()
+            }
+            R.id.snabble_action_torch -> {
+                selfScanningView?.isTorchEnabled = !(selfScanningView?.isTorchEnabled ?: false)
+                updateTorchIcon()
+            }
+        }
+
+        return true
+    }
+
+    companion object {
+
+        const val ARG_SHOW_PRODUCT_CODE = "showProductCode"
+    }
 }
