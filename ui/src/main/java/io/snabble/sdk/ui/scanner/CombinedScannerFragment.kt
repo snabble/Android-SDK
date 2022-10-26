@@ -68,10 +68,6 @@ class CombinedScannerFragment : SelfScanningFragment() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        scannerBottomSheetView.isVisible = grantResults.getOrNull(0) == PackageManager.PERMISSION_GRANTED
-    }
-
     override fun onCreateActualView(
         inflater: LayoutInflater,
         container: ViewGroup?,
