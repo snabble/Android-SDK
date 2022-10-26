@@ -38,10 +38,6 @@ import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.utils.Dispatch
 
 open class SelfScanningFragment : BaseFragment(), MenuProvider {
-    companion object {
-
-        const val ARG_SHOW_PRODUCT_CODE = "showProductCode"
-    }
 
     private var optionsMenu: Menu? = null
     var selfScanningView: SelfScanningView? = null
@@ -51,12 +47,12 @@ open class SelfScanningFragment : BaseFragment(), MenuProvider {
     private var canAskAgain = false
     private var isStart = false
     var allowShowingHints = false
-    val hasSelfScanningView
-        get() = selfScanningView != null
+    val hasSelfScanningView get() = selfScanningView != null
 
     private val activityResultLauncher =
         registerForActivityResult(
-            ActivityResultContracts.RequestPermission()) { isGranted ->
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
             // Handle Permission granted/rejected
             if (isGranted) {
                 createSelfScanningView()
@@ -94,9 +90,11 @@ open class SelfScanningFragment : BaseFragment(), MenuProvider {
                 event += getString(R.string.Snabble_Scanner_Accessibility_hintCartIsEmpty)
             } else {
                 with(project) {
-                    event += getString(R.string.Snabble_Scanner_Accessibility_hintCartContent,
+                    event += getString(
+                        R.string.Snabble_Scanner_Accessibility_hintCartContent,
                         shoppingCart.size(),
-                        priceFormatter.format(shoppingCart.totalPrice))
+                        priceFormatter.format(shoppingCart.totalPrice)
+                    )
                 }
             }
             view.announceForAccessibility(event)
@@ -107,8 +105,11 @@ open class SelfScanningFragment : BaseFragment(), MenuProvider {
 
             showPermissionRationale()
 
-            view.announceForAccessibility(getString(R.string.Snabble_Scanner_Accessibility_eventScannerOpened) + " " + getString(
-                R.string.Snabble_Scanner_Accessibility_hintPermission))
+            view.announceForAccessibility(
+                getString(R.string.Snabble_Scanner_Accessibility_eventScannerOpened)
+                        + " "
+                        + getString(R.string.Snabble_Scanner_Accessibility_hintPermission)
+            )
         }
     }
 
@@ -143,10 +144,12 @@ open class SelfScanningFragment : BaseFragment(), MenuProvider {
             selfScanningView = SelfScanningView(context).apply {
                 setAllowShowingHints(allowShowingHints)
             }
-            rootView.addView(selfScanningView, 0, ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
-            ))
+            rootView.addView(
+                selfScanningView, 0, ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+            )
             onSelfScanningViewCreated(selfScanningView!!)
         }
         permissionContainer.visibility = View.GONE
@@ -189,9 +192,13 @@ open class SelfScanningFragment : BaseFragment(), MenuProvider {
 
     private fun explainScanner() {
         if (requireContext().isTalkBackActive && selfScanningView != null && !AccessibilityPreferences.suppressScannerHint) {
-            with(Snackbar.make(requireNotNull(selfScanningView),
-                R.string.Snabble_Scanner_firstScan,
-                Snackbar.LENGTH_INDEFINITE)) {
+            with(
+                Snackbar.make(
+                    requireNotNull(selfScanningView),
+                    R.string.Snabble_Scanner_firstScan,
+                    Snackbar.LENGTH_INDEFINITE
+                )
+            ) {
                 view.fitsSystemWindows = false
                 ViewCompat.setOnApplyWindowInsetsListener(view, null)
                 setAction(R.string.Snabble_Scanner_Accessibility_actionUnderstood) {
@@ -250,5 +257,10 @@ open class SelfScanningFragment : BaseFragment(), MenuProvider {
         }
 
         return true
+    }
+
+    companion object {
+
+        const val ARG_SHOW_PRODUCT_CODE = "showProductCode"
     }
 }

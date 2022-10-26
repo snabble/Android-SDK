@@ -73,8 +73,8 @@ class CombinedScannerFragment : SelfScanningFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        coordinatorView =
-            inflater.inflate(R.layout.snabble_fragment_combined_scanner, container, false) as CoordinatorLayout
+        coordinatorView = inflater
+            .inflate(R.layout.snabble_fragment_combined_scanner, container, false) as CoordinatorLayout
         coordinatorView.keepScreenOn = true
         return coordinatorView
     }
@@ -110,7 +110,6 @@ class CombinedScannerFragment : SelfScanningFragment() {
         }
 
         if (cart?.isEmpty == true) {
-
             scanHint = SnackbarUtils.make(view, getString(R.string.Snabble_Scanner_firstScan), 30000)
                 .apply {
                     setAction(android.R.string.ok) { dismiss() }
@@ -165,17 +164,20 @@ class CombinedScannerFragment : SelfScanningFragment() {
 
     override fun onStart() {
         super.onStart()
+
         cart?.addListener(shoppingCartListener)
     }
 
     override fun onStop() {
         super.onStop()
+
         cart?.removeListener(shoppingCartListener)
     }
 }
 
-class ScannerBottomSheetBehavior(private val view: ScannerBottomSheetView) :
-    BottomSheetBehavior<ScannerBottomSheetView>(view.context, null) {
+class ScannerBottomSheetBehavior(
+    private val view: ScannerBottomSheetView,
+) : BottomSheetBehavior<ScannerBottomSheetView>(view.context, null) {
 
     private var slideSlop = 0f
     private var enableSlideSlop = false
@@ -233,11 +235,14 @@ class ScannerBottomSheetBehavior(private val view: ScannerBottomSheetView) :
     ): Boolean {
         peekHeight = view.peekHeight
 
-        return super.onMeasureChild(parent,
-            child, parentWidthMeasureSpec,
+        return super.onMeasureChild(
+            parent,
+            child,
+            parentWidthMeasureSpec,
             widthUsed,
             parentHeightMeasureSpec,
-            heightUsed)
+            heightUsed
+        )
     }
 }
 
