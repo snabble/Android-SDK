@@ -1,5 +1,6 @@
 package io.snabble.sdk.ui.scanner
 
+import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Gravity
@@ -7,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -24,8 +26,8 @@ import io.snabble.sdk.ui.utils.behavior
 import io.snabble.sdk.utils.Utils
 import kotlin.math.min
 
-
 class CombinedScannerFragment : SelfScanningFragment() {
+
     private lateinit var coordinatorView: CoordinatorLayout
     private lateinit var scannerBottomSheetView: ScannerBottomSheetView
     private var scanHint: Snackbar? = null
@@ -34,7 +36,6 @@ class CombinedScannerFragment : SelfScanningFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
         allowShowingHints = false
     }
 
@@ -61,27 +62,29 @@ class CombinedScannerFragment : SelfScanningFragment() {
                     selfScanningView.resume()
                 }
             }
-        } else {
-            scannerBottomSheetView.isVisible = false
+            scannerBottomSheetView.isVisible =
+                (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+                        == PackageManager.PERMISSION_GRANTED)
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        scannerBottomSheetView.isVisible = grantResults.getOrNull(0) == PackageManager.PERMISSION_GRANTED
-    }
-
-    override fun onCreateActualView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        coordinatorView = inflater.inflate(R.layout.snabble_fragment_combined_scanner, container, false) as CoordinatorLayout
+    override fun onCreateActualView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
+        coordinatorView = inflater
+            .inflate(R.layout.snabble_fragment_combined_scanner, container, false) as CoordinatorLayout
         coordinatorView.keepScreenOn = true
         return coordinatorView
     }
 
     override fun onActualViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onActualViewCreated(view, savedInstanceState)
-
         scannerBottomSheetView = view.findViewById(R.id.cart)
+        scannerBottomSheetView.isVisible =
+            (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+                    == PackageManager.PERMISSION_GRANTED)
         Snabble.checkedInProject.observe(viewLifecycleOwner) { project ->
             project?.let {
                 scannerBottomSheetView.cart = it.shoppingCart
@@ -106,9 +109,7 @@ class CombinedScannerFragment : SelfScanningFragment() {
             })
         }
 
-        if (cart?.isEmpty == true /*&& !Settings.hasSeenScannerHint*/) {
-            //Settings.hasSeenScannerHint = true
-
+        if (cart?.isEmpty == true) {
             scanHint = SnackbarUtils.make(view, getString(R.string.Snabble_Scanner_firstScan), 30000)
                 .apply {
                     setAction(android.R.string.ok) { dismiss() }
@@ -163,17 +164,21 @@ class CombinedScannerFragment : SelfScanningFragment() {
 
     override fun onStart() {
         super.onStart()
+
         cart?.addListener(shoppingCartListener)
     }
 
     override fun onStop() {
         super.onStop()
+
         cart?.removeListener(shoppingCartListener)
     }
 }
 
-class ScannerBottomSheetBehavior(private val view: ScannerBottomSheetView)
-    : BottomSheetBehavior<ScannerBottomSheetView>(view.context, null) {
+class ScannerBottomSheetBehavior(
+    private val view: ScannerBottomSheetView,
+) : BottomSheetBehavior<ScannerBottomSheetView>(view.context, null) {
+
     private var slideSlop = 0f
     private var enableSlideSlop = false
 
@@ -222,27 +227,37 @@ class ScannerBottomSheetBehavior(private val view: ScannerBottomSheetView)
         })
     }
 
-    override fun onMeasureChild(parent: CoordinatorLayout,
-                                child: ScannerBottomSheetView, parentWidthMeasureSpec: Int,
-                                widthUsed: Int, parentHeightMeasureSpec: Int,
-                                heightUsed: Int): Boolean {
+    override fun onMeasureChild(
+        parent: CoordinatorLayout,
+        child: ScannerBottomSheetView, parentWidthMeasureSpec: Int,
+        widthUsed: Int, parentHeightMeasureSpec: Int,
+        heightUsed: Int,
+    ): Boolean {
         peekHeight = view.peekHeight
 
-        return super.onMeasureChild(parent,
-            child, parentWidthMeasureSpec,
+        return super.onMeasureChild(
+            parent,
+            child,
+            parentWidthMeasureSpec,
             widthUsed,
             parentHeightMeasureSpec,
-            heightUsed)
+            heightUsed
+        )
     }
 }
 
-class ScannerParallaxBehavior(private val barcodeScannerView: BarcodeScannerView)
-    : CoordinatorLayout.Behavior<SelfScanningView>(barcodeScannerView.context, null) {
+class ScannerParallaxBehavior(private val barcodeScannerView: BarcodeScannerView) :
+    CoordinatorLayout.Behavior<SelfScanningView>(barcodeScannerView.context, null) {
+
     override fun layoutDependsOn(parent: CoordinatorLayout, scanner: SelfScanningView, dependency: View): Boolean {
         return dependency.id == R.id.cart
     }
 
-    override fun onDependentViewChanged(parent: CoordinatorLayout, scanner: SelfScanningView, dependency: View): Boolean {
+    override fun onDependentViewChanged(
+        parent: CoordinatorLayout,
+        scanner: SelfScanningView,
+        dependency: View,
+    ): Boolean {
         val translationY = (dependency.y - parent.height) / 2
         barcodeScannerView.translationY = translationY
         return true

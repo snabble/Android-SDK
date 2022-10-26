@@ -55,7 +55,7 @@
     <fragment
         android:id="@+id/navigation_home"
         android:name="io.snabble.sdk.screens.home.ui.HomeFragment"
-        android:label="@string/home" >
+        android:label="@string/home">
 
         <argument
             android:name="hideToolbar"
@@ -71,7 +71,7 @@
 
     <fragment
         android:id="@+id/navigation_scanner"
-        android:name="io.snabble.sdk.ui.scanner.SelfScanningFragment"
+        android:name="io.snabble.sdk.ui.scanner.CombinedScannerFragment"
         android:label="@string/scanner">
         <argument
             android:name="showProductCode"
