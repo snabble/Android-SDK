@@ -138,8 +138,7 @@ open class SelfScanningFragment : BaseFragment(), MenuProvider {
     protected open fun onSelfScanningViewCreated(selfScanningView: SelfScanningView) {}
 
     private fun createSelfScanningView() {
-        val menuHost: MenuHost = requireActivity() as MenuHost
-        menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        (activity as? MenuHost)?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
         if (selfScanningView == null) {
             selfScanningView = SelfScanningView(context).apply {
                 setAllowShowingHints(allowShowingHints)
