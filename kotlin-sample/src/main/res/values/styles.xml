@@ -4,7 +4,7 @@
         <item name="colorPrimary">@color/snabbleBlue</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorPrimaryContainer">@color/snabbleBlue</item>
-        <item name="colorOnPrimaryContainer">@color/white</item>
+        <item name="colorOnPrimaryContainer">@color/snabbleBlue</item>
         <item name="colorPrimaryInverse">@color/snabbleBlue</item>
 
         <item name="colorSecondary">@color/snabbleBlue</item>

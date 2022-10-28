@@ -71,14 +71,14 @@ fun ButtonWidget(
                 .then(modifier),
             onClick = { onAction(DynamicAction(widget)) },
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+                backgroundColor = MaterialTheme.colorScheme.primary,
             ),
             shape = MaterialTheme.shapes.small,
         ) {
             Text(
                 text = text,
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = MaterialTheme.colorScheme.onPrimary
             )
         }
     }
