@@ -28,9 +28,10 @@ fun ButtonWidget(
     model: ButtonItem,
     onAction: OnDynamicAction = {},
 ) {
-    Box(modifier = Modifier
-        .padding(model.padding.toPaddingValues())
-        .then(modifier)
+    Box(
+        modifier = Modifier
+            .padding(model.padding.toPaddingValues())
+            .then(modifier)
     ) {
         Button(
             modifier = Modifier

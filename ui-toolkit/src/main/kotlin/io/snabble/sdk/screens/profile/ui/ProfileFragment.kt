@@ -33,8 +33,10 @@ class ProfileFragment : Fragment() {
                         dynamicViewModel = viewModel,
                         modifier = Modifier
                             .background(
-                                Color(LocalContext.current.getComposeColor("profile_background")
-                                    ?: MaterialTheme.colorScheme.background.toArgb())
+                                Color(
+                                    LocalContext.current.getComposeColor("profile_background")
+                                        ?: MaterialTheme.colorScheme.background.toArgb()
+                                )
                             )
                     )
                 }

@@ -28,11 +28,14 @@ class HomeFragment : Fragment() {
             setContent {
                 setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
                 ThemeWrapper {
-                    DynamicScreen(dynamicViewModel = viewModel,
+                    DynamicScreen(
+                        dynamicViewModel = viewModel,
                         modifier = Modifier
                             .background(
-                                Color(LocalContext.current.getComposeColor("home_background")
-                                    ?: MaterialTheme.colorScheme.background.toArgb())
+                                Color(
+                                    LocalContext.current.getComposeColor("home_background")
+                                        ?: MaterialTheme.colorScheme.background.toArgb()
+                                )
                             )
                     )
                 }
