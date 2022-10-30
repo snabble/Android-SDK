@@ -245,13 +245,14 @@ object Snabble {
      */
     var checkedInShop: Shop? = null
         set(value) {
-            val currentShopId = this.checkedInShop?.id.orEmpty()
-            val newShopId = value?.id.orEmpty()
+            val currentShopId = this.checkedInShop?.id
+            val newShopId = value?.id
             if (currentShopId != newShopId) {
                 field = value
-                if (newShopId == "") {
+                if (newShopId.isNullOrEmpty()) {
                     userPreferences.lastCheckedInShopId = null
                     checkedInProject.value = null
+                    mutableCurrentCheckedInShop.value = null
                 } else {
                     userPreferences.lastCheckedInShopId = newShopId
 

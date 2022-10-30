@@ -2,7 +2,6 @@ package io.snabble.sdk.ui.scanner
 
 import android.app.Dialog
 import android.content.Context
-import io.snabble.sdk.ui.SnabbleUI.executeAction
 import android.widget.EditText
 import android.widget.TextView
 import android.content.DialogInterface
@@ -12,20 +11,18 @@ import io.snabble.sdk.ui.R
 import android.view.accessibility.AccessibilityEvent
 import android.view.inputmethod.EditorInfo
 import io.snabble.sdk.ui.telemetry.Telemetry
-import io.snabble.sdk.ui.SnabbleUI
 import android.view.animation.TranslateAnimation
 import android.view.animation.CycleInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import androidx.appcompat.widget.AppCompatButton
-import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputLayout
+import io.snabble.accessibility.accessibility
 import io.snabble.sdk.*
-import io.snabble.sdk.ui.accessibility
 import io.snabble.sdk.ui.utils.*
 import io.snabble.sdk.utils.Dispatch
 import java.lang.NumberFormatException

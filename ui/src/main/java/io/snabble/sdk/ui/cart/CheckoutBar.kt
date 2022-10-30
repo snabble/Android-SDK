@@ -16,6 +16,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.core.view.marginTop
 import androidx.fragment.app.FragmentActivity
+import io.snabble.accessibility.accessibility
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
 import io.snabble.sdk.ShoppingCart
@@ -26,7 +27,6 @@ import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.accessibility
 import io.snabble.sdk.ui.checkout.CheckoutActivity
 import io.snabble.sdk.ui.payment.PaymentInputViewHelper
 import io.snabble.sdk.ui.payment.SEPALegalInfoHelper

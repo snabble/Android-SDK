@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="Dashboard.text">Besuche eine unterstütze Filiale, um mit Snabble einzukaufen!</string>
+    <string name="Dashboard.title">Willkommen bei Snabble</string>
+    <string name="home">Start</string>
+    <string name="Onboarding.accept">Akzeptieren</string>
+    <string name="Onboarding.message1">Mit Snabble scannst du deinen Einkauf selbst und bezahlt direkt in der App. Ohne in der Schlange zu stehen und ohne deinen Einkauf auf’s Band zu legen.</string>
+    <string name="Onboarding.message2">Betrete eine teilnehmende Filiale, starte den Einkauf und halte den Barcode eines Artikels vor die Kamera. Der Rest erklärt sich von selbst.</string>
+    <string name="Onboarding.message3">Bitte akzeptiere die Nutzungsbedingungen und lies die Datenschutzhinweise.</string>
+    <string name="profile">Profil</string>
+    <string name="Profile.customerCard">Kundenkarte</string>
+    <string name="Profile.deleteAccount">Account löschen</string>
+    <string name="Profile.header">Dein Profil</string>
+    <string name="Profile.imprint">Impressum</string>
+    <string name="Profile.lastPurchases">Vorherige Einkäufe</string>
+    <string name="Profile.legalNotes">Rechtliche Hinweise</string>
+    <string name="Profile.licences">Lizenzen</string>
+    <string name="Profile.paymentMethods">Bezahlverfahren</string>
+    <string name="Profile.privacy">Datenschutzerklärung</string>
+    <string name="Profile.pushMessages">Push-Benachrichtigungen</string>
+    <string name="Profile.saveEnergy">Strom sparen</string>
+    <string name="Profile.settings">Einstellungen</string>
+    <string name="Profile.showOnboarding">Zeige Onboarding</string>
+    <string name="Profile.terms">Nutzungsbedingungen</string>
+    <string name="scanner">Scanner</string>
+    <string name="shoppingCart">Warenkorb</string>
+    <string name="shops">Filialen</string>
+</resources>

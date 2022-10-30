@@ -2,11 +2,13 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply from: '../scripts/maven.gradle'
 apply plugin: 'org.jetbrains.dokka'
-apply plugin: "org.jetbrains.kotlin.plugin.parcelize"
+apply plugin: 'org.jetbrains.kotlin.plugin.parcelize'
 
-description = "Snabble UI: The Android User Interface snabble SDK"
+description = 'Snabble UI: The Android User Interface snabble SDK'
 
 android {
+    namespace 'io.snabble.sdk.ui'
+
     compileSdkVersion project.compileSdkVersion
 
     defaultConfig {
@@ -46,16 +48,17 @@ dependencies {
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:${project.desugarVersion}"
 
     implementation project(':utils')
-    implementation project(':core')
+    api project(':core')
+    api project(':accessibility-toolbox')
 
-    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.webkit:webkit:1.4.0'
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
-    implementation 'com.google.android.material:material:1.6.0'
+    implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
     implementation 'me.relex:circleindicator:2.1.6'
     implementation 'ch.datatrans:android-sdk:1.5.0'
@@ -71,7 +74,7 @@ dependencies {
     implementation "androidx.camera:camera-view:${camerax_version}"
     implementation "androidx.camera:camera-extensions:${camerax_version}"
 
-    def navigation_version = '2.4.2'
+    def navigation_version = '2.5.1'
     implementation "androidx.navigation:navigation-runtime-ktx:$navigation_version"
     implementation "androidx.navigation:navigation-fragment-ktx:$navigation_version"
     implementation "androidx.navigation:navigation-ui-ktx:$navigation_version"
@@ -82,7 +85,6 @@ dependencies {
     implementation 'com.google.zxing:core:3.3.3'
     implementation 'com.squareup.picasso:picasso:2.8'
 
-    testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:runner:1.4.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }

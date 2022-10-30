@@ -1,0 +1,52 @@
+{
+  "configuration": {
+    "image": "home_default_background",
+    "style": "scroll",
+    "padding": [16]
+  },
+  "widgets": [
+    {
+      "type": "text",
+      "id": "2",
+      "text": "Dashboard.title",
+      "textColor": "snabbleBlue",
+      "textStyle": "title",
+      "padding": [0, 16, 5, 0]
+    },
+    {
+      "type": "text",
+      "id": "3",
+      "text": "Dashboard.text",
+      "textStyle": "body",
+      "padding": [0, 0, 5, 0]
+    },
+    {
+      "type": "snabble.locationPermission",
+      "id": "location",
+      "padding": [0, 8, 0, 0]
+    },
+    {
+      "type": "snabble.startShopping",
+      "id": "start",
+      "padding": [0]
+    },
+    {
+      "type": "snabble.allStores",
+      "id": "stores",
+      "padding": [0]
+    },
+    {
+      "type": "information",
+      "id": "card",
+      "text": "Füge eine Kundenkarte hinzu",
+      "image": "store_logo",
+      "padding": [0, 6, 16, 0]
+    },
+    {
+      "type": "purchases",
+      "id": "purchases",
+      "projectId": "snabble-sdk-demo-app-oguh3x",
+      "padding": [0]
+    }
+  ]
+}

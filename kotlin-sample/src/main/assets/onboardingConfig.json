@@ -1,0 +1,21 @@
+{
+  "items" : [
+    {
+      "imageSource": "snabble_onboarding_step1",
+      "title": "Welcome to Snabble",
+      "text": "Sample.Onboarding.message1",
+      "footer": "No queueing and without putting your purchase on the belt.",
+      "customButtonTitle": "Let's go"
+    }, {
+      "imageSource": "snabble_onboarding_step2",
+      "text": "Sample.Onboarding.message2"
+    },
+    {
+      "imageSource": "snabble_onboarding_step3",
+      "text": "Sample.Onboarding.message3",
+      "termsButtonTitle": "Show",
+      "link": "kotlin-sample://terms",
+      "customButtonTitle": "Accept"
+    }
+  ]
+}

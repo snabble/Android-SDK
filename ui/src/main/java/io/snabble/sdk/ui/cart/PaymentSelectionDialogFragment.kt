@@ -13,8 +13,8 @@ import android.view.View
 import android.widget.ImageView
 import androidx.core.view.isVisible
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import io.snabble.accessibility.accessibility
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.ui.accessibility
 import io.snabble.sdk.ui.utils.setTextOrHide
 import java.util.ArrayList
 
@@ -33,7 +33,7 @@ class PaymentSelectionDialogFragment : BottomSheetDialogFragment() {
 
             if (args.containsKey(ARG_ENTRIES)) {
                 val selectedEntry = args.getSerializable(ARG_SELECTED_ENTRY) as PaymentSelectionHelper.Entry?
-                (args.getSerializable(ARG_ENTRIES) as? ArrayList<PaymentSelectionHelper.Entry>)?.let { entries ->
+                (args.getSerializable(ARG_ENTRIES) as? ArrayList<*>)?.mapNotNull { it as? PaymentSelectionHelper.Entry }?.let { entries ->
                     val hasAnyAddedMethods = entries.any { it.isAdded }
                     entries.forEach { entry ->
                         val v = View.inflate(requireContext(), R.layout.snabble_item_payment_select, null)

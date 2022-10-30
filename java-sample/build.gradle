@@ -2,6 +2,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
+    namespace 'io.snabble.testapp'
+
     compileSdkVersion project.compileSdkVersion
 
     defaultConfig {
@@ -26,9 +28,9 @@ android {
         }
 
         manifestPlaceholders = [
-                appId: appId,
+                appId   : appId,
                 endpoint: endpoint,
-                secret: secret,
+                secret  : secret,
         ]
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
@@ -71,7 +73,7 @@ dependencies {
 
     //noinspection GradleDependency
     implementation 'commons-io:commons-io:2.5'
-    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'com.google.android.material:material:1.6.1'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:runner:1.4.0'

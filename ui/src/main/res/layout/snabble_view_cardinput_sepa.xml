@@ -30,7 +30,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginRight="16dp"
-            android:hint="@string/Snabble.Payment.SEPA.Name"
+            android:hint="@string/Snabble.Payment.SEPA.name"
             android:layout_below="@+id/hint"
             tools:errorEnabled="true">
             <com.google.android.material.textfield.TextInputEditText
@@ -84,7 +84,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/input_name_layout"
                 android:layout_toRightOf="@+id/prefix"
-                android:hint="@string/Snabble.Payment.SEPA.IBAN"
+                android:hint="@string/Snabble.Payment.SEPA.iban"
                 android:inputType="textCapCharacters|textVisiblePassword"
                 android:maxLines="1"
                 android:textAllCaps="true" />

@@ -1,9 +1,31 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [0.69.1-beta02]
+
+### Fixed
+- Added accidentally removed sourceSets from ui-toolkit/build.gradle
+
+## [0.69.1-beta01]
+
+### Added
+- DynamicView to build Screens by a _(JSON)_ Configuration
+- Handle conflict status code when creating a new process (#70)
+
+## [0.69.0]
+
+### Changed
+- Added ui-toolkit for more realistic sample app with onboarding
+- Moved accessibility toolbox to an own dependency
+- Report cart change events only on user interactions (#67)
+- Phrase content and keys updated
+
+### Breaking Changes
+- Renamed some colors which should be used internally only
+
 ## [0.68.6]
 
-# Changed
+### Changed
 - Apply new Phrase key structure
 
 ## [0.68.5]

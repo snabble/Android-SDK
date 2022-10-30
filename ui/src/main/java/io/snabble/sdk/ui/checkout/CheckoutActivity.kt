@@ -59,7 +59,7 @@ class CheckoutActivity : FragmentActivity() {
             Snabble.setup(application)
         }
 
-        Snabble.initializationState.observe(this) {
+        Snabble.initializationState.observe(this) initObserver@ {
             when (it) {
                 InitializationState.INITIALIZED -> {
                     Snabble.checkedInProject.observe(this) { project ->
@@ -101,7 +101,8 @@ class CheckoutActivity : FragmentActivity() {
                     }
                 }
                 InitializationState.UNINITIALIZED,
-                InitializationState.INITIALIZING -> {} // ignore
+                InitializationState.INITIALIZING,
+                null -> Unit // ignore
                 InitializationState.ERROR -> {
                     finishWithError("The snabble SDK is not initialized")
                 }

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="Dashboard.text">Pre nákup so Snabble navštív niektorý z podporovaných obchodov!</string>
+    <string name="Dashboard.title">Vitaj v Snabble</string>
+    <string name="home">Štart</string>
+    <string name="Onboarding.accept">Prijať</string>
+    <string name="Onboarding.message1">So Snabble naskenuješ svoj nákup sám/sama a zaplatíš priamo v aplikácii. Bez vystávania v rade a vykladania tvojho nákupu na pás.</string>
+    <string name="Onboarding.message2">Navštív niektorý zo zapojených obchodov, začni nakupovať a prilož kameru k čiarovým kódom tovarov. Ostatné už ide samé.</string>
+    <string name="Onboarding.message3">Prosím, akceptuj podmienky používania a prečítaj si pravidlá ochrany údajov.</string>
+    <string name="profile">Profil</string>
+    <string name="Profile.customerCard">Customer Card</string>
+    <string name="Profile.deleteAccount">Vymazať konto</string>
+    <string name="Profile.header">Tvoj profil</string>
+    <string name="Profile.imprint">Imprint</string>
+    <string name="Profile.lastPurchases">Last Purchases</string>
+    <string name="Profile.legalNotes">Legal Notes</string>
+    <string name="Profile.licences">Licences</string>
+    <string name="Profile.paymentMethods">Spôsob platby</string>
+    <string name="Profile.privacy">Privacy Policy</string>
+    <string name="Profile.pushMessages">Push Messages</string>
+    <string name="Profile.saveEnergy">Šetrenie batérie</string>
+    <string name="Profile.settings">Settings</string>
+    <string name="Profile.showOnboarding">Zobraz Onboarding</string>
+    <string name="Profile.terms">Terms</string>
+    <string name="scanner">Skener</string>
+    <string name="shoppingCart">Košík</string>
+    <string name="shops">Obchody</string>
+</resources>

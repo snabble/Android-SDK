@@ -244,6 +244,7 @@ class PaymentStatusView @JvmOverloads constructor(
                     checkout.abort()
                 }
             }
+            else -> Unit
         }
 
         statusContainer.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)

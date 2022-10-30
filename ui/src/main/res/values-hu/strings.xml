@@ -62,6 +62,22 @@
     <string name="Snabble.CreditCard.payNow">Fizetés hitelkártyával</string>
     <string name="Snabble.delete">Törlés</string>
     <string name="Snabble.done">Kész</string>
+    <string name="Snabble.DynamicView.AllStores.button">Minden üzlet megtekintése</string>
+    <string name="Snabble.DynamicView.connectWifi">Kapcsolódás az ingyenes „%s“ WIFI-vel</string>
+    <string name="Snabble.DynamicView.ConnectWifi.noSSID">Sajnos nincs elérhető WIFI</string>
+    <string name="Snabble.DynamicView.customerCard">Használd ki automatikusan az ügyfélkártyáid nyújtotta előnyöket.</string>
+    <string name="Snabble.DynamicView.lastPurchase">Utolsó bevásárlásod</string>
+    <string name="Snabble.DynamicView.lastPurchases">Utolsó bevásárlásaid</string>
+    <string name="Snabble.DynamicView.LastPurchases.all">Összes</string>
+    <string name="Snabble.DynamicView.LocationPermission.Button.notDetermined">Tartózkodási hely engedélyezése</string>
+    <string name="Snabble.DynamicView.LocationPermission.MissingPermission.message">Csak így tudjuk megjeleníteni a közelben lévő üzleteket, és lehetővé tenni neked a bevásárlást.</string>
+    <string name="Snabble.DynamicView.LocationPermission.MissingPermission.title">A Snabble-nek szüksége van a tartózkodási helyedre</string>
+    <string name="Snabble.DynamicView.LocationPermission.notNow">Most nem</string>
+    <string name="Snabble.DynamicView.LocationPermission.openSettings">Beállítások megnyitása</string>
+    <string name="Snabble.DynamicView.LocationPermission.ReducedAccuracy.message">Nyisd meg a beállításokat, válaszd a „Tartózkodási hely“ lehetőséget, és aktiváld a „Pontos tartózkodási hely“ opciót</string>
+    <string name="Snabble.DynamicView.LocationPermission.ReducedAccuracy.title">A Snabble-nek szüksége van a pontos tartózkodási helyedre, hogy felismerje, éppen melyik üzletben vásárolsz</string>
+    <string name="Snabble.DynamicView.Shop.show">Üzletek mutatása</string>
+    <string name="Snabble.DynamicView.StartShopping.button">Vásárolj be most itt</string>
     <string name="Snabble.edit">Szerkesztés</string>
     <string name="Snabble.goToSettings">A beállításokhoz</string>
     <string name="Snabble.Hints.closedBags">Csak így tovább! Kérjük, könnyítsd meg a pénztáros munkáját, és ne csomagold közvetlenül lezárt tasakba a termékedet. Köszönjük!</string>
@@ -76,17 +92,15 @@
     <string name="Snabble.LimitsAlert.notAllMethodsAvailable">%s feletti áruértéknél nem áll rendelkezésedre az összes fizetési mód</string>
     <string name="Snabble.LimitsAlert.title">Vedd figyelembe</string>
     <string name="Snabble.loadingProductInformation">Termékinformációk betöltése…</string>
-    <string name="Snabble.LocationRequired.MissingPermission.message">Csak így tudjuk megjeleníteni a közelben lévő üzleteket, és lehetővé tenni neked a bevásárlást.</string>
-    <string name="Snabble.LocationRequired.MissingPermission.title">A Snabble-nek szüksége van a tartózkodási helyedre</string>
-    <string name="Snabble.LocationRequired.notNow">Most nem</string>
-    <string name="Snabble.LocationRequired.openSettings">Beállítások megnyitása</string>
-    <string name="Snabble.LocationRequired.ReducedAccuracy.message">Nyisd meg a beállításokat, válaszd a „Tartózkodási hely“ lehetőséget, és aktiváld a „Pontos tartózkodási hely“ opciót</string>
-    <string name="Snabble.LocationRequired.ReducedAccuracy.title">A Snabble-nek szüksége van a pontos tartózkodási helyedre, hogy felismerje, éppen melyik üzletben vásárolsz</string>
     <string name="Snabble.networkError">Hálózati kapcsolat hiba</string>
     <string name="Snabble.no">Nem</string>
     <string name="Snabble.noDiscount">nincs árengedmény</string>
     <string name="Snabble.NotForSale.ErrorMsg.scan">Ezt a terméket jelenleg sajnos nem lehet az alkalmazással kifizetni. Kérlek, fizesd a szokásos módon a kasszánál.</string>
     <string name="Snabble.ok">OK</string>
+    <string name="Snabble.Onboarding.Deeplink.accessibility">%s megnyitása</string>
+    <string name="Snabble.Onboarding.done">Kész</string>
+    <string name="Snabble.Onboarding.Link.show">Megtekintés</string>
+    <string name="Snabble.Onboarding.next">Tovább</string>
     <string name="Snabble.Paydirekt.AuthorizationFailed.message">Kérlek, próbáld meg később még egyszer</string>
     <string name="Snabble.Paydirekt.AuthorizationFailed.title">Nem sikerült az azonosítás</string>
     <string name="Snabble.Paydirekt.deleteAuthorization">Fizetési mód törlése</string>
@@ -112,6 +126,7 @@
     <string name="Snabble.Payment.errorStarting">A fizetési folyamat feldolgozása közben hiba lépett fel.</string>
     <string name="Snabble.Payment.noMethodAvailable">Sajnos ez a vásárlás nem végezhető el az alkalmazás segítségével.</string>
     <string name="Snabble.Payment.offlineHint">Jelenleg offline állapotban vagy, így bizonyos fizetési módok adott esetben nem érhetők el</string>
+    <string name="Snabble.Payment.Online.message">Az egyik alkalmazottnak jóvá kell hagynia a vásárlásodat.</string>
     <string name="Snabble.Payment.payAtCashDesk">Fizetés a pénztárnál</string>
     <string name="Snabble.Payment.payAtSCO">Kártya az EC-terminálra</string>
     <string name="Snabble.Payment.payUsingCustomerCard">ügyfélkártyával</string>
@@ -121,16 +136,12 @@
     <string name="Snabble.Payment.rejected">Bevásárlás elutasítva</string>
     <string name="Snabble.Payment.rejectedHint">A bevásárlás elutasításra került. Ellenőrizd a kosaradat, és próbáld meg újra a fizetést.</string>
     <string name="Snabble.Payment.SEPA.hint">Megjegyzés: A te és a kereskedőink visszaélésekkel szembeni védelme érdekében az első SEPA terhelési megbízásos fizetésednél a kereskedőnél megjelenik a bankkártyád.</string>
-    <string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
-    <string name="Snabble.Payment.SEPA.InvalidIBAN">A megadott IBAN érvénytelen.</string>
-    <string name="Snabble.Payment.SEPA.InvalidName">Add meg a neved.</string>
+    <string name="Snabble.Payment.SEPA.iban">IBAN</string>
+    <string name="Snabble.Payment.SEPA.invalidIBAN">A megadott IBAN érvénytelen.</string>
+    <string name="Snabble.Payment.SEPA.invalidName">Add meg a neved.</string>
     <string name="Snabble.Payment.SEPA.missingCountry">Az országkód nem lehet üres.</string>
-    <string name="Snabble.Payment.SEPA.Name">Név</string>
-    <!--
-  ********* iOS SEPA and Creditcard Data *********
-  iOS only, this is used for the iOS-specific SEPA data entry and payment
-  -->
-    <string name="Snabble.Payment.SEPA.Title">SEPA terhelési megbízás</string>
+    <string name="Snabble.Payment.SEPA.name">Név</string>
+    <string name="Snabble.Payment.SEPA.title">SEPA terhelési megbízás</string>
     <string name="Snabble.Payment.success">Köszönjük a vásárlásodat</string>
     <string name="Snabble.Payment.Twint.error">A TWINT-fiókod feldolgozása során hiba történt</string>
     <string name="Snabble.Payment.usableAt">Itt használható: %s</string>
@@ -262,6 +273,37 @@
     <string name="Snabble.SEPA.payNow">Fizetés SEPA segítségével</string>
     <string name="Snabble.SEPA.scoTransferHint">Add meg a kártyán látható nevet, hogy a fizetések lebonyolításához közvetlenül eltárolásra kerülhessen az alkalmazásban.</string>
     <string name="Snabble.Settings">Beállítások</string>
+    <!-- <street and house number> in <ZIP code> <city name> -->
+    <string name="Snabble.Shop.Address.accessibility">%1$s %2$s %3$s-ban</string>
+    <string name="Snabble.Shop.Detail.openingHours">Nyitvatartási idők</string>
+    <string name="Snabble.Shop.Detail.Phonenumber.accessibility">Telefonszám %s</string>
+    <string name="Snabble.Shop.Detail.shopNow">Vásárolj be most itt</string>
+    <string name="Snabble.Shop.Detail.startNavigation">Szeretnéd elindítani a navigációt?</string>
+    <string name="Snabble.Shop.Detail.title">Részletek</string>
+    <string name="Snabble.Shop.Details.contractingParty">Szerződéses partner</string>
+    <string name="Snabble.Shop.Details.friday">Péntek</string>
+    <string name="Snabble.Shop.Details.MapDisabled.actionTitle">Bekapcsolás</string>
+    <string name="Snabble.Shop.Details.MapDisabled.title">Kikapcsoltad a(z) %s használatát.</string>
+    <string name="Snabble.Shop.Details.monday">Hétfő</string>
+    <string name="Snabble.Shop.Details.saturday">Szombat</string>
+    <string name="Snabble.Shop.Details.StartCall.accessibility">Felhívás</string>
+    <string name="Snabble.Shop.Details.sunday">Vasárnap</string>
+    <string name="Snabble.Shop.Details.thursday">Csütörtök</string>
+    <string name="Snabble.Shop.Details.tuesday">Kedd</string>
+    <string name="Snabble.Shop.Details.wednesday">Szerda</string>
+    <string name="Snabble.Shop.Distance.accessibility">%s távolságban</string>
+    <plurals name="Snabble.Shop.Finder.storeCount">
+        <item quantity="one">%d üzlet</item>
+        <item quantity="other">%d üzletek</item>
+        <item quantity="zero">Nincsenek üzletek</item>
+    </plurals>
+    <string name="Snabble.Shop.Finder.title">Üzlet</string>
+    <string name="Snabble.Shop.Finder.youarehere">Itt vagy</string>
+    <string name="Snabble.Shop.List.Colapse.accessibility">összecsukni</string>
+    <string name="Snabble.Shop.List.EventShopColapsed.accessibility">%s összecsukva</string>
+    <string name="Snabble.Shop.List.EventShopExpanded.accessibility">%s kinyitva</string>
+    <string name="Snabble.Shop.List.Expand.accessibility">kinyitni</string>
+    <string name="Snabble.Shop.List.ShowDetails.accessibility">Az üzlet adatainak megjelenítése</string>
     <string name="Snabble.Shopping.title">Bevásárlás</string>
     <string name="Snabble.Shoppingcart.Accessibility.actionAdd">Hozzáadás</string>
     <string name="Snabble.Shoppingcart.Accessibility.actionDelete">Törlés</string>
@@ -279,7 +321,7 @@
     <string name="Snabble.Shoppingcart.Accessibility.quantity">Mennyiség</string>
     <string name="Snabble.Shoppingcart.Accessibility.selected">Kiválasztva</string>
     <string name="Snabble.Shoppingcart.articleRemoved">Termék eltávolítva</string>
-    <string name="Snabble.Shoppingcart.BuyProducts">%1$d termék megvásárlása %2$s-ért</string>
+    <string name="Snabble.Shoppingcart.buyProducts">%1$d termék megvásárlása %2$s-ért</string>
     <string name="Snabble.Shoppingcart.BuyProducts.now">Fizetés, most</string>
     <string name="Snabble.Shoppingcart.BuyProducts.one">%1$d termék megvásárlása %2$s-ért</string>
     <string name="Snabble.Shoppingcart.BuyProducts.selectPaymentMethod">Fizetési mód kiválasztása</string>

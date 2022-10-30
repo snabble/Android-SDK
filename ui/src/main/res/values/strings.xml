@@ -18,7 +18,7 @@
     <string name="Snabble.Biometry.touchId">Touch ID</string>
     <string name="Snabble.cancel">Cancel</string>
     <string name="Snabble.CC.3dsecureHint.retailer">Enter your data here. We will then forward you to your bank to confirm your details. We reserve 1 € (for %s) and book the money back immediately.</string>
-    <string name="Snabble.CC.3dsecureHint.retailerWithPrice">Enter your data here. We will then forward you to your bank to confirm your details. We reserve %s (for %s) and book the money back immediately.</string>
+    <string name="Snabble.CC.3dsecureHint.retailerWithPrice">Enter your data here. We will then forward you to your bank to confirm your details. We reserve %1$s (for %2$s) and book the money back immediately.</string>
     <string name="Snabble.CC.cardNumber">Card number</string>
     <string name="Snabble.CC.editingHint">Your credit card data is only stored in encrypted form and therefore cannot be edited.</string>
     <string name="Snabble.CC.noEntryPossible">Unfortunately you can\'t add credit cards at this time.</string>
@@ -62,6 +62,22 @@
     <string name="Snabble.CreditCard.payNow">Pay now using Credit card</string>
     <string name="Snabble.delete">Delete</string>
     <string name="Snabble.done">Done</string>
+    <string name="Snabble.DynamicView.AllStores.button">See all stores</string>
+    <string name="Snabble.DynamicView.connectWifi">Use the free “%s” wifi</string>
+    <string name="Snabble.DynamicView.ConnectWifi.noSSID">Unfortunately there is no WLAN available</string>
+    <string name="Snabble.DynamicView.customerCard">Take advantage of your store cards automatically.</string>
+    <string name="Snabble.DynamicView.lastPurchase">Your last purchase</string>
+    <string name="Snabble.DynamicView.lastPurchases">Your last purchases</string>
+    <string name="Snabble.DynamicView.LastPurchases.all">Show All</string>
+    <string name="Snabble.DynamicView.LocationPermission.Button.notDetermined">Grant permission</string>
+    <string name="Snabble.DynamicView.LocationPermission.MissingPermission.message">This is necessary to show stores in your vicinity and allow you to shop there.</string>
+    <string name="Snabble.DynamicView.LocationPermission.MissingPermission.title">Snabble needs your location</string>
+    <string name="Snabble.DynamicView.LocationPermission.notNow">Ask me later</string>
+    <string name="Snabble.DynamicView.LocationPermission.openSettings">Open Settings</string>
+    <string name="Snabble.DynamicView.LocationPermission.ReducedAccuracy.message">Please go to Settings &gt; Privacy, then select “Location Services” and activate “Precise Location”</string>
+    <string name="Snabble.DynamicView.LocationPermission.ReducedAccuracy.title">Snabble requires your precise location to identify in which store you are currently shopping</string>
+    <string name="Snabble.DynamicView.Shop.show">Show stores</string>
+    <string name="Snabble.DynamicView.StartShopping.button">Start shopping</string>
     <string name="Snabble.edit">Edit</string>
     <string name="Snabble.goToSettings">Go to settings</string>
     <string name="Snabble.Hints.closedBags">Well done! Please make things easy for the cashier and don\'t store your products in closed bags. Thank you!</string>
@@ -76,24 +92,15 @@
     <string name="Snabble.LimitsAlert.notAllMethodsAvailable">With a total of more than %s, not all payment methods are available.</string>
     <string name="Snabble.LimitsAlert.title">Note</string>
     <string name="Snabble.loadingProductInformation">Loading product data…</string>
-    <string name="Snabble.LocationRequired.MissingPermission.message">This is necessary to show stores in your vicinity and allow you to shop there.</string>
-    <string name="Snabble.LocationRequired.MissingPermission.title">Snabble needs your location</string>
-    <string name="Snabble.LocationRequired.notNow">Ask me later</string>
-    <string name="Snabble.LocationRequired.openSettings">Open Settings</string>
-    <string name="Snabble.LocationRequired.ReducedAccuracy.message">Please go to Settings &gt; Privacy, then select “Location Services” and activate “Precise Location”</string>
-    <string name="Snabble.LocationRequired.ReducedAccuracy.title">Snabble requires your precise location to identify in which store you are currently shopping</string>
     <string name="Snabble.networkError">Connection error</string>
     <string name="Snabble.no">No</string>
     <string name="Snabble.noDiscount">no discount</string>
     <string name="Snabble.NotForSale.ErrorMsg.scan">This product cannot be paid for using the app, please pay for it at the cashier.</string>
     <string name="Snabble.ok">OK</string>
-    <string name="Snabble.Onboarding.accept">Agree</string>
-    <string name="Snabble.Onboarding.message1">Using Snabble, you scan your purchase yourself and pay directly in the app. No queueing and without putting your purchase on the belt.</string>
-    <string name="Snabble.Onboarding.message2">Enter a participating store, start shopping and hold the barcode of an article in front of the camera. The rest is self-explanatory.</string>
-    <string name="Snabble.Onboarding.message3">Please accept the terms of use and take note of the privacy policy.</string>
+    <string name="Snabble.Onboarding.Deeplink.accessibility">open %s</string>
+    <string name="Snabble.Onboarding.done">Done</string>
+    <string name="Snabble.Onboarding.Link.show">Show</string>
     <string name="Snabble.Onboarding.next">Continue</string>
-    <string name="Snabble.Onboarding.Terms.show">Show</string>
-    <string name="Snabble.Onboarding.Terms.title">Terms of Use</string>
     <string name="Snabble.Paydirekt.AuthorizationFailed.message">Please try again later</string>
     <string name="Snabble.Paydirekt.AuthorizationFailed.title">Authorization failed</string>
     <string name="Snabble.Paydirekt.deleteAuthorization">Delete method</string>
@@ -129,16 +136,12 @@
     <string name="Snabble.Payment.rejected">Purchase denied</string>
     <string name="Snabble.Payment.rejectedHint">Your purchase was denied. Please check your cart and start the checkout again.</string>
     <string name="Snabble.Payment.SEPA.hint">Note: In order to protect you and our merchants against misuse, the merchant will have your bank card shown on your first payment by SEPA direct debit.</string>
-    <string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
-    <string name="Snabble.Payment.SEPA.InvalidIBAN">Please enter a valid IBAN.</string>
-    <string name="Snabble.Payment.SEPA.InvalidName">Please enter a valid name.</string>
+    <string name="Snabble.Payment.SEPA.iban">IBAN</string>
+    <string name="Snabble.Payment.SEPA.invalidIBAN">Please enter a valid IBAN.</string>
+    <string name="Snabble.Payment.SEPA.invalidName">Please enter a valid name.</string>
     <string name="Snabble.Payment.SEPA.missingCountry">Country code cannot be empty.</string>
-    <string name="Snabble.Payment.SEPA.Name">Name</string>
-    <!--
-  ********* iOS SEPA and Creditcard Data *********
-  iOS only, this is used for the iOS-specific SEPA data entry and payment
-  -->
-    <string name="Snabble.Payment.SEPA.Title">SEPA direct debit</string>
+    <string name="Snabble.Payment.SEPA.name">Name</string>
+    <string name="Snabble.Payment.SEPA.title">SEPA direct debit</string>
     <string name="Snabble.Payment.success">Thank you for shopping</string>
     <string name="Snabble.Payment.Twint.error">There was an error processing your TWINT account</string>
     <string name="Snabble.Payment.usableAt">Usable at: %s</string>
@@ -227,9 +230,9 @@
     <string name="Snabble.Scanner.Accessibility.eventCartOpened">Cart extended</string>
     <string name="Snabble.Scanner.Accessibility.eventMaxQuantityReached">You reached the maximum count of items for the cart</string>
     <!-- Example: 3 times Banana for 3$ -->
-    <string name="Snabble.Scanner.Accessibility.eventQuantityUpdate">%s times %s for %s</string>
+    <string name="Snabble.Scanner.Accessibility.eventQuantityUpdate">%1$s times %2$s for %3$s</string>
     <string name="Snabble.Scanner.Accessibility.eventScannerOpened">You opened the scanner.</string>
-    <string name="Snabble.Scanner.Accessibility.hintCartContent">There are %s items for %s in your cart.</string>
+    <string name="Snabble.Scanner.Accessibility.hintCartContent">There are %1$s items for %2$s in your cart.</string>
     <string name="Snabble.Scanner.Accessibility.hintCartIsEmpty">Your cart is empty.</string>
     <string name="Snabble.Scanner.Accessibility.hintPermission">In order to scan we need a permission from you.</string>
     <string name="Snabble.Scanner.addCodeAsIs">Add %s as-is</string>
@@ -270,6 +273,37 @@
     <string name="Snabble.SEPA.payNow">Pay now using SEPA</string>
     <string name="Snabble.SEPA.scoTransferHint">Please enter the name from the card to save it for future payments.</string>
     <string name="Snabble.Settings">Settings</string>
+    <!-- <street and house number> in <ZIP code> <city name> -->
+    <string name="Snabble.Shop.Address.accessibility">%1$s in %2$s %3$s</string>
+    <string name="Snabble.Shop.Detail.openingHours">Opening hours</string>
+    <string name="Snabble.Shop.Detail.Phonenumber.accessibility">Phonenumber %s</string>
+    <string name="Snabble.Shop.Detail.shopNow">Start shopping</string>
+    <string name="Snabble.Shop.Detail.startNavigation">Do you like to start navigation?</string>
+    <string name="Snabble.Shop.Detail.title">Details</string>
+    <string name="Snabble.Shop.Details.contractingParty">Contracting Party</string>
+    <string name="Snabble.Shop.Details.friday">Friday</string>
+    <string name="Snabble.Shop.Details.MapDisabled.actionTitle">Activate</string>
+    <string name="Snabble.Shop.Details.MapDisabled.title">You have disabled the use of %s.</string>
+    <string name="Snabble.Shop.Details.monday">Monday</string>
+    <string name="Snabble.Shop.Details.saturday">Saturday</string>
+    <string name="Snabble.Shop.Details.StartCall.accessibility">Call</string>
+    <string name="Snabble.Shop.Details.sunday">Sunday</string>
+    <string name="Snabble.Shop.Details.thursday">Thursday</string>
+    <string name="Snabble.Shop.Details.tuesday">Tuesday</string>
+    <string name="Snabble.Shop.Details.wednesday">Wednesday</string>
+    <string name="Snabble.Shop.Distance.accessibility">In %s</string>
+    <plurals name="Snabble.Shop.Finder.storeCount">
+        <item quantity="one">%d store</item>
+        <item quantity="other">%d stores</item>
+        <item quantity="zero">No stores</item>
+    </plurals>
+    <string name="Snabble.Shop.Finder.title">Shop</string>
+    <string name="Snabble.Shop.Finder.youarehere">You are here</string>
+    <string name="Snabble.Shop.List.Colapse.accessibility">collapse</string>
+    <string name="Snabble.Shop.List.EventShopColapsed.accessibility">%s collapsed</string>
+    <string name="Snabble.Shop.List.EventShopExpanded.accessibility">%s expanded</string>
+    <string name="Snabble.Shop.List.Expand.accessibility">expand</string>
+    <string name="Snabble.Shop.List.ShowDetails.accessibility">Show shop details</string>
     <string name="Snabble.Shopping.title">Shopping</string>
     <string name="Snabble.Shoppingcart.Accessibility.actionAdd">Add</string>
     <string name="Snabble.Shoppingcart.Accessibility.actionDelete">Delete</string>
@@ -287,7 +321,7 @@
     <string name="Snabble.Shoppingcart.Accessibility.quantity">Quantity</string>
     <string name="Snabble.Shoppingcart.Accessibility.selected">Selected</string>
     <string name="Snabble.Shoppingcart.articleRemoved">Product removed</string>
-    <string name="Snabble.Shoppingcart.BuyProducts">Buy %1$d products for %2$s</string>
+    <string name="Snabble.Shoppingcart.buyProducts">Buy %1$d products for %2$s</string>
     <string name="Snabble.Shoppingcart.BuyProducts.now">Pay now</string>
     <string name="Snabble.Shoppingcart.BuyProducts.one">Buy %1$d product for %2$s</string>
     <string name="Snabble.Shoppingcart.BuyProducts.selectPaymentMethod">Select payment method</string>

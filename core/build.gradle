@@ -7,6 +7,8 @@ apply plugin: 'org.jetbrains.dokka'
 description = "Snabble Core: The business logic of the snabble SDK"
 
 android {
+    namespace 'io.snabble.sdk'
+
     compileSdkVersion project.compileSdkVersion
 
     defaultConfig {
@@ -61,18 +63,18 @@ dependencies {
     implementation 'com.google.android.gms:play-services-wallet:19.1.0'
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'androidx.biometric:biometric:1.2.0-alpha04'
-    implementation 'androidx.lifecycle:lifecycle-process:2.4.1'
-    implementation 'androidx.lifecycle:lifecycle-common:2.4.1'
+    implementation 'androidx.lifecycle:lifecycle-process:2.5.1'
+    implementation 'androidx.lifecycle:lifecycle-common:2.5.1'
 
     api "com.squareup.okhttp3:okhttp:${project.okhttpVersion}"
     implementation "com.squareup.okhttp3:logging-interceptor:${project.okhttpVersion}"
     implementation 'eu.rekisoft.android.util:LazyWorker:2.1.0'
 
-    api 'com.google.code.gson:gson:2.9.0'
+    api 'com.google.code.gson:gson:2.9.1'
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.robolectric:robolectric:4.8.1'
     testImplementation "com.squareup.okhttp3:mockwebserver:${project.okhttpVersion}"
-    testImplementation 'org.jetbrains.kotlin:kotlin-reflect:1.6.21'
+    testImplementation "org.jetbrains.kotlin:kotlin-reflect:${project.kotlin_version}"
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
 }

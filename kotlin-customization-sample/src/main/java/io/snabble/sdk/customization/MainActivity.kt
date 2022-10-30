@@ -1,22 +1,30 @@
 package io.snabble.sdk.customization
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.os.Parcelable
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
+import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.gson.Gson
 import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.checkin.OnCheckInStateChangedListener
+import io.snabble.sdk.screens.onboarding.data.OnboardingModel
 import io.snabble.sdk.ui.SnabbleUI
 
 class MainActivity : AppCompatActivity() {
@@ -44,6 +52,37 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         toolbar.setNavigationOnClickListener { onBackPressed() }
+
+        if (savedInstanceState == null) {
+            val json = resources.assets.open("onboardingConfig.json").bufferedReader().readText()
+            val model = Gson().fromJson(json, OnboardingModel::class.java)
+            navController.navigate(R.id.frag_onboarding, bundleOf("model" to model))
+        }
+
+        navController.addOnDestinationChangedListener { _, destination, arguments ->
+            println("Nav to ${resources.getResourceName(destination.id)}")
+            // apply deeplink arguments to bundle
+            if (arguments?.containsKey(NavController.KEY_DEEP_LINK_INTENT) == true) {
+                arguments.parcelable<Intent>(NavController.KEY_DEEP_LINK_INTENT)?.data?.let { deeplink ->
+                    deeplink.queryParameterNames.forEach { key ->
+                        val value = deeplink.getQueryParameter(key)
+                        when {
+                            value?.toIntOrNull() != null -> arguments.putInt(key, value.toInt())
+                            value?.toLongOrNull() != null -> arguments.putLong(key, value.toLong())
+                            value?.toBooleanStrictOrNull() != null -> arguments.putBoolean(key, value.toBoolean())
+                            else -> arguments.putString(key, deeplink.getQueryParameter(key))
+                        }
+                    }
+                }
+            }
+            toolbar.isVisible = arguments?.getBoolean("hideToolbar", false) != true
+            navView.isVisible = arguments?.getBoolean("hideBottomNavigation", false) != true
+            navView.isEnabled = arguments?.getBoolean("hideBottomNavigation", false) != true
+            toolbar.title = destination.label
+            arguments?.getString("title")?.let {
+                toolbar.title = it.replace("...", "…")
+            }
+        }
 
         SnabbleUI.setUiAction(this, SnabbleUI.Event.SHOW_BARCODE_SEARCH) { _, args ->
             navController.navigate(R.id.navigation_barcode_search, args)
@@ -121,4 +160,9 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
         Snabble.checkInManager.stopUpdating()
     }
+}
+
+private inline fun <reified T : Parcelable> Bundle.parcelable(key: String): T? = when {
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getParcelable(key, T::class.java)
+    else -> @Suppress("DEPRECATION") getParcelable(key) as? T
 }

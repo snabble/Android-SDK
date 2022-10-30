@@ -50,16 +50,10 @@ public class Events {
         this.shoppingCart = shoppingCart;
 
         project.getShoppingCart().addListener(new ShoppingCart.SimpleShoppingCartListener() {
+
             @Override
             public void onChanged(ShoppingCart cart) {
-                if (cartId != null && !cart.getId().equals(cartId)) {
-                    PayloadSessionEnd payloadSessionEnd = new PayloadSessionEnd();
-                    payloadSessionEnd.session = cartId;
-                    post(payloadSessionEnd, false);
-                    cartId = cart.getId();
-                    hasSentSessionStart = false;
-                    return;
-                }
+                updateShop(Snabble.getInstance().getCheckedInShop());
 
                 if (shop != null) {
                     if (!hasSentSessionStart) {
@@ -67,9 +61,40 @@ public class Events {
                         payloadSessionStart.session = cartId;
                         post(payloadSessionStart, false);
                     }
-
                     post(Events.this.project.getShoppingCart().toBackendCart(), true);
                 }
+            }
+
+            @Override
+            public void onCleared(ShoppingCart cart) {
+                final boolean isSameCartWithNewId = shoppingCart == cart && !cart.getId().equals(cartId);
+                if (isSameCartWithNewId) {
+                    PayloadSessionEnd payloadSessionEnd = new PayloadSessionEnd();
+                    payloadSessionEnd.session = cartId;
+                    post(payloadSessionEnd, false);
+                    cartId = cart.getId();
+                    hasSentSessionStart = false;
+                }
+            }
+
+            @Override
+            public void onProductsUpdated(ShoppingCart list) {
+                // Override because it shouldn't trigger onChanged(Cart)
+            }
+
+            @Override
+            public void onPricesUpdated(ShoppingCart list) {
+                // Override because it shouldn't trigger onChanged(Cart)
+            }
+
+            @Override
+            public void onTaxationChanged(ShoppingCart list, ShoppingCart.Taxation taxation) {
+                // Override because it shouldn't trigger onChanged(Cart)
+            }
+
+            @Override
+            public void onCartDataChanged(ShoppingCart list) {
+                // Override because it shouldn't trigger onChanged(Cart)
             }
         });
     }
@@ -83,6 +108,7 @@ public class Events {
             shop = newShop;
         } else {
             shop = null;
+            cartId = null;
             hasSentSessionStart = false;
         }
     }

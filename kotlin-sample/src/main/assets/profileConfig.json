@@ -1,0 +1,95 @@
+{
+  "configuration": {
+    "image": "",
+    "style": "scroll",
+    "padding": [0]
+  },
+  "widgets": [
+    {
+      "type": "section",
+      "id": "section1",
+      "header": "Profile.header",
+      "padding": [0, 16, 8, 0],
+      "items": [
+        {
+          "type": "text",
+          "id": "2",
+          "text": "Profile.customerCard",
+          "padding": [16, 8]
+        },
+        {
+          "type": "text",
+          "id": "3",
+          "text": "Profile.lastPurchases",
+          "padding": [16, 8]
+        },
+        {
+          "type": "text",
+          "id": "5",
+          "text": "Profile.paymentMethods",
+          "padding": [16, 8]
+        },
+        {
+          "type": "text",
+          "id": "4",
+          "text": "Profile.deleteAccount",
+          "padding": [16, 8]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "section1",
+      "header": "Profile.settings",
+      "padding": [0, 16, 0, 0],
+      "items": [
+        {
+          "type": "toggle",
+          "id": "onboarding.toggle",
+          "text": "Profile.showOnboarding",
+          "key": "snabble.show.onboarding",
+          "padding": [16, 6]
+        },
+        {
+          "type": "toggle",
+          "id": "pushMessages.toggle",
+          "text": "Profile.pushMessages",
+          "key": "io.snabble.sample.pushMessages",
+          "padding": [16, 6]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "3",
+      "header": "Profile.legalNotes",
+      "padding": [0, 16, 0, 0],
+      "items": [
+        {
+          "type": "text",
+          "id": "1",
+          "text": "Profile.imprint",
+          "padding": [16, 8]
+        },
+        {
+          "type": "text",
+          "id": "2",
+          "text": "Profile.terms",
+          "padding": [16, 8]
+        },
+        {
+          "type": "text",
+          "id": "3",
+          "text": "Profile.privacy",
+          "padding": [16, 8]
+        },
+        {
+          "type": "text",
+          "id": "4",
+          "text": "Profile.licences",
+          "padding": [16, 8]
+        }
+      ]
+    }
+  ]
+}

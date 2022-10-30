@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="Dashboard.text">Látogass el az egyik támogatott üzletbe, és vásárolj a Snabble-lel!</string>
+    <string name="Dashboard.title">Köszöntünk a Snabble-nél</string>
+    <string name="home">Start</string>
+    <string name="Onboarding.accept">Elfogadás</string>
+    <string name="Onboarding.message1">A Snabble segítségével saját magad szkenneled be a vásárolni kívánt termékeket, és közvetlenül az alkalmazásban fizetsz. Nem kell sorban állni a pénztár előtt, és a vásárolt termékeket nem kell az áruszalagra helyezni.</string>
+    <string name="Onboarding.message2">Lépj be egy résztvevő üzletbe, kezdd el a bevásárlást, és tartsd a termék vonalkódját a kamera elé. A többi magától értetődik.</string>
+    <string name="Onboarding.message3">Kérlek, fogadd el a felhasználási feltételeket és az adatvédelmi tudnivalókat.</string>
+    <string name="profile">Profil</string>
+    <string name="Profile.customerCard">Customer Card</string>
+    <string name="Profile.deleteAccount">Fiók törlése</string>
+    <string name="Profile.header">Profilod</string>
+    <string name="Profile.imprint">Imprint</string>
+    <string name="Profile.lastPurchases">Last Purchases</string>
+    <string name="Profile.legalNotes">Legal Notes</string>
+    <string name="Profile.licences">Licences</string>
+    <string name="Profile.paymentMethods">Fizetési mód</string>
+    <string name="Profile.privacy">Privacy Policy</string>
+    <string name="Profile.pushMessages">Push Messages</string>
+    <string name="Profile.saveEnergy">Energiatakarékosság</string>
+    <string name="Profile.settings">Settings</string>
+    <string name="Profile.showOnboarding">Mutasd az Onboardingot</string>
+    <string name="Profile.terms">Terms</string>
+    <string name="scanner">Szkenner</string>
+    <string name="shoppingCart">Kosár</string>
+    <string name="shops">Üzletek</string>
+</resources>

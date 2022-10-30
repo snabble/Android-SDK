@@ -70,6 +70,22 @@
     <string name="Snabble.CreditCard.payNow">Teraz zaplatiť kreditnou kartou</string>
     <string name="Snabble.delete">Vymazať</string>
     <string name="Snabble.done">Hotovo</string>
+    <string name="Snabble.DynamicView.AllStores.button">Prezrieť všetky obchody</string>
+    <string name="Snabble.DynamicView.connectWifi">Pripojiť sa k bezplatnej WLAN sieti „%s“ teraz</string>
+    <string name="Snabble.DynamicView.ConnectWifi.noSSID">Ľutujeme, nie je k dispozícii žiadna WLAN sieť.</string>
+    <string name="Snabble.DynamicView.customerCard">Využi automaticky výhody svojej zákazníckej karty.</string>
+    <string name="Snabble.DynamicView.lastPurchase">Tvoj posledný nákup</string>
+    <string name="Snabble.DynamicView.lastPurchases">Tvoje posledné nákupy</string>
+    <string name="Snabble.DynamicView.LastPurchases.all">Všetko</string>
+    <string name="Snabble.DynamicView.LocationPermission.Button.notDetermined">Povoliť polohu</string>
+    <string name="Snabble.DynamicView.LocationPermission.MissingPermission.message">Len tak môžeme zobraziť obchody v tvojej blízkosti a umožniť nákup.</string>
+    <string name="Snabble.DynamicView.LocationPermission.MissingPermission.title">Snabble potrebuje zistiť tvoju polohu</string>
+    <string name="Snabble.DynamicView.LocationPermission.notNow">Teraz nie</string>
+    <string name="Snabble.DynamicView.LocationPermission.openSettings">Otvoriť nastavenia</string>
+    <string name="Snabble.DynamicView.LocationPermission.ReducedAccuracy.message">Otvor nastavenia, zvoľ položku „Poloha“ a aktivuj možnosť „Presná poloha“.</string>
+    <string name="Snabble.DynamicView.LocationPermission.ReducedAccuracy.title">Snabble potrebuje tvoju presnú polohu, aby rozpoznal, v ktorom obchode práve nakupuješ</string>
+    <string name="Snabble.DynamicView.Shop.show">Zobraziť obchody</string>
+    <string name="Snabble.DynamicView.StartShopping.button">Teraz nakúpiť tu</string>
     <string name="Snabble.edit">Upraviť</string>
     <string name="Snabble.goToSettings">Prejsť na nastavenia</string>
     <string name="Snabble.Hints.closedBags">Len tak ďalej! Prosím, uľahči prácu pokladníkom a nevkladaj svoje produkty priamo do uzavretých tašiek. Ďakujem!</string>
@@ -84,17 +100,15 @@
     <string name="Snabble.LimitsAlert.notAllMethodsAvailable">Nad hodnotu tovaru %s nie sú k dispozícii všetky spôsoby platby</string>
     <string name="Snabble.LimitsAlert.title">Pozor</string>
     <string name="Snabble.loadingProductInformation">Načítanie informácií o produkte…</string>
-    <string name="Snabble.LocationRequired.MissingPermission.message">Len tak môžeme zobraziť obchody v tvojej blízkosti a umožniť nákup.</string>
-    <string name="Snabble.LocationRequired.MissingPermission.title">Snabble potrebuje zistiť tvoju polohu</string>
-    <string name="Snabble.LocationRequired.notNow">Teraz nie</string>
-    <string name="Snabble.LocationRequired.openSettings">Otvoriť nastavenia</string>
-    <string name="Snabble.LocationRequired.ReducedAccuracy.message">Otvor nastavenia, zvoľ položku „Poloha“ a aktivuj možnosť „Presná poloha“.</string>
-    <string name="Snabble.LocationRequired.ReducedAccuracy.title">Snabble potrebuje tvoju presnú polohu, aby rozpoznal, v ktorom obchode práve nakupuješ</string>
     <string name="Snabble.networkError">Chyba spojenia</string>
     <string name="Snabble.no">Nie</string>
     <string name="Snabble.noDiscount">žiadna zľava</string>
     <string name="Snabble.NotForSale.ErrorMsg.scan">Tento produkt momentálne nie je možné zaplatiť cez aplikáciu. Zaplať ho pri pokladni ako obvykle.</string>
     <string name="Snabble.ok">OK</string>
+    <string name="Snabble.Onboarding.Deeplink.accessibility">Otvoriť %s</string>
+    <string name="Snabble.Onboarding.done">Hotovo</string>
+    <string name="Snabble.Onboarding.Link.show">Prezrieť</string>
+    <string name="Snabble.Onboarding.next">Ďalej</string>
     <string name="Snabble.Paydirekt.AuthorizationFailed.message">Skús neskôr znovu, prosím</string>
     <string name="Snabble.Paydirekt.AuthorizationFailed.title">Autorizácia sa nepodarila</string>
     <string name="Snabble.Paydirekt.deleteAuthorization">Vymazať spôsob platby</string>
@@ -120,6 +134,7 @@
     <string name="Snabble.Payment.errorStarting">Chyba pri vytvorení platobného procesu</string>
     <string name="Snabble.Payment.noMethodAvailable">Tento nákup nie je možné vykonať pomocou tejto aplikácie.</string>
     <string name="Snabble.Payment.offlineHint">Momentálne si offline a preto niektoré spôsoby platby nemusia byť k dispozícii</string>
+    <string name="Snabble.Payment.Online.message">Tvoj nákup musí potvrdiť zamestnanec obchodu.</string>
     <string name="Snabble.Payment.payAtCashDesk">Zaplatiť pri pokladni</string>
     <string name="Snabble.Payment.payAtSCO">Karta na EC termináli</string>
     <string name="Snabble.Payment.payUsingCustomerCard">so zákazníckou kartou</string>
@@ -129,16 +144,12 @@
     <string name="Snabble.Payment.rejected">Nákup zamietnutý</string>
     <string name="Snabble.Payment.rejectedHint">Tvoj nákup bol zamietnutý. Skontroluj svoj košík a začni platobný proces znovu.</string>
     <string name="Snabble.Payment.SEPA.hint">Poznámka: Za účelom tvojej ochrany a ochrany našich obchodníkov pred zneužitím si obchodník pri tvojej prvej platbe prostredníctvom SEPA inkasa vyžiada tvoju bankovú kartu.</string>
-    <string name="Snabble.Payment.SEPA.IBAN">IBAN</string>
-    <string name="Snabble.Payment.SEPA.InvalidIBAN">Zadaný IBAN je neplatný.</string>
-    <string name="Snabble.Payment.SEPA.InvalidName">Zadaj meno, prosím.</string>
+    <string name="Snabble.Payment.SEPA.iban">IBAN</string>
+    <string name="Snabble.Payment.SEPA.invalidIBAN">Zadaný IBAN je neplatný.</string>
+    <string name="Snabble.Payment.SEPA.invalidName">Zadaj meno, prosím.</string>
     <string name="Snabble.Payment.SEPA.missingCountry">Kód krajiny nesmie zostať prázdny.</string>
-    <string name="Snabble.Payment.SEPA.Name">Meno</string>
-    <!--
-  ********* iOS SEPA and Creditcard Data *********
-  iOS only, this is used for the iOS-specific SEPA data entry and payment
-  -->
-    <string name="Snabble.Payment.SEPA.Title">SEPA inkaso</string>
+    <string name="Snabble.Payment.SEPA.name">Meno</string>
+    <string name="Snabble.Payment.SEPA.title">SEPA inkaso</string>
     <string name="Snabble.Payment.success">Ďakujeme za tvoj nákup</string>
     <string name="Snabble.Payment.Twint.error">Pri spracovaní tvojho účtu TWINT sa vyskytla chyba</string>
     <string name="Snabble.Payment.usableAt">Použiteľné tu: %s</string>
@@ -270,6 +281,39 @@
     <string name="Snabble.SEPA.payNow">SEPA platba teraz</string>
     <string name="Snabble.SEPA.scoTransferHint">Ešte zadaj meno uvedené na karte, aby si ju mohol/mohla uložiť pre platby priamo prostredníctvom aplikácie.</string>
     <string name="Snabble.Settings">Nastavenia</string>
+    <!-- <street and house number> in <ZIP code> <city name> -->
+    <string name="Snabble.Shop.Address.accessibility">%1$s v %2$s %3$s</string>
+    <string name="Snabble.Shop.Detail.openingHours">Otváracie hodiny</string>
+    <string name="Snabble.Shop.Detail.Phonenumber.accessibility">Telefónne číslo %s</string>
+    <string name="Snabble.Shop.Detail.shopNow">Teraz nakúpiť tu</string>
+    <string name="Snabble.Shop.Detail.startNavigation">Chcete zapnúť navigáciu?</string>
+    <string name="Snabble.Shop.Detail.title">Detaily</string>
+    <string name="Snabble.Shop.Details.contractingParty">Zmluvný partner</string>
+    <string name="Snabble.Shop.Details.friday">Piatok</string>
+    <string name="Snabble.Shop.Details.MapDisabled.actionTitle">Aktivovať</string>
+    <string name="Snabble.Shop.Details.MapDisabled.title">Deaktivoval/a si používanie služby %s.</string>
+    <string name="Snabble.Shop.Details.monday">Pondelok</string>
+    <string name="Snabble.Shop.Details.saturday">Sobota</string>
+    <string name="Snabble.Shop.Details.StartCall.accessibility">Zavolať</string>
+    <string name="Snabble.Shop.Details.sunday">Nedeľa</string>
+    <string name="Snabble.Shop.Details.thursday">Štvrtok</string>
+    <string name="Snabble.Shop.Details.tuesday">Utorok</string>
+    <string name="Snabble.Shop.Details.wednesday">Streda</string>
+    <string name="Snabble.Shop.Distance.accessibility">Vo vzdialenosti %s</string>
+    <plurals name="Snabble.Shop.Finder.storeCount">
+        <item quantity="few">%d obchody</item>
+        <item quantity="many">%d obchodov</item>
+        <item quantity="one">%d obchod</item>
+        <item quantity="other">%d  obchody/obchodov</item>
+        <item quantity="zero">Žiadne obchody</item>
+    </plurals>
+    <string name="Snabble.Shop.Finder.title">Obchod</string>
+    <string name="Snabble.Shop.Finder.youarehere">Nachádzate sa tu</string>
+    <string name="Snabble.Shop.List.Colapse.accessibility">zatvoriť</string>
+    <string name="Snabble.Shop.List.EventShopColapsed.accessibility">%s zatvorený</string>
+    <string name="Snabble.Shop.List.EventShopExpanded.accessibility">%s otvorený</string>
+    <string name="Snabble.Shop.List.Expand.accessibility">otvoriť</string>
+    <string name="Snabble.Shop.List.ShowDetails.accessibility">Zobraziť detaily obchodu</string>
     <string name="Snabble.Shopping.title">Nakúpiť</string>
     <string name="Snabble.Shoppingcart.Accessibility.actionAdd">Pridať</string>
     <string name="Snabble.Shoppingcart.Accessibility.actionDelete">Vymazať</string>
@@ -287,7 +331,7 @@
     <string name="Snabble.Shoppingcart.Accessibility.quantity">Počet</string>
     <string name="Snabble.Shoppingcart.Accessibility.selected">Vybraté</string>
     <string name="Snabble.Shoppingcart.articleRemoved">Položka bola odstránená</string>
-    <string name="Snabble.Shoppingcart.BuyProducts">Kúpiť %1$d položky/položiek za %2$s</string>
+    <string name="Snabble.Shoppingcart.buyProducts">Kúpiť %1$d položky/položiek za %2$s</string>
     <string name="Snabble.Shoppingcart.BuyProducts.now">Zaplatiť teraz</string>
     <string name="Snabble.Shoppingcart.BuyProducts.one">Kúpiť %1$d položku za %2$s</string>
     <string name="Snabble.Shoppingcart.BuyProducts.selectPaymentMethod">Vybrať spôsob platby</string>

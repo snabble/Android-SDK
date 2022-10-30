@@ -1560,10 +1560,8 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         updateTimestamp();
 
         Dispatch.mainThread(() -> {
-            if (list.data.items.contains(item)) {
-                for (ShoppingCartListener listener : listeners) {
-                    listener.onItemRemoved(list, item, pos);
-                }
+            for (ShoppingCartListener listener : listeners) {
+                listener.onItemRemoved(list, item, pos);
             }
         });
     }
