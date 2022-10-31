@@ -6,6 +6,7 @@
         <item name="colorPrimaryContainer">@color/snabbleBlue</item>
         <item name="colorOnPrimaryContainer">@color/snabbleBlue</item>
         <item name="colorPrimaryInverse">@color/snabbleBlue</item>
+        <item name="colorSurface">@color/almostWhite</item>
 
         <item name="colorSecondary">@color/snabbleBlue</item>
         <item name="colorOnSecondary">@color/white</item>
