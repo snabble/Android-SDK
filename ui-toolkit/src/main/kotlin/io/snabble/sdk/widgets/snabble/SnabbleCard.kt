@@ -44,7 +44,7 @@ internal fun SnabbleCard(
                 )
                 .then(modifier),
             shape = MaterialTheme.shapes.small,
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
             elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.elevation.small),
         ) {
             content()

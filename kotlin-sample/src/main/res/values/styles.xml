@@ -3,10 +3,9 @@
     <style name="AppTheme" parent="@style/Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/snabbleBlue</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorPrimaryContainer">@color/snabbleBlue</item>
+        <item name="colorPrimaryContainer">@color/almost_white</item>
         <item name="colorOnPrimaryContainer">@color/snabbleBlue</item>
         <item name="colorPrimaryInverse">@color/snabbleBlue</item>
-        <item name="colorSurface">@color/almostWhite</item>
 
         <item name="colorSecondary">@color/snabbleBlue</item>
         <item name="colorOnSecondary">@color/white</item>
