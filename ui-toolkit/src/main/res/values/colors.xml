@@ -3,7 +3,8 @@
     <color name="snabble_onboarding_background">#EBEBEB</color>
     <color name="snabble_onboarding_primary">#0077bb</color>
     <color name="snabble_onboarding_highlight">#005982</color>
-    <color name="snabble_background">#FAFCFE</color>
+    <color name="home_background">#FAFCFE</color>
+    <color name="profile_background">#FAFCFE</color>
     <!-- Red theme sample
     <color name="snabble_onboarding_primary">#cd1414</color>
     <color name="snabble_onboarding_highlight">#970011</color>

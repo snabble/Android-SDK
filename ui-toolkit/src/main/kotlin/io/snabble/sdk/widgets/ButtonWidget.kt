@@ -28,9 +28,10 @@ fun ButtonWidget(
     model: ButtonItem,
     onAction: OnDynamicAction = {},
 ) {
-    Box(modifier = Modifier
-        .padding(model.padding.toPaddingValues())
-        .then(modifier)
+    Box(
+        modifier = Modifier
+            .padding(model.padding.toPaddingValues())
+            .then(modifier)
     ) {
         Button(
             modifier = Modifier
@@ -62,22 +63,22 @@ fun ButtonWidget(
 ) {
     Box(
         modifier = Modifier
-            .padding(padding.toPaddingValues())
-            .then(modifier),
+            .padding(padding.toPaddingValues()),
     ) {
         Button(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .then(modifier),
             onClick = { onAction(DynamicAction(widget)) },
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+                backgroundColor = MaterialTheme.colorScheme.primary,
             ),
             shape = MaterialTheme.shapes.small,
         ) {
             Text(
                 text = text,
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = MaterialTheme.colorScheme.onPrimary
             )
         }
     }

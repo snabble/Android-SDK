@@ -17,11 +17,6 @@
         android:title="@string/shops" />
 
     <item
-        android:id="@+id/navigation_cart"
-        android:icon="@drawable/ic_baseline_shopping_cart_24"
-        android:title="@string/shoppingCart" />
-
-    <item
         android:id="@+id/navigation_profile"
         android:icon="@drawable/ic_profile"
         android:title="@string/profile" />

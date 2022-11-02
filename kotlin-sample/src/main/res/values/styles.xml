@@ -3,8 +3,8 @@
     <style name="AppTheme" parent="@style/Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/snabbleBlue</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorPrimaryContainer">@color/snabbleBlue</item>
-        <item name="colorOnPrimaryContainer">@color/white</item>
+        <item name="colorPrimaryContainer">@color/almost_white</item>
+        <item name="colorOnPrimaryContainer">@color/snabbleBlue</item>
         <item name="colorPrimaryInverse">@color/snabbleBlue</item>
 
         <item name="colorSecondary">@color/snabbleBlue</item>
@@ -52,5 +52,9 @@
         <item name="android:statusBarColor">@color/white</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
         <item name="android:windowBackground">@drawable/loading</item>
+    </style>
+
+    <style name="BottomSheetCardViewStyle" parent="DefaultBottomSheetCardViewStyle">
+        <item name="cardBackgroundColor">@color/almost_white</item>
     </style>
 </resources>
