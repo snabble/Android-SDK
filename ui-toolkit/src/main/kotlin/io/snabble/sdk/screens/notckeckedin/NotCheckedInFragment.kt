@@ -48,15 +48,16 @@ class NotCheckedInFragment : Fragment() {
 fun NotCheckedInScreen(
 ) {
     val context = LocalContext.current
-
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally)
     {
         Image(
+            modifier = Modifier.padding(16.dp, 128.dp, 16.dp, 16.dp),
             painter = painterResource(id = R.drawable.store_logo),
             contentDescription = "Store")
         Text(
+            modifier = Modifier.padding(16.dp, 0.dp, 16.dp, 8.dp),
             text = stringResource(id = R.string.Snabble_DynamicView_Shop_show))
         Box(
             modifier = Modifier
@@ -79,6 +80,7 @@ fun NotCheckedInScreen(
             )
         }
         Text(
+            modifier = Modifier.padding(16.dp, 0.dp, 16.dp, 8.dp),
             text = stringResource(id = R.string.Snabble_DynamicView_Shop_show))
         Box(
             modifier = Modifier
@@ -95,7 +97,7 @@ fun NotCheckedInScreen(
         ) {
             Text(
                 modifier = Modifier.align(Alignment.Center),
-                text = stringResource(id = R.string.Snabble_DynamicView_Shop_show),
+                text = stringResource(id = R.string.Snabble_PaymentMethods_add),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.primary
             )
