@@ -33,6 +33,7 @@ io.snabble.sdk.ui.views
 module:ui-toolkit
 io.snabble.sdk
 io.snabble.sdk.dynamicview.domain.model
+io.snabble.sdk.dynamicview.theme
 io.snabble.sdk.dynamicview.ui
 io.snabble.sdk.dynamicview.viewmodel
 io.snabble.sdk.screens.home.ui
