@@ -62,6 +62,13 @@ fun setUpUiEvents(activity: AppCompatActivity, navController: NavController, bot
     }
     SnabbleUI.setUiAction(
         activity,
+        SnabbleUI.Event.NOT_CHECKED_IN
+    ) { _, args ->
+        navController.navigate(R.id.not_checked_in, args)
+    }
+
+    SnabbleUI.setUiAction(
+        activity,
         SnabbleUI.Event.GO_BACK
     ) { _, _ ->
     }

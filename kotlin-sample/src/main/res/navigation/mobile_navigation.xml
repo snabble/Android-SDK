@@ -71,7 +71,7 @@
 
     <fragment
         android:id="@+id/not_checked_in"
-        android:name="io.snabble.sdk.sample.NotCheckedInFragment"
+        android:name="io.snabble.sdk.screens.notckeckedin.NotCheckedInFragment"
         android:label="Check in" />
 
     <fragment

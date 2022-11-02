@@ -35,4 +35,8 @@
     <string name="Snabble.Shop.List.EventShopExpanded.accessibility">%s expanded</string>
     <string name="Snabble.Shop.List.Expand.accessibility">expand</string>
     <string name="Snabble.Shop.List.ShowDetails.accessibility">Show shop details</string>
+
+    <string name="Snabble.NotCheckedIn.message">Begib dich zu einem Store um den Scanner zu verwenden</string>
+    <string name="Snabble.AddPayment.message">Oder füge jetzt schon eine Zahlungsmethode hinzu.</string>
+
 </resources>

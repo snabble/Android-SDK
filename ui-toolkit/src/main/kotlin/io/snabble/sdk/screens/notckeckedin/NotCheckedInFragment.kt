@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -50,15 +51,16 @@ fun NotCheckedInScreen(
     val context = LocalContext.current
     Column(
         modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally)
     {
         Image(
             modifier = Modifier.padding(16.dp, 128.dp, 16.dp, 16.dp),
-            painter = painterResource(id = R.drawable.store_logo),
+            painter = painterResource(id = R.drawable.snabble_offline_shop),
             contentDescription = "Store")
         Text(
             modifier = Modifier.padding(16.dp, 0.dp, 16.dp, 8.dp),
-            text = stringResource(id = R.string.Snabble_DynamicView_Shop_show))
+            text = stringResource(id = R.string.Snabble_NotCheckedIn_message))
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -81,7 +83,7 @@ fun NotCheckedInScreen(
         }
         Text(
             modifier = Modifier.padding(16.dp, 0.dp, 16.dp, 8.dp),
-            text = stringResource(id = R.string.Snabble_DynamicView_Shop_show))
+            text = stringResource(id = R.string.Snabble_AddPayment_message))
         Box(
             modifier = Modifier
                 .fillMaxWidth()
