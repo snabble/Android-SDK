@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="BottomSheetCardViewStyle" parent="DefaultBottomSheetCardViewStyle" />
+
+    <style name="DefaultBottomSheetCardViewStyle" parent="@style/Widget.MaterialComponents.CardView">
+        <item name="shapeAppearanceOverlay">@style/BottomSheetCorners</item>
+        <item name="cardElevation">8dp</item>
+        <item name="strokeWidth">0dp</item>
+    </style>
+
+    <style name="BottomSheetCorners">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">28dp</item>
+        <item name="cornerSizeTopLeft">28dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+    </style>
+</resources>

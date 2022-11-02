@@ -53,4 +53,8 @@
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
         <item name="android:windowBackground">@drawable/loading</item>
     </style>
+
+    <style name="BottomSheetCardViewStyle" parent="DefaultBottomSheetCardViewStyle">
+        <item name="cardBackgroundColor">@color/almost_white</item>
+    </style>
 </resources>
