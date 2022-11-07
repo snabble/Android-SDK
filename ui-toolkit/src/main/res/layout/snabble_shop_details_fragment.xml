@@ -85,7 +85,6 @@
 
         <com.google.android.material.card.MaterialCardView
             style="@style/BottomSheetCardViewStyle"
-            app:cardBackgroundColor="?attr/colorSurfaceVariant"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 

@@ -210,6 +210,7 @@ private fun PurchaseDetail(
             Text(
                 text = "${data.title}\n",
                 style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
