@@ -54,7 +54,7 @@ fun SeeAllStoresWidget(
                     modifier = Modifier.align(Alignment.Center),
                     text = stringResource(id = R.string.Snabble_DynamicView_Shop_show),
                     style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
