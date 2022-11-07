@@ -45,6 +45,7 @@ fun ToggleWidget(
         val (label, switch) = createRefs()
         Text(
             text = model.text,
+            color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.constrainAs(label) {
                 linkTo(start = parent.start, end = switch.start)
