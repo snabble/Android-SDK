@@ -2,6 +2,7 @@ package io.snabble.sdk.widgets
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -13,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import io.snabble.sdk.dynamicview.domain.model.ButtonItem
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.domain.model.Widget
@@ -35,7 +37,8 @@ fun ButtonWidget(
     ) {
         Button(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .height(40.dp),
             onClick = { onAction(DynamicAction(model)) },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Color(
@@ -68,12 +71,13 @@ fun ButtonWidget(
         Button(
             modifier = Modifier
                 .fillMaxWidth()
+                .height(40.dp)
                 .then(modifier),
             onClick = { onAction(DynamicAction(widget)) },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = MaterialTheme.colorScheme.primary,
             ),
-            shape = MaterialTheme.shapes.small,
+            shape = MaterialTheme.shapes.extraLarge,
         ) {
             Text(
                 text = text,
