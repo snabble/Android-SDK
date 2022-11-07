@@ -11,7 +11,7 @@
 
     <color name="onSecondary">@color/black</color>
 
-    <color name="windowBackground">#EBEBEB</color>
+    <color name="windowBackground">#FAFCFE</color>
     <color name="statusBarColor">@color/white</color>
     <color name="androidNavBarColor">@color/white</color>
 
