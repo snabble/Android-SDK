@@ -9,12 +9,12 @@ internal interface HasLocationPermissionUseCase {
 }
 
 internal class HasLocationPermissionUseCaseImpl(
-    private val Snabble: Snabble,
+    private val snabble: Snabble,
 ) : HasLocationPermissionUseCase {
 
     override operator fun invoke(): Boolean =
         try {
-            Snabble.checkInLocationManager.checkLocationPermission()
+            snabble.checkInLocationManager.checkLocationPermission()
         } catch (e: UninitializedPropertyAccessException) {
             Log.d(this.javaClass.name, "invokeError: ${e.message} ")
             true

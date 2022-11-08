@@ -10,15 +10,15 @@ internal interface UpdateCheckInManagerUseCase {
 
 internal class UpdateCheckInManagerUseCaseImpl(
     private val hasLocationPermission: HasLocationPermissionUseCase,
-    private val Snabble: Snabble,
+    private val snabble: Snabble,
 ) : UpdateCheckInManagerUseCase {
 
     @SuppressLint("MissingPermission")
     override operator fun invoke() {
         if (hasLocationPermission()) {
-            Snabble.checkInManager.startUpdating()
+            snabble.checkInManager.startUpdating()
         } else {
-            Snabble.checkInManager.stopUpdating()
+            snabble.checkInManager.stopUpdating()
         }
     }
 }
