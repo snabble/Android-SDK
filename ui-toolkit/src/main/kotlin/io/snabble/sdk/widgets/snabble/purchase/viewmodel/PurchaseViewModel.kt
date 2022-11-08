@@ -3,13 +3,13 @@ package io.snabble.sdk.widgets.snabble.purchase.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.snabble.sdk.widgets.snabble.purchase.Purchase
-import io.snabble.sdk.widgets.snabble.purchase.repository.PurchasesRepository
+import io.snabble.sdk.widgets.snabble.purchase.usecases.GetPurchasesUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 internal class PurchaseViewModel(
-    private val repo: PurchasesRepository,
+    private val getPurchases: GetPurchasesUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<State>(Loading)
@@ -22,7 +22,7 @@ internal class PurchaseViewModel(
         }
     }
 
-    private suspend fun loadPurchases(): List<Purchase> = repo.getPurchases(count = 2)
+    private suspend fun loadPurchases(): List<Purchase> = getPurchases(count = 2)
 }
 
 internal sealed class State

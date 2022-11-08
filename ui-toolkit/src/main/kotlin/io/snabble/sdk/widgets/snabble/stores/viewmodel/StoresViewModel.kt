@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 internal class StoresViewModel(
-    private val Snabble: Snabble,
+    private val snabble: Snabble,
 ) : ViewModel() {
 
     private val _isCheckedInFlow = MutableStateFlow(false)
@@ -19,11 +19,11 @@ internal class StoresViewModel(
     }
 
     init {
-        Snabble.currentCheckedInShop.observeForever(isCheckedInObserver)
+        snabble.currentCheckedInShop.observeForever(isCheckedInObserver)
     }
 
     override fun onCleared() {
-        Snabble.currentCheckedInShop.removeObserver(isCheckedInObserver)
+        snabble.currentCheckedInShop.removeObserver(isCheckedInObserver)
 
         super.onCleared()
     }
