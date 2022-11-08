@@ -4,6 +4,8 @@ import io.snabble.sdk.widgets.snabble.purchase.RelativeTimeStringFormatter
 import io.snabble.sdk.widgets.snabble.purchase.RelativeTimeStringFormatterImpl
 import io.snabble.sdk.widgets.snabble.purchase.repository.PurchasesRepository
 import io.snabble.sdk.widgets.snabble.purchase.repository.PurchasesRepositoryImpl
+import io.snabble.sdk.widgets.snabble.purchase.usecases.GetPurchasesUseCase
+import io.snabble.sdk.widgets.snabble.purchase.usecases.GetPurchasesUseCaseImpl
 import io.snabble.sdk.widgets.snabble.purchase.viewmodel.PurchaseViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.factoryOf
@@ -13,9 +15,11 @@ import org.koin.dsl.module
 internal val purchaseWidgetModule = module {
     viewModelOf(::PurchaseViewModel)
 
+    factoryOf(::GetPurchasesUseCaseImpl) bind GetPurchasesUseCase::class
+
     factory {
         PurchasesRepositoryImpl(
-            Snabble = get(),
+            snabble = get(),
             timeFormatter = get(),
         )
     } bind PurchasesRepository::class
