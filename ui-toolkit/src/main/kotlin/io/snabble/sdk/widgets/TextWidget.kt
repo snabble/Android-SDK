@@ -44,7 +44,7 @@ fun TextWidget(
         Text(
             modifier = Modifier.align(Alignment.CenterStart),
             text = model.text,
-            color = Color(model.textColor ?: Color.Black.toArgb()),
+            color = Color(model.textColor ?: MaterialTheme.colorScheme.onSurface.toArgb()),
             style = when (model.textStyle) {
                 "title" -> MaterialTheme.typography.headlineLarge
                 "body" -> MaterialTheme.typography.bodyLarge

@@ -39,7 +39,7 @@
       "type": "information",
       "id": "card",
       "text": "Füge eine Kundenkarte hinzu",
-      "image": "store_logo",
+      "image": "customer_card",
       "padding": [0, 6, 16, 0]
     },
     {

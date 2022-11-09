@@ -3,7 +3,7 @@ package io.snabble.sdk.widgets
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -44,9 +44,9 @@ fun SeeAllStoresWidget(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.Center)
-                    .heightIn(min = 36.dp)
+                    .height(40.dp)
                     .padding(model.padding.toPaddingValues())
-                    .clip(MaterialTheme.shapes.extraSmall)
+                    .clip(MaterialTheme.shapes.extraLarge)
                     .clickable { onAction(DynamicAction(model)) }
                     .then(modifier),
             ) {

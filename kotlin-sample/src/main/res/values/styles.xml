@@ -1,29 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="AppTheme" parent="@style/Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/snabbleBlue</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="colorPrimaryContainer">@color/almost_white</item>
-        <item name="colorOnPrimaryContainer">@color/snabbleBlue</item>
-        <item name="colorPrimaryInverse">@color/snabbleBlue</item>
-
-        <item name="colorSecondary">@color/snabbleBlue</item>
-        <item name="colorOnSecondary">@color/white</item>
-        <item name="colorSecondaryContainer">@color/white</item>
-        <item name="colorOnSecondaryContainer">@color/black</item>
-
-        <item name="colorTertiary">@color/snabbleBlue</item>
-        <item name="colorOnTertiary">@color/white</item>
-        <item name="colorTertiaryContainer">@color/snabbleBlue</item>
-        <item name="colorOnTertiaryContainer">@color/grey</item>
-
-        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.Snabble.HeadlineLarge</item>
-        <item name="textAppearanceBodyLarge">@style/TextAppearance.Snabble.BodyLarge</item>
-        <item name="textAppearanceBodyMedium">@style/TextAppearance.Snabble.BodyMedium</item>
-        <item name="textAppearanceBodySmall">@style/TextAppearance.Snabble.BodySmall</item>
-        <item name="textAppearanceTitleLarge">@style/TextAppearance.Snabble.TitleLarge</item>
-    </style>
-
     <style name="TextAppearance.Snabble.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
         <item name="android:textSize">40sp</item>
     </style>
@@ -55,6 +31,6 @@
     </style>
 
     <style name="BottomSheetCardViewStyle" parent="DefaultBottomSheetCardViewStyle">
-        <item name="cardBackgroundColor">@color/almost_white</item>
+        <item name="cardBackgroundColor">?attr/colorSurfaceVariant</item>
     </style>
 </resources>
