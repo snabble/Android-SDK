@@ -43,6 +43,11 @@
       "padding": [0, 6, 16, 0]
     },
     {
+      "type": "snabble.connectWifi",
+      "id": "wifi",
+      "padding": [0, 6, 16, 0]
+    },
+    {
       "type": "purchases",
       "id": "purchases",
       "projectId": "snabble-sdk-demo-app-oguh3x",
