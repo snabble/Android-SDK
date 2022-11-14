@@ -1,5 +1,7 @@
 package io.snabble.sdk.widgets
 
+import android.content.Intent
+import android.provider.Settings.ACTION_WIFI_SETTINGS
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -14,9 +16,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import io.snabble.sdk.dynamicview.domain.model.ConnectWlanItem
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.domain.model.utils.toPaddingValues
@@ -33,8 +37,12 @@ fun ConnectWlanWidget(
     model: ConnectWlanItem,
     onAction: OnDynamicAction,
 ) {
+    val ctx = LocalContext.current
     SnabbleCard(
-        onClick = { onAction(DynamicAction(model)) },
+        onClick = {
+            onAction(DynamicAction(model))
+            startActivity(ctx, Intent(ACTION_WIFI_SETTINGS), null)
+        },
         modifier = modifier.padding(model.padding.toPaddingValues())
     ) {
         Row(

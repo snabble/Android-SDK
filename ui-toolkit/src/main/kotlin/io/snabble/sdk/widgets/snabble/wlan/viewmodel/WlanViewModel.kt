@@ -6,9 +6,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 internal class WlanViewModel(
-    hasWlanConnection: HasWlanConnectionUseCase,
+    private val hasWlanConnection: HasWlanConnectionUseCase,
 ) : ViewModel() {
 
     private val _wifiButtonIsVisible = MutableStateFlow(hasWlanConnection())
     val wifiButtonIsVisible = _wifiButtonIsVisible.asStateFlow()
+
+    fun updateWlanState() {
+        _wifiButtonIsVisible.tryEmit(hasWlanConnection())
+    }
 }
