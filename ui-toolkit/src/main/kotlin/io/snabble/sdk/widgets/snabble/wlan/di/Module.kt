@@ -6,6 +6,8 @@ import io.snabble.sdk.widgets.snabble.wlan.usecases.HasWlanConnectionUseCase
 import io.snabble.sdk.widgets.snabble.wlan.usecases.HasWlanConnectionUseCaseImpl
 import io.snabble.sdk.widgets.snabble.wlan.usecases.IsStoreWifiAvailable
 import io.snabble.sdk.widgets.snabble.wlan.usecases.IsStoreWifiAvailableImpl
+import io.snabble.sdk.widgets.snabble.wlan.usecases.wlanmanager.WlanManager
+import io.snabble.sdk.widgets.snabble.wlan.usecases.wlanmanager.WlanManagerLegacyImpl
 import io.snabble.sdk.widgets.snabble.wlan.viewmodel.WlanViewModel
 import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.factoryOf
@@ -17,4 +19,5 @@ internal val wlanModule = module {
     factoryOf(::HasWlanConnectionUseCaseImpl) bind HasWlanConnectionUseCase::class
     factoryOf(::IsStoreWifiAvailableImpl) bind IsStoreWifiAvailable::class
     factoryOf(::ConnectToWlanUseCaseImpl) bind ConnectToWlanUseCase::class
+    factoryOf(::WlanManagerLegacyImpl) bind WlanManager::class
 }
