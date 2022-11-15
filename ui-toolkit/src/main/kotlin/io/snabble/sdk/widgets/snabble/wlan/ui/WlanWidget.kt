@@ -26,10 +26,11 @@ internal fun ConnectWlanWidget(
     OnLifecycleEvent(Lifecycle.Event.ON_RESUME) { _, _ ->
         viewModel.updateWlanState()
     }
-    
+
     if (isButtonVisibleState.value) {
         ConnectWlanWidget(
             modifier = modifier,
+            onclick = { viewModel.connect() },
             model = model,
             onAction = onAction
         )

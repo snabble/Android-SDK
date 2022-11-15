@@ -1,12 +1,15 @@
 package io.snabble.sdk.widgets.snabble.wlan.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import io.snabble.sdk.widgets.snabble.wlan.usecases.ConnectToWlanUseCase
 import io.snabble.sdk.widgets.snabble.wlan.usecases.HasWlanConnectionUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 internal class WlanViewModel(
     private val hasWlanConnection: HasWlanConnectionUseCase,
+    private val connectToWlanUseCase: ConnectToWlanUseCase,
 ) : ViewModel() {
 
     private val _wifiButtonIsVisible = MutableStateFlow(hasWlanConnection())
@@ -14,5 +17,10 @@ internal class WlanViewModel(
 
     fun updateWlanState() {
         _wifiButtonIsVisible.tryEmit(hasWlanConnection())
+    }
+
+    fun connect() {
+        Log.d("xx", "connecting to Wifi: ")
+        connectToWlanUseCase("AndroidWifi")
     }
 }
