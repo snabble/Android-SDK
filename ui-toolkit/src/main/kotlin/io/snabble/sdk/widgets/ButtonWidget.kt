@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import io.snabble.sdk.dynamicview.domain.model.ButtonItem
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.domain.model.Widget
-import io.snabble.sdk.dynamicview.domain.model.utils.toPaddingValues
+import io.snabble.sdk.dynamicview.domain.model.toPaddingValues
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.viewmodel.DynamicAction
 import io.snabble.sdk.utils.getComposeColor
