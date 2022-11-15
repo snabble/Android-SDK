@@ -145,23 +145,26 @@ class ConnectToWlanUseCaseImpl(
     private val connectivityManager: ConnectivityManager,
 ) : ConnectToWlanUseCase {
 
+    @SuppressLint("MissingPermission")
     @Suppress("DEPRECATION")
     override fun invoke(ssid: String): Result {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+
             val wifiConf = WifiConfiguration()
-            wifiConf.SSID = "\"$ssid\""
-            val networkId = wifiManager.addNetwork(wifiConf)
-            wifiManager.saveConfiguration()
-            wifiConf.xx("saving wificonf: $networkId")
-            var status = wifiManager.enableNetwork(networkId, true)
-            status.xx("attempt to connect: ")
+            wifiConf.SSID = "\"" + ssid + "\""
+            wifiConf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+            var netId = wifiManager.addNetwork(wifiConf).xx()
+            wifiManager.disconnect()
+            wifiManager.enableNetwork(netId, true).xx("enabled")
+            val isConnectionSuccessful = wifiManager.reconnect()
+            isConnectionSuccessful.xx("attempt to connect: ")
         } else {
             wifiManager.removeNetworkSuggestions(emptyList())
             val wifiSug =
                 WifiNetworkSuggestion
                     .Builder().apply {
                         setSsid(ssid)
-                        setPriority(0)
+                        setPriority(40)
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                             setMacRandomizationSetting(WifiNetworkSuggestion.RANDOMIZATION_PERSISTENT)
                         }
@@ -179,11 +182,15 @@ class ConnectToWlanUseCaseImpl(
     }
 }
 
-sealed interface Result
+sealed interface Result {
+
+    val message: String
+}
+
 data class Success(
-    val message: String,
+    override val message: String,
 ) : Result
 
 data class Error(
-    val message: String,
+    override val message: String,
 ) : Result
