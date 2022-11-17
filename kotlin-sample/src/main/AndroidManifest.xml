@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
         android:name=".App"
@@ -30,12 +30,18 @@
             android:exported="true"
             android:windowSoftInputMode="adjustPan" />
 
+        <activity
+            android:name="io.snabble.sdk.screens.receipts.ReceiptListActivity"
+            android:exported="false"
+            android:label="@string/Snabble.Receipts.title"
+            android:theme="@style/AppTheme.ActionBar" />
+
         <meta-data
             android:name="snabble_network_interceptor"
             android:value="io.snabble.sdk.sample.LoggingInterceptor" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value=""/>
+            android:value="" />
     </application>
 </manifest>

@@ -35,5 +35,10 @@
     </style>
 
     <style name="AppTheme" parent="AppTheme.Parent" />
-    
+
+    <style name="AppTheme.ActionBar" parent="AppTheme">
+        <!-- Needed to load the layout w/ Actionbar! -->
+        <item name="snabbleToolbarStyle" />
+    </style>
+
 </resources>

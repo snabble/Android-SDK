@@ -20,6 +20,7 @@ import com.google.android.material.navigation.NavigationBarView
 import com.google.gson.Gson
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.SnabbleUiToolkit
+import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_RECEIPT_LIST
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepository
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepositoryImpl
 import io.snabble.sdk.screens.home.viewmodel.DynamicHomeViewModel
@@ -74,6 +75,7 @@ class MainActivity : AppCompatActivity() {
         profileViewModel.actions.asLiveData()
             .observe(this) { action ->
                 when (action.widget.id) {
+                    "show.lastPurchases" -> SnabbleUiToolkit.executeAction(context = this, SHOW_RECEIPT_LIST)
                     else -> Unit
                 }
             }
@@ -83,6 +85,7 @@ class MainActivity : AppCompatActivity() {
                 when (action.widget.id) {
                     "start" -> navBarView.selectedItemId = R.id.navigation_scanner
                     "stores" -> navBarView.selectedItemId = R.id.navigation_shop
+                    "purchases" -> SnabbleUiToolkit.executeAction(context = this, SHOW_RECEIPT_LIST)
                     else -> Unit
                 }
             }

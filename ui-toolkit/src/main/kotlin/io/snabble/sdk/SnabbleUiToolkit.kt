@@ -14,9 +14,11 @@ import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_DEEPLINK
 import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST
 import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_ONBOARDING
 import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_ONBOARDING_DONE
+import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_RECEIPT_LIST
 import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_SHOP_LIST
 import io.snabble.sdk.SnabbleUiToolkit.Event.START_NAVIGATION
 import io.snabble.sdk.screens.onboarding.ui.OnboardingActivity
+import io.snabble.sdk.screens.receipts.ReceiptListActivity
 import io.snabble.sdk.screens.shopfinder.ShopDetailsActivity
 import io.snabble.sdk.screens.shopfinder.ShopListActivity
 import io.snabble.sdk.ui.Action
@@ -44,6 +46,7 @@ object SnabbleUiToolkit {
         SHOW_SHOP_LIST,
         SHOW_DETAILS_SHOP_LIST,
         SHOW_DEEPLINK,
+        SHOW_RECEIPT_LIST,
         DETAILS_SHOP_BUTTON_ACTION,
         START_NAVIGATION,
         GO_BACK
@@ -121,6 +124,12 @@ object SnabbleUiToolkit {
                     ShopDetailsActivity::class.java,
                     args,
                     true
+                )
+                SHOW_RECEIPT_LIST -> startActivity(
+                    context,
+                    ReceiptListActivity::class.java,
+                    args,
+                    canGoBack = true
                 )
                 SHOW_DEEPLINK,
                 GO_BACK,

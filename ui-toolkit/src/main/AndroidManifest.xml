@@ -15,6 +15,9 @@
         <activity
             android:name="io.snabble.sdk.screens.shopfinder.ShopDetailsActivity"
             android:exported="false" />
+        <activity
+            android:name="io.snabble.sdk.screens.receipts.ReceiptListActivity"
+            android:exported="false" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"
