@@ -1,27 +1,12 @@
 package io.snabble.sdk.widgets.snabble.wlan.usecases
 
-import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import androidx.core.content.ContextCompat
 
-fun Context.isAnyPermissionGranted(): Boolean {
-    return (permissionChangeWifiStateIsGranted() ||
-            permissionCoarseLocationIsGranted() ||
-            permissionFineLocationIsGranted())
-}
+internal fun Context.isGranted(permission: String): Boolean =
+    ContextCompat.checkSelfPermission(this, permission) == PERMISSION_GRANTED
 
-fun Context.scanResultPermissionsGranted(): Boolean =
-    permissionFineLocationIsGranted() && permissionChangeWifiStateIsGranted()
+internal fun Context.isAnyGranted(vararg permission: String): Boolean = permission.any(::isGranted)
 
-fun Context.permissionChangeWifiStateIsGranted() =
-    ContextCompat.checkSelfPermission(this,
-        Manifest.permission.CHANGE_WIFI_STATE) == PackageManager.PERMISSION_GRANTED
-
-fun Context.permissionCoarseLocationIsGranted() =
-    ContextCompat.checkSelfPermission(this,
-        Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-
-fun Context.permissionFineLocationIsGranted() =
-    ContextCompat.checkSelfPermission(this,
-        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+internal fun Context.areAllGranted(vararg permission: String): Boolean = permission.all(::isGranted)
