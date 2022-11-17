@@ -6,10 +6,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.wifi.WifiManager
 import android.os.Build
-import io.snabble.sdk.widgets.snabble.wlan.usecases.areAllGranted
 import io.snabble.sdk.wlanmanager.data.Error
 import io.snabble.sdk.wlanmanager.data.Result
 import io.snabble.sdk.wlanmanager.data.Success
+import io.snabble.sdk.wlanmanager.utils.areAllGranted
 
 class CheckSsidApi29(
     private val context: Context,

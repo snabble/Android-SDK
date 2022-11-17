@@ -9,8 +9,14 @@ import io.snabble.sdk.wlanmanager.usecase.networkscan.ScanForNetwork
 import io.snabble.sdk.wlanmanager.usecase.ssidcheck.CheckSsid
 
 /**
- * WifiManager
+ * WifiManager for every Api.
+ *
+ * Follows the following restrictions:
+ * https://developer.android.com/guide/topics/connectivity/wifi-scan#wifi-scan-restrictions
+ *
+ * Picks matching use case depending on the Api lvl
  */
+
 class WlanManagerImpl(
     private val scanIsFinished: ScanIsFinished,
     private val scanForNetwork: ScanForNetwork,

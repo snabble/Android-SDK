@@ -23,7 +23,7 @@ internal class HasWlanConnectionUseCaseImpl(
 
     override suspend operator fun invoke(ssid: String): Boolean =
         snabble.currentCheckedInShop.value != null &&
-                !suggestionAlreadySafed(ssid) &&
+                !suggestionAlreadySaved(ssid) &&
                 wifiManager.isWifiEnabled &&
                 !isConnectedToWifi() &&
                 wlanManager.isWifiAvailable(ssid)
@@ -40,7 +40,7 @@ internal class HasWlanConnectionUseCaseImpl(
         }
     }
 
-    private fun suggestionAlreadySafed(ssid: String): Boolean {
+    private fun suggestionAlreadySaved(ssid: String): Boolean {
 
         val sharedPreferences = context.getSharedPreferences("Suggestions", Context.MODE_PRIVATE)
         val suggestedSsid = sharedPreferences.getString("suggestion", "")

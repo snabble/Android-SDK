@@ -1,4 +1,4 @@
-package io.snabble.sdk.widgets.snabble.wlan.usecases
+package io.snabble.sdk.wlanmanager.utils
 
 import android.content.Context
 import android.content.pm.PackageManager.PERMISSION_GRANTED

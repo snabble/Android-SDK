@@ -34,7 +34,7 @@ internal val wlanModule = module {
 
     factory<ScanForNetwork> {
         when (Build.VERSION.SDK_INT) {
-            in 1..27 -> ScanForNetworkLegacy(context = get(), wifiManager = get())
+            in 1..27 -> ScanForNetworkLegacy(wifiManager = get())
             28 -> ScanForNetworkApi28(context = get(), wifiManager = get())
             else -> ScanForNetworkApi29(context = get(), wifiManager = get())
         }

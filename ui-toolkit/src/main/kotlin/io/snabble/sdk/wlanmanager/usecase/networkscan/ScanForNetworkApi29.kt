@@ -3,11 +3,10 @@ package io.snabble.sdk.wlanmanager.usecase.networkscan
 import android.Manifest.permission.*
 import android.content.Context
 import android.net.wifi.WifiManager
-import android.util.Log
-import io.snabble.sdk.widgets.snabble.wlan.usecases.areAllGranted
 import io.snabble.sdk.wlanmanager.data.Error
 import io.snabble.sdk.wlanmanager.data.Result
 import io.snabble.sdk.wlanmanager.data.Success
+import io.snabble.sdk.wlanmanager.utils.areAllGranted
 
 class ScanForNetworkApi29(
     private val context: Context,
@@ -15,7 +14,6 @@ class ScanForNetworkApi29(
 ) : ScanForNetwork {
 
     override fun invoke(): Result {
-        Log.d("xx", "invoke: 29")
         return if (hasPermissionForScanning()) {
             @Suppress("DEPRECATION")
             val success = wifiManager.startScan()

@@ -6,10 +6,10 @@ import android.Manifest.permission.CHANGE_WIFI_STATE
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.wifi.WifiManager
-import io.snabble.sdk.widgets.snabble.wlan.usecases.isAnyGranted
 import io.snabble.sdk.wlanmanager.data.Error
 import io.snabble.sdk.wlanmanager.data.Result
 import io.snabble.sdk.wlanmanager.data.Success
+import io.snabble.sdk.wlanmanager.utils.isAnyGranted
 
 class CheckSsidLegacy(
     private val context: Context,
