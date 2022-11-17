@@ -22,7 +22,9 @@ class ConnectToWifiApi29(
 
         val status = wifiManager.addNetworkSuggestions(listOf(sug))
 
-        return if (status == STATUS_NETWORK_SUGGESTIONS_SUCCESS) {
+        return if (status == STATUS_NETWORK_SUGGESTIONS_SUCCESS ||
+            status == WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_DUPLICATE
+        ) {
             saveSuggestion(ssid)
             Success("Suggestion added")
         } else
