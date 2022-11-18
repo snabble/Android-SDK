@@ -114,6 +114,7 @@ object ReceiptManager {
             override fun failure() {
                 if (dispatchUpdateIfNeeded(receiptInfo.value, checkout, project)) {
                     isLoading.postValue(false)
+                    receiptInfo.postValue(emptyList())
                 }
             }
         })
