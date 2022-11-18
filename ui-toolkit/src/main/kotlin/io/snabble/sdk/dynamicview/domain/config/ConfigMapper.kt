@@ -43,7 +43,15 @@ internal interface ConfigMapper {
     fun mapDtoToItems(dynamicConfigDto: DynamicConfigDto): DynamicConfig
 }
 
-internal class ConfigMapperImpl(private val context: Context) : ConfigMapper {
+fun interface SsidProvider {
+
+    fun provide(): String?
+}
+
+internal class ConfigMapperImpl(
+    private val context: Context,
+    private val ssidProvider: SsidProvider,
+) : ConfigMapper {
 
     override fun mapDtoToItems(dynamicConfigDto: DynamicConfigDto): DynamicConfig = DynamicConfig(
         configuration = dynamicConfigDto.configuration.toConfiguration(),
@@ -60,7 +68,7 @@ internal class ConfigMapperImpl(private val context: Context) : ConfigMapper {
         with(widget) {
             when (this) {
                 is ButtonDto -> toButton()
-                is ConnectWlanDto -> toConnectWlan()
+                is ConnectWlanDto -> toConnectWlan(ssidProvider)
                 is CustomerCardDto -> toCustomCardItem()
                 is ImageDto -> toImage()
                 is InformationDto -> toInformation()
@@ -83,9 +91,10 @@ internal class ConfigMapperImpl(private val context: Context) : ConfigMapper {
         padding = padding.toPadding()
     )
 
-    private fun ConnectWlanDto.toConnectWlan(): ConnectWlanItem = ConnectWlanItem(
+    private fun ConnectWlanDto.toConnectWlan(ssidProvider: SsidProvider): ConnectWlanItem = ConnectWlanItem(
         id = id,
-        padding = padding.toPadding()
+        padding = padding.toPadding(),
+        ssid = ssidProvider.provide()
     )
 
     private fun CustomerCardDto.toCustomCardItem(): CustomerCardItem = CustomerCardItem(

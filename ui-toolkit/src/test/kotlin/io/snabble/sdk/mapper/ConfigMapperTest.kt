@@ -42,7 +42,9 @@ import io.snabble.sdk.utils.resolveImageId
 internal class ConfigMapperTest : FreeSpec({
 
     val context = mockk<Context>(relaxed = true)
-    fun createMapper() = ConfigMapperImpl(context)
+
+    fun createMapper() = ConfigMapperImpl(context, ssidProvider = { "Snabble Store" })
+
     fun setUpSutDto(widgetDto: WidgetDto?): DynamicConfigDto {
         if (widgetDto == null) {
             return DynamicConfigDto(
@@ -81,13 +83,13 @@ internal class ConfigMapperTest : FreeSpec({
 
             "configurationDto to ConfigurationItem" - {
 
-                "image"{
+                "image" {
                     sut.configuration.image shouldBe 1
                 }
-                "padding"{
+                "padding" {
                     sut.configuration.padding shouldBe Padding(0, 0, 0, 0)
                 }
-                "style"{
+                "style" {
                     sut.configuration.style shouldBe ""
                 }
             }
@@ -121,7 +123,7 @@ internal class ConfigMapperTest : FreeSpec({
                 "image" {
                     imageItem.image shouldBe 1
                 }
-                "padding"{
+                "padding" {
                     imageItem.padding shouldBe Padding(0, 0, 0, 0)
                 }
 
@@ -149,16 +151,16 @@ internal class ConfigMapperTest : FreeSpec({
                 "id" {
                     textItem.id shouldBe "a.title"
                 }
-                "text"{
+                "text" {
                     textItem.text shouldBe "Hello World"
                 }
-                "text color"{
+                "text color" {
                     textItem.textColor shouldBe 8
                 }
-                "text style"{
+                "text style" {
                     textItem.textStyle shouldBe null
                 }
-                "padding"{
+                "padding" {
                     textItem.padding shouldBe Padding(0, 0, 0, 0)
                 }
             }
@@ -186,16 +188,16 @@ internal class ConfigMapperTest : FreeSpec({
                 "id" {
                     buttonItem.id shouldBe "a.button"
                 }
-                "text"{
+                "text" {
                     buttonItem.text shouldBe "Hello World"
                 }
-                "foreground color"{
+                "foreground color" {
                     buttonItem.foregroundColor shouldBe 2
                 }
-                "background color"{
+                "background color" {
                     buttonItem.backgroundColor shouldBe 3
                 }
-                "padding"{
+                "padding" {
                     buttonItem.padding shouldBe Padding(0, 0, 0, 0)
                 }
             }
@@ -217,7 +219,7 @@ internal class ConfigMapperTest : FreeSpec({
                 "id" {
                     locationPermissionItem.id shouldBe "a.location"
                 }
-                "padding"{
+                "padding" {
                     locationPermissionItem.padding shouldBe Padding(0, 0, 0, 0)
                 }
             }
@@ -239,7 +241,7 @@ internal class ConfigMapperTest : FreeSpec({
                 "id" {
                     seeAllStoresItem.id shouldBe "a.store"
                 }
-                "padding"{
+                "padding" {
                     seeAllStoresItem.padding shouldBe Padding(0, 0, 0, 0)
                 }
             }
@@ -261,7 +263,7 @@ internal class ConfigMapperTest : FreeSpec({
                 "id" {
                     startShoppingItem.id shouldBe "a.start"
                 }
-                "padding"{
+                "padding" {
                     startShoppingItem.padding shouldBe Padding(0, 0, 0, 0)
                 }
             }
@@ -292,7 +294,7 @@ internal class ConfigMapperTest : FreeSpec({
                 "image" {
                     informationItem.image shouldBe 2
                 }
-                "padding"{
+                "padding" {
                     informationItem.padding shouldBe Padding(0, 0, 0, 0)
                 }
             }
@@ -323,7 +325,7 @@ internal class ConfigMapperTest : FreeSpec({
                 "image" {
                     customerCardItem.image shouldBe 2
                 }
-                "padding"{
+                "padding" {
                     customerCardItem.padding shouldBe Padding(0, 0, 0, 0)
                 }
             }
@@ -345,8 +347,13 @@ internal class ConfigMapperTest : FreeSpec({
                 "id" {
                     connectWlanItem.id shouldBe "a.wifi"
                 }
-                "padding"{
+
+                "padding" {
                     connectWlanItem.padding shouldBe Padding(0, 0, 0, 0)
+                }
+
+                "ssid" {
+                    connectWlanItem.ssid shouldBe "Snabble Store"
                 }
             }
 
@@ -380,7 +387,7 @@ internal class ConfigMapperTest : FreeSpec({
                 "items" {
                     sectionItem.items.first().shouldBeTypeOf<ConnectWlanItem>()
                 }
-                "padding"{
+                "padding" {
                     sectionItem.padding shouldBe Padding(0, 0, 0, 0)
                 }
             }
