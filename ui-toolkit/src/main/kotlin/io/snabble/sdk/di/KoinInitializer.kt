@@ -36,7 +36,7 @@ internal class KoinInitializer : Initializer<Koin> {
                 wlanModule,
                 homeModule,
                 profileModule,
-                wlanManagerModule
+                wlanManagerModule,
             )
         }
             .koin

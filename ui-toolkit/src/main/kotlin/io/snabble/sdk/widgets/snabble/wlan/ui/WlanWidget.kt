@@ -30,9 +30,11 @@ internal fun ConnectWlanWidget(
     if (isButtonVisibleState.value) {
         ConnectWlanWidget(
             modifier = modifier,
-            onclick = { viewModel.connect(model.ssid) },
             model = model,
-            onAction = onAction
+            onAction = {
+                viewModel.connect(model.ssid)
+                onAction(it)
+            }
         )
     }
 }

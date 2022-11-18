@@ -10,15 +10,20 @@ import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.coroutines.resume
 import kotlin.time.Duration.Companion.seconds
 
-class ScanIsFinishedImpl(
+internal interface HasScanFinished {
+
+    suspend operator fun invoke(): Boolean
+}
+
+internal class ScanIsFinishedImpl(
     private val context: Context,
-) : ScanIsFinished {
+) : HasScanFinished {
 
     override suspend fun invoke(): Boolean =
         withTimeoutOrNull(5.seconds) {
             suspendCancellableCoroutine { continuation ->
 
-                val wifiScanReceiver = object : BroadcastReceiver() {
+                val scanFinishedReceiver = object : BroadcastReceiver() {
 
                     override fun onReceive(context: Context, intent: Intent) {
                         context.unregisterReceiver(this)
@@ -28,10 +33,10 @@ class ScanIsFinishedImpl(
 
                 val intentFilter = IntentFilter()
                 intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)
-                context.registerReceiver(wifiScanReceiver, intentFilter)
+                context.registerReceiver(scanFinishedReceiver, intentFilter)
 
                 continuation.invokeOnCancellation {
-                    context.unregisterReceiver(wifiScanReceiver)
+                    context.unregisterReceiver(scanFinishedReceiver)
                 }
             }
         } ?: false

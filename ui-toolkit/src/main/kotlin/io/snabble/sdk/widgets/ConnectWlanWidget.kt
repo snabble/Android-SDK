@@ -31,13 +31,11 @@ import io.snabble.sdk.widgets.snabble.SnabbleCard
 fun ConnectWlanWidget(
     modifier: Modifier = Modifier,
     model: ConnectWlanItem,
-    onclick: () -> Unit,
     onAction: OnDynamicAction,
 ) {
     SnabbleCard(
         onClick = {
             onAction(DynamicAction(model))
-            onclick()
         },
         modifier = Modifier
             .padding(model.padding.toPaddingValues())
@@ -86,7 +84,6 @@ private fun WlanWidgetPreview() {
                 ssid = ""
             ),
             onAction = {},
-            onclick = {}
         )
     }
 }

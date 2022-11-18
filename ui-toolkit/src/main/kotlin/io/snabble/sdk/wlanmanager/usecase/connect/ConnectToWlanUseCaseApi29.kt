@@ -1,4 +1,4 @@
-package io.snabble.sdk.wlanmanager.usecase.connectNetwork
+package io.snabble.sdk.wlanmanager.usecase.connect
 
 import android.content.SharedPreferences
 import android.net.wifi.WifiManager
@@ -11,30 +11,32 @@ import io.snabble.sdk.wlanmanager.data.Error
 import io.snabble.sdk.wlanmanager.data.Result
 import io.snabble.sdk.wlanmanager.data.Success
 
-class ConnectToWifiApi30(
+internal class ConnectToWlanUseCaseApi29(
     private val sharedPrefs: SharedPreferences,
     private val wifiManager: WifiManager,
-) : ConnectToWifi {
+) : ConnectToWlanUseCase {
 
-    @RequiresApi(Build.VERSION_CODES.R)
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun invoke(ssid: String): Result {
+
         val sug = wifiNetworkSuggestion(ssid)
 
         val status = wifiManager.addNetworkSuggestions(listOf(sug))
 
-        return if (status == STATUS_NETWORK_SUGGESTIONS_SUCCESS) {
+        return if (status == STATUS_NETWORK_SUGGESTIONS_SUCCESS ||
+            status == WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_DUPLICATE
+        ) {
             saveSuggestion(ssid)
             Success("Suggestion added")
         } else
             Error("Suggestion failed")
     }
 
-    @RequiresApi(Build.VERSION_CODES.R)
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun wifiNetworkSuggestion(ssid: String) =
         WifiNetworkSuggestion
             .Builder()
             .setSsid(ssid)
-            .setIsInitialAutojoinEnabled(true)
             .setIsAppInteractionRequired(true)
             .setIsMetered(false)
             .build()

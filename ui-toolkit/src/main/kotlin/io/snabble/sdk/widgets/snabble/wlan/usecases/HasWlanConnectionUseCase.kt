@@ -35,7 +35,7 @@ internal class HasWlanConnectionUseCaseImpl(
                 wifiManager.isWifiEnabled &&
                 !suggestionAlreadySaved(ssid) &&
                 !isConnectedToWifi() &&
-                wlanManager.isWifiAvailable(ssid)
+                wlanManager.isWlanAvailable(ssid)
 
     @Suppress("DEPRECATION")
     private fun isConnectedToWifi(): Boolean {

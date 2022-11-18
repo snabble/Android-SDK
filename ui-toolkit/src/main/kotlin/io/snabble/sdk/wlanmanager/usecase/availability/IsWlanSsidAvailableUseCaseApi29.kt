@@ -1,4 +1,4 @@
-package io.snabble.sdk.wlanmanager.usecase.ssidcheck
+package io.snabble.sdk.wlanmanager.usecase.availability
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.Manifest.permission.ACCESS_WIFI_STATE
@@ -11,10 +11,10 @@ import io.snabble.sdk.wlanmanager.data.Result
 import io.snabble.sdk.wlanmanager.data.Success
 import io.snabble.sdk.wlanmanager.utils.areAllGranted
 
-class CheckSsidApi29(
+internal class IsWlanSsidAvailableUseCaseApi29(
     private val context: Context,
     private val wifiManager: WifiManager,
-) : CheckSsid {
+) : IsWlanSsidAvailableUseCase {
 
     override fun invoke(ssid: String): Result {
         @SuppressLint("MissingPermission")

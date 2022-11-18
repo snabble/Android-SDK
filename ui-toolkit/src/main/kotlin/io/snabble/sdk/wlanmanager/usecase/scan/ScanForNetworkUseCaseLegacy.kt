@@ -1,4 +1,4 @@
-package io.snabble.sdk.wlanmanager.usecase.networkscan
+package io.snabble.sdk.wlanmanager.usecase.scan
 
 import android.net.wifi.WifiManager
 import io.snabble.sdk.wlanmanager.data.Error
@@ -8,9 +8,9 @@ import io.snabble.sdk.wlanmanager.data.Success
 /**
  * Up to Android 8.1 (Api 27) no restrictions were given
  */
-class ScanForNetworkLegacy(
+internal class ScanForNetworkUseCaseLegacy(
     private val wifiManager: WifiManager,
-) : ScanForNetwork {
+) : ScanForNetworkUseCase {
 
     override fun invoke(): Result {
         @Suppress("DEPRECATION")

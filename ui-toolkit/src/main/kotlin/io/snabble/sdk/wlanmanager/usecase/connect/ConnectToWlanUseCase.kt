@@ -1,8 +1,8 @@
-package io.snabble.sdk.wlanmanager.usecase.ssidcheck
+package io.snabble.sdk.wlanmanager.usecase.connect
 
 import io.snabble.sdk.wlanmanager.data.Result
 
-interface CheckSsid {
+internal interface ConnectToWlanUseCase {
 
     operator fun invoke(ssid: String): Result
 }

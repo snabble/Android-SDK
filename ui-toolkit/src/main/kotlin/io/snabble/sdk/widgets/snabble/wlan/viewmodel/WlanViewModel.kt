@@ -30,7 +30,7 @@ internal class WlanViewModel(
 
     fun connect(ssid: String?) {
         ssid ?: return
-        wifiManager.connectToWifi(ssid)
+        wifiManager.connectToWlan(ssid)
         _wifiButtonIsVisible.tryEmit(false)
     }
 }

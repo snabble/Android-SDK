@@ -1,4 +1,4 @@
-package io.snabble.sdk.wlanmanager.usecase.networkscan
+package io.snabble.sdk.wlanmanager.usecase.scan
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
@@ -11,10 +11,10 @@ import io.snabble.sdk.wlanmanager.data.Success
 import io.snabble.sdk.wlanmanager.utils.isAnyGranted
 import io.snabble.sdk.wlanmanager.utils.isGranted
 
-class ScanForNetworkApi28(
+internal class ScanForNetworkUseCaseApi28(
     private val context: Context,
     private val wifiManager: WifiManager,
-) : ScanForNetwork {
+) : ScanForNetworkUseCase {
 
     override fun invoke(): Result {
         return if (hasPermissionForScanning()) {

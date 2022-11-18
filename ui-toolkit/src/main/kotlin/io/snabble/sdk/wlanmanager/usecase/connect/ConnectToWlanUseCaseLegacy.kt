@@ -1,4 +1,4 @@
-package io.snabble.sdk.wlanmanager.usecase.connectNetwork
+package io.snabble.sdk.wlanmanager.usecase.connect
 
 import android.net.wifi.WifiConfiguration
 import android.net.wifi.WifiManager
@@ -6,12 +6,12 @@ import io.snabble.sdk.wlanmanager.data.Error
 import io.snabble.sdk.wlanmanager.data.Result
 import io.snabble.sdk.wlanmanager.data.Success
 
-class ConnectToWifiLegacy(
+internal class ConnectToWlanUseCaseLegacy(
     private val wifiManager: WifiManager,
-) : ConnectToWifi {
+) : ConnectToWlanUseCase {
 
     override fun invoke(ssid: String): Result {
-        val wifiConf = createWifiConfiguration(ssid)
+        val wifiConf = createWlanConfiguration(ssid)
 
         @Suppress("DEPRECATION")
         val netId = wifiManager.addNetwork(wifiConf)
@@ -20,12 +20,11 @@ class ConnectToWifiLegacy(
     }
 
     @Suppress("DEPRECATION")
-    private fun createWifiConfiguration(ssid: String): WifiConfiguration {
-        val wifiConf = WifiConfiguration()
-        wifiConf.SSID = "\"$ssid\""
-        wifiConf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE)
-        return wifiConf
-    }
+    private fun createWlanConfiguration(ssid: String): WifiConfiguration =
+        WifiConfiguration().apply {
+            SSID = "\"$ssid\""
+            allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE)
+        }
 
     @Suppress("DEPRECATION")
     private fun startWifiConnectionForNetwork(netId: Int): Result {
