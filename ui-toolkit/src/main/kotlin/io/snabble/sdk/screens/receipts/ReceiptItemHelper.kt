@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.core.content.FileProvider
 import io.snabble.sdk.ReceiptInfo
+import io.snabble.sdk.Receipts
 import io.snabble.sdk.Receipts.ReceiptDownloadCallback
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.toolkit.R
@@ -39,76 +40,97 @@ internal class ReceiptItemHelper(
         priceView.text = receiptInfo.price
         dateView.text = formatDate(Date(receiptInfo.timestamp), newLineTimestamp)
         itemView.setOnClickListener {
-            val receipts = Snabble.receipts
-            val progressDialog = ProgressDialog(context).apply {
-                setProgressStyle(ProgressDialog.STYLE_SPINNER)
-                setMessage(context.getString(R.string.Snabble_pleaseWait))
-                setCancelable(true)
-                setOnCancelListener {
-                    receipts.cancelDownload()
-                }
+            showDetails(receiptInfo)
+        }
+    }
+
+    fun showDetails(receiptId: String) {
+        Snabble.receipts.getReceiptInfo(object : Receipts.ReceiptInfoCallback {
+
+            override fun success(receiptInfos: Array<ReceiptInfo>?) {
+                receiptInfos
+                    ?.find { it.id == receiptId }
+                    ?.let {
+                        showDetails(it)
+                    }
             }
-            progressDialog.show()
 
-            receipts.download(
-                receiptInfo,
-                object : ReceiptDownloadCallback {
-                    override fun success(pdf: File?) {
-                        pdf ?: return
+            override fun failure() {
+                // shrug
+            }
+        })
+    }
 
-                        if (FileUtils.sizeOf(pdf) == 0L) {
-                            pdf.delete()
-                            receipts.download(receiptInfo, this)
-                            return
-                        }
+    fun showDetails(receiptInfo: ReceiptInfo) {
+        val receipts = Snabble.receipts
+        val progressDialog = ProgressDialog(context).apply {
+            setProgressStyle(ProgressDialog.STYLE_SPINNER)
+            setMessage(context.getString(R.string.Snabble_pleaseWait))
+            setCancelable(true)
+            setOnCancelListener {
+                receipts.cancelDownload()
+            }
+        }
+        progressDialog.show()
 
-                        progressDialog.cancel()
+        receipts.download(
+            receiptInfo,
+            object : ReceiptDownloadCallback {
+                override fun success(pdf: File?) {
+                    pdf ?: return
 
-                        val intent = Intent(Intent.ACTION_VIEW).apply {
-                            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-
-                            val uri = FileProvider.getUriForFile(
-                                context,
-                                "${context.packageName}.ReceiptFileProvider",
-                                pdf
-                            )
-                            setDataAndType(uri, "application/pdf")
-                        }
-                        val activity: Activity? = UIUtils.getHostActivity(context)
-                        try {
-                            activity?.startActivity(intent)
-                        } catch (ignored: Exception) {
-                            if (!itemView.isAttachedToWindow) return
-
-                            try {
-                                SnackbarUtils
-                                    .make(
-                                        itemView,
-                                        R.string.Snabble_Receipt_pdfReaderUnavailable,
-                                        UIUtils.SNACKBAR_LENGTH_VERY_LONG
-                                    )
-                                    .show()
-                            } catch (ignored: IllegalArgumentException) {
-                                // no suitable parent view found
-                            }
-                        }
+                    if (FileUtils.sizeOf(pdf) == 0L) {
+                        pdf.delete()
+                        receipts.download(receiptInfo, this)
+                        return
                     }
 
-                    override fun failure() {
-                        progressDialog.cancel()
+                    progressDialog.cancel()
 
+                    val intent = Intent(Intent.ACTION_VIEW).apply {
+                        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+
+                        val uri = FileProvider.getUriForFile(
+                            context,
+                            "${context.packageName}.ReceiptFileProvider",
+                            pdf
+                        )
+                        setDataAndType(uri, "application/pdf")
+                    }
+                    val activity: Activity? = UIUtils.getHostActivity(context)
+                    try {
+                        activity?.startActivity(intent)
+                    } catch (ignored: Exception) {
                         if (!itemView.isAttachedToWindow) return
 
-                        SnackbarUtils
-                            .make(
-                                itemView,
-                                R.string.Snabble_Receipt_errorDownload,
-                                UIUtils.SNACKBAR_LENGTH_VERY_LONG
-                            )
-                            .show()
+                        try {
+                            SnackbarUtils
+                                .make(
+                                    itemView,
+                                    R.string.Snabble_Receipt_pdfReaderUnavailable,
+                                    UIUtils.SNACKBAR_LENGTH_VERY_LONG
+                                )
+                                .show()
+                        } catch (ignored: IllegalArgumentException) {
+                            // no suitable parent view found
+                        }
                     }
-                })
-        }
+                }
+
+                override fun failure() {
+                    progressDialog.cancel()
+
+                    if (!itemView.isAttachedToWindow) return
+
+                    SnackbarUtils
+                        .make(
+                            itemView,
+                            R.string.Snabble_Receipt_errorDownload,
+                            UIUtils.SNACKBAR_LENGTH_VERY_LONG
+                        )
+                        .show()
+                }
+            })
     }
 
     private fun formatDate(past: Date, newLineTimestamp: Boolean): String {
@@ -128,4 +150,70 @@ internal class ReceiptItemHelper(
         private val DATE_FORMAT = SimpleDateFormat("dd.MM.yyyy – HH:mm", Locale.ROOT)
         private val DATE_FORMAT_NEW_LINE = SimpleDateFormat("dd.MM.yyyy\nHH:mm", Locale.ROOT)
     }
+}
+
+fun showDetails(receiptId: String, context: Context) {
+    Snabble.receipts.getReceiptInfo(object : Receipts.ReceiptInfoCallback {
+
+        override fun success(receiptInfos: Array<ReceiptInfo>?) {
+            receiptInfos
+                ?.find { it.id == receiptId }
+                ?.let {
+                    showDetails(it, context)
+                }
+        }
+
+        override fun failure() {
+            // shrug
+        }
+    })
+}
+
+fun showDetails(receiptInfo: ReceiptInfo, context: Context) {
+    val receipts = Snabble.receipts
+    val progressDialog = ProgressDialog(context).apply {
+        setProgressStyle(ProgressDialog.STYLE_SPINNER)
+        setMessage(context.getString(R.string.Snabble_pleaseWait))
+        setCancelable(true)
+        setOnCancelListener {
+            receipts.cancelDownload()
+        }
+    }
+    progressDialog.show()
+
+    receipts.download(
+        receiptInfo,
+        object : ReceiptDownloadCallback {
+            override fun success(pdf: File?) {
+                pdf ?: return
+
+                if (FileUtils.sizeOf(pdf) == 0L) {
+                    pdf.delete()
+                    receipts.download(receiptInfo, this)
+                    return
+                }
+
+                progressDialog.cancel()
+
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+
+                    val uri = FileProvider.getUriForFile(
+                        context,
+                        "${context.packageName}.ReceiptFileProvider",
+                        pdf
+                    )
+                    setDataAndType(uri, "application/pdf")
+                }
+                val activity: Activity? = UIUtils.getHostActivity(context)
+                try {
+                    activity?.startActivity(intent)
+                } catch (ignored: Exception) {
+                }
+            }
+
+            override fun failure() {
+                progressDialog.cancel()
+            }
+        })
 }

@@ -25,6 +25,7 @@ import io.snabble.sdk.sample.onboarding.repository.OnboardingRepository
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepositoryImpl
 import io.snabble.sdk.screens.home.viewmodel.DynamicHomeViewModel
 import io.snabble.sdk.screens.profile.viewmodel.DynamicProfileViewModel
+import io.snabble.sdk.screens.receipts.showDetails
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -85,7 +86,17 @@ class MainActivity : AppCompatActivity() {
                 when (action.widget.id) {
                     "start" -> navBarView.selectedItemId = R.id.navigation_scanner
                     "stores" -> navBarView.selectedItemId = R.id.navigation_shop
-                    "purchases" -> SnabbleUiToolkit.executeAction(context = this, SHOW_RECEIPT_LIST)
+                    "purchases" -> {
+                        when (action.info?.get("action")) {
+                            "more" -> SnabbleUiToolkit.executeAction(context = this, SHOW_RECEIPT_LIST)
+
+                            "purchase" -> {
+                                (action.info?.get("id") as? String)?.let {
+                                    showDetails(it, this)
+                                }
+                            }
+                        }
+                    }
                     else -> Unit
                 }
             }
