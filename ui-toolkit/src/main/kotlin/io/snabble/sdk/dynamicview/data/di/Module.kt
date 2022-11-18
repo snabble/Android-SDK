@@ -1,6 +1,8 @@
 package io.snabble.sdk.dynamicview.data.di
 
 import android.content.res.AssetManager
+import io.snabble.sdk.Snabble
+import io.snabble.sdk.dynamicview.data.dto.SsidProvider
 import io.snabble.sdk.dynamicview.data.dto.mapper.ConfigMapper
 import io.snabble.sdk.dynamicview.data.dto.mapper.ConfigMapperImpl
 import io.snabble.sdk.dynamicview.data.local.ConfigFileProvider
@@ -29,6 +31,10 @@ internal val configModule = module {
     single { Json { ignoreUnknownKeys = true } }
 
     factory { androidContext().resources.assets } bind AssetManager::class
+
+    factory<SsidProvider> {
+        SsidProvider { get<Snabble>().currentCheckedInShop.value?.customerNetworks?.firstOrNull()?.ssid }
+    }
 
     factoryOf(::ConfigMapperImpl) bind ConfigMapper::class
 

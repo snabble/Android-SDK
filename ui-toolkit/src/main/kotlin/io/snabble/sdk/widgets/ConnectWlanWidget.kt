@@ -34,8 +34,12 @@ fun ConnectWlanWidget(
     onAction: OnDynamicAction,
 ) {
     SnabbleCard(
-        onClick = { onAction(DynamicAction(model)) },
-        modifier = modifier.padding(model.padding.toPaddingValues())
+        onClick = {
+            onAction(DynamicAction(model))
+        },
+        modifier = Modifier
+            .padding(model.padding.toPaddingValues())
+            .then(modifier)
     ) {
         Row(
             modifier = Modifier
@@ -49,11 +53,16 @@ fun ConnectWlanWidget(
                 modifier = Modifier.weight(1f),
                 color = MaterialTheme.colorScheme.onSurface,
                 text = "Connect to free Wifi",
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyLarge
             )
             Image(
                 modifier = Modifier
-                    .padding(start = MaterialTheme.padding.large)
+                    .padding(
+                        start = MaterialTheme.padding.medium,
+                        top = MaterialTheme.padding.medium,
+                        bottom = MaterialTheme.padding.medium,
+                        end = 0.dp
+                    )
                     .wrapContentSize(),
                 contentScale = ContentScale.Fit,
                 painter = painterResource(id = R.drawable.snabble_wifi),
@@ -72,8 +81,9 @@ private fun WlanWidgetPreview() {
             model = ConnectWlanItem(
                 id = "wifi",
                 padding = Padding(horizontal = 16, vertical = 8),
+                ssid = ""
             ),
-            onAction = {}
+            onAction = {},
         )
     }
 }

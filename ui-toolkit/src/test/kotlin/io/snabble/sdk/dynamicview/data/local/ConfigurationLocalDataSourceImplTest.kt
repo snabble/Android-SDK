@@ -45,7 +45,10 @@ internal class ConfigurationLocalDataSourceImplTest : FreeSpec({
     ) = ConfigurationLocalDataSourceImpl(
         fileProvider = mockk { coEvery { getFile(any()) } returns json },
         json = Json { ignoreUnknownKeys = true },
-        configMapper = ConfigMapperImpl(context = mockk(relaxed = true, block = mapping)),
+        configMapper = ConfigMapperImpl(
+            context = mockk(relaxed = true, block = mapping),
+            ssidProvider = { "Snabble Store" }
+        ),
     )
 
     beforeEach {
@@ -198,7 +201,8 @@ internal class ConfigurationLocalDataSourceImplTest : FreeSpec({
                 )
                 sut.getConfig("").widgets.first() shouldBe ConnectWlanItem(
                     id = "connect_wifi",
-                    padding = Padding(16, 16, 16, 16)
+                    padding = Padding(16, 16, 16, 16),
+                    ssid = "Snabble Store"
                 )
             }
 

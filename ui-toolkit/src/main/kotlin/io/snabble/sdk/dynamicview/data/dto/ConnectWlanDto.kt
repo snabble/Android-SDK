@@ -11,7 +11,13 @@ internal data class ConnectWlanDto(
     @SerialName("padding") val padding: PaddingDto,
 ) : WidgetDto
 
-internal fun ConnectWlanDto.toConnectWlan(): ConnectWlanItem = ConnectWlanItem(
+internal fun interface SsidProvider {
+
+    fun provide(): String?
+}
+
+internal fun ConnectWlanDto.toConnectWlan(ssidProvider: SsidProvider): ConnectWlanItem = ConnectWlanItem(
     id = id,
-    padding = padding.toPadding()
+    padding = padding.toPadding(),
+    ssidProvider.provide(),
 )
