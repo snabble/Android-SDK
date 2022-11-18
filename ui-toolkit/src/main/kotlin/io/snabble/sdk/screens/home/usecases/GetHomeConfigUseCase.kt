@@ -1,6 +1,6 @@
 package io.snabble.sdk.screens.home.usecases
 
-import io.snabble.sdk.dynamicview.domain.config.ConfigRepository
+import io.snabble.sdk.dynamicview.domain.repository.ConfigRepository
 import io.snabble.sdk.dynamicview.domain.model.DynamicConfig
 
 internal interface GetHomeConfigUseCase {

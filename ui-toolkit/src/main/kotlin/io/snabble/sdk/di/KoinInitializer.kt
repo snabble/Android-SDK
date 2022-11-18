@@ -2,7 +2,7 @@ package io.snabble.sdk.di
 
 import android.content.Context
 import androidx.startup.Initializer
-import io.snabble.sdk.dynamicview.domain.config.di.configModule
+import io.snabble.sdk.dynamicview.data.di.configModule
 import io.snabble.sdk.screens.home.di.homeModule
 import io.snabble.sdk.screens.profile.di.profileModule
 import io.snabble.sdk.ui.toolkit.BuildConfig
@@ -12,6 +12,7 @@ import io.snabble.sdk.widgets.snabble.purchase.di.purchaseWidgetModule
 import io.snabble.sdk.widgets.snabble.stores.di.storesModule
 import io.snabble.sdk.widgets.snabble.toggle.di.toggleWidgetModule
 import io.snabble.sdk.widgets.snabble.wlan.di.wlanModule
+import io.snabble.sdk.wlanmanager.di.wlanManagerModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.Koin
 import org.koin.core.logger.Level
@@ -34,7 +35,8 @@ internal class KoinInitializer : Initializer<Koin> {
                 toggleWidgetModule,
                 wlanModule,
                 homeModule,
-                profileModule
+                profileModule,
+                wlanManagerModule,
             )
         }
             .koin
