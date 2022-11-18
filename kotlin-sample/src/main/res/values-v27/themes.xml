@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="AppTheme.Parent">
+        <item name="android:statusBarColor">@color/statusBarColor</item>
+        <item name="android:windowLightNavigationBar">@bool/isLightTheme</item>
+        <item name="android:navigationBarColor">@color/androidNavBarColor</item>
+        <item name="android:windowLightStatusBar">@bool/isLightTheme</item>
+    </style>
+</resources>

@@ -47,7 +47,7 @@ fun ConnectWlanWidget(
         ) {
             Text(
                 modifier = Modifier.weight(1f),
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                color = MaterialTheme.colorScheme.onSurface,
                 text = "Connect to free Wifi",
                 style = MaterialTheme.typography.bodyMedium
             )

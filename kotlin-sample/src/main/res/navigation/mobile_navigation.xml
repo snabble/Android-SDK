@@ -83,11 +83,6 @@
             app:argType="string" />
     </fragment>
 
-    <fragment
-        android:id="@+id/navigation_cart"
-        android:name="io.snabble.sdk.ui.cart.ShoppingCartFragment"
-        android:label="@string/shoppingCart" />
-
     <navigation
         android:id="@+id/navigation_shop"
         app:startDestination="@id/navigation_shops">
@@ -176,7 +171,7 @@
     <action
         android:id="@+id/navigation_action_status"
         app:destination="@id/navigation_payment_status"
-        app:popUpTo="@id/navigation_cart"
+        app:popUpTo="@id/navigation_scanner"
         app:popUpToInclusive="true" />
 
 </navigation>

@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## UNRELEASED
+
+### Added
+* ui-toolkit: Support sections without headers
+
+## [0.69.1-beta03]
+
+### Changed
+* UI/UX changes for easier customization and styling
+
 ## [0.69.1-beta02]
 
 ### Fixed

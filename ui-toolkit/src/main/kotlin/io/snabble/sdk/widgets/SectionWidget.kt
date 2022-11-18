@@ -2,7 +2,6 @@ package io.snabble.sdk.widgets
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -29,6 +28,7 @@ import io.snabble.sdk.dynamicview.theme.properties.applyElevation
 import io.snabble.sdk.dynamicview.theme.properties.applyPadding
 import io.snabble.sdk.dynamicview.theme.properties.padding
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
+import io.snabble.sdk.utils.isNotNullOrBlank
 import io.snabble.sdk.widgets.snabble.toggle.ui.ToggleWidget
 import io.snabble.sdk.dynamicview.theme.properties.Padding as OuterPadding
 
@@ -40,19 +40,14 @@ fun SectionWidget(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(model.padding.toPaddingValues())
             .then(modifier)
     ) {
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = MaterialTheme.padding.large),
-            text = model.header,
-            color = MaterialTheme.colorScheme.onTertiaryContainer,
-            style = MaterialTheme.typography.titleSmall
-        )
-        Spacer(modifier = Modifier.height(MaterialTheme.padding.default))
+        if (model.header.isNotNullOrBlank()) {
+            SectionHeader(title = model.header)
+            Spacer(modifier = Modifier.height(MaterialTheme.padding.default))
+        }
         Column(Modifier.fillMaxWidth()) {
             for (widget in model.items) {
                 when (widget) {
@@ -83,6 +78,22 @@ fun SectionWidget(
     }
 }
 
+@Composable
+fun SectionHeader(
+    modifier: Modifier = Modifier,
+    title: String,
+) {
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = MaterialTheme.padding.large)
+            .then(modifier),
+        text = title,
+        color = MaterialTheme.colorScheme.onTertiaryContainer,
+        style = MaterialTheme.typography.titleSmall
+    )
+}
+
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
 private fun SectionPreview() {
@@ -94,6 +105,39 @@ private fun SectionPreview() {
             model = SectionItem(
                 id = "section",
                 header = "Profil",
+                items = listOf(
+                    TextItem(
+                        id = "1",
+                        text = "Setup",
+                        textStyle = "body",
+                        showDisclosure = false,
+                        padding = Padding(horizontal = 16, vertical = 5),
+                    ),
+                    TextItem(
+                        id = "1",
+                        text = "Terms",
+                        textStyle = "body",
+                        showDisclosure = false,
+                        padding = Padding(horizontal = 16, vertical = 5),
+                    ),
+                ),
+                padding = Padding(0, 0, 0, 0)
+            ),
+            onAction = {})
+    }
+}
+
+@Preview(backgroundColor = 0xFFFFFF, showBackground = true)
+@Composable
+private fun HeaderlessSectionPreview() {
+    CompositionLocalProvider(
+        LocalPadding provides OuterPadding().applyPadding(),
+        LocalElevation provides Elevation().applyElevation()
+    ) {
+        SectionWidget(
+            model = SectionItem(
+                id = "section",
+                header = "",
                 items = listOf(
                     TextItem(
                         id = "1",

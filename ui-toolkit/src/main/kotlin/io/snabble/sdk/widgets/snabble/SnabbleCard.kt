@@ -7,8 +7,8 @@ import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -35,7 +35,8 @@ internal fun SnabbleCard(
         }
     ) {
         @OptIn(ExperimentalMaterial3Api::class)
-        Card(
+        ElevatedCard(
+            onClick = onClick,
             modifier = Modifier
                 .indication(
                     interactionSource = MutableInteractionSource(),
@@ -43,9 +44,8 @@ internal fun SnabbleCard(
                 )
                 .then(modifier),
             shape = MaterialTheme.shapes.small,
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
             elevation = CardDefaults.cardElevation(defaultElevation = MaterialTheme.elevation.small),
-            onClick = onClick,
         ) {
             content()
         }

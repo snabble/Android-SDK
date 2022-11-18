@@ -12,13 +12,13 @@ internal interface HasWlanConnectionUseCase {
 }
 
 internal class HasWlanConnectionUseCaseImpl(
-    private val Snabble: Snabble,
+    private val snabble: Snabble,
     private val wifiManager: WifiManager,
     private val connectivityManager: ConnectivityManager,
 ) : HasWlanConnectionUseCase {
 
     override operator fun invoke(): Boolean =
-        Snabble.currentCheckedInShop.value != null
+        snabble.currentCheckedInShop.value != null
                 && wifiManager.isWifiEnabled
                 && !isConnectedToStoreWifi()
 

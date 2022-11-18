@@ -88,6 +88,7 @@ fun Purchases(
         Text(
             text = "Previous purchases",
             style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
@@ -209,6 +210,7 @@ private fun PurchaseDetail(
             Text(
                 text = "${data.title}\n",
                 style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier

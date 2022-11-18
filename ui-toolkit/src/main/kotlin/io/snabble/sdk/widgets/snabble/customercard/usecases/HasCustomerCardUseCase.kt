@@ -8,8 +8,8 @@ internal interface HasCustomerCardUseCase {
 }
 
 internal class HasCustomerCardUseCaseImpl(
-    private val Snabble: Snabble,
+    private val snabble: Snabble,
 ) : HasCustomerCardUseCase {
 
-    override operator fun invoke(): Boolean = Snabble.projects.first().customerCardInfo.isNotEmpty()
+    override operator fun invoke(): Boolean = snabble.projects.firstOrNull()?.customerCardInfo?.isNotEmpty() == true
 }

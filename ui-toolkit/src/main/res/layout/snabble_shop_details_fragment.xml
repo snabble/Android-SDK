@@ -75,7 +75,7 @@
     <androidx.core.widget.NestedScrollView
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:clipChildren="false"
         android:fillViewport="true"
         app:behavior_hideable="false"
@@ -84,10 +84,9 @@
         tools:behavior_peekHeight="550dp">
 
         <com.google.android.material.card.MaterialCardView
+            style="@style/BottomSheetCardViewStyle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clipChildren="false"
-            android:elevation="2dp">
+            android:layout_height="wrap_content">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -185,9 +184,9 @@
 
                 <androidx.gridlayout.widget.GridLayout
                     android:id="@+id/timetable"
-                    android:layout_below="@id/timetable_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_below="@id/timetable_title"
                     android:layout_centerHorizontal="true"
                     android:gravity="center"
                     app:columnCount="2">

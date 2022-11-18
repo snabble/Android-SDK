@@ -1,15 +1,11 @@
 package io.snabble.sdk.dynamicview.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Magenta
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -24,11 +20,11 @@ import io.snabble.sdk.dynamicview.domain.model.utils.toPaddingValues
 import io.snabble.sdk.dynamicview.theme.ThemeWrapper
 import io.snabble.sdk.dynamicview.viewmodel.DynamicViewModel
 import io.snabble.sdk.ui.toolkit.R
-import io.snabble.sdk.utils.getComposeColor
 import io.snabble.sdk.widgets.ImageWidget
 
 @Composable
 internal fun DynamicScreen(
+    modifier: Modifier,
     dynamicViewModel: DynamicViewModel,
     onAction: OnDynamicAction = dynamicViewModel::sendAction,
 ) {
@@ -38,9 +34,7 @@ internal fun DynamicScreen(
     DynamicView(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Color(LocalContext.current.getComposeColor("snabble_background") ?: Magenta.toArgb())
-            ),
+            .then(modifier),
         contentPadding = config.configuration.padding.toPaddingValues(),
         background = {
             if (config.configuration.image != null) {
@@ -63,7 +57,7 @@ internal fun DynamicScreen(
 @Composable
 private fun DynamicScreenPreviewWith(config: DynamicConfig) {
     ThemeWrapper {
-        DynamicScreen(dynamicViewModel = DynamicViewModel().apply { setConfig(config) })
+        DynamicScreen(dynamicViewModel = DynamicViewModel().apply { setConfig(config) }, modifier = Modifier)
     }
 }
 
