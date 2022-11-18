@@ -18,16 +18,21 @@ internal class WlanViewModel(
     private val _wifiButtonIsVisible = MutableStateFlow(false)
     val wifiButtonIsVisible = _wifiButtonIsVisible.asStateFlow()
 
-    fun updateWlanState() {
+    fun updateWlanState(ssid: String?) {
+        if (ssid == null) {
+            _wifiButtonIsVisible.tryEmit(false)
+            return
+        }
+
         viewModelScope.launch {
-            val value = hasWlanConnectionUseCase("AndroidWifi")
+            val value = hasWlanConnectionUseCase(ssid)
             _wifiButtonIsVisible.tryEmit(value)
         }
     }
 
-    fun connect() {
-        val status = wifiManager.connectToWifi("AndroidWifi")
-        when (status) {
+    fun connect(ssid: String?) {
+        ssid ?: return
+        when (wifiManager.connectToWifi(ssid)) {
             is Success -> _wifiButtonIsVisible.tryEmit(false)
             is Error -> _wifiButtonIsVisible.tryEmit(false)
         }

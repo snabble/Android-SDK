@@ -83,6 +83,7 @@ private fun WlanWidgetPreview() {
             model = ConnectWlanItem(
                 id = "wifi",
                 padding = Padding(horizontal = 16, vertical = 8),
+                ssid = ""
             ),
             onAction = {},
             onclick = {}

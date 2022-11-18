@@ -21,10 +21,18 @@ internal class HasWlanConnectionUseCaseImpl(
     private val wlanManager: WlanManager,
 ) : HasWlanConnectionUseCase {
 
+    /**
+     * Wifi should only be shown under the following conditions:
+     * - The user is checked in into a shop
+     * - Wifi is enabled
+     * - no Suggestion has been saved
+     * - is not connected a wifi
+     * - the wanted wifi is available
+     */
     override suspend operator fun invoke(ssid: String): Boolean =
         snabble.currentCheckedInShop.value != null &&
-                !suggestionAlreadySaved(ssid) &&
                 wifiManager.isWifiEnabled &&
+                !suggestionAlreadySaved(ssid) &&
                 !isConnectedToWifi() &&
                 wlanManager.isWifiAvailable(ssid)
 

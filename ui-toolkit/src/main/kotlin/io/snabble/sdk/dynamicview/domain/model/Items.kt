@@ -39,6 +39,7 @@ data class CustomerCardItem(
 data class ConnectWlanItem(
     override val id: String,
     override val padding: Padding,
+    val ssid: String?,
 ) : Widget, HasPadding
 
 data class ImageItem(

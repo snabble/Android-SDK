@@ -24,13 +24,13 @@ internal fun ConnectWlanWidget(
 ) {
     val isButtonVisibleState = viewModel.wifiButtonIsVisible.collectAsStateWithLifecycle()
     OnLifecycleEvent(Lifecycle.Event.ON_RESUME) { _, _ ->
-        viewModel.updateWlanState()
+        viewModel.updateWlanState(model.ssid)
     }
 
     if (isButtonVisibleState.value) {
         ConnectWlanWidget(
             modifier = modifier,
-            onclick = { viewModel.connect() },
+            onclick = { viewModel.connect(model.ssid) },
             model = model,
             onAction = onAction
         )
