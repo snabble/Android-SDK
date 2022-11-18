@@ -42,7 +42,7 @@ internal class ConfigMapperTest : FreeSpec({
 
     val context = mockk<Context>(relaxed = true)
 
-    fun createMapper() = ConfigMapperImpl(context)
+    fun createMapper() = ConfigMapperImpl(context, ssidProvider = { "Snabble Store" })
 
     fun setupSutDto(widgetDto: WidgetDto?): DynamicConfigDto {
         if (widgetDto == null) {
@@ -346,8 +346,13 @@ internal class ConfigMapperTest : FreeSpec({
                 "id" {
                     connectWlanItem.id shouldBe "a.wifi"
                 }
+
                 "padding" {
                     connectWlanItem.padding shouldBe Padding(0, 0, 0, 0)
+                }
+
+                "ssid" {
+                    connectWlanItem.ssid shouldBe "Snabble Store"
                 }
             }
 

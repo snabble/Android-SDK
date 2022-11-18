@@ -12,6 +12,7 @@ import io.snabble.sdk.dynamicview.data.dto.LocationPermissionDto
 import io.snabble.sdk.dynamicview.data.dto.PurchasesDto
 import io.snabble.sdk.dynamicview.data.dto.SectionDto
 import io.snabble.sdk.dynamicview.data.dto.SeeAllStoresDto
+import io.snabble.sdk.dynamicview.data.dto.SsidProvider
 import io.snabble.sdk.dynamicview.data.dto.StartShoppingDto
 import io.snabble.sdk.dynamicview.data.dto.TextDto
 import io.snabble.sdk.dynamicview.data.dto.ToggleDto
@@ -42,7 +43,7 @@ internal interface ConfigMapper {
     fun mapDtoToItems(dynamicConfigDto: DynamicConfigDto): DynamicConfig
 }
 
-internal class ConfigMapperImpl(private val context: Context) : ConfigMapper {
+internal class ConfigMapperImpl(private val context: Context, private val ssidProvider: SsidProvider) : ConfigMapper {
 
     override fun mapDtoToItems(dynamicConfigDto: DynamicConfigDto): DynamicConfig = DynamicConfig(
         configuration = dynamicConfigDto.configuration.toConfiguration(),
@@ -64,7 +65,7 @@ internal class ConfigMapperImpl(private val context: Context) : ConfigMapper {
                     backgroundColor = context.resolveColorId(backgroundColor)
                 )
 
-                is ConnectWlanDto -> toConnectWlan()
+                is ConnectWlanDto -> toConnectWlan(ssidProvider)
 
                 is CustomerCardDto -> toCustomCardItem(
                     text = "${context.resolveResourceString(text)}",
