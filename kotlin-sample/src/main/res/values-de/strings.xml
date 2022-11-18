@@ -10,6 +10,11 @@
     <string name="profile">Profil</string>
     <string name="Profile.customerCard">Kundenkarte</string>
     <string name="Profile.deleteAccount">Account löschen</string>
+    <string name="Profile.developerMode">Entwickler-Einstellungen</string>
+    <string name="Profile.environment">Umgebung</string>
+    <string name="Profile.Environment.production">Production</string>
+    <string name="Profile.Environment.staging">Staging</string>
+    <string name="Profile.Environment.testing">Testing</string>
     <string name="Profile.header">Dein Profil</string>
     <string name="Profile.imprint">Impressum</string>
     <string name="Profile.lastPurchases">Vorherige Einkäufe</string>
@@ -18,6 +23,8 @@
     <string name="Profile.paymentMethods">Bezahlverfahren</string>
     <string name="Profile.privacy">Datenschutzerklärung</string>
     <string name="Profile.pushMessages">Push-Benachrichtigungen</string>
+    <string name="Profile.resetAppID">AppID zurücksetzen</string>
+    <string name="Profile.resetClientID">Client ID zurücksetzen</string>
     <string name="Profile.saveEnergy">Strom sparen</string>
     <string name="Profile.settings">Einstellungen</string>
     <string name="Profile.showOnboarding">Zeige Onboarding</string>

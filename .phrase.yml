@@ -50,43 +50,43 @@ phrase:
         params:
           <<: *defaults
           locale_id: b220db5757be359631c55ec54fb65ac6 # en-US
-          tags: Onboarding,Shop
+          tags: Onboarding,Shop,Scanner
       - file: ./ui-toolkit/src/main/res/values-de/strings.xml
         project_id: *id_core
         params:
           <<: *defaults
           locale_id: 512f99f8cd03c80affd16303fb5de9c2 # de
-          tags: Onboarding,Shop
+          tags: Onboarding,Shop,Scanner
       - file: ./ui-toolkit/src/main/res/values-fr/strings.xml
         project_id: *id_core
         params:
           <<: *defaults
           locale_id: edf0b29dd998221329199f185d360ae4 # fr
-          tags: Onboarding,Shop
+          tags: Onboarding,Shop,Scanner
       - file: ./ui-toolkit/src/main/res/values-fr-rCH/strings.xml
         project_id: *id_core
         params:
           <<: *defaults
           locale_id: fae2e092d1704da2ed88f3f56eb6f219 # fr-CH
-          tags: Onboarding,Shop
+          tags: Onboarding,Shop,Scanner
       - file: ./ui-toolkit/src/main/res/values-hu/strings.xml
         project_id: *id_core
         params:
           <<: *defaults
           locale_id: 8f797bd77008e27f6286531a5ad55f67 # hu
-          tags: Onboarding,Shop
+          tags: Onboarding,Shop,Scanner
       - file: ./ui-toolkit/src/main/res/values-it/strings.xml
         project_id: *id_core
         params:
           <<: *defaults
           locale_id: a4dea5c3e2c77e7c6ea344e69db63ed9 # it
-          tags: Onboarding,Shop
+          tags: Onboarding,Shop,Scanner
       - file: ./ui-toolkit/src/main/res/values-sk/strings.xml
         project_id: *id_core
         params:
           <<: *defaults
           locale_id: 9ee4c528e480d56878c98ee8bfbc521b # sk
-          tags: Onboarding,Shop
+          tags: Onboarding,Shop,Scanner
 
       # kotlin-sample module
       - file: ./kotlin-sample/src/main/res/values/strings.xml

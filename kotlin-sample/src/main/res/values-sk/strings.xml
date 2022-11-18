@@ -10,6 +10,11 @@
     <string name="profile">Profil</string>
     <string name="Profile.customerCard">Customer Card</string>
     <string name="Profile.deleteAccount">Vymazať konto</string>
+    <string name="Profile.developerMode">Developer Settings</string>
+    <string name="Profile.environment">"Environment "</string>
+    <string name="Profile.Environment.production">Production</string>
+    <string name="Profile.Environment.staging">Staging</string>
+    <string name="Profile.Environment.testing">Testing</string>
     <string name="Profile.header">Tvoj profil</string>
     <string name="Profile.imprint">Imprint</string>
     <string name="Profile.lastPurchases">Last Purchases</string>
@@ -18,6 +23,8 @@
     <string name="Profile.paymentMethods">Spôsob platby</string>
     <string name="Profile.privacy">Privacy Policy</string>
     <string name="Profile.pushMessages">Push Messages</string>
+    <string name="Profile.resetAppID">Reset AppID</string>
+    <string name="Profile.resetClientID">Reset Client ID</string>
     <string name="Profile.saveEnergy">Šetrenie batérie</string>
     <string name="Profile.settings">Settings</string>
     <string name="Profile.showOnboarding">Zobraz Onboarding</string>

@@ -258,6 +258,8 @@
     <string name="Snabble.Scanner.multiPack">Non dimenticare!</string>
     <string name="Snabble.Scanner.networkError">Non è stato possibile richiedere il prodotto. Controlla la tua connessione internet.</string>
     <string name="Snabble.Scanner.noMatchesFound">Articolo non trovato</string>
+    <!-- Text to be displayed in scanner if the app is not checked into a shop. -->
+    <string name="Snabble.Scanner.notCheckedIn">Visit a store to use the scanner.</string>
     <string name="Snabble.Scanner.plusDeposit">+ %s deposito</string>
     <string name="Snabble.Scanner.scannedAgeRestrictedProduct">La tua età sarà verificata al momento del pagamento.</string>
     <string name="Snabble.Scanner.scannedShelfCode">Pesa il prodotto e scansiona il codice a barre sull’etichetta</string>

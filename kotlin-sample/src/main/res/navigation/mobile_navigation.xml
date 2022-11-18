@@ -85,7 +85,7 @@
         <fragment
             android:id="@+id/not_checked_in"
             android:name="io.snabble.sdk.screens.notckeckedin.NotCheckedInFragment"
-            android:label="Check in" />
+            android:label="@string/scanner" />
     </navigation>
 
     <navigation
