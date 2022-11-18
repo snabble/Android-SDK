@@ -31,7 +31,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebaslogen.resaca.viewModelScoped
 import io.snabble.sdk.di.KoinProvider
 import io.snabble.sdk.dynamicview.domain.model.Padding
-import io.snabble.sdk.dynamicview.domain.model.ProjectId
 import io.snabble.sdk.dynamicview.domain.model.PurchasesItem
 import io.snabble.sdk.dynamicview.theme.ThemeWrapper
 import io.snabble.sdk.dynamicview.theme.properties.padding
@@ -251,7 +250,6 @@ private fun PurchaseWidgetPreview() {
         Purchases(
             model = PurchasesItem(
                 id = "last.purchases",
-                projectId = ProjectId("0123"),
                 padding = Padding(horizontal = 0)
             ),
             purchaseList = listOf(Purchase("a01", "13,37 €", "Snabble Store Bonn", "Today")),
@@ -267,7 +265,6 @@ private fun TwoPurchasesPreview() {
         Purchases(
             model = PurchasesItem(
                 id = "last.purchases",
-                projectId = ProjectId("0123"),
                 padding = Padding(horizontal = 0)
             ),
             purchaseList = listOf(
