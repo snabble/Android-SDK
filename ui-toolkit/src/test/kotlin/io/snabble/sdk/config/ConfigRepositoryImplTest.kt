@@ -44,7 +44,10 @@ internal class ConfigRepositoryImplTest : FreeSpec({
     fun createSut(json: String, mapping: Context.() -> Unit = {}) = ConfigRepositoryImpl(
         fileProvider = mockk { coEvery { getFile(any()) } returns json },
         json = Json { ignoreUnknownKeys = true },
-        configMapper = ConfigMapperImpl(context = mockk(relaxed = true, block = mapping)),
+        configMapper = ConfigMapperImpl(
+            context = mockk(relaxed = true, block = mapping),
+            ssidProvider = { "Snabble Store" }
+        ),
     )
 
     beforeEach {
@@ -145,7 +148,7 @@ internal class ConfigRepositoryImplTest : FreeSpec({
                 )
             }
 
-            "a customer card"{
+            "a customer card" {
                 val sut = createSut(
                     createJson(
                         """[{
@@ -197,7 +200,8 @@ internal class ConfigRepositoryImplTest : FreeSpec({
                 )
                 sut.getConfig("").widgets.first() shouldBe ConnectWlanItem(
                     id = "connect_wifi",
-                    padding = Padding(16, 16, 16, 16)
+                    padding = Padding(16, 16, 16, 16),
+                    ssid = "Snabble Store"
                 )
             }
 

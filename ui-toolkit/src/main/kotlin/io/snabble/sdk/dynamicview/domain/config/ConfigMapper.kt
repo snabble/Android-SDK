@@ -1,7 +1,6 @@
 package io.snabble.sdk.dynamicview.domain.config
 
 import android.content.Context
-import io.snabble.sdk.Snabble
 import io.snabble.sdk.dynamicview.data.ButtonDto
 import io.snabble.sdk.dynamicview.data.ConfigurationDto
 import io.snabble.sdk.dynamicview.data.ConnectWlanDto
@@ -44,9 +43,14 @@ internal interface ConfigMapper {
     fun mapDtoToItems(dynamicConfigDto: DynamicConfigDto): DynamicConfig
 }
 
+fun interface SsidProvider {
+
+    fun provide(): String?
+}
+
 internal class ConfigMapperImpl(
     private val context: Context,
-    private val snabble: Snabble,
+    private val ssidProvider: SsidProvider,
 ) : ConfigMapper {
 
     override fun mapDtoToItems(dynamicConfigDto: DynamicConfigDto): DynamicConfig = DynamicConfig(
@@ -64,7 +68,7 @@ internal class ConfigMapperImpl(
         with(widget) {
             when (this) {
                 is ButtonDto -> toButton()
-                is ConnectWlanDto -> toConnectWlan()
+                is ConnectWlanDto -> toConnectWlan(ssidProvider)
                 is CustomerCardDto -> toCustomCardItem()
                 is ImageDto -> toImage()
                 is InformationDto -> toInformation()
@@ -87,10 +91,10 @@ internal class ConfigMapperImpl(
         padding = padding.toPadding()
     )
 
-    private fun ConnectWlanDto.toConnectWlan(): ConnectWlanItem = ConnectWlanItem(
+    private fun ConnectWlanDto.toConnectWlan(ssidProvider: SsidProvider): ConnectWlanItem = ConnectWlanItem(
         id = id,
         padding = padding.toPadding(),
-        ssid = snabble.currentCheckedInShop.value?.customerNetworks?.firstOrNull()?.ssid
+        ssid = ssidProvider.provide()
     )
 
     private fun CustomerCardDto.toCustomCardItem(): CustomerCardItem = CustomerCardItem(
