@@ -8,13 +8,14 @@ import android.net.wifi.WifiManager
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.coroutines.resume
+import kotlin.time.Duration.Companion.seconds
 
 class ScanIsFinishedImpl(
     private val context: Context,
 ) : ScanIsFinished {
 
     override suspend fun invoke(): Boolean =
-        withTimeoutOrNull(5_000) {
+        withTimeoutOrNull(5.seconds) {
             suspendCancellableCoroutine { continuation ->
 
                 val wifiScanReceiver = object : BroadcastReceiver() {

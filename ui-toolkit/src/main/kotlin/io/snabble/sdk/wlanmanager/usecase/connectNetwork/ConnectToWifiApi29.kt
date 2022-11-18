@@ -1,18 +1,19 @@
 package io.snabble.sdk.wlanmanager.usecase.connectNetwork
 
-import android.content.Context
+import android.content.SharedPreferences
 import android.net.wifi.WifiManager
 import android.net.wifi.WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS
 import android.net.wifi.WifiNetworkSuggestion
 import android.os.Build
 import androidx.annotation.RequiresApi
+import io.snabble.sdk.wlanmanager.WlanManagerImpl.Companion.KEY_SUGGESTIONS
 import io.snabble.sdk.wlanmanager.data.Error
 import io.snabble.sdk.wlanmanager.data.Result
 import io.snabble.sdk.wlanmanager.data.Success
 
 class ConnectToWifiApi29(
+    private val sharedPrefs: SharedPreferences,
     private val wifiManager: WifiManager,
-    private val context: Context,
 ) : ConnectToWifi {
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -40,9 +41,7 @@ class ConnectToWifiApi29(
             .setIsMetered(false)
             .build()
 
-    @RequiresApi(Build.VERSION_CODES.Q)
     private fun saveSuggestion(ssid: String) {
-        val sharedPreferences = context.getSharedPreferences("Suggestions", Context.MODE_PRIVATE)
-        sharedPreferences.edit().putString("suggestion", ssid).apply()
+        sharedPrefs.edit().putString(KEY_SUGGESTIONS, ssid).apply()
     }
 }

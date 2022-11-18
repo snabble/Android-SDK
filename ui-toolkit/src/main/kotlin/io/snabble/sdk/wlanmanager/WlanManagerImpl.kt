@@ -40,4 +40,10 @@ class WlanManagerImpl(
     override fun connectToWifi(ssid: String): Result {
         return connectToWifiUseCase(ssid)
     }
+
+    companion object {
+
+        const val PREFS_WLAN = "WlanPrefs"
+        const val KEY_SUGGESTIONS = "Suggestions"
+    }
 }

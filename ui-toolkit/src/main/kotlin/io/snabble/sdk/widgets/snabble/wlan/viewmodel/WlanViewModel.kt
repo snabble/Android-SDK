@@ -4,8 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.snabble.sdk.widgets.snabble.wlan.usecases.HasWlanConnectionUseCase
 import io.snabble.sdk.wlanmanager.WlanManager
-import io.snabble.sdk.wlanmanager.data.Error
-import io.snabble.sdk.wlanmanager.data.Success
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -32,9 +30,7 @@ internal class WlanViewModel(
 
     fun connect(ssid: String?) {
         ssid ?: return
-        when (wifiManager.connectToWifi(ssid)) {
-            is Success -> _wifiButtonIsVisible.tryEmit(false)
-            is Error -> _wifiButtonIsVisible.tryEmit(false)
-        }
+        wifiManager.connectToWifi(ssid)
+        _wifiButtonIsVisible.tryEmit(false)
     }
 }

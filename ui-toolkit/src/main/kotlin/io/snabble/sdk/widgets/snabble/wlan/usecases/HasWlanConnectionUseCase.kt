@@ -1,12 +1,13 @@
 package io.snabble.sdk.widgets.snabble.wlan.usecases
 
-import android.content.Context
+import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
 import android.os.Build
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.wlanmanager.WlanManager
+import io.snabble.sdk.wlanmanager.WlanManagerImpl.Companion.KEY_SUGGESTIONS
 
 internal interface HasWlanConnectionUseCase {
 
@@ -15,10 +16,10 @@ internal interface HasWlanConnectionUseCase {
 
 internal class HasWlanConnectionUseCaseImpl(
     private val snabble: Snabble,
-    private val context: Context,
     private val wifiManager: WifiManager,
     private val connectivityManager: ConnectivityManager,
     private val wlanManager: WlanManager,
+    private val sharedPrefs: SharedPreferences,
 ) : HasWlanConnectionUseCase {
 
     /**
@@ -48,10 +49,6 @@ internal class HasWlanConnectionUseCaseImpl(
         }
     }
 
-    private fun suggestionAlreadySaved(ssid: String): Boolean {
-
-        val sharedPreferences = context.getSharedPreferences("Suggestions", Context.MODE_PRIVATE)
-        val suggestedSsid = sharedPreferences.getString("suggestion", "")
-        return suggestedSsid == ssid
-    }
+    private fun suggestionAlreadySaved(ssid: String): Boolean =
+        sharedPrefs.getString(KEY_SUGGESTIONS, "") == ssid
 }
