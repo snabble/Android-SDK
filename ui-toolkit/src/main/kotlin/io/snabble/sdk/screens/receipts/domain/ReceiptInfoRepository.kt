@@ -3,8 +3,10 @@ package io.snabble.sdk.screens.receipts.domain
 import io.snabble.sdk.ReceiptInfo
 import io.snabble.sdk.Receipts
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.screens.receipts.DownloadFailedException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 interface ReceiptsInfoRepository {
 
@@ -28,7 +30,7 @@ class ReceiptsInfoRepositoryImpl(
                 }
 
                 override fun failure() {
-                    continuation.resume(null)
+                    continuation.resumeWithException(DownloadFailedException())
                 }
             })
             continuation.invokeOnCancellation {

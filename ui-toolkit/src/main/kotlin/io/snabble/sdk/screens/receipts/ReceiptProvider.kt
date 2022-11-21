@@ -1,23 +1,29 @@
 package io.snabble.sdk.screens.receipts
 
 import android.app.Activity
-import android.app.ProgressDialog
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.view.View
 import androidx.core.content.FileProvider
+import io.snabble.sdk.ReceiptInfo
 import io.snabble.sdk.screens.receipts.usecase.GetReceiptsInfoUseCase
 import io.snabble.sdk.screens.receipts.usecase.GetReceiptsInfoUseCaseImpl
 import io.snabble.sdk.screens.receipts.usecase.GetReceiptsUseCase
 import io.snabble.sdk.screens.receipts.usecase.GetReceiptsUseCaseImpl
+import io.snabble.sdk.ui.toolkit.BuildConfig
 import io.snabble.sdk.ui.toolkit.R
+import io.snabble.sdk.ui.utils.SnackbarUtils
 import io.snabble.sdk.ui.utils.UIUtils
-import io.snabble.sdk.utils.xx
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
-import kotlin.coroutines.cancellation.CancellationException
+import kotlin.coroutines.coroutineContext
 import kotlin.coroutines.resumeWithException
 
 class ReceiptProvider(
@@ -26,19 +32,44 @@ class ReceiptProvider(
     private val getReceipts: GetReceiptsUseCase = GetReceiptsUseCaseImpl(),
 ) {
 
-    private lateinit var progressDialog: ProgressDialog
+    suspend fun showReceipt(view: View, receiptId: String) {
+        showReceipt(view) {
+            getReceiptsInfo(receiptId)
+        }
+    }
 
-    suspend fun showReceipt(receiptId: String) {
-        coroutineScope {
-            val progressDialogJob = launch {
-                showProgressIndicator()
+    suspend fun showReceipt(view: View, info: ReceiptInfo) {
+        showReceipt(view) { info }
+    }
+
+    private suspend fun showReceipt(view: View, receiptInfo: suspend () -> ReceiptInfo?) {
+        val showReceiptJob = Job(parent = coroutineContext.job)
+        val scope = CoroutineScope(Dispatchers.Main + showReceiptJob)
+        scope.launch {
+            val dialogJob = launch {
+                try {
+                    showProgressIndicator()
+                } catch (e: CancelledDialogException) {
+                    showReceiptJob.cancel()
+                }
             }
-            delay(5_000)
-            val info = getReceiptsInfo(receiptId)
-            val receipt = info?.let { getReceipts(it) }
-            progressDialogJob.cancel()
+
+            if (BuildConfig.DEBUG) delay(1_000)
+            val receipt: File? = try {
+                receiptInfo()
+                    ?.let { getReceipts(it) }
+            } catch (e: DownloadFailedException) {
+                showSnackBar(view, R.string.Snabble_Receipt_errorDownload)
+                null
+            } finally {
+                dialogJob.cancel()
+            }
             if (receipt != null) {
-                show(receipt)
+                try {
+                    show(receipt)
+                } catch (e: MissingPdfReaderException) {
+                    showSnackBar(view, R.string.Snabble_Receipt_pdfReaderUnavailable)
+                }
             }
         }
     }
@@ -58,30 +89,40 @@ class ReceiptProvider(
         try {
             activity?.startActivity(intent)
         } catch (ignored: Exception) {
-            //Todo: Handle Error
+            throw MissingPdfReaderException()
         }
     }
 
     private suspend fun showProgressIndicator() {
         suspendCancellableCoroutine<Unit> { continuation ->
-            val progressDialog = ProgressDialog(context).apply {
-                setProgressStyle(ProgressDialog.STYLE_SPINNER)
-                setMessage(context.getString(R.string.Snabble_pleaseWait))
-                setCancelable(true)
-                setOnCancelListener {
-                    // TODO: Reminder: receipts.cancelDownload()
+            val dialog = AlertDialog.Builder(context)
+                .setView(R.layout.circular_progress_indicator)
+                .setCancelable(true)
+                .setOnCancelListener {
                     if (!continuation.isCancelled) {
-                        "Resuming with CancellationException".xx()
-                        continuation.resumeWithException(CancellationException("Cancelled progress dialog"))
+                        continuation.resumeWithException(CancelledDialogException())
                     }
                 }
-            }
-            progressDialog.show()
+                .show()
 
             continuation.invokeOnCancellation {
-                "Job has been cancelled".xx()
-                progressDialog.cancel()
+                dialog.cancel()
             }
         }
     }
 }
+
+internal class CancelledDialogException(
+    override val message: String = "Cancelled progress dialog",
+) : Exception()
+
+internal class MissingPdfReaderException(
+    override val message: String = "PDF Reader unavailable",
+) : Exception()
+
+internal class DownloadFailedException(
+    override val message: String = "Downloading Receipt failed",
+) : Exception()
+
+private fun showSnackBar(view: View, id: Int) =
+    SnackbarUtils.make(view, id, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()

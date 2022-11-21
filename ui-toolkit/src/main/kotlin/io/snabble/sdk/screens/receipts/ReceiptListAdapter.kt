@@ -7,8 +7,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import io.snabble.sdk.ReceiptInfo
 import io.snabble.sdk.ui.toolkit.R
+import kotlinx.coroutines.CoroutineScope
 
-internal class ReceiptListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
+internal class ReceiptListAdapter(private val lifecycleScope: CoroutineScope) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
 
     var receiptInfoList: List<ReceiptInfo>? = null
         @SuppressLint("NotifyDataSetChanged")
@@ -24,7 +26,7 @@ internal class ReceiptListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder
         receiptInfoList
             ?.get(pos)
             ?.let {
-                (holder as? ReceiptViewHolder)?.bindTo(it)
+                (holder as? ReceiptViewHolder)?.bindTo(it, lifecycleScope)
             }
     }
 
@@ -35,7 +37,7 @@ private class ReceiptViewHolder(itemView: View) : RecyclerView.ViewHolder(itemVi
 
     private val receiptItemHelper = ReceiptItemHelper(context = itemView.context, itemView = itemView)
 
-    fun bindTo(receiptInfo: ReceiptInfo) {
-        receiptItemHelper.bindTo(receiptInfo, false)
+    fun bindTo(receiptInfo: ReceiptInfo, lifecycleScope: CoroutineScope) {
+        receiptItemHelper.bindTo(receiptInfo, false, lifecycleScope)
     }
 }

@@ -8,6 +8,7 @@ import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,7 +18,7 @@ import io.snabble.sdk.ui.toolkit.R
 
 class ReceiptListFragment : Fragment() {
 
-    private val receiptListAdapter: ReceiptListAdapter = ReceiptListAdapter()
+    private lateinit var receiptListAdapter: ReceiptListAdapter
 
     private lateinit var emptyView: View
     private lateinit var progressView: ProgressBar
@@ -33,6 +34,8 @@ class ReceiptListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupToolbar()
+
+        receiptListAdapter = ReceiptListAdapter(viewLifecycleOwner.lifecycleScope)
 
         emptyView = view.findViewById(R.id.empty_state)
         progressView = view.findViewById(R.id.progress)
