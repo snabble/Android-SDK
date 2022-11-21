@@ -254,6 +254,8 @@
     <string name="Snabble.Scanner.multiPack">Ne felejtsd el!</string>
     <string name="Snabble.Scanner.networkError">A terméket nem sikerült lekérdezni. Ellenőrizd az internetkapcsolatot.</string>
     <string name="Snabble.Scanner.noMatchesFound">Termék nem található</string>
+    <!-- Text to be displayed in scanner if the app is not checked into a shop. -->
+    <string name="Snabble.Scanner.notCheckedIn">Visit a store to use the scanner.</string>
     <string name="Snabble.Scanner.plusDeposit">+ %s betétdíj</string>
     <string name="Snabble.Scanner.scannedAgeRestrictedProduct">A fizetésnél egyszeri alkalommal ellenőrizzük a korodat.</string>
     <string name="Snabble.Scanner.scannedShelfCode">Kérlek, mérd le a terméket, és utána olvasd be a matricán található vonalkódot</string>

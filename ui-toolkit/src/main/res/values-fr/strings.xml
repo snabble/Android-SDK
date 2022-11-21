@@ -4,6 +4,8 @@
     <string name="Snabble.Onboarding.done">Terminé</string>
     <string name="Snabble.Onboarding.Link.show">Consulter</string>
     <string name="Snabble.Onboarding.next">Continuer</string>
+    <!-- Text to be displayed in scanner if the app is not checked into a shop. -->
+    <string name="Snabble.Scanner.notCheckedIn">Visit a store to use the scanner.</string>
     <!-- <street and house number> in <ZIP code> <city name> -->
     <string name="Snabble.Shop.Address.accessibility">%1$s à %2$s %3$s</string>
     <string name="Snabble.Shop.Detail.openingHours">Heures d\'ouverture</string>

@@ -62,9 +62,24 @@ fun setUpUiEvents(activity: AppCompatActivity, navController: NavController, bot
     }
     SnabbleUI.setUiAction(
         activity,
+        SnabbleUI.Event.NOT_CHECKED_IN
+    ) { _, args ->
+        navController.navigate(R.id.not_checked_in, args)
+    }
+
+    SnabbleUI.setUiAction(
+        activity,
         SnabbleUI.Event.GO_BACK
     ) { _, _ ->
     }
+
+    SnabbleUiToolkit.setUiAction(
+        activity,
+        SnabbleUiToolkit.Event.SHOW_SHOP_LIST
+    ) { _, args ->
+        bottomNavigationView.selectedItemId = R.id.navigation_shop
+    }
+
     SnabbleUiToolkit.setUiAction(
         activity,
         SnabbleUiToolkit.Event.SHOW_DETAILS_SHOP_LIST

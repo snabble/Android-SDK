@@ -52,6 +52,8 @@ abstract class BaseFragment(@LayoutRes val layoutResId: Int = 0, val waitForProj
                 isReady = false
                 fragmentContainer.removeAllViews()
                 sdkNotInitialized.isVisible = true
+                sdkNotInitialized.text = "You're not checked in. \n To show your custom view handle the SnabbleUi event NOT_CHECKED_IN"
+                SnabbleUI.executeAction(requireContext(), SnabbleUI.Event.NOT_CHECKED_IN)
             } else {
                 Snabble.checkedInProject.observe(viewLifecycleOwner) {
                     if (it != null) {
@@ -60,6 +62,8 @@ abstract class BaseFragment(@LayoutRes val layoutResId: Int = 0, val waitForProj
                         isReady = false
                         fragmentContainer.removeAllViews()
                         sdkNotInitialized.isVisible = true
+                        sdkNotInitialized.text = "You're not checked in. \n To show your custom view handle the SnabbleUi event NOT_CHECKED_IN"
+                        SnabbleUI.executeAction(requireContext(), SnabbleUI.Event.NOT_CHECKED_IN)
                     }
                 }
             }
@@ -87,7 +91,7 @@ abstract class BaseFragment(@LayoutRes val layoutResId: Int = 0, val waitForProj
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?)
-    : View? {
+        : View? {
         if (layoutResId != 0) {
             return inflater.inflate(layoutResId, container, false)
         }
