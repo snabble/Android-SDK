@@ -38,6 +38,7 @@ io.snabble.sdk.dynamicview.ui
 io.snabble.sdk.dynamicview.viewmodel
 io.snabble.sdk.screens.home.ui
 io.snabble.sdk.screens.home.viewmodel
+io.snabble.sdk.screens.notckeckedin
 io.snabble.sdk.screens.onboarding.data
 io.snabble.sdk.screens.onboarding.ui
 io.snabble.sdk.screens.onboarding.ui.terms
@@ -45,6 +46,9 @@ io.snabble.sdk.screens.onboarding.utils
 io.snabble.sdk.screens.onboarding.view
 io.snabble.sdk.screens.profile.ui
 io.snabble.sdk.screens.profile.viewmodel
+io.snabble.sdk.screens.receipts
+io.snabble.sdk.screens.receipts.domain
+io.snabble.sdk.screens.receipts.usecase
 io.snabble.sdk.screens.shopfinder
 io.snabble.sdk.screens.shopfinder.shoplist
 io.snabble.sdk.screens.shopfinder.utils
