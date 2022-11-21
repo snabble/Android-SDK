@@ -11,7 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.days
 
 internal class ReceiptItemHelper(
     private val context: Context,
@@ -44,7 +44,7 @@ internal class ReceiptItemHelper(
 
     private fun formatDate(past: Date, newLineTimestamp: Boolean): String {
         val nowInMillis = Date().time
-        val isYoungerThan1Day = nowInMillis - past.time < TimeUnit.DAYS.toMillis(1)
+        val isYoungerThan1Day = nowInMillis - past.time < 1.days.inWholeMilliseconds
         return when {
             isYoungerThan1Day -> relativeDateFormatter.format(past.time, nowInMillis)
 
