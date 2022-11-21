@@ -37,6 +37,7 @@
         android:drawablePadding="32dp"
         android:text="@string/Snabble.Receipts.noReceipts"
         android:visibility="gone"
+        app:drawableTint="@color/primary"
         app:drawableTopCompat="@drawable/ic_receipt"
         tools:visibility="visible" />
 
