@@ -32,6 +32,12 @@
             android:exported="true"
             android:windowSoftInputMode="adjustPan" />
 
+        <activity
+            android:name="io.snabble.sdk.screens.receipts.ReceiptListActivity"
+            android:exported="false"
+            android:label="@string/Snabble.Receipts.title"
+            android:theme="@style/AppTheme.ActionBar" />
+
         <meta-data
             android:name="snabble_network_interceptor"
             android:value="io.snabble.sdk.sample.LoggingInterceptor" />

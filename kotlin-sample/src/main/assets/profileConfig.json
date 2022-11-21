@@ -19,7 +19,7 @@
         },
         {
           "type": "text",
-          "id": "3",
+          "id": "show.lastPurchases",
           "text": "Profile.lastPurchases",
           "padding": [16, 8]
         },
