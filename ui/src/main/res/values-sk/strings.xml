@@ -262,6 +262,8 @@
     <string name="Snabble.Scanner.multiPack">Nezabudni!</string>
     <string name="Snabble.Scanner.networkError">Produkt nie je možné nájsť. Prosím, skontroluj svoje internetové pripojenie.</string>
     <string name="Snabble.Scanner.noMatchesFound">Položka nebola nájdená</string>
+    <!-- Text to be displayed in scanner if the app is not checked into a shop. -->
+    <string name="Snabble.Scanner.notCheckedIn">Visit a store to use the scanner.</string>
     <string name="Snabble.Scanner.plusDeposit">+ %s záloha</string>
     <string name="Snabble.Scanner.scannedAgeRestrictedProduct">Preto bude tvoj vek pri platbe jednorazovo skontrolovaný.</string>
     <string name="Snabble.Scanner.scannedShelfCode">Odváž produkt a naskenuj čiarový kód na etikete</string>

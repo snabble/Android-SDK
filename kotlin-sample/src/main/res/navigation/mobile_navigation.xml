@@ -69,14 +69,24 @@
         android:name="io.snabble.sdk.screens.profile.ui.ProfileFragment"
         android:label="@string/profile" />
 
-    <fragment
-        android:id="@+id/navigation_scanner"
-        android:name="io.snabble.sdk.ui.scanner.CombinedScannerFragment"
-        android:label="@string/scanner">
-        <argument
-            android:name="showProductCode"
-            app:argType="string" />
-    </fragment>
+    <navigation
+        android:id="@id/navigation_scanner"
+        app:startDestination="@id/navigation_combinedScanner">
+
+        <fragment
+            android:id="@+id/navigation_combinedScanner"
+            android:name="io.snabble.sdk.ui.scanner.CombinedScannerFragment"
+            android:label="@string/scanner">
+            <argument
+                android:name="showProductCode"
+                app:argType="string" />
+        </fragment>
+
+        <fragment
+            android:id="@+id/not_checked_in"
+            android:name="io.snabble.sdk.screens.notckeckedin.NotCheckedInFragment"
+            android:label="@string/scanner" />
+    </navigation>
 
     <navigation
         android:id="@+id/navigation_shop"

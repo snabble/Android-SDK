@@ -254,6 +254,8 @@
     <string name="Snabble.Scanner.multiPack">Don\'t forget!</string>
     <string name="Snabble.Scanner.networkError">Could not retrieve product data. Please check your internet connection.</string>
     <string name="Snabble.Scanner.noMatchesFound">Product not found</string>
+    <!-- Text to be displayed in scanner if the app is not checked into a shop. -->
+    <string name="Snabble.Scanner.notCheckedIn">Visit a store to use the scanner.</string>
     <string name="Snabble.Scanner.plusDeposit">+ %s deposit</string>
     <string name="Snabble.Scanner.scannedAgeRestrictedProduct">Your age will be checked once at the time of payment.</string>
     <string name="Snabble.Scanner.scannedShelfCode">Please weigh the product, then scan the barcode from the sticker</string>
