@@ -25,7 +25,7 @@ import io.snabble.sdk.sample.onboarding.repository.OnboardingRepository
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepositoryImpl
 import io.snabble.sdk.screens.home.viewmodel.DynamicHomeViewModel
 import io.snabble.sdk.screens.profile.viewmodel.DynamicProfileViewModel
-import io.snabble.sdk.screens.receipts.showDetails
+import io.snabble.sdk.screens.receipts.ReceiptProvider
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -92,7 +92,12 @@ class MainActivity : AppCompatActivity() {
 
                             "purchase" -> {
                                 (action.info?.get("id") as? String)?.let {
-                                    showDetails(it, this)
+                                    val receiptProvider = ReceiptProvider(this)
+                                    lifecycleScope.launch {
+
+                                        receiptProvider.showReceipt(it)
+                                    }
+//                                    showDetails(it, this)
                                 }
                             }
                         }
