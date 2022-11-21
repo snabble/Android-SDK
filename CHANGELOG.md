@@ -3,20 +3,30 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 
-## [0.69.1-beta04]
+## [0.69.1-beta05]
 ### Added
-
 * ui-toolkit: Add a screen for the not-checked-in state (#63)
 * ui-toolkit: Add WLANManager for the WifiWidget (#82)
 * ui-toolkit: Support headerless sections (#79)
 
 ### Changed
-
 * core: Update CA certificates (#81)
 * ui-toolkit: Theme update (#78)
 
 ### Fixed
+* ui-toolkit: Fix crash on empty project list (#77)
 
+## [0.69.1-beta04] (withdrawn)
+### Added
+* ui-toolkit: Add a screen for the not-checked-in state (#63)
+* ui-toolkit: Add WLANManager for the WifiWidget (#82)
+* ui-toolkit: Support headerless sections (#79)
+
+### Changed
+* core: Update CA certificates (#81)
+* ui-toolkit: Theme update (#78)
+
+### Fixed
 * ui-toolkit: Fix crash on empty project list (#77)
 
 ## [0.69.1-beta03]
