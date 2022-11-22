@@ -21,6 +21,7 @@ import io.snabble.sdk.dynamicview.data.dto.SectionDto
 import io.snabble.sdk.dynamicview.data.dto.SeeAllStoresDto
 import io.snabble.sdk.dynamicview.data.dto.StartShoppingDto
 import io.snabble.sdk.dynamicview.data.dto.TextDto
+import io.snabble.sdk.dynamicview.data.dto.VersionDto
 import io.snabble.sdk.dynamicview.data.dto.WidgetDto
 import io.snabble.sdk.dynamicview.domain.model.ButtonItem
 import io.snabble.sdk.dynamicview.domain.model.ConnectWlanItem
@@ -33,12 +34,13 @@ import io.snabble.sdk.dynamicview.domain.model.SectionItem
 import io.snabble.sdk.dynamicview.domain.model.SeeAllStoresItem
 import io.snabble.sdk.dynamicview.domain.model.StartShoppingItem
 import io.snabble.sdk.dynamicview.domain.model.TextItem
+import io.snabble.sdk.dynamicview.domain.model.VersionItem
 import io.snabble.sdk.utils.getComposeColor
 import io.snabble.sdk.utils.getResourceString
 import io.snabble.sdk.utils.resolveColorId
 import io.snabble.sdk.utils.resolveImageId
 
-internal class ConfigMapperTest : FreeSpec({
+internal class ConfigMapperImplTest : FreeSpec({
 
     val context = mockk<Context>(relaxed = true)
 
@@ -391,6 +393,27 @@ internal class ConfigMapperTest : FreeSpec({
                 }
             }
 
+            "VersionDto to VersionItem" - {
+
+                val versionDto = VersionDto(
+                    id = "a.version",
+                    padding = PaddingDto(0, 0, 0, 0)
+                )
+
+                val rootDto = setupSutDto(versionDto)
+                every { context.resolveImageId(rootDto.configuration.image) } returns 1
+
+                val sut = createMapper().mapDtoToItems(rootDto)
+
+                val startShoppingItem = sut.widgets.first().shouldBeTypeOf<VersionItem>()
+
+                "id" {
+                    startShoppingItem.id shouldBe "a.version"
+                }
+                "padding" {
+                    startShoppingItem.padding shouldBe Padding(0, 0, 0, 0)
+                }
+            }
         }
     }
 })
