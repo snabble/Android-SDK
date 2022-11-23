@@ -14,9 +14,8 @@ import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.Snabble
@@ -32,8 +31,16 @@ fun VersionWidget(
     model: VersionItem,
     onAction: OnDynamicAction,
 ) {
-    val appVersion = provideAppVersion(LocalContext.current)
-    val sdkVersion = Snabble.version
+    val appVersion: String
+    val sdkVersion: String
+
+    if (!LocalInspectionMode.current) {
+        appVersion = provideAppVersion(LocalContext.current)
+        sdkVersion = Snabble.version
+    } else {
+        appVersion = "1.0"
+        sdkVersion = "0.10.0"
+    }
 
     Column(
         modifier = Modifier
@@ -49,13 +56,13 @@ fun VersionWidget(
     ) {
         Text(
             text = "Version",
-            color = Color(MaterialTheme.colorScheme.onSurface.toArgb()),
+            color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.bodyLarge
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = "$appVersion, SDK $sdkVersion",
-            color = Color(MaterialTheme.colorScheme.onSurface.toArgb()),
+            color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.bodyMedium
         )
     }
