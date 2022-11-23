@@ -26,6 +26,9 @@ import io.snabble.sdk.sample.onboarding.repository.OnboardingRepositoryImpl
 import io.snabble.sdk.screens.home.viewmodel.DynamicHomeViewModel
 import io.snabble.sdk.screens.profile.viewmodel.DynamicProfileViewModel
 import io.snabble.sdk.screens.receipts.showDetails
+import io.snabble.sdk.utils.xx
+import io.snabble.sdk.widgets.snabble.devsettings.DevDialogFragment
+import io.snabble.sdk.widgets.snabble.devsettings.viewmodel.DevViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -53,6 +56,7 @@ class MainActivity : AppCompatActivity() {
 
     private val homeViewModel: DynamicHomeViewModel by viewModels()
     private val profileViewModel: DynamicProfileViewModel by viewModels()
+    private val devViewModel: DevViewModel by viewModels()
 
     private val onboardingRepo: OnboardingRepository by lazy {
         OnboardingRepositoryImpl(assets, Gson())
@@ -60,7 +64,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_main)
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
@@ -73,10 +76,20 @@ class MainActivity : AppCompatActivity() {
         setupToolbar(toolbar, navController, navBarView)
         setUpUiEvents(this, navController, navBarView)
 
+
+
         profileViewModel.actions.asLiveData()
             .observe(this) { action ->
                 when (action.widget.id) {
                     "show.lastPurchases" -> SnabbleUiToolkit.executeAction(context = this, SHOW_RECEIPT_LIST)
+                    "5" -> {
+                        if (devViewModel.clickCount.value.xx() == 5) {
+                            devViewModel.resetClickCount()
+                            DevDialogFragment().show(supportFragmentManager, "DevDialog")
+                        }
+
+                        devViewModel.incClickCount()
+                    }
                     else -> Unit
                 }
             }
@@ -131,6 +144,7 @@ class MainActivity : AppCompatActivity() {
     // Can be used to get args from deeplinks. In this case the args are used to
     private fun NavController.setup(toolbar: Toolbar, navBarView: NavigationBarView) {
         addOnDestinationChangedListener { _, destination, arguments ->
+            devViewModel.resetClickCount()
             "Nav to ${resources.getResourceName(destination.id)}"
             toolbar.isVisible = arguments?.getBoolean("hideToolbar") != true
             val isBottomNavigationVisible = arguments?.getBoolean("hideBottomNavigation") != true

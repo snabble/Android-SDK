@@ -1,6 +1,6 @@
 package io.snabble.sdk.wlanmanager.data
 
-internal sealed interface Result {
+sealed interface Result {
 
     val message: String
 }
