@@ -88,6 +88,11 @@
           "id": "4",
           "text": "Profile.licences",
           "padding": [16, 8]
+        },
+        {
+          "type": "snabble.version",
+          "id": "5",
+          "padding": [16, 8]
         }
       ]
     }

@@ -20,6 +20,7 @@ import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.domain.model.SectionItem
 import io.snabble.sdk.dynamicview.domain.model.TextItem
 import io.snabble.sdk.dynamicview.domain.model.ToggleItem
+import io.snabble.sdk.dynamicview.domain.model.VersionItem
 import io.snabble.sdk.dynamicview.domain.model.toPaddingValues
 import io.snabble.sdk.dynamicview.theme.properties.Elevation
 import io.snabble.sdk.dynamicview.theme.properties.LocalElevation
@@ -30,6 +31,7 @@ import io.snabble.sdk.dynamicview.theme.properties.padding
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.utils.isNotNullOrBlank
 import io.snabble.sdk.widgets.snabble.toggle.ui.ToggleWidget
+import io.snabble.sdk.widgets.snabble.version.ui.VersionWidget
 import io.snabble.sdk.dynamicview.theme.properties.Padding as OuterPadding
 
 @Composable
@@ -65,6 +67,12 @@ fun SectionWidget(
                     )
 
                     is ToggleItem -> ToggleWidget(
+                        model = widget,
+                        onAction = onAction,
+                        modifier = Modifier.heightIn(min = 36.dp)
+                    )
+
+                    is VersionItem -> VersionWidget(
                         model = widget,
                         onAction = onAction,
                         modifier = Modifier.heightIn(min = 36.dp)

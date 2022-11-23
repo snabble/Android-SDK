@@ -16,6 +16,7 @@ import io.snabble.sdk.dynamicview.data.dto.SsidProvider
 import io.snabble.sdk.dynamicview.data.dto.StartShoppingDto
 import io.snabble.sdk.dynamicview.data.dto.TextDto
 import io.snabble.sdk.dynamicview.data.dto.ToggleDto
+import io.snabble.sdk.dynamicview.data.dto.VersionDto
 import io.snabble.sdk.dynamicview.data.dto.WidgetDto
 import io.snabble.sdk.dynamicview.data.dto.toButton
 import io.snabble.sdk.dynamicview.data.dto.toConnectWlan
@@ -29,6 +30,7 @@ import io.snabble.sdk.dynamicview.data.dto.toSeeAllStores
 import io.snabble.sdk.dynamicview.data.dto.toStartShopping
 import io.snabble.sdk.dynamicview.data.dto.toText
 import io.snabble.sdk.dynamicview.data.dto.toToggle
+import io.snabble.sdk.dynamicview.data.dto.toVersion
 import io.snabble.sdk.dynamicview.domain.model.Configuration
 import io.snabble.sdk.dynamicview.domain.model.DynamicConfig
 import io.snabble.sdk.dynamicview.domain.model.SectionItem
@@ -95,6 +97,8 @@ internal class ConfigMapperImpl(private val context: Context, private val ssidPr
                 )
 
                 is ToggleDto -> toToggle(text = "${context.resolveResourceString(text)}")
+
+                is VersionDto -> toVersion()
             }
         }
     }
