@@ -83,12 +83,10 @@ class MainActivity : AppCompatActivity() {
                 when (action.widget.id) {
                     "show.lastPurchases" -> SnabbleUiToolkit.executeAction(context = this, SHOW_RECEIPT_LIST)
                     "5" -> {
+                        devViewModel.incClickCount()
                         if (devViewModel.clickCount.value.xx() == 5) {
-                            devViewModel.resetClickCount()
                             DevDialogFragment().show(supportFragmentManager, "DevDialog")
                         }
-
-                        devViewModel.incClickCount()
                     }
                     else -> Unit
                 }
@@ -144,7 +142,6 @@ class MainActivity : AppCompatActivity() {
     // Can be used to get args from deeplinks. In this case the args are used to
     private fun NavController.setup(toolbar: Toolbar, navBarView: NavigationBarView) {
         addOnDestinationChangedListener { _, destination, arguments ->
-            devViewModel.resetClickCount()
             "Nav to ${resources.getResourceName(destination.id)}"
             toolbar.isVisible = arguments?.getBoolean("hideToolbar") != true
             val isBottomNavigationVisible = arguments?.getBoolean("hideBottomNavigation") != true

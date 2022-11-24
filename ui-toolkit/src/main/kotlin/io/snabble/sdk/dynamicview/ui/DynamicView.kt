@@ -90,4 +90,5 @@ internal fun Widget(
     is SectionItem -> SectionWidget(model = widget, onAction = onAction)
 
     is VersionItem -> VersionWidget(model = widget, onAction = onAction)
+    else -> {}
 }

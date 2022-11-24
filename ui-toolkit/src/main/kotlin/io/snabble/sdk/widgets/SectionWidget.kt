@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.dynamicview.domain.model.ButtonItem
+import io.snabble.sdk.dynamicview.domain.model.DevSettingsItem
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.domain.model.SectionItem
 import io.snabble.sdk.dynamicview.domain.model.TextItem
@@ -30,6 +31,7 @@ import io.snabble.sdk.dynamicview.theme.properties.applyPadding
 import io.snabble.sdk.dynamicview.theme.properties.padding
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.utils.isNotNullOrBlank
+import io.snabble.sdk.widgets.snabble.devsettings.DevSettingsWidget
 import io.snabble.sdk.widgets.snabble.toggle.ui.ToggleWidget
 import io.snabble.sdk.widgets.snabble.version.ui.VersionWidget
 import io.snabble.sdk.dynamicview.theme.properties.Padding as OuterPadding
@@ -51,6 +53,7 @@ fun SectionWidget(
             Spacer(modifier = Modifier.height(MaterialTheme.padding.default))
         }
         Column(Modifier.fillMaxWidth()) {
+            //Todo: Filter
             for (widget in model.items) {
                 when (widget) {
                     is TextItem -> TextWidget(
@@ -78,7 +81,16 @@ fun SectionWidget(
                         modifier = Modifier.heightIn(min = 36.dp)
                     )
 
-                    else -> Unit
+                    is DevSettingsItem ->
+
+                        DevSettingsWidget(
+                            model = widget,
+                            onAction = onAction,
+                            modifier = Modifier.heightIn(min = 36.dp))
+
+                    else -> {
+                        // Do nothing
+                    }
                 }
                 Divider(modifier = modifier.fillMaxWidth(), thickness = Dp.Hairline)
             }
