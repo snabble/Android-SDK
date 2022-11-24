@@ -12,7 +12,7 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-internal val devSettingsModule = module {
+internal val devSettingsLoginModule = module {
     viewModelOf(::DevSettingsLoginViewModel)
 
     factoryOf(::HasEnabledDevSettingsUseCaseImpl) bind HasEnabledDevSettingsUseCase::class

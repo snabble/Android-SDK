@@ -130,6 +130,7 @@ class MainActivity : AppCompatActivity() {
     private fun handleProfileScreenAction(action: DynamicAction) {
         when (action.widget.id) {
             "show.lastPurchases" -> SnabbleUiToolkit.executeAction(context = this, SHOW_RECEIPT_LIST)
+
             "version" -> {
                 devSettingsLoginViewModel.incClickCount()
                 if (devSettingsLoginViewModel.clickCount.value == NUMBER_OF_NEEDED_VERSION_CLICKS) {

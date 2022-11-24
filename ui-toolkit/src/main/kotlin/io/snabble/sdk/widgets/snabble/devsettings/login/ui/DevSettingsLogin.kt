@@ -25,7 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.ImeAction.Companion.Go
+import androidx.compose.ui.text.input.ImeAction.Companion.Send
 import androidx.compose.ui.text.input.KeyboardType.Companion.Password
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -120,10 +120,10 @@ private fun PasswordField(
         visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(
             keyboardType = Password,
-            imeAction = Go
+            imeAction = Send
         ),
         keyboardActions = KeyboardActions(
-            onGo = { onAction() }
+            onSend = { onAction() }
         ),
         maxLines = 1,
         singleLine = true,

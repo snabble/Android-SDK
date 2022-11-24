@@ -1,5 +1,6 @@
 package io.snabble.sdk.widgets.snabble.devsettings.login.ui
 
+import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -26,10 +27,15 @@ class DevSettingsLoginFragment : DialogFragment() {
 
     private val hasEnableDevSettings: HasEnabledDevSettingsUseCase by KoinProvider.inject()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-        ComposeView(inflater.context).apply {
-            dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        isCancelable = false
+        return super.onCreateDialog(savedInstanceState)
+    }
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        return ComposeView(inflater.context).apply {
             hasEnableDevSettings()
                 .onEach {
                     if (it) this@DevSettingsLoginFragment.dismiss()
@@ -54,4 +60,5 @@ class DevSettingsLoginFragment : DialogFragment() {
                 }
             }
         }
+    }
 }
