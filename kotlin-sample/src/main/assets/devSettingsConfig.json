@@ -1,57 +1,47 @@
 {
   "configuration": {
-    "image": "home_default_background",
+    "image": "",
     "style": "scroll",
-    "padding": [16]
+    "padding": [0]
   },
   "widgets": [
     {
-      "type": "text",
-      "id": "2",
-      "text": "Dashboard.title",
-      "textColor": "snabbleBlue",
-      "textStyle": "title",
-      "padding": [0, 16, 5, 0]
+      "type": "section",
+      "id": "section1",
+      "header": "Backend",
+      "padding": [0, 16, 8, 0],
+      "items": [
+        {
+          "type": "snabble.clientId",
+          "id": "2",
+          "padding": [16, 0]
+        },
+        {
+          "type": "snabble.appUserId",
+          "id": "3",
+          "padding": [16, 0]
+        }
+      ]
     },
     {
-      "type": "text",
-      "id": "3",
-      "text": "Dashboard.text",
-      "textStyle": "body",
-      "padding": [0, 0, 5, 0]
-    },
-    {
-      "type": "snabble.locationPermission",
-      "id": "location",
-      "padding": [0, 8, 5, 0]
-    },
-    {
-      "type": "snabble.startShopping",
-      "id": "start",
-      "padding": [0, 0, 5, 0]
-    },
-    {
-      "type": "snabble.allStores",
-      "id": "stores",
-      "padding": [0, 0, 5, 0]
-    },
-    {
-      "type": "information",
-      "id": "card",
-      "text": "Füge eine Kundenkarte hinzu",
-      "image": "customer_card",
-      "padding": [0, 6, 16, 0]
-    },
-    {
-      "type": "snabble.connectWifi",
-      "id": "wifi",
-      "padding": [0, 6, 16, 0]
-    },
-    {
-      "type": "purchases",
-      "id": "purchases",
-      "projectId": "snabble-sdk-demo-app-oguh3x",
-      "padding": [0]
+      "type": "section",
+      "id": "section1",
+      "header": "App",
+      "padding": [0, 16, 8, 0],
+      "items": [
+        {
+          "type": "button",
+          "id": "2",
+          "text": "Reset AppUser-ID",
+          "padding": [16, 8]
+        },
+        {
+          "type": "button",
+          "id": "3",
+          "text": "Reset Client-ID",
+          "padding": [16, 8]
+        }
+      ]
     }
   ]
 }

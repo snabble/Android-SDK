@@ -18,7 +18,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.snabble.sdk.di.KoinProvider
+import io.snabble.sdk.dynamicview.domain.model.AppUserIdItem
 import io.snabble.sdk.dynamicview.domain.model.ButtonItem
+import io.snabble.sdk.dynamicview.domain.model.ClientIdItem
 import io.snabble.sdk.dynamicview.domain.model.DevSettingsItem
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.domain.model.SectionItem
@@ -34,6 +36,8 @@ import io.snabble.sdk.dynamicview.theme.properties.applyPadding
 import io.snabble.sdk.dynamicview.theme.properties.padding
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.utils.isNotNullOrBlank
+import io.snabble.sdk.widgets.snabble.devsettings.AppUserIdWidget
+import io.snabble.sdk.widgets.snabble.devsettings.ClientIdWidget
 import io.snabble.sdk.widgets.snabble.devsettings.DevSettingsWidget
 import io.snabble.sdk.widgets.snabble.devsettings.login.usecase.HasEnabledDevSettingsUseCase
 import io.snabble.sdk.widgets.snabble.toggle.ui.ToggleWidget
@@ -69,17 +73,34 @@ fun SectionWidget(
         Column(Modifier.fillMaxWidth()) {
             for (widget in items) {
                 when (widget) {
-                    is TextItem -> TextWidget(
+
+                    is AppUserIdItem -> AppUserIdWidget(
                         model = widget,
                         onAction = onAction,
-                        modifier = Modifier
-                            .heightIn(min = 36.dp)
-                    )
+                        modifier = Modifier.heightIn(min = 36.dp))
 
                     is ButtonItem -> ButtonWidget(
                         model = widget,
                         onAction = onAction,
                         modifier = Modifier.heightIn(min = 36.dp)
+                    )
+
+                    is ClientIdItem -> ClientIdWidget(
+                        model = widget,
+                        onAction = onAction,
+                        modifier = Modifier.heightIn(min = 36.dp))
+
+                    is DevSettingsItem -> DevSettingsWidget(
+                        model = widget,
+                        onAction = onAction,
+                        modifier = Modifier.heightIn(min = 36.dp)
+                    )
+
+                    is TextItem -> TextWidget(
+                        model = widget,
+                        onAction = onAction,
+                        modifier = Modifier
+                            .heightIn(min = 36.dp)
                     )
 
                     is ToggleItem -> ToggleWidget(
@@ -89,12 +110,6 @@ fun SectionWidget(
                     )
 
                     is VersionItem -> VersionWidget(
-                        model = widget,
-                        onAction = onAction,
-                        modifier = Modifier.heightIn(min = 36.dp)
-                    )
-
-                    is DevSettingsItem -> DevSettingsWidget(
                         model = widget,
                         onAction = onAction,
                         modifier = Modifier.heightIn(min = 36.dp)
