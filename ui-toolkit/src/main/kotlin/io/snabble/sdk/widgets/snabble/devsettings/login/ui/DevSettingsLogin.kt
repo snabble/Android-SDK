@@ -1,4 +1,4 @@
-package io.snabble.sdk.widgets.snabble.devsettings
+package io.snabble.sdk.widgets.snabble.devsettings.login.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,12 +8,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
-import androidx.compose.material3.Button
+import androidx.compose.material.TextButton
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -24,40 +25,28 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.ImeAction.Companion.Go
 import androidx.compose.ui.text.input.KeyboardType.Companion.Password
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-@Preview
 @Composable
-fun Preview() {
-    DevLoginWidget(
-        dismiss = {},
-        login = {},
-        showError = true,
-        onPasswordChange = {}
-    )
-}
-
-@Composable
-fun DevLoginWidget(
+internal fun DevSettingsLogin(
     dismiss: () -> Unit,
     login: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     showError: Boolean,
 ) {
-    val focusManager = LocalFocusManager.current
-
     var password by rememberSaveable { mutableStateOf("") }
-    Card(modifier = Modifier
-        .wrapContentSize()) {
-        Column(modifier = Modifier
-            .wrapContentSize()) {
+    Card(
+        modifier = Modifier.wrapContentSize(),
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(8.dp)
+                .wrapContentSize()
+        ) {
             Spacer(Modifier.height(16.dp))
             PasswordField(
                 password = password,
@@ -65,7 +54,8 @@ fun DevLoginWidget(
                     onPasswordChange(it)
                     password = it
                 },
-                focusManager = focusManager)
+                onAction = { login(password) }
+            )
             if (showError) {
                 Spacer(modifier = Modifier.heightIn(8.dp))
                 Text(
@@ -78,20 +68,34 @@ fun DevLoginWidget(
 
             Spacer(Modifier.height(16.dp))
 
-            Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly) {
-                Button(
-                    modifier = Modifier.widthIn(min = 115.dp),
-                    onClick = { login(password) }) {
-                    Text(text = "Activate")
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                TextButton(
+                    modifier = Modifier.widthIn(min = 90.dp),
+                    shape = MaterialTheme.shapes.extraLarge,
+                    onClick = { dismiss() },
+                ) {
+                    Text(
+                        text = "Cancel",
+                        color = MaterialTheme.colorScheme.primary,
+                    )
                 }
-                Button(
-                    modifier = Modifier.widthIn(min = 115.dp),
-                    onClick = {
-                        dismiss()
-                    }) {
-                    Text(text = "Cancel")
+                Spacer(Modifier.width(16.dp))
+                TextButton(
+                    modifier = Modifier.widthIn(min = 90.dp),
+                    shape = MaterialTheme.shapes.extraLarge,
+                    onClick = { login(password) },
+                ) {
+                    Text(
+                        text = "Activate",
+                        color = MaterialTheme.colorScheme.primary,
+                    )
                 }
+
             }
             Spacer(Modifier.height(16.dp))
         }
@@ -102,7 +106,7 @@ fun DevLoginWidget(
 private fun PasswordField(
     password: String,
     onPasswordChange: (String) -> Unit,
-    focusManager: FocusManager,
+    onAction: () -> Unit,
 ) {
     @OptIn(ExperimentalMaterial3Api::class)
     OutlinedTextField(
@@ -116,14 +120,23 @@ private fun PasswordField(
         visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(
             keyboardType = Password,
-            imeAction = ImeAction.Next
+            imeAction = Go
         ),
         keyboardActions = KeyboardActions(
-            onNext = {
-                focusManager.moveFocus(FocusDirection.Next)
-            }
+            onGo = { onAction() }
         ),
         maxLines = 1,
         singleLine = true,
+    )
+}
+
+@Preview
+@Composable
+private fun Preview() {
+    DevSettingsLogin(
+        dismiss = {},
+        login = {},
+        showError = true,
+        onPasswordChange = {}
     )
 }

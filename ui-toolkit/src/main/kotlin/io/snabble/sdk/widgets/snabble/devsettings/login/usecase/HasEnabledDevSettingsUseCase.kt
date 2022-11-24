@@ -1,29 +1,29 @@
-package io.snabble.sdk.widgets.snabble.devsettings.usecase
+package io.snabble.sdk.widgets.snabble.devsettings.login.usecase
 
 import android.content.SharedPreferences
-import io.snabble.sdk.widgets.snabble.devsettings.repositories.DevSettingsRepositoryImpl.Companion.DEV_SETTINGS_KEY
+import io.snabble.sdk.widgets.snabble.devsettings.login.repositories.DevSettingsLoginRepositoryImpl.Companion.KEY_ARE_DEV_SETTINGS_ENABLED
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
-interface HasEnableDevSettingsUseCase {
+internal interface HasEnabledDevSettingsUseCase {
 
     operator fun invoke(): Flow<Boolean>
 }
 
-class HasEnableDevSettingsUseCaseImpl(
+internal class HasEnabledDevSettingsUseCaseImpl(
     private val sharedPreferences: SharedPreferences,
-) : HasEnableDevSettingsUseCase {
+) : HasEnabledDevSettingsUseCase {
 
     override fun invoke(): Flow<Boolean> = callbackFlow {
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { prefs, changedKey ->
-            if (changedKey == DEV_SETTINGS_KEY) {
-                trySend(prefs.getBoolean(DEV_SETTINGS_KEY, false))
+            if (changedKey == KEY_ARE_DEV_SETTINGS_ENABLED) {
+                trySend(prefs.getBoolean(KEY_ARE_DEV_SETTINGS_ENABLED, false))
             }
         }
         sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
 
-        trySend(sharedPreferences.getBoolean(DEV_SETTINGS_KEY, false))
+        trySend(sharedPreferences.getBoolean(KEY_ARE_DEV_SETTINGS_ENABLED, false))
 
         awaitClose {
             sharedPreferences.unregisterOnSharedPreferenceChangeListener(listener)

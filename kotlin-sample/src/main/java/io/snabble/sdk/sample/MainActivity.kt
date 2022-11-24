@@ -21,14 +21,14 @@ import com.google.gson.Gson
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_RECEIPT_LIST
+import io.snabble.sdk.dynamicview.viewmodel.DynamicAction
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepository
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepositoryImpl
 import io.snabble.sdk.screens.home.viewmodel.DynamicHomeViewModel
 import io.snabble.sdk.screens.profile.viewmodel.DynamicProfileViewModel
 import io.snabble.sdk.screens.receipts.showDetails
-import io.snabble.sdk.utils.xx
-import io.snabble.sdk.widgets.snabble.devsettings.DevDialogFragment
-import io.snabble.sdk.widgets.snabble.devsettings.viewmodel.DevViewModel
+import io.snabble.sdk.widgets.snabble.devsettings.login.ui.DevSettingsLoginFragment
+import io.snabble.sdk.widgets.snabble.devsettings.login.viewmodel.DevSettingsLoginViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -56,11 +56,13 @@ class MainActivity : AppCompatActivity() {
 
     private val homeViewModel: DynamicHomeViewModel by viewModels()
     private val profileViewModel: DynamicProfileViewModel by viewModels()
-    private val devViewModel: DevViewModel by viewModels()
+    private val devSettingsLoginViewModel: DevSettingsLoginViewModel by viewModels()
 
     private val onboardingRepo: OnboardingRepository by lazy {
         OnboardingRepositoryImpl(assets, Gson())
     }
+
+    private lateinit var navBarView: NavigationBarView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +70,7 @@ class MainActivity : AppCompatActivity() {
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
-        val navBarView: NavigationBarView = findViewById(R.id.nav_view)
+        navBarView = findViewById(R.id.nav_view)
 
         navBarView.setupWithNavController(navController)
 
@@ -76,43 +78,8 @@ class MainActivity : AppCompatActivity() {
         setupToolbar(toolbar, navController, navBarView)
         setUpUiEvents(this, navController, navBarView)
 
-
-
-        profileViewModel.actions.asLiveData()
-            .observe(this) { action ->
-                when (action.widget.id) {
-                    "show.lastPurchases" -> SnabbleUiToolkit.executeAction(context = this, SHOW_RECEIPT_LIST)
-                    "5" -> {
-                        devViewModel.incClickCount()
-                        if (devViewModel.clickCount.value.xx() == 5) {
-                            DevDialogFragment().show(supportFragmentManager, "DevDialog")
-                        }
-                    }
-                    else -> Unit
-                }
-            }
-
-        homeViewModel.actions.asLiveData()
-            .observe(this) { action ->
-                when (action.widget.id) {
-                    "start" -> navBarView.selectedItemId = R.id.navigation_scanner
-                    "stores" -> navBarView.selectedItemId = R.id.navigation_shop
-                    "purchases" -> {
-                        when (action.info?.get("action")) {
-                            "more" -> SnabbleUiToolkit.executeAction(context = this, SHOW_RECEIPT_LIST)
-
-                            "purchase" -> {
-                                (action.info?.get("id") as? String)?.let {
-                                    lifecycleScope.launch {
-                                        showDetails(this@MainActivity.findViewById(android.R.id.content), it)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else -> Unit
-                }
-            }
+        homeViewModel.actions.asLiveData().observe(this, ::handleHomeScreenAction)
+        profileViewModel.actions.asLiveData().observe(this, ::handleProfileScreenAction)
 
         if (savedInstanceState == null && showOnboarding != false) {
             lifecycleScope.launch {
@@ -137,6 +104,40 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
 
         Snabble.checkInManager.stopUpdating()
+    }
+
+    private fun handleHomeScreenAction(action: DynamicAction) {
+        when (action.widget.id) {
+            "start" -> navBarView.selectedItemId = R.id.navigation_scanner
+            "stores" -> navBarView.selectedItemId = R.id.navigation_shop
+            "purchases" -> {
+                when (action.info?.get("action")) {
+                    "more" -> SnabbleUiToolkit.executeAction(context = this, SHOW_RECEIPT_LIST)
+
+                    "purchase" -> {
+                        (action.info?.get("id") as? String)?.let {
+                            lifecycleScope.launch {
+                                showDetails(this@MainActivity.findViewById(android.R.id.content), it)
+                            }
+                        }
+                    }
+                }
+            }
+            else -> Unit
+        }
+    }
+
+    private fun handleProfileScreenAction(action: DynamicAction) {
+        when (action.widget.id) {
+            "show.lastPurchases" -> SnabbleUiToolkit.executeAction(context = this, SHOW_RECEIPT_LIST)
+            "version" -> {
+                devSettingsLoginViewModel.incClickCount()
+                if (devSettingsLoginViewModel.clickCount.value == NUMBER_OF_NEEDED_VERSION_CLICKS) {
+                    DevSettingsLoginFragment().show(supportFragmentManager, "DevSettingsPasswordDialog")
+                }
+            }
+            else -> Unit
+        }
     }
 
     // Can be used to get args from deeplinks. In this case the args are used to
@@ -174,6 +175,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
+
+        private const val NUMBER_OF_NEEDED_VERSION_CLICKS = 5
 
         const val PREF_KEY_SHOW_ONBOARDING = "snabble.show.onboarding"
     }

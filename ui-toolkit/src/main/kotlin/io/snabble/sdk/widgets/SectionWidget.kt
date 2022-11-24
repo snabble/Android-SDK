@@ -35,7 +35,7 @@ import io.snabble.sdk.dynamicview.theme.properties.padding
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.utils.isNotNullOrBlank
 import io.snabble.sdk.widgets.snabble.devsettings.DevSettingsWidget
-import io.snabble.sdk.widgets.snabble.devsettings.usecase.HasEnableDevSettingsUseCaseImpl
+import io.snabble.sdk.widgets.snabble.devsettings.login.usecase.HasEnabledDevSettingsUseCase
 import io.snabble.sdk.widgets.snabble.toggle.ui.ToggleWidget
 import io.snabble.sdk.widgets.snabble.version.ui.VersionWidget
 import org.koin.core.component.inject
@@ -48,7 +48,7 @@ fun SectionWidget(
     model: SectionItem,
     onAction: OnDynamicAction,
 ) {
-    val hasEnableDevSettings: HasEnableDevSettingsUseCaseImpl by KoinProvider.inject()
+    val hasEnableDevSettings: HasEnabledDevSettingsUseCase by KoinProvider.inject()
     val devSettingsEnabled = hasEnableDevSettings().collectAsStateWithLifecycle(initialValue = true)
 
     var items = model.items
@@ -94,12 +94,11 @@ fun SectionWidget(
                         modifier = Modifier.heightIn(min = 36.dp)
                     )
 
-                    is DevSettingsItem ->
-
-                        DevSettingsWidget(
-                            model = widget,
-                            onAction = onAction,
-                            modifier = Modifier.heightIn(min = 36.dp))
+                    is DevSettingsItem -> DevSettingsWidget(
+                        model = widget,
+                        onAction = onAction,
+                        modifier = Modifier.heightIn(min = 36.dp)
+                    )
 
                     else -> {
                         // Do nothing

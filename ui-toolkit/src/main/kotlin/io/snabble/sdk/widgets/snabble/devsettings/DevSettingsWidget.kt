@@ -1,13 +1,10 @@
 package io.snabble.sdk.widgets.snabble.devsettings
 
-import androidx.compose.foundation.Indication
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,16 +19,11 @@ fun DevSettingsWidget(
     model: DevSettingsItem,
     modifier: Modifier = Modifier,
     onAction: OnDynamicAction,
-    indication: Indication? = rememberRipple(),
-
-    ) {
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(
-                interactionSource = MutableInteractionSource(),
-                indication = indication,
-            ) {
+            .clickable {
                 onAction(DynamicAction(model))
             }
             .padding(model.padding.toPaddingValues())

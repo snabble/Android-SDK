@@ -97,7 +97,7 @@
         },
         {
           "type": "snabble.version",
-          "id": "5",
+          "id": "version",
           "padding": [16, 8]
         }
       ]

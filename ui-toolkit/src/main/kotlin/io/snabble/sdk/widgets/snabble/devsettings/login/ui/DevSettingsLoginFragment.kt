@@ -1,4 +1,4 @@
-package io.snabble.sdk.widgets.snabble.devsettings
+package io.snabble.sdk.widgets.snabble.devsettings.login.ui
 
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -14,33 +14,36 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import io.snabble.sdk.di.KoinProvider
 import io.snabble.sdk.dynamicview.theme.ThemeWrapper
-import io.snabble.sdk.widgets.snabble.devsettings.usecase.HasEnableDevSettingsUseCaseImpl
-import io.snabble.sdk.widgets.snabble.devsettings.viewmodel.DevViewModel
+import io.snabble.sdk.widgets.snabble.devsettings.login.usecase.HasEnabledDevSettingsUseCase
+import io.snabble.sdk.widgets.snabble.devsettings.login.viewmodel.DevSettingsLoginViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.core.component.inject
 
-class DevDialogFragment : DialogFragment() {
+class DevSettingsLoginFragment : DialogFragment() {
 
-    private val viewModel: DevViewModel by activityViewModels()
+    private val viewModel: DevSettingsLoginViewModel by activityViewModels()
+
+    private val hasEnableDevSettings: HasEnabledDevSettingsUseCase by KoinProvider.inject()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         ComposeView(inflater.context).apply {
             dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            val hasEnableDevSettings: HasEnableDevSettingsUseCaseImpl by KoinProvider.inject()
+
             hasEnableDevSettings()
                 .onEach {
-                    if (it) this@DevDialogFragment.dismiss()
+                    if (it) this@DevSettingsLoginFragment.dismiss()
                 }
                 .launchIn(viewLifecycleOwner.lifecycleScope)
+
             setContent {
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
                 ThemeWrapper {
-                    DevLoginWidget(
+                    DevSettingsLogin(
                         dismiss = {
                             viewModel.resetErrorMessage()
-                            this@DevDialogFragment.dismiss()
+                            this@DevSettingsLoginFragment.dismiss()
                         },
                         login = {
                             viewModel.onEnableSettingsClick(it)
