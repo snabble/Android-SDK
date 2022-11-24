@@ -13,12 +13,12 @@
       "items": [
         {
           "type": "snabble.clientId",
-          "id": "2",
+          "id": "clientId",
           "padding": [16, 0]
         },
         {
           "type": "snabble.appUserId",
-          "id": "3",
+          "id": "appUserId",
           "padding": [16, 0]
         }
       ]
@@ -31,13 +31,13 @@
       "items": [
         {
           "type": "button",
-          "id": "2",
+          "id": "resetAppUserId",
           "text": "Reset AppUser-ID",
           "padding": [16, 8]
         },
         {
           "type": "button",
-          "id": "3",
+          "id": "resetClientId",
           "text": "Reset Client-ID",
           "padding": [16, 8]
         }

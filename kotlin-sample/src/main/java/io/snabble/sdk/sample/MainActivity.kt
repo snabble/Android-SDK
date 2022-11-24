@@ -1,9 +1,12 @@
 package io.snabble.sdk.sample
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.os.bundleOf
@@ -18,6 +21,7 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
 import com.google.android.material.navigation.NavigationBarView
 import com.google.gson.Gson
+import com.jakewharton.processphoenix.ProcessPhoenix
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_RECEIPT_LIST
@@ -136,6 +140,7 @@ class MainActivity : AppCompatActivity() {
     private fun handleProfileScreenAction(action: DynamicAction, navController: NavController) {
         when (action.widget.id) {
             "show.lastPurchases" -> SnabbleUiToolkit.executeAction(context = this, SHOW_RECEIPT_LIST)
+
             "devSettings" -> navController.navigate(R.id.fra_dev_settings)
 
             "version" -> {
@@ -150,9 +155,35 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleDevSettingsScreenAction(action: DynamicAction) {
         when (action.widget.id.xx("devs: ")) {
+            "resetAppUserId" ->
+                createWarningDialog(
+                    msg = "Do you really want to reset your AppUser-ID?",
+                    action = {
+                        Snabble.userPreferences.appUser = null
+                        ProcessPhoenix.triggerRebirth(this)
+                    }
+                ).show()
+            "resetClientId" -> createWarningDialog(
+                msg = "Do you really want to reset your Client-ID?",
+                action = {
+                    val sharedPreferences = this.getSharedPreferences("snabble_prefs", Context.MODE_PRIVATE)
+                    sharedPreferences.edit().putString("Client-ID", null).commit()
+                    ProcessPhoenix.triggerRebirth(this)
+                }).show()
+
             else -> Unit
         }
     }
+
+    private fun createWarningDialog(msg: String, action: () -> Unit) =
+        AlertDialog.Builder(this)
+            .setTitle("Warning")
+            .setMessage(msg)
+            .setPositiveButton("Yes") { _: DialogInterface?, _: Int ->
+                action()
+            }
+            .setNegativeButton("No", null)
+            .create()
 
     // Can be used to get args from deeplinks. In this case the args are used to
     private fun NavController.setup(toolbar: Toolbar, navBarView: NavigationBarView) {
