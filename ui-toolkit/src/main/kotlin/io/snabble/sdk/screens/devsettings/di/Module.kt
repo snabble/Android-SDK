@@ -1,4 +1,4 @@
-package io.snabble.sdk.screens.home.di
+package io.snabble.sdk.screens.devsettings.di
 
 import io.snabble.sdk.screens.devsettings.usecases.GetDevSettingsConfigUseCase
 import io.snabble.sdk.screens.devsettings.usecases.GetDevSettingsConfigUseCaseImpl

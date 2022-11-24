@@ -33,7 +33,7 @@ class DevSettingsFragment : Fragment() {
                         modifier = Modifier
                             .background(
                                 Color(
-                                    LocalContext.current.getComposeColor("home_background")
+                                    LocalContext.current.getComposeColor("dev_background")
                                         ?: MaterialTheme.colorScheme.background.toArgb()
                                 )
                             )

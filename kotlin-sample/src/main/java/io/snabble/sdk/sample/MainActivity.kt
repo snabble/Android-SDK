@@ -24,9 +24,11 @@ import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_RECEIPT_LIST
 import io.snabble.sdk.dynamicview.viewmodel.DynamicAction
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepository
 import io.snabble.sdk.sample.onboarding.repository.OnboardingRepositoryImpl
+import io.snabble.sdk.screens.devsettings.viewmodel.DevSettingsViewModel
 import io.snabble.sdk.screens.home.viewmodel.DynamicHomeViewModel
 import io.snabble.sdk.screens.profile.viewmodel.DynamicProfileViewModel
 import io.snabble.sdk.screens.receipts.showDetails
+import io.snabble.sdk.utils.xx
 import io.snabble.sdk.widgets.snabble.devsettings.login.ui.DevSettingsLoginFragment
 import io.snabble.sdk.widgets.snabble.devsettings.login.viewmodel.DevSettingsLoginViewModel
 import kotlinx.coroutines.launch
@@ -57,6 +59,7 @@ class MainActivity : AppCompatActivity() {
     private val homeViewModel: DynamicHomeViewModel by viewModels()
     private val profileViewModel: DynamicProfileViewModel by viewModels()
     private val devSettingsLoginViewModel: DevSettingsLoginViewModel by viewModels()
+    private val devSettingsViewModel: DevSettingsViewModel by viewModels()
 
     private val onboardingRepo: OnboardingRepository by lazy {
         OnboardingRepositoryImpl(assets, Gson())
@@ -79,7 +82,10 @@ class MainActivity : AppCompatActivity() {
         setUpUiEvents(this, navController, navBarView)
 
         homeViewModel.actions.asLiveData().observe(this, ::handleHomeScreenAction)
-        profileViewModel.actions.asLiveData().observe(this, ::handleProfileScreenAction)
+        profileViewModel.actions.asLiveData().observe(this) {
+            handleProfileScreenAction(it, navController)
+        }
+        devSettingsViewModel.actions.asLiveData().observe(this, ::handleDevSettingsScreenAction)
 
         if (savedInstanceState == null && showOnboarding != false) {
             lifecycleScope.launch {
@@ -127,9 +133,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleProfileScreenAction(action: DynamicAction) {
+    private fun handleProfileScreenAction(action: DynamicAction, navController: NavController) {
         when (action.widget.id) {
             "show.lastPurchases" -> SnabbleUiToolkit.executeAction(context = this, SHOW_RECEIPT_LIST)
+            "devSettings" -> navController.navigate(R.id.fra_dev_settings)
 
             "version" -> {
                 devSettingsLoginViewModel.incClickCount()
@@ -137,6 +144,12 @@ class MainActivity : AppCompatActivity() {
                     DevSettingsLoginFragment().show(supportFragmentManager, "DevSettingsPasswordDialog")
                 }
             }
+            else -> Unit
+        }
+    }
+
+    private fun handleDevSettingsScreenAction(action: DynamicAction) {
+        when (action.widget.id.xx("devs: ")) {
             else -> Unit
         }
     }
