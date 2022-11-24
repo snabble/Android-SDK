@@ -3,6 +3,7 @@ package io.snabble.sdk.di
 import android.content.Context
 import androidx.startup.Initializer
 import io.snabble.sdk.dynamicview.data.di.configModule
+import io.snabble.sdk.screens.home.di.devSettingsModule
 import io.snabble.sdk.screens.home.di.homeModule
 import io.snabble.sdk.screens.profile.di.profileModule
 import io.snabble.sdk.screens.receipts.di.receiptModule
@@ -41,6 +42,7 @@ internal class KoinInitializer : Initializer<Koin> {
                 wlanManagerModule,
                 receiptModule,
                 devSettingsLoginModule,
+                devSettingsModule
             )
         }
             .koin
