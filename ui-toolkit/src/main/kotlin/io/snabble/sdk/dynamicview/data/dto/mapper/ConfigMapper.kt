@@ -5,6 +5,7 @@ import io.snabble.sdk.dynamicview.data.dto.ButtonDto
 import io.snabble.sdk.dynamicview.data.dto.ConfigurationDto
 import io.snabble.sdk.dynamicview.data.dto.ConnectWlanDto
 import io.snabble.sdk.dynamicview.data.dto.CustomerCardDto
+import io.snabble.sdk.dynamicview.data.dto.DevSettingsDto
 import io.snabble.sdk.dynamicview.data.dto.DynamicConfigDto
 import io.snabble.sdk.dynamicview.data.dto.ImageDto
 import io.snabble.sdk.dynamicview.data.dto.InformationDto
@@ -21,6 +22,7 @@ import io.snabble.sdk.dynamicview.data.dto.WidgetDto
 import io.snabble.sdk.dynamicview.data.dto.toButton
 import io.snabble.sdk.dynamicview.data.dto.toConnectWlan
 import io.snabble.sdk.dynamicview.data.dto.toCustomCardItem
+import io.snabble.sdk.dynamicview.data.dto.toDevSettingsItem
 import io.snabble.sdk.dynamicview.data.dto.toImage
 import io.snabble.sdk.dynamicview.data.dto.toInformation
 import io.snabble.sdk.dynamicview.data.dto.toLocationPermission
@@ -99,6 +101,7 @@ internal class ConfigMapperImpl(private val context: Context, private val ssidPr
                 is ToggleDto -> toToggle(text = "${context.resolveResourceString(text)}")
 
                 is VersionDto -> toVersion()
+                is DevSettingsDto -> toDevSettingsItem(text = "${context.resolveResourceString(text)}")
             }
         }
     }

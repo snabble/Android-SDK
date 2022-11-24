@@ -15,6 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.snabble.sdk.di.KoinProvider
 import io.snabble.sdk.dynamicview.domain.model.ButtonItem
 import io.snabble.sdk.dynamicview.domain.model.DevSettingsItem
 import io.snabble.sdk.dynamicview.domain.model.Padding
@@ -32,16 +35,27 @@ import io.snabble.sdk.dynamicview.theme.properties.padding
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.utils.isNotNullOrBlank
 import io.snabble.sdk.widgets.snabble.devsettings.DevSettingsWidget
+import io.snabble.sdk.widgets.snabble.devsettings.usecase.HasEnableDevSettingsUseCaseImpl
 import io.snabble.sdk.widgets.snabble.toggle.ui.ToggleWidget
 import io.snabble.sdk.widgets.snabble.version.ui.VersionWidget
+import org.koin.core.component.inject
 import io.snabble.sdk.dynamicview.theme.properties.Padding as OuterPadding
 
+@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun SectionWidget(
     modifier: Modifier = Modifier,
     model: SectionItem,
     onAction: OnDynamicAction,
 ) {
+    val hasEnableDevSettings: HasEnableDevSettingsUseCaseImpl by KoinProvider.inject()
+    val devSettingsEnabled = hasEnableDevSettings().collectAsStateWithLifecycle(initialValue = true)
+
+    var items = model.items
+    if (!devSettingsEnabled.value) {
+        items = model.items.filter { it !is DevSettingsItem }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -53,8 +67,7 @@ fun SectionWidget(
             Spacer(modifier = Modifier.height(MaterialTheme.padding.default))
         }
         Column(Modifier.fillMaxWidth()) {
-            //Todo: Filter
-            for (widget in model.items) {
+            for (widget in items) {
                 when (widget) {
                     is TextItem -> TextWidget(
                         model = widget,

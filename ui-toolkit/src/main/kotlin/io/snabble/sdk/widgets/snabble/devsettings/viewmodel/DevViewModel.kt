@@ -27,8 +27,6 @@ class DevViewModel(
     private var _showError = MutableStateFlow(false)
     val showError = _showError.asStateFlow()
 
-    private var _settingsEnabled = devSettingsRepository.devSettingsEnabled
-
     fun onEnableSettingsClick(password: String) {
         viewModelScope.launch {
             val result = devSettingsRepository.enableDevSettings(password)
