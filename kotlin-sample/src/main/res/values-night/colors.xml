@@ -11,7 +11,7 @@
     <color name="onPrimaryContainer">#1C1B1F</color>
 
     <color name="onSecondary">@color/white</color>
-
+    
     <color name="windowBackground">#061729</color>
     <color name="statusBarColor">#000000</color>
     <color name="androidNavBarColor">#000000</color>
@@ -21,6 +21,7 @@
     <color name="grey">#8E8E93</color>
     <color name="almost_white">#FDFFFF</color>
     <color name="home_background">@color/windowBackground</color>
+    <color name="dev_background">@color/windowBackground</color>
     <color name="profile_background">@color/windowBackground</color>
     <color name="snabble_onboarding_primary">@color/snabbleBlue</color>
     <color name="snabble_onboarding_highlight">#005982</color>
