@@ -12,6 +12,7 @@ internal data class SwitchEnvironmentDto(
     @SerialName("id") override val id: String,
     @SerialName("text") val text: String,
     @SerialName("values") val values: List<Value>,
+    @SerialName("padding") val padding: PaddingDto,
 ) : WidgetDto {
 
     @Serializable
@@ -27,7 +28,8 @@ internal fun SwitchEnvironmentDto.toSwitchEnvironmentItem(
 ): SwitchEnvironmentItem = SwitchEnvironmentItem(
     id = id,
     text = text,
-    values = values.map { it.toValue(context) }
+    values = values.map { it.toValue(context) },
+    padding = padding.toPadding()
 )
 
 private fun SwitchEnvironmentDto.Value.toValue(context: Context): SwitchEnvironmentItem.Value =

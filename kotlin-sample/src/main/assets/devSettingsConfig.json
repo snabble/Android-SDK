@@ -25,6 +25,7 @@
           "type": "snabble.switchEnvironment",
           "id": "io.snabble.environment",
           "text": "Profile.environment",
+          "padding": [16, 0],
           "values": [
             {
               "id": "io.snabble.environment.production",

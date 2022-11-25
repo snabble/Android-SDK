@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.dynamicview.domain.model.SwitchEnvironmentItem
+import io.snabble.sdk.dynamicview.domain.model.toPaddingValues
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.widgets.MultiValueWidget
 
@@ -31,7 +32,7 @@ internal fun EnvironmentWidget(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onExpandChange(!expanded) }
-            .padding(horizontal = 16.dp)
+            .padding(model.padding.toPaddingValues())
             .then(modifier),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,

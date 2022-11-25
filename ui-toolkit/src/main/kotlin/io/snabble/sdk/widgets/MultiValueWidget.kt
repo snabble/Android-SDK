@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.domain.model.SwitchEnvironmentItem
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.viewmodel.DynamicAction
@@ -64,7 +65,8 @@ private fun MultiValueWidgetPreview() {
                 SwitchEnvironmentItem.Value(id = "prod", text = "Production"),
                 SwitchEnvironmentItem.Value(id = "stag", text = "Staging"),
                 SwitchEnvironmentItem.Value(id = "dev", text = "Testing"),
-            )
+            ),
+            padding = Padding(horizontal = 16),
         ),
         onAction = {},
         expanded = expanded,
