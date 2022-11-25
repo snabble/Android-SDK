@@ -8,10 +8,13 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.snabble.sdk.dynamicview.data.dto.AppUserIdDto
 import io.snabble.sdk.dynamicview.data.dto.ButtonDto
+import io.snabble.sdk.dynamicview.data.dto.ClientIdDto
 import io.snabble.sdk.dynamicview.data.dto.ConfigurationDto
 import io.snabble.sdk.dynamicview.data.dto.ConnectWlanDto
 import io.snabble.sdk.dynamicview.data.dto.CustomerCardDto
+import io.snabble.sdk.dynamicview.data.dto.DevSettingsDto
 import io.snabble.sdk.dynamicview.data.dto.DynamicConfigDto
 import io.snabble.sdk.dynamicview.data.dto.ImageDto
 import io.snabble.sdk.dynamicview.data.dto.InformationDto
@@ -23,9 +26,12 @@ import io.snabble.sdk.dynamicview.data.dto.StartShoppingDto
 import io.snabble.sdk.dynamicview.data.dto.TextDto
 import io.snabble.sdk.dynamicview.data.dto.VersionDto
 import io.snabble.sdk.dynamicview.data.dto.WidgetDto
+import io.snabble.sdk.dynamicview.domain.model.AppUserIdItem
 import io.snabble.sdk.dynamicview.domain.model.ButtonItem
+import io.snabble.sdk.dynamicview.domain.model.ClientIdItem
 import io.snabble.sdk.dynamicview.domain.model.ConnectWlanItem
 import io.snabble.sdk.dynamicview.domain.model.CustomerCardItem
+import io.snabble.sdk.dynamicview.domain.model.DevSettingsItem
 import io.snabble.sdk.dynamicview.domain.model.ImageItem
 import io.snabble.sdk.dynamicview.domain.model.InformationItem
 import io.snabble.sdk.dynamicview.domain.model.LocationPermissionItem
@@ -166,6 +172,29 @@ internal class ConfigMapperImplTest : FreeSpec({
                 }
             }
 
+            "AppUserIdDto to AppUserIdItem" - {
+
+                val appUserIdDto = AppUserIdDto(
+                    id = "a.appUserId",
+                    padding = PaddingDto(0, 0, 0, 0)
+                )
+
+                val rootDto = setupSutDto(appUserIdDto)
+                every { context.resolveImageId(rootDto.configuration.image) } returns 1
+
+                val sut = createMapper().mapDtoToItems(rootDto)
+
+                val appUserIdItem = sut.widgets.first().shouldBeTypeOf<AppUserIdItem>()
+
+                "id" {
+                    appUserIdItem.id shouldBe "a.appUserId"
+                }
+
+                "padding" {
+                    appUserIdItem.padding shouldBe Padding(0, 0, 0, 0)
+                }
+            }
+
             "ButtonDto to ButtonItem" - {
 
                 val buttonDto = ButtonDto(
@@ -202,6 +231,59 @@ internal class ConfigMapperImplTest : FreeSpec({
                     buttonItem.padding shouldBe Padding(0, 0, 0, 0)
                 }
             }
+
+            "ClientIdDto to ClientIdItem" - {
+
+                val clientIdDto = ClientIdDto(
+                    id = "a.clientId",
+                    padding = PaddingDto(0, 0, 0, 0)
+                )
+
+                val rootDto = setupSutDto(clientIdDto)
+                every { context.resolveImageId(rootDto.configuration.image) } returns 1
+
+                val sut = createMapper().mapDtoToItems(rootDto)
+
+                val clientIdItem = sut.widgets.first().shouldBeTypeOf<ClientIdItem>()
+
+                "id" {
+                    clientIdItem.id shouldBe "a.clientId"
+                }
+
+                "padding" {
+                    clientIdItem.padding shouldBe Padding(0, 0, 0, 0)
+                }
+            }
+
+            "DevSettingsDto to DevSettingsItem" - {
+
+                val devSettingsDto = DevSettingsDto(
+                    id = "a.devSettings",
+                    text = "devSettings",
+                    padding = PaddingDto(0, 0, 0, 0)
+                )
+
+                val rootDto = setupSutDto(devSettingsDto)
+                every { context.resolveImageId(rootDto.configuration.image) } returns 1
+
+                val sut = createMapper().mapDtoToItems(rootDto)
+
+                val devSettingsItem = sut.widgets.first().shouldBeTypeOf<DevSettingsItem>()
+
+                "id" {
+                    devSettingsItem.id shouldBe "a.devSettings"
+                }
+
+                "text"{
+                    devSettingsItem.text shouldBe "devSettings"
+                }
+
+                "padding" {
+                    devSettingsItem.padding shouldBe Padding(0, 0, 0, 0)
+                }
+            }
+
+
 
             "LocationPermissionDto to LocationPermissionItem" - {
 
