@@ -30,7 +30,6 @@ fun ClientIdWidget(
     model: ClientIdItem,
     onAction: OnDynamicAction,
 ) {
-
     val clientId: String = if (!LocalInspectionMode.current) {
         Snabble.clientId.toString()
     } else {
@@ -38,7 +37,6 @@ fun ClientIdWidget(
     }
 
     val context = LocalContext.current
-
     Column(
         modifier = Modifier
             .fillMaxWidth()

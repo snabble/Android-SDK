@@ -12,6 +12,7 @@ import io.snabble.sdk.dynamicview.data.dto.DynamicConfigDto
 import io.snabble.sdk.dynamicview.data.dto.ImageDto
 import io.snabble.sdk.dynamicview.data.dto.InformationDto
 import io.snabble.sdk.dynamicview.data.dto.LocationPermissionDto
+import io.snabble.sdk.dynamicview.data.dto.SwitchEnvironmentDto
 import io.snabble.sdk.dynamicview.data.dto.PurchasesDto
 import io.snabble.sdk.dynamicview.data.dto.SectionDto
 import io.snabble.sdk.dynamicview.data.dto.SeeAllStoresDto
@@ -30,6 +31,7 @@ import io.snabble.sdk.dynamicview.data.dto.toDevSettingsItem
 import io.snabble.sdk.dynamicview.data.dto.toImage
 import io.snabble.sdk.dynamicview.data.dto.toInformation
 import io.snabble.sdk.dynamicview.data.dto.toLocationPermission
+import io.snabble.sdk.dynamicview.data.dto.toSwitchEnvironmentItem
 import io.snabble.sdk.dynamicview.data.dto.toPadding
 import io.snabble.sdk.dynamicview.data.dto.toPurchases
 import io.snabble.sdk.dynamicview.data.dto.toSeeAllStores
@@ -94,6 +96,8 @@ internal class ConfigMapperImpl(private val context: Context, private val ssidPr
                 )
 
                 is LocationPermissionDto -> toLocationPermission()
+
+                is SwitchEnvironmentDto -> toSwitchEnvironmentItem(text = "${context.resolveResourceString(text)}")
 
                 is PurchasesDto -> toPurchases()
 

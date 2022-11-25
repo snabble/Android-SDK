@@ -22,6 +22,7 @@ import androidx.preference.PreferenceManager
 import com.google.android.material.navigation.NavigationBarView
 import com.google.gson.Gson
 import com.jakewharton.processphoenix.ProcessPhoenix
+import io.snabble.sdk.Environment
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.SnabbleUiToolkit.Event.SHOW_RECEIPT_LIST
@@ -32,7 +33,6 @@ import io.snabble.sdk.screens.devsettings.viewmodel.DevSettingsViewModel
 import io.snabble.sdk.screens.home.viewmodel.DynamicHomeViewModel
 import io.snabble.sdk.screens.profile.viewmodel.DynamicProfileViewModel
 import io.snabble.sdk.screens.receipts.showDetails
-import io.snabble.sdk.utils.xx
 import io.snabble.sdk.widgets.snabble.devsettings.login.ui.DevSettingsLoginFragment
 import io.snabble.sdk.widgets.snabble.devsettings.login.viewmodel.DevSettingsLoginViewModel
 import kotlinx.coroutines.launch
@@ -154,28 +154,51 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleDevSettingsScreenAction(action: DynamicAction) {
-        when (action.widget.id.xx("devs: ")) {
-            "resetAppUserId" ->
-                createWarningDialog(
-                    msg = "Do you really want to reset your AppUser-ID?",
-                    action = {
-                        Snabble.userPreferences.appUser = null
+        when (action.widget.id) {
+            "io.snabble.environment" -> {
+                val environment = when (action.info?.get("selection")) {
+                    "io.snabble.environment.production" -> {
+                        Environment.PRODUCTION
+                    }
+                    "io.snabble.environment.staging" -> {
+                        Environment.STAGING
+                    }
+                    "io.snabble.environment.testing" -> {
+                        Environment.TESTING
+                    }
+                    else -> return
+                }
+                if (environment != Snabble.environment) {
+                    showWarningDialog(
+                        msg = "Do you really want to switch from ${Snabble.environment} to $environment?"
+                    ) {
+                        Snabble.userPreferences.environment = environment
                         ProcessPhoenix.triggerRebirth(this)
                     }
-                ).show()
-            "resetClientId" -> createWarningDialog(
-                msg = "Do you really want to reset your Client-ID?",
-                action = {
-                    val sharedPreferences = this.getSharedPreferences("snabble_prefs", Context.MODE_PRIVATE)
-                    sharedPreferences.edit().putString("Client-ID", null).commit()
+                }
+            }
+
+            "resetAppUserId" -> {
+                showWarningDialog(msg = "Do you really want to reset your AppUser-ID?") {
+                    Snabble.userPreferences.appUser = null
                     ProcessPhoenix.triggerRebirth(this)
-                }).show()
+                }
+            }
+
+            "resetClientId" -> {
+                showWarningDialog(msg = "Do you really want to reset your Client-ID?") {
+                    getSharedPreferences("snabble_prefs", Context.MODE_PRIVATE).edit()
+                        .putString("Client-ID", null)
+                        .apply()
+                    ProcessPhoenix.triggerRebirth(this)
+                }
+            }
 
             else -> Unit
         }
     }
 
-    private fun createWarningDialog(msg: String, action: () -> Unit) =
+    private fun showWarningDialog(msg: String, action: () -> Unit) =
         AlertDialog.Builder(this)
             .setTitle("Warning")
             .setMessage(msg)
@@ -183,7 +206,7 @@ class MainActivity : AppCompatActivity() {
                 action()
             }
             .setNegativeButton("No", null)
-            .create()
+            .show()
 
     // Can be used to get args from deeplinks. In this case the args are used to
     private fun NavController.setup(toolbar: Toolbar, navBarView: NavigationBarView) {

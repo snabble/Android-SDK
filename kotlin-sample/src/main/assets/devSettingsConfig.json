@@ -20,6 +20,25 @@
           "type": "snabble.appUserId",
           "id": "appUserId",
           "padding": [16, 0]
+        },
+        {
+          "type": "snabble.switchEnvironment",
+          "id": "io.snabble.environment",
+          "text": "Profile.environment",
+          "values": [
+            {
+              "id": "io.snabble.environment.production",
+              "text": "Profile.Environment.production"
+            },
+            {
+              "id": "io.snabble.environment.staging",
+              "text": "Profile.Environment.staging"
+            },
+            {
+              "id": "io.snabble.environment.testing",
+              "text": "Profile.Environment.testing"
+            }
+          ]
         }
       ]
     },

@@ -30,7 +30,6 @@ fun AppUserIdWidget(
     model: AppUserIdItem,
     onAction: OnDynamicAction,
 ) {
-
     val appUserId: String = if (!LocalInspectionMode.current) {
         Snabble.userPreferences.appUser?.id.toString()
     } else {
@@ -38,7 +37,6 @@ fun AppUserIdWidget(
     }
 
     val context = LocalContext.current
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
