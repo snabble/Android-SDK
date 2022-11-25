@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity() {
         when (action.widget.id) {
             "show.lastPurchases" -> SnabbleUiToolkit.executeAction(context = this, SHOW_RECEIPT_LIST)
 
-            "devSettings" -> navController.navigate(R.id.fra_dev_settings)
+            "devSettings" -> navController.navigate(R.id.dev_settings)
 
             "version" -> {
                 devSettingsLoginViewModel.incClickCount()

@@ -1,6 +1,8 @@
 package io.snabble.sdk.dynamicview.data.dto
 
+import android.content.Context
 import io.snabble.sdk.dynamicview.domain.model.SwitchEnvironmentItem
+import io.snabble.sdk.utils.resolveResourceString
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -20,11 +22,13 @@ internal data class SwitchEnvironmentDto(
 }
 
 internal fun SwitchEnvironmentDto.toSwitchEnvironmentItem(
+    context: Context,
     text: String,
 ): SwitchEnvironmentItem = SwitchEnvironmentItem(
     id = id,
     text = text,
-    values = this.values.map(SwitchEnvironmentDto.Value::toValue)
+    values = values.map { it.toValue(context) }
 )
 
-private fun SwitchEnvironmentDto.Value.toValue(): SwitchEnvironmentItem.Value = SwitchEnvironmentItem.Value(id, text)
+private fun SwitchEnvironmentDto.Value.toValue(context: Context): SwitchEnvironmentItem.Value =
+    SwitchEnvironmentItem.Value(id, "${context.resolveResourceString(text)}")

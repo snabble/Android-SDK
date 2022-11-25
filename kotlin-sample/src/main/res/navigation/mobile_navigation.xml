@@ -74,10 +74,10 @@
             android:label="@string/profile" />
 
         <fragment
-            android:id="@+id/fra_dev_settings"
+            android:id="@+id/dev_settings"
             android:name="io.snabble.sdk.screens.devsettings.ui.DevSettingsFragment"
             android:label="@string/Profile.developerMode" />
-        
+
     </navigation>
 
     <navigation
