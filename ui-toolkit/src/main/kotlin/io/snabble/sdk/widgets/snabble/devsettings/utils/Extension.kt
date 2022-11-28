@@ -5,7 +5,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.widget.Toast
 
-fun Context.copyToClipBoard(msg: String, id: String) {
+internal fun Context.copyToClipBoard(msg: String, id: String) {
     val clipboardManager = this.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     clipboardManager.setPrimaryClip(ClipData.newPlainText(msg, id))
     Toast.makeText(this, "Copied to clipboard", Toast.LENGTH_LONG).show()
