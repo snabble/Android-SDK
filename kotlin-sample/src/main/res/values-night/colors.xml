@@ -11,7 +11,7 @@
     <color name="onPrimaryContainer">#1C1B1F</color>
 
     <color name="onSecondary">@color/white</color>
-    
+
     <color name="windowBackground">#061729</color>
     <color name="statusBarColor">#000000</color>
     <color name="androidNavBarColor">#000000</color>
