@@ -36,6 +36,8 @@ io.snabble.sdk.dynamicview.domain.model
 io.snabble.sdk.dynamicview.theme
 io.snabble.sdk.dynamicview.ui
 io.snabble.sdk.dynamicview.viewmodel
+io.snabble.sdk.screens.devsettings.ui
+io.snabble.sdk.screens.devsettings.viewmodel
 io.snabble.sdk.screens.home.ui
 io.snabble.sdk.screens.home.viewmodel
 io.snabble.sdk.screens.notckeckedin
@@ -54,8 +56,12 @@ io.snabble.sdk.screens.shopfinder.shoplist
 io.snabble.sdk.screens.shopfinder.utils
 io.snabble.sdk.utils
 io.snabble.sdk.widgets
+io.snabble.sdk.widgets.snabble.devsettings
+io.snabble.sdk.widgets.snabble.devsettings.login.ui
+io.snabble.sdk.widgets.snabble.devsettings.login.viewmodel
 io.snabble.sdk.widgets.snabble.purchase
 io.snabble.sdk.widgets.snabble.purchase.ui
+io.snabble.sdk.widgets.snabble.version.ui
 module:utils
 io.snabble.sdk.utils
 io.snabble.sdk.utils.security
