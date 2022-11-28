@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 
+## [0.69.1-beta06]
+### Added
+* ui-toolkit: Add VersionWidget to display the app and sdk version (#87)
+* ui-toolkit: Add Developer Settings to the Profile Screen (#88)
+
 ## [0.69.1-beta05]
 ### Added
 * ui-toolkit: Add a screen for the not-checked-in state (#63)
