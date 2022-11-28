@@ -7,9 +7,9 @@ import android.net.wifi.WifiNetworkSuggestion
 import android.os.Build
 import androidx.annotation.RequiresApi
 import io.snabble.sdk.wlanmanager.WlanManagerImpl.Companion.KEY_SUGGESTIONS
-import io.snabble.sdk.wlanmanager.data.Error
-import io.snabble.sdk.wlanmanager.data.Result
-import io.snabble.sdk.wlanmanager.data.Success
+import io.snabble.sdk.data.Error
+import io.snabble.sdk.data.Result
+import io.snabble.sdk.data.Success
 
 internal class ConnectToWlanUseCaseApi30(
     private val sharedPrefs: SharedPreferences,

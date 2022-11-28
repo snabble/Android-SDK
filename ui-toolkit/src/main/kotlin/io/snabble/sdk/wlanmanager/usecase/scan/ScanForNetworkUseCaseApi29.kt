@@ -3,9 +3,9 @@ package io.snabble.sdk.wlanmanager.usecase.scan
 import android.Manifest.permission.*
 import android.content.Context
 import android.net.wifi.WifiManager
-import io.snabble.sdk.wlanmanager.data.Error
-import io.snabble.sdk.wlanmanager.data.Result
-import io.snabble.sdk.wlanmanager.data.Success
+import io.snabble.sdk.data.Error
+import io.snabble.sdk.data.Result
+import io.snabble.sdk.data.Success
 import io.snabble.sdk.wlanmanager.utils.areAllGranted
 
 internal class ScanForNetworkUseCaseApi29(

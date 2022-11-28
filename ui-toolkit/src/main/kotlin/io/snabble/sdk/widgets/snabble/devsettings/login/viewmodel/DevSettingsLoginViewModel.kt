@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.snabble.sdk.di.KoinProvider
 import io.snabble.sdk.widgets.snabble.devsettings.login.repositories.DevSettingsLoginRepository
-import io.snabble.sdk.wlanmanager.data.Success
+import io.snabble.sdk.data.Success
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

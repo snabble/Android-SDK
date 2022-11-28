@@ -5,9 +5,9 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.Manifest.permission.CHANGE_WIFI_STATE
 import android.content.Context
 import android.net.wifi.WifiManager
-import io.snabble.sdk.wlanmanager.data.Error
-import io.snabble.sdk.wlanmanager.data.Result
-import io.snabble.sdk.wlanmanager.data.Success
+import io.snabble.sdk.data.Error
+import io.snabble.sdk.data.Result
+import io.snabble.sdk.data.Success
 import io.snabble.sdk.wlanmanager.utils.isAnyGranted
 import io.snabble.sdk.wlanmanager.utils.isGranted
 

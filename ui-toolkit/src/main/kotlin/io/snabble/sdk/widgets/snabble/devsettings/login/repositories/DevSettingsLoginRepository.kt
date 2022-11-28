@@ -3,11 +3,11 @@ package io.snabble.sdk.widgets.snabble.devsettings.login.repositories
 import android.content.SharedPreferences
 import android.util.Base64.NO_WRAP
 import android.util.Base64.encodeToString
-import io.snabble.sdk.wlanmanager.data.Error
-import io.snabble.sdk.wlanmanager.data.Result
-import io.snabble.sdk.wlanmanager.data.Success
+import io.snabble.sdk.data.Error
+import io.snabble.sdk.data.Result
+import io.snabble.sdk.data.Success
 
-interface DevSettingsLoginRepository {
+internal interface DevSettingsLoginRepository {
 
     suspend fun enableDevSettings(password: String): Result
 }
