@@ -1,6 +1,6 @@
 package io.snabble.sdk.dynamicview.domain.model
 
-internal data class SwitchEnvironmentItem(
+data class SwitchEnvironmentItem(
     override val id: String,
     val text: String,
     val values: List<Value>,
