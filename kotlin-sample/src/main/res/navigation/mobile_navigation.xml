@@ -64,10 +64,21 @@
 
     </fragment>
 
-    <fragment
+    <navigation
         android:id="@+id/navigation_profile"
-        android:name="io.snabble.sdk.screens.profile.ui.ProfileFragment"
-        android:label="@string/profile" />
+        app:startDestination="@id/navigation_profile_tab">
+
+        <fragment
+            android:id="@+id/navigation_profile_tab"
+            android:name="io.snabble.sdk.screens.profile.ui.ProfileFragment"
+            android:label="@string/profile" />
+
+        <fragment
+            android:id="@+id/dev_settings"
+            android:name="io.snabble.sdk.screens.devsettings.ui.DevSettingsFragment"
+            android:label="@string/Profile.developerMode" />
+
+    </navigation>
 
     <navigation
         android:id="@id/navigation_scanner"

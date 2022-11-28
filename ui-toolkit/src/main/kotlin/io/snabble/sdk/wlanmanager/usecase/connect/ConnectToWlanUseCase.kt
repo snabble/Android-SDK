@@ -1,6 +1,6 @@
 package io.snabble.sdk.wlanmanager.usecase.connect
 
-import io.snabble.sdk.wlanmanager.data.Result
+import io.snabble.sdk.data.Result
 
 internal interface ConnectToWlanUseCase {
 

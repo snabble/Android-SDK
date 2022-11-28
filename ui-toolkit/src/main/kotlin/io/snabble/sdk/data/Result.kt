@@ -1,4 +1,4 @@
-package io.snabble.sdk.wlanmanager.data
+package io.snabble.sdk.data
 
 internal sealed interface Result {
 

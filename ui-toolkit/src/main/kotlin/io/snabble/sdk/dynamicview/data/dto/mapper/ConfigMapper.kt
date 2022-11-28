@@ -1,10 +1,13 @@
 package io.snabble.sdk.dynamicview.data.dto.mapper
 
 import android.content.Context
+import io.snabble.sdk.dynamicview.data.dto.AppUserIdDto
 import io.snabble.sdk.dynamicview.data.dto.ButtonDto
+import io.snabble.sdk.dynamicview.data.dto.ClientIdDto
 import io.snabble.sdk.dynamicview.data.dto.ConfigurationDto
 import io.snabble.sdk.dynamicview.data.dto.ConnectWlanDto
 import io.snabble.sdk.dynamicview.data.dto.CustomerCardDto
+import io.snabble.sdk.dynamicview.data.dto.DevSettingsDto
 import io.snabble.sdk.dynamicview.data.dto.DynamicConfigDto
 import io.snabble.sdk.dynamicview.data.dto.ImageDto
 import io.snabble.sdk.dynamicview.data.dto.InformationDto
@@ -14,13 +17,17 @@ import io.snabble.sdk.dynamicview.data.dto.SectionDto
 import io.snabble.sdk.dynamicview.data.dto.SeeAllStoresDto
 import io.snabble.sdk.dynamicview.data.dto.SsidProvider
 import io.snabble.sdk.dynamicview.data.dto.StartShoppingDto
+import io.snabble.sdk.dynamicview.data.dto.SwitchEnvironmentDto
 import io.snabble.sdk.dynamicview.data.dto.TextDto
 import io.snabble.sdk.dynamicview.data.dto.ToggleDto
 import io.snabble.sdk.dynamicview.data.dto.VersionDto
 import io.snabble.sdk.dynamicview.data.dto.WidgetDto
+import io.snabble.sdk.dynamicview.data.dto.toAppUserId
 import io.snabble.sdk.dynamicview.data.dto.toButton
+import io.snabble.sdk.dynamicview.data.dto.toClientId
 import io.snabble.sdk.dynamicview.data.dto.toConnectWlan
 import io.snabble.sdk.dynamicview.data.dto.toCustomCardItem
+import io.snabble.sdk.dynamicview.data.dto.toDevSettingsItem
 import io.snabble.sdk.dynamicview.data.dto.toImage
 import io.snabble.sdk.dynamicview.data.dto.toInformation
 import io.snabble.sdk.dynamicview.data.dto.toLocationPermission
@@ -28,6 +35,7 @@ import io.snabble.sdk.dynamicview.data.dto.toPadding
 import io.snabble.sdk.dynamicview.data.dto.toPurchases
 import io.snabble.sdk.dynamicview.data.dto.toSeeAllStores
 import io.snabble.sdk.dynamicview.data.dto.toStartShopping
+import io.snabble.sdk.dynamicview.data.dto.toSwitchEnvironmentItem
 import io.snabble.sdk.dynamicview.data.dto.toText
 import io.snabble.sdk.dynamicview.data.dto.toToggle
 import io.snabble.sdk.dynamicview.data.dto.toVersion
@@ -61,11 +69,15 @@ internal class ConfigMapperImpl(private val context: Context, private val ssidPr
     private fun List<WidgetDto>.toWidgets(): List<Widget> = map { widget ->
         with(widget) {
             when (this) {
+                is AppUserIdDto -> toAppUserId()
+
                 is ButtonDto -> toButton(
                     text = "${context.resolveResourceString(text)}",
                     foregroundColor = context.resolveColorId(foregroundColor),
                     backgroundColor = context.resolveColorId(backgroundColor)
                 )
+
+                is ClientIdDto -> toClientId()
 
                 is ConnectWlanDto -> toConnectWlan(ssidProvider)
 
@@ -73,6 +85,8 @@ internal class ConfigMapperImpl(private val context: Context, private val ssidPr
                     text = "${context.resolveResourceString(text)}",
                     image = context.resolveImageId(image)
                 )
+
+                is DevSettingsDto -> toDevSettingsItem(text = "${context.resolveResourceString(text)}")
 
                 is ImageDto -> toImage(image = context.resolveImageId(image))
 
@@ -82,6 +96,11 @@ internal class ConfigMapperImpl(private val context: Context, private val ssidPr
                 )
 
                 is LocationPermissionDto -> toLocationPermission()
+
+                is SwitchEnvironmentDto -> toSwitchEnvironmentItem(
+                    context = context,
+                    text = "${context.resolveResourceString(text)}"
+                )
 
                 is PurchasesDto -> toPurchases()
 

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Value is `Password` -->
+    <string name="dev_settings_password" translatable="false">UGFzc3dvcmQ=</string>
+</resources>

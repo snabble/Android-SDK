@@ -15,9 +15,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.snabble.sdk.di.KoinProvider
+import io.snabble.sdk.dynamicview.domain.model.AppUserIdItem
 import io.snabble.sdk.dynamicview.domain.model.ButtonItem
+import io.snabble.sdk.dynamicview.domain.model.ClientIdItem
+import io.snabble.sdk.dynamicview.domain.model.DevSettingsItem
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.domain.model.SectionItem
+import io.snabble.sdk.dynamicview.domain.model.SwitchEnvironmentItem
 import io.snabble.sdk.dynamicview.domain.model.TextItem
 import io.snabble.sdk.dynamicview.domain.model.ToggleItem
 import io.snabble.sdk.dynamicview.domain.model.VersionItem
@@ -30,16 +37,32 @@ import io.snabble.sdk.dynamicview.theme.properties.applyPadding
 import io.snabble.sdk.dynamicview.theme.properties.padding
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.utils.isNotNullOrBlank
+import io.snabble.sdk.widgets.snabble.devsettings.AppUserIdWidget
+import io.snabble.sdk.widgets.snabble.devsettings.ClientIdWidget
+import io.snabble.sdk.widgets.snabble.devsettings.DevSettingsWidget
+import io.snabble.sdk.widgets.snabble.devsettings.EnvironmentWidget
+import io.snabble.sdk.widgets.snabble.devsettings.login.usecase.HasEnabledDevSettingsUseCase
 import io.snabble.sdk.widgets.snabble.toggle.ui.ToggleWidget
 import io.snabble.sdk.widgets.snabble.version.ui.VersionWidget
+import org.koin.core.component.inject
 import io.snabble.sdk.dynamicview.theme.properties.Padding as OuterPadding
 
+@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun SectionWidget(
     modifier: Modifier = Modifier,
     model: SectionItem,
     onAction: OnDynamicAction,
 ) {
+    val hasEnableDevSettings: HasEnabledDevSettingsUseCase by KoinProvider.inject()
+    val devSettingsEnabled = hasEnableDevSettings().collectAsStateWithLifecycle(initialValue = false)
+
+    val items = if (!devSettingsEnabled.value) {
+        model.items.filterNot { it is DevSettingsItem }
+    } else {
+        model.items
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -51,19 +74,37 @@ fun SectionWidget(
             Spacer(modifier = Modifier.height(MaterialTheme.padding.default))
         }
         Column(Modifier.fillMaxWidth()) {
-            for (widget in model.items) {
+            for (widget in items) {
                 when (widget) {
-                    is TextItem -> TextWidget(
+                    is AppUserIdItem -> AppUserIdWidget(
                         model = widget,
                         onAction = onAction,
-                        modifier = Modifier
-                            .heightIn(min = 36.dp)
+                        modifier = Modifier.heightIn(min = 36.dp)
                     )
 
                     is ButtonItem -> ButtonWidget(
                         model = widget,
                         onAction = onAction,
                         modifier = Modifier.heightIn(min = 36.dp)
+                    )
+
+                    is ClientIdItem -> ClientIdWidget(
+                        model = widget,
+                        onAction = onAction,
+                        modifier = Modifier.heightIn(min = 36.dp)
+                    )
+
+                    is DevSettingsItem -> DevSettingsWidget(
+                        model = widget,
+                        onAction = onAction,
+                        modifier = Modifier.heightIn(min = 36.dp)
+                    )
+
+                    is TextItem -> TextWidget(
+                        model = widget,
+                        onAction = onAction,
+                        modifier = Modifier
+                            .heightIn(min = 36.dp)
                     )
 
                     is ToggleItem -> ToggleWidget(
@@ -78,7 +119,13 @@ fun SectionWidget(
                         modifier = Modifier.heightIn(min = 36.dp)
                     )
 
-                    else -> Unit
+                    is SwitchEnvironmentItem -> EnvironmentWidget(
+                        model = widget,
+                        onAction = onAction,
+                        modifier = Modifier.heightIn(min = 36.dp)
+                    )
+
+                    else -> Unit // Do nothing
                 }
                 Divider(modifier = modifier.fillMaxWidth(), thickness = Dp.Hairline)
             }

@@ -22,6 +22,7 @@
     <color name="black">#FF000000</color>
     <color name="almost_white">#FDFFFF</color>
     <color name="profile_background">@color/windowBackground</color>
+    <color name="dev_background">@color/windowBackground</color>
     <color name="home_background">@color/windowBackground</color>
     <color name="snabble_onboarding_primary">@color/snabbleBlue</color>
     <color name="snabble_onboarding_highlight">#005982</color>

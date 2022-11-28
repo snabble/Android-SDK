@@ -1,0 +1,67 @@
+{
+  "configuration": {
+    "image": "",
+    "style": "scroll",
+    "padding": [0]
+  },
+  "widgets": [
+    {
+      "type": "section",
+      "id": "section1",
+      "header": "Backend",
+      "padding": [0, 16, 8, 0],
+      "items": [
+        {
+          "type": "snabble.clientId",
+          "id": "clientId",
+          "padding": [16, 0]
+        },
+        {
+          "type": "snabble.appUserId",
+          "id": "appUserId",
+          "padding": [16, 0]
+        },
+        {
+          "type": "snabble.switchEnvironment",
+          "id": "io.snabble.environment",
+          "text": "Profile.environment",
+          "padding": [16, 0],
+          "values": [
+            {
+              "id": "io.snabble.environment.production",
+              "text": "Profile.Environment.production"
+            },
+            {
+              "id": "io.snabble.environment.staging",
+              "text": "Profile.Environment.staging"
+            },
+            {
+              "id": "io.snabble.environment.testing",
+              "text": "Profile.Environment.testing"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "section1",
+      "header": "App",
+      "padding": [0, 16, 8, 0],
+      "items": [
+        {
+          "type": "button",
+          "id": "resetAppUserId",
+          "text": "Reset AppUser-ID",
+          "padding": [16, 8]
+        },
+        {
+          "type": "button",
+          "id": "resetClientId",
+          "text": "Reset Client-ID",
+          "padding": [16, 8]
+        }
+      ]
+    }
+  ]
+}
