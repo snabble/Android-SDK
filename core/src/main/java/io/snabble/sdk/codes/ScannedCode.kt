@@ -4,7 +4,6 @@ import io.snabble.sdk.Project
 import io.snabble.sdk.Unit
 import java.io.Serializable
 import java.math.BigDecimal
-import java.util.ArrayList
 
 // TODO: Kotlinify this class more, get rid of the "hasXX" methods and use optionals
 
@@ -103,6 +102,11 @@ class ScannedCode private constructor() : Serializable {
     }
 
     /**
+     * Indicates if the line item from this code can be merged or not
+     */
+    var isMergeable: Boolean = true
+
+    /**
      * Creates a new builder, based on this code.
      */
     fun newBuilder(): Builder {
@@ -162,6 +166,10 @@ class ScannedCode private constructor() : Serializable {
 
         fun setPrice(price: Int) = apply {
             this.scannedCode._price = price
+        }
+
+        fun setMergeable(isMergeable: Boolean) = apply {
+            this.scannedCode.isMergeable = isMergeable
         }
 
         fun create(): ScannedCode {

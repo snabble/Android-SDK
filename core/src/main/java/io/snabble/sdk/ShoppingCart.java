@@ -930,6 +930,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
                     && getUnit() != PIECE
                     && product.getPrice(cart.project.getCustomerCardId()) != 0
                     && scannedCode.getEmbeddedData() == 0
+                    && scannedCode.isMergeable()
                     && !isUsingSpecifiedQuantity;
             return b;
         }

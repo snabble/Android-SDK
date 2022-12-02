@@ -111,7 +111,7 @@ public class CodeTemplate {
                             subType = parts[1];
                         }
 
-                        if (subType == null && length < 1) {
+                        if (subType == null && length < 0) {
                             throw new IllegalArgumentException("Invalid group length: " + length);
                         }
                     }
@@ -313,6 +313,11 @@ public class CodeTemplate {
             for (int i = 0; i < groups.size(); i++) {
                 Group group = groups.get(i);
                 if (i == groups.size() - 1 && group instanceof IgnoreGroup) {
+                    break;
+                }
+
+                if (group instanceof EmbedGroup && group.length() == 0) {
+                    builder.setMergeable(false);
                     break;
                 }
 

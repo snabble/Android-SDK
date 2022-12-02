@@ -34,7 +34,7 @@ public abstract class Group {
     }
 
     public String string() {
-        if (data == null) {
+        if (data == null || data.isEmpty()) {
             return "0";
         }
 
