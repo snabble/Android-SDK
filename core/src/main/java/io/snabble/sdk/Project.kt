@@ -1,5 +1,6 @@
 package io.snabble.sdk
 
+import android.util.Log
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
@@ -411,9 +412,15 @@ class Project internal constructor(jsonObject: JsonObject) {
             company = GsonHolder.get().fromJson(jsonObject["company"], Company::class.java)
         }
 
-        val codeTemplates = jsonObject["codeTemplates"]?.asJsonObject?.entrySet()?.map { (name, pattern) ->
-            CodeTemplate(name, pattern.asString)
-        }?.toMutableList() ?: mutableListOf()
+        val codeTemplates = try {
+            jsonObject["codeTemplates"]?.asJsonObject?.entrySet()?.map { (name, pattern) ->
+                CodeTemplate(name, pattern.asString)
+            }?.toMutableList() ?: mutableListOf()
+        } catch (e: Exception) {
+            Log.d("xx", e.toString())
+            throw e
+//            mutableListOf()
+        }
 
         val hasDefaultTemplate = codeTemplates.any { it.name == "default" }
         if (!hasDefaultTemplate) {
@@ -634,6 +641,7 @@ class Project internal constructor(jsonObject: JsonObject) {
     }
 
     fun interface OnProjectUpdatedListener {
+
         fun onProjectUpdated(project: Project?)
     }
 }
