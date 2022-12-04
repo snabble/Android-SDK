@@ -88,6 +88,7 @@ public class PaymentSelectionHelper {
         icons.put(PaymentMethod.POST_FINANCE_CARD, R.drawable.snabble_ic_payment_select_postfinance);
         icons.put(PaymentMethod.TWINT, R.drawable.snabble_ic_payment_select_twint);
         icons.put(PaymentMethod.GOOGLE_PAY, R.drawable.snabble_ic_payment_select_gpay);
+        icons.put(PaymentMethod.PAYONESEPADATA, R.drawable.snabble_ic_payment_select_amex); //TODO: Update icon
 
         names.put(PaymentMethod.DE_DIRECT_DEBIT, "SEPA-Lastschrift");
         names.put(PaymentMethod.VISA, "VISA");
@@ -103,6 +104,7 @@ public class PaymentSelectionHelper {
         names.put(PaymentMethod.POST_FINANCE_CARD, "PostFinance Card");
         names.put(PaymentMethod.TWINT, "Twint");
         names.put(PaymentMethod.GOOGLE_PAY, "Google Pay");
+        names.put(PaymentMethod.PAYONESEPADATA, "PayOne");
 
         paymentMethodsSortPriority.add(PaymentMethod.GOOGLE_PAY);
         paymentMethodsSortPriority.add(PaymentMethod.DE_DIRECT_DEBIT);
@@ -112,6 +114,7 @@ public class PaymentSelectionHelper {
         paymentMethodsSortPriority.add(PaymentMethod.TWINT);
         paymentMethodsSortPriority.add(PaymentMethod.POST_FINANCE_CARD);
         paymentMethodsSortPriority.add(PaymentMethod.PAYDIREKT);
+        paymentMethodsSortPriority.add(PaymentMethod.PAYONESEPADATA); // TODO: change prio pos?
         paymentMethodsSortPriority.add(PaymentMethod.GATEKEEPER_TERMINAL);
         paymentMethodsSortPriority.add(PaymentMethod.TEGUT_EMPLOYEE_CARD);
         paymentMethodsSortPriority.add(PaymentMethod.LEINWEBER_CUSTOMER_ID);
@@ -411,7 +414,7 @@ public class PaymentSelectionHelper {
 
         for (Entry e : entries) {
             if (e.paymentMethod == entry.paymentMethod &&
-               (e.paymentCredentials == null || (e.paymentCredentials.getId().equals(entry.paymentCredentials.getId())))) {
+                    (e.paymentCredentials == null || (e.paymentCredentials.getId().equals(entry.paymentCredentials.getId())))) {
                 return e;
             }
         }
@@ -427,7 +430,7 @@ public class PaymentSelectionHelper {
     public boolean shouldShowBigSelector() {
         for (Entry e : entries) {
             if ((e.paymentMethod.isRequiringCredentials() && e.isAdded)
-              || e.paymentMethod == PaymentMethod.GOOGLE_PAY) {
+                    || e.paymentMethod == PaymentMethod.GOOGLE_PAY) {
                 return false;
             }
         }

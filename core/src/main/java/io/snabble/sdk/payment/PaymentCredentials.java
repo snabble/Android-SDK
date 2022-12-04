@@ -59,7 +59,8 @@ public class PaymentCredentials {
         LEINWEBER_CUSTOMER_ID("leinweberCustomerID", false, Collections.singletonList(PaymentMethod.LEINWEBER_CUSTOMER_ID)),
         DATATRANS("datatransAlias", true, Arrays.asList(PaymentMethod.TWINT, PaymentMethod.POST_FINANCE_CARD)),
         DATATRANS_CREDITCARD("datatransCreditCardAlias", true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
-        PAYONE_CREDITCARD(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX));
+        PAYONE_CREDITCARD(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
+        PAYONE_SEPA("payoneSepaData", true, Arrays.asList(PaymentMethod.PAYONESEPADATA));
 
         private final String originType;
         private final boolean requiresProject;
@@ -310,7 +311,7 @@ public class PaymentCredentials {
     @Deprecated
     private static long parseValidTo(String format, String expirationMonth, String expirationYear) {
         if (expirationMonth == null || expirationMonth.equals("")
-         || expirationYear == null || expirationYear.equals("")) {
+                || expirationYear == null || expirationYear.equals("")) {
             return 0;
         }
 
@@ -602,7 +603,7 @@ public class PaymentCredentials {
         }
         sb.append(s.substring(s.length() - numCharsEnd));
 
-        for (int i=4; i<sb.length(); i+=4) {
+        for (int i = 4; i < sb.length(); i += 4) {
             sb.insert(i, ' ');
             i++;
         }
@@ -610,7 +611,9 @@ public class PaymentCredentials {
         return sb.toString();
     }
 
-    /** Asynchronous encryption using the certificate the backend provided for us **/
+    /**
+     * Asynchronous encryption using the certificate the backend provided for us
+     **/
     private String rsaEncrypt(X509Certificate certificate, byte[] data) {
         try {
             if (validateCertificate(certificate)) {
@@ -628,7 +631,9 @@ public class PaymentCredentials {
         }
     }
 
-    /** Synchronous decryption using the user credentials **/
+    /**
+     * Synchronous decryption using the user credentials
+     **/
     private String decryptUsingKeyStore() {
         PaymentCredentialsStore store = Snabble.getInstance().getPaymentCredentialsStore();
 
@@ -725,7 +730,7 @@ public class PaymentCredentials {
     /**
      * Validates the current payment credentials.
      * If this method returns false the payment credentials are not usable anymore.
-     *
+     * <p>
      * E.g. on timed out credit cards or expired certificates.
      */
     public boolean validate() {
@@ -846,17 +851,25 @@ public class PaymentCredentials {
                 || type == Type.DATATRANS
                 || type == Type.DATATRANS_CREDITCARD) {
             switch (getBrand()) {
-                case VISA: return PaymentMethod.VISA;
-                case AMEX: return PaymentMethod.AMEX;
-                case MASTERCARD: return PaymentMethod.MASTERCARD;
-                case POST_FINANCE_CARD: return PaymentMethod.POST_FINANCE_CARD;
-                case TWINT: return PaymentMethod.TWINT;
+                case VISA:
+                    return PaymentMethod.VISA;
+                case AMEX:
+                    return PaymentMethod.AMEX;
+                case MASTERCARD:
+                    return PaymentMethod.MASTERCARD;
+                case POST_FINANCE_CARD:
+                    return PaymentMethod.POST_FINANCE_CARD;
+                case TWINT:
+                    return PaymentMethod.TWINT;
             }
         } else if (type == Type.PAYONE_CREDITCARD) {
             switch (getBrand()) {
-                case VISA: return PaymentMethod.VISA;
-                case AMEX: return PaymentMethod.AMEX;
-                case MASTERCARD: return PaymentMethod.MASTERCARD;
+                case VISA:
+                    return PaymentMethod.VISA;
+                case AMEX:
+                    return PaymentMethod.AMEX;
+                case MASTERCARD:
+                    return PaymentMethod.MASTERCARD;
             }
         }
 
