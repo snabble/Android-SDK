@@ -594,7 +594,7 @@ public class ShoppingCartView extends FrameLayout {
         private static final int TYPE_SIMPLE = 1;
         private List<Row> list = Collections.emptyList();
         private final Context context;
-        private final ShoppingCart cart;
+        private ShoppingCart cart;
         private final View parentView;
         private boolean hasAnyImages = false;
 
@@ -626,6 +626,8 @@ public class ShoppingCartView extends FrameLayout {
 
         // for fetching the data from outside of this view
         public void fetchFrom(ShoppingCart cart) {
+            this.cart = cart;
+
             hasAnyImages = false;
 
             for (int i = 0; i < cart.size(); i++) {
