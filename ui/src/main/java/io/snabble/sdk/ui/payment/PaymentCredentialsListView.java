@@ -182,10 +182,10 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                     sameTypeOrNull = types.contains(pm.getType());
                 }
             }
-
             if (pm.isAvailableInCurrentApp() && sameTypeOrNull && sameProjectOrNull) {
                 switch (pm.getType()) {
                     case SEPA:
+                    case PAYONE_SEPA:
                         entries.add(new Entry(pm, R.drawable.snabble_ic_payment_select_sepa, pm.getObfuscatedId()));
                         break;
                     case CREDIT_CARD_PSD2:

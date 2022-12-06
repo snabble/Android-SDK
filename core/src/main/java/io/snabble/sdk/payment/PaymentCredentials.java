@@ -60,7 +60,7 @@ public class PaymentCredentials {
         DATATRANS("datatransAlias", true, Arrays.asList(PaymentMethod.TWINT, PaymentMethod.POST_FINANCE_CARD)),
         DATATRANS_CREDITCARD("datatransCreditCardAlias", true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
         PAYONE_CREDITCARD(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
-        PAYONE_SEPA("payoneSepaData", true, Arrays.asList(PaymentMethod.PAYONESEPADATA));
+        PAYONE_SEPA("payoneSepaData", true, Collections.singletonList(PaymentMethod.PAYONESEPADATA));
 
         private final String originType;
         private final boolean requiresProject;
