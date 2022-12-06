@@ -88,7 +88,7 @@ public class PaymentSelectionHelper {
         icons.put(PaymentMethod.POST_FINANCE_CARD, R.drawable.snabble_ic_payment_select_postfinance);
         icons.put(PaymentMethod.TWINT, R.drawable.snabble_ic_payment_select_twint);
         icons.put(PaymentMethod.GOOGLE_PAY, R.drawable.snabble_ic_payment_select_gpay);
-        icons.put(PaymentMethod.PAYONESEPADATA, R.drawable.snabble_ic_payment_select_amex); //TODO: Update icon
+        icons.put(PaymentMethod.PAYONESEPADATA, R.drawable.snabble_ic_payment_select_sepa);
 
         names.put(PaymentMethod.DE_DIRECT_DEBIT, "SEPA-Lastschrift");
         names.put(PaymentMethod.VISA, "VISA");
@@ -104,7 +104,7 @@ public class PaymentSelectionHelper {
         names.put(PaymentMethod.POST_FINANCE_CARD, "PostFinance Card");
         names.put(PaymentMethod.TWINT, "Twint");
         names.put(PaymentMethod.GOOGLE_PAY, "Google Pay");
-        names.put(PaymentMethod.PAYONESEPADATA, "PayOne");
+        names.put(PaymentMethod.PAYONESEPADATA, "SEPA-Lastschrift");
 
         paymentMethodsSortPriority.add(PaymentMethod.GOOGLE_PAY);
         paymentMethodsSortPriority.add(PaymentMethod.DE_DIRECT_DEBIT);
