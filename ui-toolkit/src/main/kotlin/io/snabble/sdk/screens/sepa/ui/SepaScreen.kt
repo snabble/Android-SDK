@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -25,13 +26,15 @@ import io.snabble.sdk.screens.sepa.ui.widget.TextFieldWidget
 @Composable
 fun PayOneSepaScreen(
     saveData: (data: PayoneSepaData) -> Unit,
-    validateText: (String) -> Unit,
     validateIban: (String) -> Unit,
+    ibanIsValid: Boolean,
 ) {
 
     var lastName by rememberSaveable { mutableStateOf("") }
     var iban by rememberSaveable { mutableStateOf("") }
     var city by rememberSaveable { mutableStateOf("") }
+
+    val enableButton = lastName.isNotBlank() && city.isNotBlank() && ibanIsValid
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -41,7 +44,6 @@ fun PayOneSepaScreen(
             name = lastName,
             label = "Nachname",
             onStringChange = {
-                validateText(it)
                 lastName = it
             },
             readOnly = false,
@@ -60,7 +62,6 @@ fun PayOneSepaScreen(
             label = "Stadt",
             readOnly = false,
             onStringChange = {
-                validateText(it)
                 city = it
             },
             onAction = {}
@@ -72,6 +73,15 @@ fun PayOneSepaScreen(
             onStringChange = {},
             onAction = {}
         )
+        if (!ibanIsValid) {
+            Spacer(modifier = Modifier.heightIn(8.dp))
+            androidx.compose.material.Text(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                text = "Invalid IBAN",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
         Spacer(modifier = Modifier.height(32.dp))
         Button(
             modifier = Modifier
@@ -81,14 +91,15 @@ fun PayOneSepaScreen(
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
             ),
+            enabled = enableButton,
             shape = MaterialTheme.shapes.extraLarge,
             onClick = {
                 saveData(
                     PayoneSepaData(
                         name = lastName,
-                        iban = "DE" + iban,
+                        iban = "DE$iban",
                         city = city,
-                        country = "Deutschlande",
+                        country = "Deutschland",
                     )
                 )
             },
@@ -103,7 +114,7 @@ fun PayOneSepaScreen(
 fun Preview() {
     PayOneSepaScreen(
         saveData = {},
-        validateText = {},
-        validateIban = {}
+        validateIban = { it.isNotBlank() },
+        ibanIsValid = true
     )
 }

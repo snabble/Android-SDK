@@ -3,15 +3,16 @@ package io.snabble.sdk.screens.sepa.viewmodel
 import androidx.lifecycle.ViewModel
 import io.snabble.sdk.payment.IBAN
 import io.snabble.sdk.payment.payone.sepa.PayoneSepaData
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class SepaViewModel : ViewModel() {
 
-    fun validateIban(string: String): Boolean {
-        return IBAN.validate(string)
-    }
+    private var _showError = MutableStateFlow(false)
+    internal val showError = _showError.asStateFlow()
 
-    fun validateText(string: String): Boolean {
-        return string.isNotBlank()
+    fun validateIban(string: String) {
+        _showError.tryEmit(IBAN.validate(string))
     }
 
     fun saveData(data: PayoneSepaData) {
