@@ -18,13 +18,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.snabble.sdk.screens.sepa.data.PayOneSepaData
+import io.snabble.sdk.payment.payone.sepa.PayoneSepaData
 import io.snabble.sdk.screens.sepa.ui.widget.IbanFieldWidget
 import io.snabble.sdk.screens.sepa.ui.widget.TextFieldWidget
 
 @Composable
 fun PayOneSepaScreen(
-    saveData: (data: PayOneSepaData) -> Unit,
+    saveData: (data: PayoneSepaData) -> Unit,
     validateText: (String) -> Unit,
     validateIban: (String) -> Unit,
 ) {
@@ -84,7 +84,7 @@ fun PayOneSepaScreen(
             shape = MaterialTheme.shapes.extraLarge,
             onClick = {
                 saveData(
-                    PayOneSepaData(
+                    PayoneSepaData(
                         name = lastName,
                         iban = "DE" + iban,
                         city = city,

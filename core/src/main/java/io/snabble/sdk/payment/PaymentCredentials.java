@@ -2,6 +2,7 @@ package io.snabble.sdk.payment;
 
 import android.util.Base64;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 
@@ -37,6 +38,7 @@ import io.snabble.sdk.Environment;
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.R;
 import io.snabble.sdk.Snabble;
+import io.snabble.sdk.payment.payone.sepa.PayoneSepaData;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.Utils;
@@ -207,32 +209,42 @@ public class PaymentCredentials {
      * Encrypts and stores SEPA payment credentials.
      */
     public static PaymentCredentials fromSEPA(String name, String iban) {
-        PaymentCredentials pc = new PaymentCredentials();
+        if (name == null || name.length() == 0) throw new IllegalArgumentException("Invalid Name");
+        if (!IBAN.validate(iban)) throw new IllegalArgumentException("Invalid IBAN");
+
+        final SepaData data = new SepaData();
+        data.name = name;
+        data.iban = iban;
+        final String json = GsonHolder.get().toJson(data, SepaData.class);
+        return createForSepa(Type.SEPA, iban, json);
+    }
+
+    /**
+     * Encrypts and stores SEPA payment credentials.
+     */
+    public static PaymentCredentials fromPayoneSepa(@NonNull final PayoneSepaData sepaData) {
+        final String json = GsonHolder.get().toJson(sepaData, PayoneSepaData.class);
+        return createForSepa(Type.PAYONE_SEPA, sepaData.getIban(), json);
+    }
+
+    private static PaymentCredentials createForSepa(
+            @NonNull final Type type,
+            @NonNull final String iban,
+            @NonNull final String jsonData
+    ) {
+        final PaymentCredentials pc = new PaymentCredentials();
         pc.generateId();
-        pc.type = Type.SEPA;
+        pc.type = type;
 
-        List<X509Certificate> certificates = Snabble.getInstance().getPaymentCertificates();
-        if (certificates.size() == 0) {
+        final List<X509Certificate> certificates = Snabble.getInstance().getPaymentCertificates();
+        if (certificates == null || certificates.size() == 0) {
             return null;
-        }
-
-        if (name == null || name.length() == 0) {
-            throw new IllegalArgumentException("Invalid Name");
-        }
-
-        if (!IBAN.validate(iban)) {
-            throw new IllegalArgumentException("Invalid IBAN");
         }
 
         pc.obfuscatedId = pc.obfuscate(iban);
 
-        SepaData data = new SepaData();
-        data.name = name;
-        data.iban = iban;
-        String json = GsonHolder.get().toJson(data, SepaData.class);
-
-        X509Certificate certificate = certificates.get(0);
-        pc.rsaEncryptedData = pc.rsaEncrypt(certificate, json.getBytes());
+        final X509Certificate certificate = certificates.get(0);
+        pc.rsaEncryptedData = pc.rsaEncrypt(certificate, jsonData.getBytes());
         pc.signature = pc.sha256Signature(certificate);
         pc.brand = Brand.UNKNOWN;
         pc.appId = Snabble.getInstance().getConfig().appId;
@@ -243,6 +255,13 @@ public class PaymentCredentials {
 
         return pc;
     }
+
+    private static void throwIfEmpty(@NonNull String value, @Nullable String name) {
+        if (value.length() == 0) {
+            throw new IllegalArgumentException(name != null ? name : "Parameter" + " must not be empty");
+        }
+    }
+
 
     /**
      * Encrypts and stores a Telecash / First Data credit card.

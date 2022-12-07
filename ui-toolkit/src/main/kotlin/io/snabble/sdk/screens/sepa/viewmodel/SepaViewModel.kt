@@ -2,7 +2,7 @@ package io.snabble.sdk.screens.sepa.viewmodel
 
 import androidx.lifecycle.ViewModel
 import io.snabble.sdk.payment.IBAN
-import io.snabble.sdk.screens.sepa.data.PayOneSepaData
+import io.snabble.sdk.payment.payone.sepa.PayoneSepaData
 
 class SepaViewModel : ViewModel() {
 
@@ -14,7 +14,7 @@ class SepaViewModel : ViewModel() {
         return string.isNotBlank()
     }
 
-    fun saveData(data: PayOneSepaData) {
+    fun saveData(data: PayoneSepaData) {
         //TODO: implement
     }
 }
