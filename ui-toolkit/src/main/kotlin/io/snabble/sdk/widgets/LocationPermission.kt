@@ -22,7 +22,7 @@ fun LocationPermission(
             modifier = modifier.fillMaxWidth(),
             widget = model,
             padding = model.padding,
-            text = stringResource(id = R.string.Snabble_askForPermission),
+            text = stringResource(id = R.string.Snabble_DynamicView_LocationPermission_Button_notDetermined),
             onAction = onAction,
         )
     }
