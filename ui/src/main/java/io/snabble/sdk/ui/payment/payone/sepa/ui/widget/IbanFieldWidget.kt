@@ -1,4 +1,4 @@
-package io.snabble.sdk.screens.sepa.ui.widget
+package io.snabble.sdk.ui.payment.payone.sepa.ui.widget
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,10 +24,12 @@ fun IbanFieldWidget(
     onAction: () -> Unit,
 ) {
     @OptIn(ExperimentalMaterial3Api::class)
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         OutlinedTextField(
             modifier = Modifier
                 .wrapContentSize()

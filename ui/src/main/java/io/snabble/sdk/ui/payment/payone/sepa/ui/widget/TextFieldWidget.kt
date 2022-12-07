@@ -1,4 +1,4 @@
-package io.snabble.sdk.screens.sepa.ui.widget
+package io.snabble.sdk.ui.payment.payone.sepa.ui.widget
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

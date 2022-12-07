@@ -1,5 +1,6 @@
-package io.snabble.sdk.screens.sepa.ui
+package io.snabble.sdk.ui.payment.payone.sepa.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,21 +21,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.payment.payone.sepa.PayoneSepaData
-import io.snabble.sdk.screens.sepa.ui.widget.IbanFieldWidget
-import io.snabble.sdk.screens.sepa.ui.widget.TextFieldWidget
+import io.snabble.sdk.ui.payment.payone.sepa.ui.widget.IbanFieldWidget
+import io.snabble.sdk.ui.payment.payone.sepa.ui.widget.TextFieldWidget
 
 @Composable
-fun PayOneSepaScreen(
+fun PayoneSepaScreen(
     saveData: (data: PayoneSepaData) -> Unit,
     validateIban: (String) -> Unit,
-    ibanIsValid: Boolean,
+    isIbanValid: Boolean,
 ) {
-
     var lastName by rememberSaveable { mutableStateOf("") }
     var iban by rememberSaveable { mutableStateOf("") }
     var city by rememberSaveable { mutableStateOf("") }
 
-    val enableButton = lastName.isNotBlank() && city.isNotBlank() && ibanIsValid
+    val enableButton = lastName.isNotBlank() && city.isNotBlank() && isIbanValid
+    Log.d("foo", "isValid? $isIbanValid")
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -52,7 +53,7 @@ fun PayOneSepaScreen(
         IbanFieldWidget(
             iban = iban,
             onIbanChange = {
-                validateIban(it)
+                validateIban("DE$it")
                 iban = it
             },
             onAction = {}
@@ -73,7 +74,7 @@ fun PayOneSepaScreen(
             onStringChange = {},
             onAction = {}
         )
-        if (!ibanIsValid) {
+        if (!isIbanValid && iban.isNotBlank()) {
             Spacer(modifier = Modifier.heightIn(8.dp))
             androidx.compose.material.Text(
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -112,9 +113,9 @@ fun PayOneSepaScreen(
 @Preview
 @Composable
 fun Preview() {
-    PayOneSepaScreen(
+    PayoneSepaScreen(
         saveData = {},
         validateIban = { it.isNotBlank() },
-        ibanIsValid = true
+        isIbanValid = true
     )
 }
