@@ -8,6 +8,7 @@ buildscript {
 
     repositories {
         google()
+        mavenLocal()
         mavenCentral()
         maven { url 'https://plugins.gradle.org/m2/' }
     }
@@ -40,9 +41,9 @@ allprojects {
         sdkVersion = '0.69.1-beta06'
         versionCode = 1
 
-        compileSdkVersion = 31
+        compileSdkVersion = 33
         minSdkVersion = 21
-        targetSdkVersion = 31
+        targetSdkVersion = 33
 
         okhttpVersion = '4.10.0'
         desugarVersion = '1.1.5'
