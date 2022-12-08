@@ -532,6 +532,10 @@ class Checkout @JvmOverloads constructor(
                         shoppingCart.generateNewUUID()
                         notifyStateChanged(CheckoutState.DENIED_BY_SUPERVISOR)
                     }
+                    if (checkoutProcess.paymentMethod == PaymentMethod.PAYONESEPADATA) {
+                        notifyStateChanged(CheckoutState.PAYONE_SEPA_MANDATE_REQUIRED)
+                        return true
+                    }
                 }
                 CheckState.PROCESSING -> {
                     notifyStateChanged(CheckoutState.PAYMENT_PROCESSING)

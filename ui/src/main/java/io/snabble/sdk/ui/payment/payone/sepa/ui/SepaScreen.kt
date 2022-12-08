@@ -100,7 +100,7 @@ fun PayoneSepaScreen(
                         name = lastName,
                         iban = "DE$iban",
                         city = city,
-                        country = "Deutschland",
+                        countryCode = "DE",
                     )
                 )
             },
