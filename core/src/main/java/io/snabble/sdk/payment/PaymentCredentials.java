@@ -860,6 +860,8 @@ public class PaymentCredentials {
     public PaymentMethod getPaymentMethod() {
         if (getType() == PaymentCredentials.Type.SEPA) {
             return PaymentMethod.DE_DIRECT_DEBIT;
+        } else if (getType() == Type.PAYONE_SEPA) {
+            return PaymentMethod.PAYONESEPADATA;
         } else if (type == Type.TEGUT_EMPLOYEE_CARD) {
             return PaymentMethod.TEGUT_EMPLOYEE_CARD;
         } else if (type == Type.LEINWEBER_CUSTOMER_ID) {

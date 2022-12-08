@@ -1,5 +1,8 @@
 package io.snabble.sdk.ui.payment;
 
+import static io.snabble.sdk.payment.PaymentCredentials.Brand;
+import static io.snabble.sdk.payment.PaymentCredentials.Type;
+
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
@@ -40,7 +43,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
     private final List<Entry> entries = new ArrayList<>();
     private PaymentCredentialsStore paymentCredentialsStore;
     private RecyclerView recyclerView;
-    private List<PaymentCredentials.Type> types;
+    private List<Type> types;
     private Project project;
     private View emptyState;
 
@@ -113,7 +116,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         this.project = project;
     }
 
-    public void show(List<PaymentCredentials.Type> types, Project project) {
+    public void show(List<Type> types, Project project) {
         this.types = types;
         this.project = project;
 
@@ -170,7 +173,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                 sameProjectOrNull = project.getId().equals(pm.getProjectId());
             }
 
-            if (pm.getProjectId() == null && pm.getType() == PaymentCredentials.Type.SEPA) {
+            if (pm.getProjectId() == null && (pm.getType() == Type.SEPA || pm.getType() == Type.PAYONE_SEPA)) {
                 sameProjectOrNull = true;
             }
 
@@ -219,7 +222,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         recyclerView.getAdapter().notifyDataSetChanged();
     }
 
-    private int getDrawableForBrand(PaymentCredentials.Brand brand) {
+    private int getDrawableForBrand(Brand brand) {
         int drawableResId = 0;
         if (brand != null) {
             switch (brand) {

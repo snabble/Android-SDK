@@ -12,7 +12,7 @@ data class PayoneSepaData(
     init {
         require(name.isNotBlank()) { "Name must not be blank" }
         require(IBAN.validate(iban)) { "IBAN is not valid" }
-        require(city.isBlank()) { "City must not be blank" }
+        require(city.isNotBlank()) { "City must not be blank" }
         require(country.isNotBlank()) { "Country must not be" }
     }
 }
