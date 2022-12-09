@@ -1,5 +1,6 @@
 package io.snabble.sdk.checkout
 
+import android.util.Log
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
@@ -17,9 +18,11 @@ class Checkout @JvmOverloads constructor(
     private val shoppingCart: ShoppingCart,
     private val checkoutApi: CheckoutApi = DefaultCheckoutApi(
         project, shoppingCart
-    )
+    ),
 ) {
+
     companion object {
+
         const val INVALID_PRICE = -1
     }
 
@@ -121,7 +124,8 @@ class Checkout @JvmOverloads constructor(
         if (checkoutProcess != null
             && state.value != CheckoutState.PAYMENT_APPROVED
             && state.value != CheckoutState.DENIED_BY_PAYMENT_PROVIDER
-            && state.value != CheckoutState.DENIED_BY_SUPERVISOR) {
+            && state.value != CheckoutState.DENIED_BY_SUPERVISOR
+        ) {
             if (hasAnyFulfillmentAllocationFailed()) {
                 reset()
                 return
@@ -148,7 +152,8 @@ class Checkout @JvmOverloads constructor(
                         notifyStateChanged(CheckoutState.PAYMENT_PROCESSING_ERROR)
                     } else {
                         if (state.value != CheckoutState.PAYMENT_PROCESSING
-                         && state.value != CheckoutState.PAYMENT_APPROVED) {
+                            && state.value != CheckoutState.PAYMENT_APPROVED
+                        ) {
                             val lastState = state.value
 
                             Dispatch.mainThread {
@@ -182,7 +187,8 @@ class Checkout @JvmOverloads constructor(
         if (checkoutProcess != null
             && state.value != CheckoutState.PAYMENT_APPROVED
             && state.value != CheckoutState.DENIED_BY_PAYMENT_PROVIDER
-            && state.value != CheckoutState.DENIED_BY_SUPERVISOR) {
+            && state.value != CheckoutState.DENIED_BY_SUPERVISOR
+        ) {
             checkoutApi.abort(checkoutProcess, null)
         }
         reset()
@@ -205,6 +211,7 @@ class Checkout @JvmOverloads constructor(
     private fun cancelOutstandingCalls() {
         checkoutApi.cancel()
     }
+
     /**
      * Returns true of the checkout is currently available, or false if checkout is disabled
      * for this project
@@ -248,12 +255,13 @@ class Checkout @JvmOverloads constructor(
         }
 
         val backendCart = shoppingCart.toBackendCart()
-        checkoutApi.createCheckoutInfo(backendCart,
+        checkoutApi.createCheckoutInfo(
+            backendCart,
             object : CheckoutInfoResult {
                 override fun onSuccess(
                     signedCheckoutInfo: SignedCheckoutInfo,
                     onlinePrice: Int,
-                    availablePaymentMethods: List<PaymentMethodInfo>
+                    availablePaymentMethods: List<PaymentMethodInfo>,
                 ) {
                     this@Checkout.signedCheckoutInfo = signedCheckoutInfo
                     if (signedCheckoutInfo.isRequiringTaxation) {
@@ -344,7 +352,7 @@ class Checkout @JvmOverloads constructor(
                 paymentProcessResult = object : PaymentProcessResult {
                     override fun onSuccess(
                         checkoutProcessResponse: CheckoutProcessResponse?,
-                        rawResponse: String?
+                        rawResponse: String?,
                     ) {
                         synchronized(this@Checkout) {
                             checkoutProcess = checkoutProcessResponse
@@ -401,7 +409,7 @@ class Checkout @JvmOverloads constructor(
     private fun hasAnyFulfillmentAllocationFailed(): Boolean {
         return checkoutProcess?.fulfillments?.any {
             it.state == FulfillmentState.ALLOCATION_FAILED
-         || it.state == FulfillmentState.ALLOCATION_TIMED_OUT
+                    || it.state == FulfillmentState.ALLOCATION_TIMED_OUT
         } ?: false
     }
 
@@ -436,7 +444,7 @@ class Checkout @JvmOverloads constructor(
             checkoutApi.updatePaymentProcess(process, object : PaymentProcessResult {
                 override fun onSuccess(
                     checkoutProcessResponse: CheckoutProcessResponse?,
-                    rawResponse: String?
+                    rawResponse: String?,
                 ) {
                     synchronized(this@Checkout) {
                         checkoutProcess = checkoutProcessResponse
@@ -465,7 +473,9 @@ class Checkout @JvmOverloads constructor(
             || state == CheckoutState.VERIFYING_PAYMENT_METHOD
             || state == CheckoutState.REQUEST_PAYMENT_AUTHORIZATION_TOKEN
             || state == CheckoutState.PAYMENT_PROCESSING
-            || (state == CheckoutState.PAYMENT_APPROVED && !areAllFulfillmentsClosed())) {
+            || (state == CheckoutState.PAYMENT_APPROVED && !areAllFulfillmentsClosed())
+            || state == CheckoutState.PAYONE_SEPA_MANDATE_REQUIRED
+        ) {
             scheduleNextPoll()
         }
     }
@@ -497,6 +507,16 @@ class Checkout @JvmOverloads constructor(
                 return false
             }
 
+            if (
+                checkoutProcess.paymentState == CheckState.UNAUTHORIZED &&
+                checkoutProcess.paymentMethod == PaymentMethod.PAYONESEPADATA &&
+                checkoutProcess.routingTarget != RoutingTarget.SUPERVISOR
+            ) {
+                Log.d("xx", "show Mandate")
+                notifyStateChanged(CheckoutState.PAYONE_SEPA_MANDATE_REQUIRED)
+                return false
+            }
+
             val authorizePaymentUrl = checkoutProcess.authorizePaymentLink
             if (authorizePaymentUrl != null) {
                 if (authorizePaymentRequestFailed) {
@@ -513,9 +533,11 @@ class Checkout @JvmOverloads constructor(
                 return false
             }
 
+            Log.d("xx", "CheckState: $checkoutProcess")
             when (checkoutProcess.paymentState) {
                 CheckState.UNAUTHORIZED,
-                CheckState.PENDING -> {
+                CheckState.PENDING,
+                -> {
                     if (hasAnyFulfillmentFailed()) {
                         checkoutApi.abort(checkoutProcess, null)
                         notifyStateChanged(CheckoutState.PAYMENT_PROCESSING)
@@ -532,15 +554,13 @@ class Checkout @JvmOverloads constructor(
                         shoppingCart.generateNewUUID()
                         notifyStateChanged(CheckoutState.DENIED_BY_SUPERVISOR)
                     }
-                    if (checkoutProcess.paymentMethod == PaymentMethod.PAYONESEPADATA) {
-                        notifyStateChanged(CheckoutState.PAYONE_SEPA_MANDATE_REQUIRED)
-                        return true
-                    }
                 }
                 CheckState.PROCESSING -> {
+                    Log.d("xx", "PROCESSING")
                     notifyStateChanged(CheckoutState.PAYMENT_PROCESSING)
                 }
                 CheckState.SUCCESSFUL -> {
+                    Log.d("xx", "SUCCESSFUL")
                     val exitToken = checkoutProcess.exitToken
                     return if (exitToken != null && (exitToken.format.isNullOrEmpty() || exitToken.value.isNullOrEmpty())) {
                         false
@@ -551,8 +571,10 @@ class Checkout @JvmOverloads constructor(
                     }
                 }
                 CheckState.FAILED -> {
+                    Log.d("xx", "FAILED")
                     if (checkoutProcess.paymentResult?.failureCause != null
-                        && checkoutProcess.paymentResult.failureCause == "terminalAbort") {
+                        && checkoutProcess.paymentResult.failureCause == "terminalAbort"
+                    ) {
                         Logger.d("Payment aborted by terminal")
                         notifyStateChanged(CheckoutState.PAYMENT_ABORTED)
                     } else {
@@ -563,10 +585,12 @@ class Checkout @JvmOverloads constructor(
                     return true
                 }
                 else -> {
+                    Log.d("xx", "ELSE")
                     return false
                 }
             }
         }
+        Log.d("xx", "BYE BYE")
         return false
     }
 

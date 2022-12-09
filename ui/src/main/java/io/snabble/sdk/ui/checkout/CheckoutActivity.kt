@@ -3,6 +3,8 @@ package io.snabble.sdk.ui.checkout
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.webkit.WebView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
@@ -10,14 +12,26 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
-import io.snabble.sdk.*
+import io.snabble.sdk.InitializationState
+import io.snabble.sdk.PaymentMethod
+import io.snabble.sdk.Snabble
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.utils.Logger
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
+import java.io.IOException
+import java.io.UnsupportedEncodingException
+import java.net.URLDecoder
 
 class CheckoutActivity : FragmentActivity() {
     companion object {
+
         const val ARG_PROJECT_ID = "projectId"
 
         @JvmStatic
@@ -59,7 +73,7 @@ class CheckoutActivity : FragmentActivity() {
             Snabble.setup(application)
         }
 
-        Snabble.initializationState.observe(this) initObserver@ {
+        Snabble.initializationState.observe(this) initObserver@{
             when (it) {
                 InitializationState.INITIALIZED -> {
                     Snabble.checkedInProject.observe(this) { project ->
@@ -102,7 +116,8 @@ class CheckoutActivity : FragmentActivity() {
                 }
                 InitializationState.UNINITIALIZED,
                 InitializationState.INITIALIZING,
-                null -> Unit // ignore
+                null,
+                -> Unit // ignore
                 InitializationState.ERROR -> {
                     finishWithError("The snabble SDK is not initialized")
                 }
@@ -117,7 +132,7 @@ class CheckoutActivity : FragmentActivity() {
 
     private fun getNavigationId(): Int? {
         val checkout = checkout ?: return null
-
+        Log.d("xx", "getNavigationId: ${checkout.state.value}")
         return when (checkout.state.value) {
             CheckoutState.WAIT_FOR_GATEKEEPER -> {
                 R.id.snabble_nav_routing_gatekeeper
@@ -145,6 +160,7 @@ class CheckoutActivity : FragmentActivity() {
                 }
             }
             CheckoutState.PAYMENT_ABORTED -> {
+                Log.d("xx", "Payment aborted!")
                 finish()
                 null
             }
@@ -166,6 +182,50 @@ class CheckoutActivity : FragmentActivity() {
             CheckoutState.NONE -> {
                 finish()
                 null
+            }
+            CheckoutState.PAYONE_SEPA_MANDATE_REQUIRED -> {
+                val webView = WebView(this).apply {
+                    val encodedContent =
+                        checkout.checkoutProcess?.paymentPreauthInformation?.get("markup")?.asString ?: ""
+                    val content = createHtmlWonderString(encodedContent)
+                    loadData(content, "text/html", "UTF-8")
+                }
+                AlertDialog.Builder(this)
+                    .setTitle("TODO")
+                    .setView(webView)
+                    .setPositiveButton(R.string.Snabble_ok) { dialog, _ ->
+                        dialog.dismiss()
+
+                        val project = Snabble.checkedInProject.value!! // FIXME: Don't do this!
+                        val projectId = project.id
+                        val mandateId = checkout.checkoutProcess?.paymentPreauthInformation
+                            ?.get("mandateIdentification")?.asString!!
+                        val url = checkout.checkoutProcess?.links?.get("authorizePayment")!!
+                        val request: Request = Request.Builder()
+                            .url(Snabble.absoluteUrl(url.href!!))
+                            .post(
+                                "{ \"mandateReference\": \"$mandateId\" }"
+                                    .toRequestBody("application/json".toMediaType())
+                            )
+                            .build()
+                        Log.d("xx", "Mandate URL: ${request.url}")
+
+                        project.okHttpClient
+                            .newCall(request)
+                            .enqueue(object : Callback {
+                                override fun onFailure(call: Call, e: IOException) {
+                                    Log.d("xx", "Shruggi shrug")
+                                }
+
+                                override fun onResponse(call: Call, response: Response) {
+                                    Log.d("xx", "Shruggi shrug shrug: ${response.code} -> ${response.body?.string()}")
+                                }
+                            })
+                    }
+                    .setCancelable(false)
+                    .create()
+                    .show()
+                R.id.snabble_nav_payment_status
             }
             else -> R.id.snabble_nav_payment_status
         }
@@ -189,3 +249,28 @@ class CheckoutActivity : FragmentActivity() {
         }.build())
     }
 }
+
+private fun createHtmlWonderString(preAuthInfo: String): String {
+    val body = try {
+        URLDecoder.decode(preAuthInfo, "UTF-8")
+    } catch (ignored: UnsupportedEncodingException) {
+        ""
+    }
+    return head + body + tail
+}
+
+private const val head = """
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+        <style type="text/css">
+        </style>
+    </head>
+    <body>
+"""
+
+private const val tail = """
+    </body>
+</html>
+"""
