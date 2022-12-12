@@ -143,12 +143,20 @@
     <string name="Snabble.Payment.presentCode">Za účelom potvrdenia nákupu prilož tento kód pred Snabble monitor alebo ho ukáž zamestnancovi.</string>
     <string name="Snabble.Payment.rejected">Nákup zamietnutý</string>
     <string name="Snabble.Payment.rejectedHint">Tvoj nákup bol zamietnutý. Skontroluj svoj košík a začni platobný proces znovu.</string>
+    <string name="Snabble.Payment.SEPA.city">Mesto</string>
+    <string name="Snabble.Payment.SEPA.countryCode">Krajina</string>
     <string name="Snabble.Payment.SEPA.hint">Poznámka: Za účelom tvojej ochrany a ochrany našich obchodníkov pred zneužitím si obchodník pri tvojej prvej platbe prostredníctvom SEPA inkasa vyžiada tvoju bankovú kartu.</string>
     <string name="Snabble.Payment.SEPA.iban">IBAN</string>
     <string name="Snabble.Payment.SEPA.invalidIBAN">Zadaný IBAN je neplatný.</string>
-    <string name="Snabble.Payment.SEPA.invalidName">Zadaj meno, prosím.</string>
+    <string name="Snabble.Payment.SEPA.invalidIBANCountry">Zadaný IBAN kód krajiny je nesprávny.</string>
+    <string name="Snabble.Payment.SEPA.invalidName">Zadaj priezvisko, prosím.</string>
+    <string name="Snabble.Payment.SEPA.mandate">Referenčné číslo mandátu</string>
+    <string name="Snabble.Payment.SEPA.missingCity">Zadaj mesto, prosím.</string>
     <string name="Snabble.Payment.SEPA.missingCountry">Kód krajiny nesmie zostať prázdny.</string>
+    <string name="Snabble.Payment.SEPA.missingIBAN">Please enter a IBAN.</string>
+    <string name="Snabble.Payment.SEPA.missingName">Zadaj meno, prosím.</string>
     <string name="Snabble.Payment.SEPA.name">Meno</string>
+    <string name="Snabble.Payment.SEPA.payer">Platiteľ</string>
     <string name="Snabble.Payment.SEPA.title">SEPA inkaso</string>
     <string name="Snabble.Payment.success">Ďakujeme za tvoj nákup</string>
     <string name="Snabble.Payment.Twint.error">Pri spracovaní tvojho účtu TWINT sa vyskytla chyba</string>
@@ -263,7 +271,7 @@
     <string name="Snabble.Scanner.networkError">Produkt nie je možné nájsť. Prosím, skontroluj svoje internetové pripojenie.</string>
     <string name="Snabble.Scanner.noMatchesFound">Položka nebola nájdená</string>
     <!-- Text to be displayed in scanner if the app is not checked into a shop. -->
-    <string name="Snabble.Scanner.notCheckedIn">Visit a store to use the scanner.</string>
+    <string name="Snabble.Scanner.notCheckedIn">Choď do obchodu a použi skener.</string>
     <string name="Snabble.Scanner.plusDeposit">+ %s záloha</string>
     <string name="Snabble.Scanner.scannedAgeRestrictedProduct">Preto bude tvoj vek pri platbe jednorazovo skontrolovaný.</string>
     <string name="Snabble.Scanner.scannedShelfCode">Odváž produkt a naskenuj čiarový kód na etikete</string>
@@ -279,6 +287,7 @@
     <string name="Snabble.SEPA.iAgree">Súhlasím</string>
     <string name="Snabble.SEPA.IbanTransferAlert.message">Chceš uložiť tieto údaje účtu (IBAN: %s) pre nákupy v budúcnosti?</string>
     <string name="Snabble.SEPA.IbanTransferAlert.title">Uložiť údaje účtu</string>
+    <string name="Snabble.SEPA.iDoNotAgree">Nesúhlasím</string>
     <string name="Snabble.SEPA.mandate">Mandát na inkaso v SEPA</string>
     <string name="Snabble.SEPA.payNow">SEPA platba teraz</string>
     <string name="Snabble.SEPA.scoTransferHint">Ešte zadaj meno uvedené na karte, aby si ju mohol/mohla uložiť pre platby priamo prostredníctvom aplikácie.</string>

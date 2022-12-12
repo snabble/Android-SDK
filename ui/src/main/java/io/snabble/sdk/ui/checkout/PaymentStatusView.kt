@@ -3,10 +3,8 @@ package io.snabble.sdk.ui.checkout
 import android.animation.LayoutTransition
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -171,8 +169,6 @@ class PaymentStatusView @JvmOverloads constructor(
     }
 
     private fun onStateChanged(state: CheckoutState?) {
-        // TODO: Need to display the PAYONE SEPA Mandate WebView acknowledge view
-        Log.d("xx", "${checkout.checkoutProcess?.paymentPreauthInformation}")
         if (ignoreStateChanges) {
             return
         }

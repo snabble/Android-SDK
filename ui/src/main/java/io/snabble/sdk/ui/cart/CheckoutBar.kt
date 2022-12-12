@@ -305,7 +305,6 @@ open class CheckoutBar @JvmOverloads constructor(
     }
 
     protected fun onStateChanged(state: CheckoutState) {
-        Log.d("xx", "onStateChanged: ich werde gepollt")
         when (state) {
             CheckoutState.HANDSHAKING -> {
                 progressDialog.showAfterDelay(300)

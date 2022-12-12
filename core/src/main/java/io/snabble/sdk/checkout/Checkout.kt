@@ -1,6 +1,5 @@
 package io.snabble.sdk.checkout
 
-import android.util.Log
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
@@ -507,12 +506,8 @@ class Checkout @JvmOverloads constructor(
                 return false
             }
 
-            if (
-                checkoutProcess.paymentState == CheckState.UNAUTHORIZED &&
-                checkoutProcess.paymentMethod == PaymentMethod.PAYONESEPADATA &&
-                checkoutProcess.routingTarget != RoutingTarget.SUPERVISOR
-            ) {
-                Log.d("xx", "show Mandate")
+            if (isPayoneSepaMandateRequired(checkoutProcess)) {
+                Logger.d("Waiting for PAYONE SEPA mandate")
                 notifyStateChanged(CheckoutState.PAYONE_SEPA_MANDATE_REQUIRED)
                 return false
             }
@@ -533,7 +528,6 @@ class Checkout @JvmOverloads constructor(
                 return false
             }
 
-            Log.d("xx", "CheckState: $checkoutProcess")
             when (checkoutProcess.paymentState) {
                 CheckState.UNAUTHORIZED,
                 CheckState.PENDING,
@@ -556,11 +550,9 @@ class Checkout @JvmOverloads constructor(
                     }
                 }
                 CheckState.PROCESSING -> {
-                    Log.d("xx", "PROCESSING")
                     notifyStateChanged(CheckoutState.PAYMENT_PROCESSING)
                 }
                 CheckState.SUCCESSFUL -> {
-                    Log.d("xx", "SUCCESSFUL")
                     val exitToken = checkoutProcess.exitToken
                     return if (exitToken != null && (exitToken.format.isNullOrEmpty() || exitToken.value.isNullOrEmpty())) {
                         false
@@ -571,7 +563,6 @@ class Checkout @JvmOverloads constructor(
                     }
                 }
                 CheckState.FAILED -> {
-                    Log.d("xx", "FAILED")
                     if (checkoutProcess.paymentResult?.failureCause != null
                         && checkoutProcess.paymentResult.failureCause == "terminalAbort"
                     ) {
@@ -585,14 +576,17 @@ class Checkout @JvmOverloads constructor(
                     return true
                 }
                 else -> {
-                    Log.d("xx", "ELSE")
                     return false
                 }
             }
         }
-        Log.d("xx", "BYE BYE")
         return false
     }
+
+    private fun isPayoneSepaMandateRequired(checkoutProcess: CheckoutProcessResponse) =
+        checkoutProcess.paymentState == CheckState.UNAUTHORIZED &&
+                checkoutProcess.paymentMethod == PaymentMethod.PAYONESEPADATA &&
+                checkoutProcess.routingTarget != RoutingTarget.SUPERVISOR
 
     private fun approve() {
         Logger.d("dddd approve checkout " + System.identityHashCode(this))

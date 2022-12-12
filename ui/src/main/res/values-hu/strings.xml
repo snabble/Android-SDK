@@ -135,12 +135,20 @@
     <string name="Snabble.Payment.presentCode">A bevásárlás nyugtázásához tartsd ezt a kódot egy Snabble-monitor elé, vagy mutasd meg egy alkalmazottnak.</string>
     <string name="Snabble.Payment.rejected">Bevásárlás elutasítva</string>
     <string name="Snabble.Payment.rejectedHint">A bevásárlás elutasításra került. Ellenőrizd a kosaradat, és próbáld meg újra a fizetést.</string>
+    <string name="Snabble.Payment.SEPA.city">Város</string>
+    <string name="Snabble.Payment.SEPA.countryCode">Ország</string>
     <string name="Snabble.Payment.SEPA.hint">Megjegyzés: A te és a kereskedőink visszaélésekkel szembeni védelme érdekében az első SEPA terhelési megbízásos fizetésednél a kereskedőnél megjelenik a bankkártyád.</string>
     <string name="Snabble.Payment.SEPA.iban">IBAN</string>
     <string name="Snabble.Payment.SEPA.invalidIBAN">A megadott IBAN érvénytelen.</string>
-    <string name="Snabble.Payment.SEPA.invalidName">Add meg a neved.</string>
+    <string name="Snabble.Payment.SEPA.invalidIBANCountry">A megadott IBAN-országkód hibás.</string>
+    <string name="Snabble.Payment.SEPA.invalidName">Add meg a vezetéknevedet.</string>
+    <string name="Snabble.Payment.SEPA.mandate">Megbízás hivatkozási sz.</string>
+    <string name="Snabble.Payment.SEPA.missingCity">Add meg a várost.</string>
     <string name="Snabble.Payment.SEPA.missingCountry">Az országkód nem lehet üres.</string>
+    <string name="Snabble.Payment.SEPA.missingIBAN">Please enter a IBAN.</string>
+    <string name="Snabble.Payment.SEPA.missingName">Add meg a neved.</string>
     <string name="Snabble.Payment.SEPA.name">Név</string>
+    <string name="Snabble.Payment.SEPA.payer">Fizetésre kötelezett</string>
     <string name="Snabble.Payment.SEPA.title">SEPA terhelési megbízás</string>
     <string name="Snabble.Payment.success">Köszönjük a vásárlásodat</string>
     <string name="Snabble.Payment.Twint.error">A TWINT-fiókod feldolgozása során hiba történt</string>
@@ -244,7 +252,7 @@
     <string name="Snabble.Scanner.couponAdded">„%s“ kupon hozzáadva</string>
     <string name="Snabble.Scanner.duplicateDepositScanned">Az egyes betétdíjblokkok csak egyszer olvashatók be.</string>
     <string name="Snabble.Scanner.enterBarcode">Kód megadása</string>
-    <string name="Snabble.Scanner.enterCodeButton">Vonalkód\nmegadása</string>
+    <string name="Snabble.Scanner.enterCodeButton">Vonalkód\megadása</string>
     <!-- Text der Snackbar die Angezeigt wird, wenn der Benutzer noch nie ein Produkt gescannt hat -->
     <string name="Snabble.Scanner.firstScan">Szkenneld be az első termékedet. Ehhez tartsd a termék vonalkódját a kamerához.</string>
     <string name="Snabble.Scanner.goToCart">Kosár: %s</string>
@@ -255,7 +263,7 @@
     <string name="Snabble.Scanner.networkError">A terméket nem sikerült lekérdezni. Ellenőrizd az internetkapcsolatot.</string>
     <string name="Snabble.Scanner.noMatchesFound">Termék nem található</string>
     <!-- Text to be displayed in scanner if the app is not checked into a shop. -->
-    <string name="Snabble.Scanner.notCheckedIn">Visit a store to use the scanner.</string>
+    <string name="Snabble.Scanner.notCheckedIn">A szkenner használatához fáradj be egy üzletbe.</string>
     <string name="Snabble.Scanner.plusDeposit">+ %s betétdíj</string>
     <string name="Snabble.Scanner.scannedAgeRestrictedProduct">A fizetésnél egyszeri alkalommal ellenőrizzük a korodat.</string>
     <string name="Snabble.Scanner.scannedShelfCode">Kérlek, mérd le a terméket, és utána olvasd be a matricán található vonalkódot</string>
@@ -271,6 +279,7 @@
     <string name="Snabble.SEPA.iAgree">Hozzájárulok</string>
     <string name="Snabble.SEPA.IbanTransferAlert.message">Elmented ezeket a számlaadatokat (IBAN: %s) a jövőbeni bevásárlásokhoz?</string>
     <string name="Snabble.SEPA.IbanTransferAlert.title">Számla adatainak mentése</string>
+    <string name="Snabble.SEPA.iDoNotAgree">Nem járulok hozzá</string>
     <string name="Snabble.SEPA.mandate">SEPA terhelési megbízás</string>
     <string name="Snabble.SEPA.payNow">Fizetés SEPA segítségével</string>
     <string name="Snabble.SEPA.scoTransferHint">Add meg a kártyán látható nevet, hogy a fizetések lebonyolításához közvetlenül eltárolásra kerülhessen az alkalmazásban.</string>
