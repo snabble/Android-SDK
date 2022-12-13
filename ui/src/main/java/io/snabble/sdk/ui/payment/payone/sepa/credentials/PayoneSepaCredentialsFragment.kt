@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment.payone.sepa
+package io.snabble.sdk.ui.payment.payone.sepa.credentials
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -11,14 +11,14 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import io.snabble.sdk.ui.payment.payone.sepa.viewmodel.SepaViewModel
+import io.snabble.sdk.ui.payment.payone.sepa.credentials.viewmodel.SepaViewModel
 import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.payment.payone.sepa.ui.PayoneSepaScreen
+import io.snabble.sdk.ui.payment.payone.sepa.credentials.ui.PayoneSepaScreen
 import io.snabble.sdk.ui.utils.KeyguardUtils
 import io.snabble.sdk.ui.utils.UIUtils
 
-class PayoneSepaFragment : Fragment() {
+class PayoneSepaCredentialsFragment : Fragment() {
 
     private val viewModel: SepaViewModel by viewModels()
 

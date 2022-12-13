@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment.payone.sepa.ui.widget
+package io.snabble.sdk.ui.payment.payone.sepa.credentials.ui.widget
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth

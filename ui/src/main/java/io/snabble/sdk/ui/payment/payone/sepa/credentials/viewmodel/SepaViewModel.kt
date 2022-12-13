@@ -1,11 +1,11 @@
-package io.snabble.sdk.ui.payment.payone.sepa.viewmodel
+package io.snabble.sdk.ui.payment.payone.sepa.credentials.viewmodel
 
 import androidx.lifecycle.ViewModel
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.payment.IBAN
 import io.snabble.sdk.payment.payone.sepa.PayoneSepaData
-import io.snabble.sdk.ui.payment.payone.sepa.domain.PayoneSepaRepository
-import io.snabble.sdk.ui.payment.payone.sepa.domain.PayoneSepaRepositoryImpl
+import io.snabble.sdk.ui.payment.payone.sepa.credentials.domain.PayoneSepaRepository
+import io.snabble.sdk.ui.payment.payone.sepa.credentials.domain.PayoneSepaRepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 

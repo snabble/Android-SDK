@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment.payone.sepa.ui
+package io.snabble.sdk.ui.payment.payone.sepa.credentials.ui
 
 import android.util.Log
 import androidx.compose.foundation.layout.Column
@@ -21,8 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.payment.payone.sepa.PayoneSepaData
-import io.snabble.sdk.ui.payment.payone.sepa.ui.widget.IbanFieldWidget
-import io.snabble.sdk.ui.payment.payone.sepa.ui.widget.TextFieldWidget
+import io.snabble.sdk.ui.payment.payone.sepa.credentials.ui.widget.IbanFieldWidget
+import io.snabble.sdk.ui.payment.payone.sepa.credentials.ui.widget.TextFieldWidget
 
 @Composable
 fun PayoneSepaScreen(

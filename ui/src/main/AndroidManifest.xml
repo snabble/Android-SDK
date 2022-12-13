@@ -13,7 +13,7 @@
             android:name=".payment.SEPACardInputActivity"
             android:exported="false" />
         <activity
-            android:name=".payment.payone.sepa.PayoneSepaActivity"
+            android:name=".payment.payone.sepa.credentials.PayoneSepaActivity"
             android:exported="false" />
         <activity
             android:name=".payment.CreditCardInputActivity"
