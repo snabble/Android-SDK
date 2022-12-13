@@ -12,29 +12,33 @@ import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.snabble.sdk.ui.payment.payone.sepa.mandate.ui.PayoneSepaMandateScreen
 import io.snabble.sdk.ui.payment.payone.sepa.mandate.viewmodel.SepaMandateViewModel
+import io.snabble.sdk.ui.utils.ThemeWrapper
 import io.snabble.sdk.utils.Logger
 
 class PayoneSepaMandateFragment : DialogFragment() {
 
     private val viewModel: SepaMandateViewModel by viewModels()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-        ComposeView(inflater.context).apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View = ComposeView(inflater.context).apply {
+        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
-            setContent {
-                @OptIn(ExperimentalLifecycleComposeApi::class)
-                val state = viewModel.mandateFlow.collectAsStateWithLifecycle()
+        setContent {
+            @OptIn(ExperimentalLifecycleComposeApi::class)
+            val uiState = viewModel.mandateFlow.collectAsStateWithLifecycle().value
 
-//                ThemeWrapper {
+            ThemeWrapper {
                 PayoneSepaMandateScreen(
-                    state = state.value,
+                    state = uiState,
                     onAccepted = { viewModel.accept() },
                     onDenied = { viewModel.accept() },
                     onSuccessAction = { Logger.d("PAYONE SEPA Mandate has been accepted.") },
                     onErrorAction = { viewModel.abort() }
                 )
-//                }
             }
         }
+    }
 }

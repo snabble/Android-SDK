@@ -39,8 +39,7 @@ fun IbanFieldWidget(
             label = {},
             readOnly = true,
             textStyle = MaterialTheme.typography.bodyLarge,
-
-            )
+        )
         OutlinedTextField(
             value = iban,
             onValueChange = onIbanChange,

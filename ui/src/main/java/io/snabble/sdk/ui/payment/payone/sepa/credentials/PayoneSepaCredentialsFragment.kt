@@ -11,44 +11,53 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import io.snabble.sdk.ui.payment.payone.sepa.credentials.viewmodel.SepaViewModel
 import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.payment.payone.sepa.credentials.ui.PayoneSepaScreen
+import io.snabble.sdk.ui.payment.payone.sepa.credentials.viewmodel.SepaViewModel
 import io.snabble.sdk.ui.utils.KeyguardUtils
+import io.snabble.sdk.ui.utils.ThemeWrapper
 import io.snabble.sdk.ui.utils.UIUtils
 
 class PayoneSepaCredentialsFragment : Fragment() {
 
     private val viewModel: SepaViewModel by viewModels()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-        ComposeView(inflater.context).apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View = ComposeView(inflater.context).apply {
+        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
-            setContent {
-                val isIbanValid = viewModel.isIbanValid.collectAsState().value
+        setContent {
+            val isIbanValid = viewModel.isIbanValid.collectAsState().value
+            ThemeWrapper {
                 PayoneSepaScreen(
                     saveData = { data ->
                         if (KeyguardUtils.isDeviceSecure()) {
-                            Keyguard.unlock(UIUtils.getHostFragmentActivity(context), object : Keyguard.Callback {
+                            Keyguard.unlock(
+                                UIUtils.getHostFragmentActivity(context),
+                                object : Keyguard.Callback {
 
-                                override fun success() {
-                                    val hasBeenSaved = viewModel.saveData(data = data)
-                                    if (!hasBeenSaved) {
-                                        Toast
-                                            .makeText(
-                                                context,
-                                                "Could not verify payment credentials",
-                                                Toast.LENGTH_LONG
-                                            )
-                                            .show()
+                                    override fun success() {
+                                        val hasBeenSaved = viewModel.saveData(data = data)
+                                        if (!hasBeenSaved) {
+                                            Toast
+                                                .makeText(
+                                                    context,
+                                                    "Could not verify payment credentials",
+                                                    Toast.LENGTH_LONG
+                                                )
+                                                .show()
+                                        }
+                                    }
+
+                                    override fun error() {
+                                        // ignored
                                     }
                                 }
-
-                                override fun error() {
-                                }
-                            })
+                            )
                         } else {
                             AlertDialog.Builder(context)
                                 .setMessage(R.string.Snabble_Keyguard_requireScreenLock)
@@ -60,7 +69,7 @@ class PayoneSepaCredentialsFragment : Fragment() {
                     validateIban = { viewModel.validateIban(it) },
                     isIbanValid = isIbanValid
                 )
-
             }
         }
+    }
 }

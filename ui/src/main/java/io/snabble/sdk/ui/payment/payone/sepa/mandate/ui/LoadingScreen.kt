@@ -26,7 +26,7 @@ import io.snabble.sdk.ui.R
 internal fun LoadingScreen() {
     Dialog(
         properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false),
-        onDismissRequest = { }
+        onDismissRequest = {}
     ) {
         Row(
             modifier = Modifier
@@ -42,7 +42,7 @@ internal fun LoadingScreen() {
             Text(
                 text = stringResource(id = R.string.Snabble_pleaseWait),
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.primary,
+                color = MaterialTheme.colorScheme.onSurface,
             )
         }
     }
