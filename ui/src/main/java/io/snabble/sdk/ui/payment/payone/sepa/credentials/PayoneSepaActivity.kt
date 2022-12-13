@@ -5,5 +5,5 @@ import io.snabble.sdk.ui.BaseFragmentActivity
 
 class PayoneSepaActivity : BaseFragmentActivity() {
 
-    override fun onCreateFragment(): Fragment = PayoneSepaCredentialsFragment()
+    override fun onCreateFragment(): Fragment = PayoneSepaInputFragment()
 }
