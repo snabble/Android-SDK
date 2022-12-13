@@ -1,13 +1,13 @@
 package io.snabble.sdk.ui.payment.payone.sepa.credentials.ui
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -18,67 +18,78 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.payment.payone.sepa.PayoneSepaData
+import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.payment.payone.sepa.credentials.ui.widget.IbanFieldWidget
 import io.snabble.sdk.ui.payment.payone.sepa.credentials.ui.widget.TextFieldWidget
 
 @Composable
-fun PayoneSepaScreen(
+internal fun PayoneSepaScreen(
     saveData: (data: PayoneSepaData) -> Unit,
     validateIban: (String) -> Unit,
     isIbanValid: Boolean,
 ) {
-    var lastName by rememberSaveable { mutableStateOf("") }
+    var name by rememberSaveable { mutableStateOf("") }
     var iban by rememberSaveable { mutableStateOf("") }
     var city by rememberSaveable { mutableStateOf("") }
 
-    val enableButton = lastName.isNotBlank() && city.isNotBlank() && isIbanValid
-    Log.d("foo", "isValid? $isIbanValid")
+    val areAllInputsValid = name.isNotBlank() && city.isNotBlank() && isIbanValid
+
+    val focusManager = LocalFocusManager.current
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(state = rememberScrollState())
+            .padding(all = 16.dp),
     ) {
-        Spacer(modifier = Modifier.height(32.dp))
         TextFieldWidget(
-            name = lastName,
-            label = "Nachname",
-            onStringChange = {
-                lastName = it
-            },
+            value = name,
+            label = stringResource(id = R.string.Snabble_Payment_SEPA_name),
+            onStringChange = { name = it },
             readOnly = false,
-            onAction = {}
+            focusManager = focusManager
         )
+        Spacer(modifier = Modifier.height(8.dp))
         IbanFieldWidget(
             iban = iban,
             onIbanChange = {
-                validateIban("DE$it")
+                validateIban("$COUNTRY_CODE$it")
                 iban = it
             },
-            onAction = {}
+            focusManager = focusManager
         )
+        Spacer(modifier = Modifier.height(8.dp))
         TextFieldWidget(
-            name = city,
-            label = "Stadt",
+            value = city,
+            label = stringResource(id = R.string.Snabble_Payment_SEPA_city),
             readOnly = false,
-            onStringChange = {
-                city = it
+            onStringChange = { city = it },
+            onAction = {
+                focusManager.clearFocus()
+                if (areAllInputsValid) {
+                    saveSepaData(saveData, name, iban, city)
+                }
             },
-            onAction = {}
+            focusManager = focusManager,
+            canSend = true,
         )
+        Spacer(modifier = Modifier.height(8.dp))
         TextFieldWidget(
-            name = "Deutschland",
-            label = "Land",
+            value = "Deutschland",
+            label = stringResource(id = R.string.Snabble_Payment_SEPA_countryCode),
             readOnly = true,
-            onStringChange = {},
-            onAction = {}
+            enabled = false,
         )
         if (!isIbanValid && iban.isNotBlank()) {
             Spacer(modifier = Modifier.heightIn(8.dp))
-            androidx.compose.material.Text(
+            Text(
                 modifier = Modifier.padding(horizontal = 16.dp),
-                text = "Invalid IBAN",
+                text = stringResource(id = R.string.Snabble_Payment_SEPA_invalidIBAN),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.error
             )
@@ -92,27 +103,38 @@ fun PayoneSepaScreen(
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
             ),
-            enabled = enableButton,
+            enabled = areAllInputsValid,
             shape = MaterialTheme.shapes.extraLarge,
             onClick = {
-                saveData(
-                    PayoneSepaData(
-                        name = lastName,
-                        iban = "DE$iban",
-                        city = city,
-                        countryCode = "DE",
-                    )
-                )
+                saveSepaData(saveData, name, iban, city)
             },
         ) {
-            Text(text = "Speichern")
+            Text(text = stringResource(id = R.string.Snabble_save))
         }
     }
 }
 
-@Preview
+private fun saveSepaData(
+    saveData: (data: PayoneSepaData) -> Unit,
+    name: String,
+    iban: String,
+    city: String
+) {
+    saveData(
+        PayoneSepaData(
+            name = name,
+            iban = "$COUNTRY_CODE$iban",
+            city = city,
+            countryCode = COUNTRY_CODE,
+        )
+    )
+}
+
+private const val COUNTRY_CODE = "DE"
+
+@Preview(showSystemUi = true, showBackground = true)
 @Composable
-fun Preview() {
+private fun PayoneSepaScreenPreview() {
     PayoneSepaScreen(
         saveData = {},
         validateIban = { it.isNotBlank() },
