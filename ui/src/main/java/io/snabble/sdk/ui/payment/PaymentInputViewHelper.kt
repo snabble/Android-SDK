@@ -56,7 +56,7 @@ object PaymentInputViewHelper {
                         PaymentMethod.DE_DIRECT_DEBIT -> {
                             SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_SEPA_CARD_INPUT)
                         }
-                        PaymentMethod.PAYONESEPADATA -> {
+                        PaymentMethod.PAYONE_SEPA -> {
                             SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_PAYONE_SEPA)
                         }
                         else -> {

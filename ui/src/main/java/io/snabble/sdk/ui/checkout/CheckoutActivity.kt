@@ -105,8 +105,7 @@ class CheckoutActivity : FragmentActivity() {
                 }
                 InitializationState.UNINITIALIZED,
                 InitializationState.INITIALIZING,
-                null,
-                -> Unit // ignore
+                null -> Unit // ignore
                 InitializationState.ERROR -> {
                     finishWithError("The snabble SDK is not initialized")
                 }

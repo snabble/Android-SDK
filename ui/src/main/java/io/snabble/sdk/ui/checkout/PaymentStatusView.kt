@@ -18,13 +18,13 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputLayout
 import io.snabble.sdk.*
+import io.snabble.sdk.ui.checkout.PaymentOriginCandidateHelper.PaymentOriginCandidate
+import io.snabble.sdk.ui.checkout.PaymentOriginCandidateHelper.PaymentOriginCandidateAvailableListener
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.checkout.Fulfillment
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.checkout.PaymentOriginCandidateHelper.PaymentOriginCandidate
-import io.snabble.sdk.ui.checkout.PaymentOriginCandidateHelper.PaymentOriginCandidateAvailableListener
 import io.snabble.sdk.ui.payment.SEPACardInputActivity
 import io.snabble.sdk.ui.scanner.BarcodeView
 import io.snabble.sdk.ui.telemetry.Telemetry
@@ -34,11 +34,11 @@ import io.snabble.sdk.ui.utils.observeView
 import io.snabble.sdk.ui.utils.requireFragmentActivity
 import io.snabble.sdk.utils.Dispatch
 
+
 class PaymentStatusView @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0,
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : ScrollView(context, attrs, defStyleAttr),
     LifecycleObserver, PaymentOriginCandidateAvailableListener {
-
     init {
         inflate(getContext(), R.layout.snabble_view_payment_status, this)
     }
@@ -70,6 +70,7 @@ class PaymentStatusView @JvmOverloads constructor(
 
     private val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
+
         }
     }
 
@@ -190,11 +191,9 @@ class PaymentStatusView @JvmOverloads constructor(
 
         when (state) {
             CheckoutState.PAYMENT_PROCESSING,
-            CheckoutState.VERIFYING_PAYMENT_METHOD,
-            -> {
+            CheckoutState.VERIFYING_PAYMENT_METHOD -> {
                 payment.state = PaymentStatusItemView.State.IN_PROGRESS
             }
-
             CheckoutState.PAYMENT_APPROVED -> {
                 title.text = resources.getString(R.string.Snabble_PaymentStatus_Title_success)
                 image.setImageResource(R.drawable.snabble_ic_payment_success_big)
@@ -399,8 +398,7 @@ class PaymentStatusView @JvmOverloads constructor(
             if (it.type == "tobaccolandEWA") {
                 if (state == null || state.isFailure) {
                     if (it.state == FulfillmentState.ALLOCATION_FAILED
-                        || it.state == FulfillmentState.ALLOCATION_TIMED_OUT
-                    ) {
+                        || it.state == FulfillmentState.ALLOCATION_TIMED_OUT) {
                         handlePaymentAborted()
                     }
 

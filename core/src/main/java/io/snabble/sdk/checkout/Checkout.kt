@@ -17,7 +17,7 @@ class Checkout @JvmOverloads constructor(
     private val shoppingCart: ShoppingCart,
     private val checkoutApi: CheckoutApi = DefaultCheckoutApi(
         project, shoppingCart
-    ),
+    )
 ) {
 
     companion object {
@@ -260,7 +260,7 @@ class Checkout @JvmOverloads constructor(
                 override fun onSuccess(
                     signedCheckoutInfo: SignedCheckoutInfo,
                     onlinePrice: Int,
-                    availablePaymentMethods: List<PaymentMethodInfo>,
+                    availablePaymentMethods: List<PaymentMethodInfo>
                 ) {
                     this@Checkout.signedCheckoutInfo = signedCheckoutInfo
                     if (signedCheckoutInfo.isRequiringTaxation) {
@@ -351,7 +351,7 @@ class Checkout @JvmOverloads constructor(
                 paymentProcessResult = object : PaymentProcessResult {
                     override fun onSuccess(
                         checkoutProcessResponse: CheckoutProcessResponse?,
-                        rawResponse: String?,
+                        rawResponse: String?
                     ) {
                         synchronized(this@Checkout) {
                             checkoutProcess = checkoutProcessResponse
@@ -443,7 +443,7 @@ class Checkout @JvmOverloads constructor(
             checkoutApi.updatePaymentProcess(process, object : PaymentProcessResult {
                 override fun onSuccess(
                     checkoutProcessResponse: CheckoutProcessResponse?,
-                    rawResponse: String?,
+                    rawResponse: String?
                 ) {
                     synchronized(this@Checkout) {
                         checkoutProcess = checkoutProcessResponse
@@ -530,8 +530,7 @@ class Checkout @JvmOverloads constructor(
 
             when (checkoutProcess.paymentState) {
                 CheckState.UNAUTHORIZED,
-                CheckState.PENDING,
-                -> {
+                CheckState.PENDING -> {
                     if (hasAnyFulfillmentFailed()) {
                         checkoutApi.abort(checkoutProcess, null)
                         notifyStateChanged(CheckoutState.PAYMENT_PROCESSING)
@@ -585,7 +584,7 @@ class Checkout @JvmOverloads constructor(
 
     private fun isPayoneSepaMandateRequired(checkoutProcess: CheckoutProcessResponse) =
         checkoutProcess.paymentState == CheckState.UNAUTHORIZED &&
-                checkoutProcess.paymentMethod == PaymentMethod.PAYONESEPADATA &&
+                checkoutProcess.paymentMethod == PaymentMethod.PAYONE_SEPA &&
                 checkoutProcess.routingTarget != RoutingTarget.SUPERVISOR
 
     private fun approve() {

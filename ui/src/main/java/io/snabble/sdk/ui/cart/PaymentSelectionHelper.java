@@ -88,7 +88,7 @@ public class PaymentSelectionHelper {
         icons.put(PaymentMethod.POST_FINANCE_CARD, R.drawable.snabble_ic_payment_select_postfinance);
         icons.put(PaymentMethod.TWINT, R.drawable.snabble_ic_payment_select_twint);
         icons.put(PaymentMethod.GOOGLE_PAY, R.drawable.snabble_ic_payment_select_gpay);
-        icons.put(PaymentMethod.PAYONESEPADATA, R.drawable.snabble_ic_payment_select_sepa);
+        icons.put(PaymentMethod.PAYONE_SEPA, R.drawable.snabble_ic_payment_select_sepa);
 
         names.put(PaymentMethod.DE_DIRECT_DEBIT, "SEPA-Lastschrift");
         names.put(PaymentMethod.VISA, "VISA");
@@ -104,7 +104,7 @@ public class PaymentSelectionHelper {
         names.put(PaymentMethod.POST_FINANCE_CARD, "PostFinance Card");
         names.put(PaymentMethod.TWINT, "Twint");
         names.put(PaymentMethod.GOOGLE_PAY, "Google Pay");
-        names.put(PaymentMethod.PAYONESEPADATA, "SEPA-Lastschrift");
+        names.put(PaymentMethod.PAYONE_SEPA, "SEPA-Lastschrift");
 
         paymentMethodsSortPriority.add(PaymentMethod.GOOGLE_PAY);
         paymentMethodsSortPriority.add(PaymentMethod.DE_DIRECT_DEBIT);
@@ -114,7 +114,7 @@ public class PaymentSelectionHelper {
         paymentMethodsSortPriority.add(PaymentMethod.TWINT);
         paymentMethodsSortPriority.add(PaymentMethod.POST_FINANCE_CARD);
         paymentMethodsSortPriority.add(PaymentMethod.PAYDIREKT);
-        paymentMethodsSortPriority.add(PaymentMethod.PAYONESEPADATA); // TODO: change prio pos?
+        paymentMethodsSortPriority.add(PaymentMethod.PAYONE_SEPA);
         paymentMethodsSortPriority.add(PaymentMethod.GATEKEEPER_TERMINAL);
         paymentMethodsSortPriority.add(PaymentMethod.TEGUT_EMPLOYEE_CARD);
         paymentMethodsSortPriority.add(PaymentMethod.LEINWEBER_CUSTOMER_ID);

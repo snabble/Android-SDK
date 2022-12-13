@@ -9,7 +9,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.AttributeSet
-import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.widget.ArrayAdapter
@@ -50,7 +49,7 @@ import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.utils.Logger
 
 open class CheckoutBar @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0,
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
     init {
@@ -195,8 +194,10 @@ open class CheckoutBar @JvmOverloads constructor(
             val isHidden = project.paymentMethodDescriptors.size == 1 && hasNoPaymentMethods
             paymentSelector.isVisible = !isHidden
             paymentIcon.setImageResource(entry.iconResId)
-            paymentSelectorButton.contentDescription =
-                resources.getString(R.string.Snabble_Shoppingcart_Accessibility_paymentMethod, entry.text)
+            paymentSelectorButton.contentDescription = resources.getString(
+                R.string.Snabble_Shoppingcart_Accessibility_paymentMethod,
+                entry.text
+            )
             paymentSelectorButton.accessibility {
                 setClickAction(R.string.Snabble_Shoppingcart_BuyProducts_selectPaymentMethod)
             }
@@ -357,8 +358,7 @@ open class CheckoutBar @JvmOverloads constructor(
             CheckoutState.PAYMENT_APPROVED,
             CheckoutState.DENIED_BY_PAYMENT_PROVIDER,
             CheckoutState.DENIED_BY_SUPERVISOR,
-            CheckoutState.PAYMENT_PROCESSING,
-            -> {
+            CheckoutState.PAYMENT_PROCESSING -> {
                 executeUiAction(SnabbleUI.Event.SHOW_CHECKOUT, Bundle().apply {
                     putString(CheckoutActivity.ARG_PROJECT_ID, project.id)
                 })
@@ -390,15 +390,15 @@ open class CheckoutBar @JvmOverloads constructor(
                         .setPositiveButton(R.string.Snabble_ok, null)
                         .show()
                 } else {
-                    SnackbarUtils.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
+                    SnackbarUtils
+                        .make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
                         .show()
                 }
                 progressDialog.dismiss()
             }
             CheckoutState.CONNECTION_ERROR,
             CheckoutState.NO_SHOP,
-            CheckoutState.PAYMENT_PROCESSING_ERROR,
-            -> {
+            CheckoutState.PAYMENT_PROCESSING_ERROR -> {
                 if (isAttachedToWindow) {
                     SnackbarUtils.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
                         .show()
@@ -418,7 +418,9 @@ open class CheckoutBar @JvmOverloads constructor(
                     .setTitle(I18nUtils.getIdentifier(context.resources, R.string.Snabble_Taxation_consumeWhere))
                     .setAdapter(
                         ArrayAdapter(
-                            context, R.layout.snabble_item_taxation, listOf(
+                            context,
+                            R.layout.snabble_item_taxation,
+                            listOf(
                                 context.getString(R.string.Snabble_Taxation_Consume_inhouse),
                                 context.getString(R.string.Snabble_Taxation_Consume_takeaway)
                             )

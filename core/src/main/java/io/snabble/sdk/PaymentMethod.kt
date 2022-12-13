@@ -89,7 +89,8 @@ enum class PaymentMethod(
 
     @SerializedName("externalBilling")
     TEGUT_EMPLOYEE_CARD
-        (id = "externalBilling",
+        (
+        id = "externalBilling",
         isOfflineMethod = false,
         isRequiringCredentials = true,
         isShowOnlyIfCredentialsArePresent = true,
@@ -160,7 +161,7 @@ enum class PaymentMethod(
     ),
 
     @SerializedName("deDirectDebit")
-    PAYONESEPADATA(
+    PAYONE_SEPA(
         id = "deDirectDebit",
         isOfflineMethod = false,
         isRequiringCredentials = true,
@@ -197,10 +198,10 @@ enum class PaymentMethod(
                         "tegutEmployeeID" -> return TEGUT_EMPLOYEE_CARD
                         "leinweberCustomerID" -> return LEINWEBER_CUSTOMER_ID
                     }
-                } else if (pm.id == id && pm.id == PAYONESEPADATA.id) {
+                } else if (pm.id == id && pm.id == PAYONE_SEPA.id) {
                     //needed for deserialization
                     return when (origin[0]) {
-                        "payoneSepaData" -> PAYONESEPADATA
+                        "payoneSepaData" -> PAYONE_SEPA
                         else -> DE_DIRECT_DEBIT
                     }
                 } else if (pm.id == id) {

@@ -161,8 +161,7 @@ object SnabbleUI {
                 SHOW_CHECKOUT_DONE,
                 NOT_CHECKED_IN,
                 EXIT_TOKEN_AVAILABLE,
-                null,
-                -> {
+                null -> {
                 }
             }
         }
@@ -173,7 +172,7 @@ object SnabbleUI {
         context: Context,
         clazz: Class<T>, args: Bundle?,
         canGoBack: Boolean = true,
-        unique: Boolean = false,
+        unique: Boolean = false
     ) {
         val intent = Intent(context, clazz)
 

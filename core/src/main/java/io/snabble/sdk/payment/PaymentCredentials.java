@@ -62,7 +62,8 @@ public class PaymentCredentials {
         DATATRANS("datatransAlias", true, Arrays.asList(PaymentMethod.TWINT, PaymentMethod.POST_FINANCE_CARD)),
         DATATRANS_CREDITCARD("datatransCreditCardAlias", true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
         PAYONE_CREDITCARD(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
-        PAYONE_SEPA("payoneSepaData", true, Collections.singletonList(PaymentMethod.PAYONESEPADATA));
+        PAYONE_SEPA("payoneSepaData", true, Collections.singletonList(PaymentMethod.PAYONE_SEPA)),
+        ;
 
         private final String originType;
         private final boolean requiresProject;
@@ -861,7 +862,7 @@ public class PaymentCredentials {
         if (getType() == PaymentCredentials.Type.SEPA) {
             return PaymentMethod.DE_DIRECT_DEBIT;
         } else if (getType() == Type.PAYONE_SEPA) {
-            return PaymentMethod.PAYONESEPADATA;
+            return PaymentMethod.PAYONE_SEPA;
         } else if (type == Type.TEGUT_EMPLOYEE_CARD) {
             return PaymentMethod.TEGUT_EMPLOYEE_CARD;
         } else if (type == Type.LEINWEBER_CUSTOMER_ID) {
