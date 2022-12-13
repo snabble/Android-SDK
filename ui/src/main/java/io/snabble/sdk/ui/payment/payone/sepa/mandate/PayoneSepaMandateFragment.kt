@@ -1,8 +1,5 @@
 package io.snabble.sdk.ui.payment.payone.sepa.mandate
 
-import android.content.DialogInterface
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,37 +12,29 @@ import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.snabble.sdk.ui.payment.payone.sepa.mandate.ui.PayoneSepaMandateScreen
 import io.snabble.sdk.ui.payment.payone.sepa.mandate.viewmodel.SepaMandateViewModel
+import io.snabble.sdk.utils.Logger
 
 class PayoneSepaMandateFragment : DialogFragment() {
 
     private val viewModel: SepaMandateViewModel by viewModels()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.WHITE))
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        ComposeView(inflater.context).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
-        return ComposeView(inflater.context).apply {
             setContent {
-                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-
                 @OptIn(ExperimentalLifecycleComposeApi::class)
                 val state = viewModel.mandateFlow.collectAsStateWithLifecycle()
 
 //                ThemeWrapper {
                 PayoneSepaMandateScreen(
                     state = state.value,
-                    onAccepted = { viewModel.accept(hasUserAccepted = true) },
-                    onDenied = { this@PayoneSepaMandateFragment.dismiss() },
-                    onSuccessAction = { this@PayoneSepaMandateFragment.dismiss() },
-                    onErrorAction = { this@PayoneSepaMandateFragment.dismiss() }
+                    onAccepted = { viewModel.accept() },
+                    onDenied = { viewModel.accept() },
+                    onSuccessAction = { Logger.d("PAYONE SEPA Mandate has been accepted.") },
+                    onErrorAction = { viewModel.abort() }
                 )
 //                }
             }
         }
-    }
-
-    override fun onDismiss(dialog: DialogInterface) {
-        super.onDismiss(dialog)
-
-        viewModel.accept(hasUserAccepted = false)
-    }
 }

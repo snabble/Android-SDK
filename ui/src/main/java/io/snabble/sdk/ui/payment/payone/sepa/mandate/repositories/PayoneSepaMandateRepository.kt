@@ -29,7 +29,7 @@ internal interface PayoneSepaMandateRepository {
 
     suspend fun acceptMandate(): Boolean
 
-    fun denyMandate()
+    fun abortProcess()
 }
 
 internal class PayoneSepaMandateRepositoryImpl(
@@ -95,7 +95,7 @@ internal class PayoneSepaMandateRepositoryImpl(
         }
     }
 
-    override fun denyMandate() {
+    override fun abortProcess() {
         snabble.checkedInProject.value?.checkout?.abort()
     }
 

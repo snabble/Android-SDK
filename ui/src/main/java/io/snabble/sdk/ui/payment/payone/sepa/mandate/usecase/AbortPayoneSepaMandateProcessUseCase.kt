@@ -4,14 +4,14 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.payment.payone.sepa.mandate.repositories.PayoneSepaMandateRepository
 import io.snabble.sdk.ui.payment.payone.sepa.mandate.repositories.PayoneSepaMandateRepositoryImpl
 
-internal interface DenyPayoneSepaMandateUseCase {
+internal interface AbortPayoneSepaMandateProcessUseCase {
 
     operator fun invoke()
 }
 
-internal class DenyPayoneSepaMandateUseCaseImpl(
+internal class AbortPayoneSepaMandateProcessUseCaseImpl(
     private val repo: PayoneSepaMandateRepository = PayoneSepaMandateRepositoryImpl(snabble = Snabble),
-) : DenyPayoneSepaMandateUseCase {
+) : AbortPayoneSepaMandateProcessUseCase {
 
-    override fun invoke() = repo.denyMandate()
+    override fun invoke() = repo.abortProcess()
 }

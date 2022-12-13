@@ -16,7 +16,6 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.payment.payone.sepa.mandate.PayoneSepaMandateFragment
 import io.snabble.sdk.utils.Logger
 
 class CheckoutActivity : FragmentActivity() {
@@ -172,15 +171,10 @@ class CheckoutActivity : FragmentActivity() {
                 null
             }
             CheckoutState.PAYONE_SEPA_MANDATE_REQUIRED -> {
-                createMandateDialog()
-                R.id.snabble_nav_payment_status
+                R.id.snabble_nav_payment_payone_sepa_mandate
             }
             else -> R.id.snabble_nav_payment_status
         }
-    }
-
-    private fun createMandateDialog() {
-        PayoneSepaMandateFragment().show(supportFragmentManager, "PayoneSepaMandateDialog")
     }
 
     override fun onBackPressed() {
