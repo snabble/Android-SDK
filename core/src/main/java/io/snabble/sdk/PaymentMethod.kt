@@ -88,8 +88,7 @@ enum class PaymentMethod(
     ),
 
     @SerializedName("externalBilling")
-    TEGUT_EMPLOYEE_CARD
-        (
+    TEGUT_EMPLOYEE_CARD(
         id = "externalBilling",
         isOfflineMethod = false,
         isRequiringCredentials = true,
