@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
+### Added
+* Added payment method PAYONE SEPA
 
 ## [0.69.1-beta06]
 ### Added
