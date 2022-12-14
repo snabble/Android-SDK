@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment.payone.sepa.credentials.domain
+package io.snabble.sdk.ui.payment.payone.sepa.form.domain
 
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.payment.PaymentCredentials

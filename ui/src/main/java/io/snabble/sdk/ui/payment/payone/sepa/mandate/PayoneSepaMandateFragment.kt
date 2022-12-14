@@ -34,7 +34,7 @@ class PayoneSepaMandateFragment : DialogFragment() {
                 PayoneSepaMandateScreen(
                     state = uiState,
                     onAccepted = { viewModel.accept() },
-                    onDenied = { viewModel.accept() },
+                    onDenied = { viewModel.abort() },
                     onSuccessAction = { Logger.d("PAYONE SEPA Mandate has been accepted.") },
                     onErrorAction = { viewModel.abort() }
                 )

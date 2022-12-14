@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment.payone.sepa.credentials
+package io.snabble.sdk.ui.payment.payone.sepa.form
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -12,13 +12,13 @@ import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.payment.payone.sepa.credentials.ui.PayoneSepaScreen
-import io.snabble.sdk.ui.payment.payone.sepa.credentials.viewmodel.SepaViewModel
+import io.snabble.sdk.ui.payment.payone.sepa.form.ui.PayoneSepaScreen
+import io.snabble.sdk.ui.payment.payone.sepa.form.viewmodel.SepaViewModel
 import io.snabble.sdk.ui.utils.KeyguardUtils
 import io.snabble.sdk.ui.utils.ThemeWrapper
 import io.snabble.sdk.ui.utils.UIUtils
 
-open class PayoneSepaInputFragment : BaseFragment(
+open class PayoneSepaFormFragment : BaseFragment(
     layoutResId = R.layout.snabble_fragment_sepa_input_payone,
     waitForProject = false,
 ) {

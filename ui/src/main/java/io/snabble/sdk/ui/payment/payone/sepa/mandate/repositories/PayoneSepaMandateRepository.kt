@@ -119,14 +119,13 @@ private fun String.decode(encoding: String = "UTF-8"): String? = try {
 private fun createHtml(body: String): String = HEAD + body + TAIL
 
 private const val HEAD = """
+<!DOCTYPE html>
 <html>
     <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-        <style type="text/css">
-        </style>
+        <title>&nbsp;</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
-    <body>
 """
 
 private const val TAIL = """

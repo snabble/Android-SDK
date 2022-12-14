@@ -13,7 +13,7 @@ import io.snabble.sdk.ui.cart.ShoppingCartActivity
 import io.snabble.sdk.ui.checkout.CheckoutActivity
 import io.snabble.sdk.ui.coupon.CouponDetailActivity
 import io.snabble.sdk.ui.payment.*
-import io.snabble.sdk.ui.payment.payone.sepa.credentials.PayoneSepaActivity
+import io.snabble.sdk.ui.payment.payone.sepa.form.PayoneSepaActivity
 import io.snabble.sdk.ui.scanner.SelfScanningActivity
 import io.snabble.sdk.ui.search.ProductSearchActivity
 import io.snabble.sdk.ui.utils.UIUtils

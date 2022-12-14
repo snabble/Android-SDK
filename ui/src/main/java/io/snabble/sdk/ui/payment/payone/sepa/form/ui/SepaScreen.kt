@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment.payone.sepa.credentials.ui
+package io.snabble.sdk.ui.payment.payone.sepa.form.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,8 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.payment.payone.sepa.PayoneSepaData
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.payment.payone.sepa.credentials.ui.widget.IbanFieldWidget
-import io.snabble.sdk.ui.payment.payone.sepa.credentials.ui.widget.TextFieldWidget
+import io.snabble.sdk.ui.payment.payone.sepa.form.ui.widget.IbanFieldWidget
+import io.snabble.sdk.ui.payment.payone.sepa.form.ui.widget.TextFieldWidget
 
 @Composable
 internal fun PayoneSepaScreen(
@@ -54,6 +54,7 @@ internal fun PayoneSepaScreen(
             readOnly = false,
             focusManager = focusManager
         )
+
         Spacer(modifier = Modifier.height(8.dp))
         IbanFieldWidget(
             iban = iban,
@@ -63,6 +64,7 @@ internal fun PayoneSepaScreen(
             },
             focusManager = focusManager
         )
+
         Spacer(modifier = Modifier.height(8.dp))
         TextFieldWidget(
             value = city,
@@ -78,6 +80,7 @@ internal fun PayoneSepaScreen(
             focusManager = focusManager,
             canSend = true,
         )
+
         Spacer(modifier = Modifier.height(8.dp))
         TextFieldWidget(
             value = "Deutschland",
@@ -94,12 +97,12 @@ internal fun PayoneSepaScreen(
                 color = MaterialTheme.colorScheme.error
             )
         }
+
         Spacer(modifier = Modifier.height(32.dp))
         Button(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(40.dp)
-                .padding(horizontal = 16.dp),
+                .height(40.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
             ),
@@ -111,6 +114,13 @@ internal fun PayoneSepaScreen(
         ) {
             Text(text = stringResource(id = R.string.Snabble_save))
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = stringResource(id = R.string.Snabble_Payment_SEPA_hint),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = .5f)
+        )
     }
 }
 
