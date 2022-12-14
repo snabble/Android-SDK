@@ -11,12 +11,7 @@ import android.os.Bundle
 import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.View
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.core.view.marginTop
@@ -37,21 +32,12 @@ import io.snabble.sdk.ui.payment.PaymentInputViewHelper
 import io.snabble.sdk.ui.payment.SEPALegalInfoHelper
 import io.snabble.sdk.ui.payment.SelectPaymentMethodFragment
 import io.snabble.sdk.ui.telemetry.Telemetry
-import io.snabble.sdk.ui.utils.DelayedProgressDialog
-import io.snabble.sdk.ui.utils.I18nUtils
-import io.snabble.sdk.ui.utils.OneShotClickListener
-import io.snabble.sdk.ui.utils.SnackbarUtils
-import io.snabble.sdk.ui.utils.UIUtils
-import io.snabble.sdk.ui.utils.executeUiAction
-import io.snabble.sdk.ui.utils.observeView
-import io.snabble.sdk.ui.utils.requireFragmentActivity
-import io.snabble.sdk.ui.utils.setOneShotClickListener
+import io.snabble.sdk.ui.utils.*
 import io.snabble.sdk.utils.Logger
 
 open class CheckoutBar @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
-
     init {
         inflate(getContext(), R.layout.snabble_view_checkout_bar, this)
     }
@@ -194,10 +180,7 @@ open class CheckoutBar @JvmOverloads constructor(
             val isHidden = project.paymentMethodDescriptors.size == 1 && hasNoPaymentMethods
             paymentSelector.isVisible = !isHidden
             paymentIcon.setImageResource(entry.iconResId)
-            paymentSelectorButton.contentDescription = resources.getString(
-                R.string.Snabble_Shoppingcart_Accessibility_paymentMethod,
-                entry.text
-            )
+            paymentSelectorButton.contentDescription = resources.getString(R.string.Snabble_Shoppingcart_Accessibility_paymentMethod, entry.text)
             paymentSelectorButton.accessibility {
                 setClickAction(R.string.Snabble_Shoppingcart_BuyProducts_selectPaymentMethod)
             }
@@ -212,10 +195,8 @@ open class CheckoutBar @JvmOverloads constructor(
             articleCount.text = String.format(articlesText.toString(), quantity)
             priceSum.text = project.priceFormatter.format(price)
 
-            val onlinePaymentAvailable =
-                cart.availablePaymentMethods != null && cart.availablePaymentMethods.isNotEmpty()
-            payButton.isEnabled =
-                price > 0 && (onlinePaymentAvailable || paymentSelectionHelper.selectedEntry.value != null)
+            val onlinePaymentAvailable = cart.availablePaymentMethods != null && cart.availablePaymentMethods.isNotEmpty()
+            payButton.isEnabled = price > 0 && (onlinePaymentAvailable || paymentSelectionHelper.selectedEntry.value != null)
 
             var showBigSelector = paymentSelectionHelper.shouldShowBigSelector()
             val showSmallSelector = paymentSelectionHelper.shouldShowSmallSelector()
@@ -244,23 +225,15 @@ open class CheckoutBar @JvmOverloads constructor(
                 payButton.isEnabled = true
                 payButton.setText(R.string.Snabble_Shoppingcart_EmptyState_restoreButtonTitle)
             } else {
-                payButton.setText(
-                    I18nUtils.getIdentifierForProject(
-                        resources,
-                        project,
-                        R.string.Snabble_Shoppingcart_BuyProducts_now
-                    )
-                )
+                payButton.setText(I18nUtils.getIdentifierForProject(resources, project, R.string.Snabble_Shoppingcart_BuyProducts_now))
             }
         }
     }
 
     protected fun pay() {
         if (cart.hasReachedMaxCheckoutLimit()) {
-            val message = resources.getString(
-                R.string.Snabble_LimitsAlert_checkoutNotAvailable,
-                project.priceFormatter.format(project.maxCheckoutLimit)
-            )
+            val message = resources.getString(R.string.Snabble_LimitsAlert_checkoutNotAvailable,
+                    project.priceFormatter.format(project.maxCheckoutLimit))
             SnackbarUtils.make(this, message, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
         } else {
             val entry = paymentSelectionHelper.selectedEntry.value
@@ -270,16 +243,16 @@ open class CheckoutBar @JvmOverloads constructor(
                 } else {
                     Telemetry.event(Telemetry.Event.ClickCheckout)
                     SEPALegalInfoHelper.showSEPALegalInfoIfNeeded(context,
-                        entry.paymentMethod,
-                        object : OneShotClickListener() {
-                            override fun click() {
-                                if (entry.paymentMethod.isOfflineMethod) {
-                                    project.checkout.checkout(3000, true)
-                                } else {
-                                    project.checkout.checkout()
+                            entry.paymentMethod,
+                            object : OneShotClickListener() {
+                                override fun click() {
+                                    if (entry.paymentMethod.isOfflineMethod) {
+                                        project.checkout.checkout(3000, true)
+                                    } else {
+                                        project.checkout.checkout()
+                                    }
                                 }
-                            }
-                        })
+                            })
                 }
             } else {
                 val hasPaymentMethodThatRequiresCredentials =
@@ -291,10 +264,7 @@ open class CheckoutBar @JvmOverloads constructor(
                     if (activity is FragmentActivity) {
                         val dialogFragment = SelectPaymentMethodFragment()
                         val bundle = Bundle()
-                        bundle.putString(
-                            SelectPaymentMethodFragment.ARG_PROJECT_ID,
-                            requireNotNull(Snabble.checkedInProject.value).id
-                        )
+                        bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, requireNotNull(Snabble.checkedInProject.value).id)
                         dialogFragment.arguments = bundle
                         dialogFragment.show(activity.supportFragmentManager, null)
                     }
@@ -390,9 +360,7 @@ open class CheckoutBar @JvmOverloads constructor(
                         .setPositiveButton(R.string.Snabble_ok, null)
                         .show()
                 } else {
-                    SnackbarUtils
-                        .make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
-                        .show()
+                    SnackbarUtils.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
                 }
                 progressDialog.dismiss()
             }
@@ -400,8 +368,7 @@ open class CheckoutBar @JvmOverloads constructor(
             CheckoutState.NO_SHOP,
             CheckoutState.PAYMENT_PROCESSING_ERROR -> {
                 if (isAttachedToWindow) {
-                    SnackbarUtils.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
-                        .show()
+                    SnackbarUtils.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG).show()
                     progressDialog.dismiss()
                 }
             }
@@ -417,14 +384,10 @@ open class CheckoutBar @JvmOverloads constructor(
                 AlertDialog.Builder(context)
                     .setTitle(I18nUtils.getIdentifier(context.resources, R.string.Snabble_Taxation_consumeWhere))
                     .setAdapter(
-                        ArrayAdapter(
-                            context,
-                            R.layout.snabble_item_taxation,
-                            listOf(
-                                context.getString(R.string.Snabble_Taxation_Consume_inhouse),
-                                context.getString(R.string.Snabble_Taxation_Consume_takeaway)
-                            )
-                        )
+                        ArrayAdapter(context, R.layout.snabble_item_taxation, listOf(
+                            context.getString(R.string.Snabble_Taxation_Consume_inhouse),
+                            context.getString(R.string.Snabble_Taxation_Consume_takeaway)
+                        ))
                     ) { dialog, which ->
                         if (which == 0) {
                             cart.taxation = ShoppingCart.Taxation.IN_HOUSE
@@ -454,6 +417,5 @@ open class CheckoutBar @JvmOverloads constructor(
 }
 
 fun interface CheckoutPreconditionHandler {
-
     fun isCheckoutAllowed(): Boolean
 }
