@@ -72,6 +72,23 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
             }));
         }
 
+        if (availablePaymentMethods.contains(PaymentMethod.PAYONE_SEPA)) {
+            entries.add(new SelectPaymentMethodFragment.Entry(
+                    R.drawable.snabble_ic_payment_select_sepa,
+                    "SEPA",
+                    getUsableAtText(PaymentMethod.PAYONE_SEPA),
+                    new OneShotClickListener() {
+
+                        @Override
+                        public void click() {
+                            PaymentInputViewHelper
+                                    .openPaymentInputView(requireContext(), PaymentMethod.PAYONE_SEPA, projectId);
+                            dismissAllowingStateLoss();
+                        }
+                    }
+            ));
+        }
+
         if (availablePaymentMethods.contains(PaymentMethod.VISA)) {
             entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_payment_select_visa,
                     "VISA",

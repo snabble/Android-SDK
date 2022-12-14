@@ -32,6 +32,7 @@ enum class PaymentMethod(
      */
     val needsAbortConfirmation: Boolean,
 ) {
+
     @SerializedName("qrCodePOS")
     QRCODE_POS(
         id = "qrCodePOS",
@@ -40,6 +41,7 @@ enum class PaymentMethod(
         isShowOnlyIfCredentialsArePresent = false,
         needsAbortConfirmation = false
     ),
+
     @SerializedName("qrCodeOffline")
     QRCODE_OFFLINE(
         id = "qrCodeOffline",
@@ -48,6 +50,7 @@ enum class PaymentMethod(
         isShowOnlyIfCredentialsArePresent = false,
         needsAbortConfirmation = false
     ),
+
     @SerializedName("deDirectDebit")
     DE_DIRECT_DEBIT(
         id = "deDirectDebit",
@@ -56,6 +59,7 @@ enum class PaymentMethod(
         isShowOnlyIfCredentialsArePresent = false,
         needsAbortConfirmation = true
     ),
+
     @SerializedName("creditCardVisa")
     VISA(
         id = "creditCardVisa",
@@ -64,6 +68,7 @@ enum class PaymentMethod(
         isShowOnlyIfCredentialsArePresent = false,
         needsAbortConfirmation = true
     ),
+
     @SerializedName("creditCardMastercard")
     MASTERCARD(
         id = "creditCardMastercard",
@@ -72,6 +77,7 @@ enum class PaymentMethod(
         isShowOnlyIfCredentialsArePresent = false,
         needsAbortConfirmation = true
     ),
+
     @SerializedName("creditCardAmericanExpress")
     AMEX(
         id = "creditCardAmericanExpress",
@@ -80,14 +86,16 @@ enum class PaymentMethod(
         isShowOnlyIfCredentialsArePresent = false,
         needsAbortConfirmation = true
     ),
+
     @SerializedName("externalBilling")
-    TEGUT_EMPLOYEE_CARD
-        (id = "externalBilling",
+    TEGUT_EMPLOYEE_CARD(
+        id = "externalBilling",
         isOfflineMethod = false,
         isRequiringCredentials = true,
         isShowOnlyIfCredentialsArePresent = true,
         needsAbortConfirmation = true
     ),
+
     @SerializedName("externalBilling")
     LEINWEBER_CUSTOMER_ID(
         id = "externalBilling",
@@ -96,6 +104,7 @@ enum class PaymentMethod(
         isShowOnlyIfCredentialsArePresent = true,
         needsAbortConfirmation = true
     ),
+
     @SerializedName("customerCardPOS")
     CUSTOMERCARD_POS(
         id = "customerCardPOS",
@@ -104,6 +113,7 @@ enum class PaymentMethod(
         isShowOnlyIfCredentialsArePresent = false,
         needsAbortConfirmation = false
     ),
+
     @SerializedName("gatekeeperTerminal")
     GATEKEEPER_TERMINAL(
         id = "gatekeeperTerminal",
@@ -112,6 +122,7 @@ enum class PaymentMethod(
         isShowOnlyIfCredentialsArePresent = false,
         needsAbortConfirmation = false
     ),
+
     @SerializedName("paydirektOneKlick")
     PAYDIREKT(
         id = "paydirektOneKlick",
@@ -120,6 +131,7 @@ enum class PaymentMethod(
         isShowOnlyIfCredentialsArePresent = false,
         needsAbortConfirmation = true
     ),
+
     @SerializedName("postFinanceCard")
     POST_FINANCE_CARD(
         id = "postFinanceCard",
@@ -128,6 +140,7 @@ enum class PaymentMethod(
         isShowOnlyIfCredentialsArePresent = false,
         needsAbortConfirmation = true
     ),
+
     @SerializedName("twint")
     TWINT(
         id = "twint",
@@ -136,6 +149,7 @@ enum class PaymentMethod(
         isShowOnlyIfCredentialsArePresent = false,
         needsAbortConfirmation = true
     ),
+
     @SerializedName("googlePay")
     GOOGLE_PAY(
         id = "googlePay",
@@ -143,9 +157,19 @@ enum class PaymentMethod(
         isRequiringCredentials = false,
         isShowOnlyIfCredentialsArePresent = false,
         needsAbortConfirmation = false
+    ),
+
+    @SerializedName("deDirectDebit")
+    PAYONE_SEPA(
+        id = "deDirectDebit",
+        isOfflineMethod = false,
+        isRequiringCredentials = true,
+        isShowOnlyIfCredentialsArePresent = false,
+        needsAbortConfirmation = true
     );
 
     companion object {
+
         /**
          * Converts a payment method from its string representation.
          */
@@ -172,6 +196,12 @@ enum class PaymentMethod(
                     when (origin[0]) {
                         "tegutEmployeeID" -> return TEGUT_EMPLOYEE_CARD
                         "leinweberCustomerID" -> return LEINWEBER_CUSTOMER_ID
+                    }
+                } else if (pm.id == id && pm.id == PAYONE_SEPA.id) {
+                    //needed for deserialization
+                    return when (origin[0]) {
+                        "payoneSepaData" -> PAYONE_SEPA
+                        else -> DE_DIRECT_DEBIT
                     }
                 } else if (pm.id == id) {
                     return pm

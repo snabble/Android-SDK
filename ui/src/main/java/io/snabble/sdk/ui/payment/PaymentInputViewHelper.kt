@@ -15,6 +15,7 @@ import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.utils.Logger
 
 object PaymentInputViewHelper {
+
     @JvmStatic
     fun openPaymentInputView(context: Context, paymentMethod: PaymentMethod?, projectId: String) {
         if (KeyguardUtils.isDeviceSecure()) {
@@ -54,6 +55,9 @@ object PaymentInputViewHelper {
                         }
                         PaymentMethod.DE_DIRECT_DEBIT -> {
                             SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_SEPA_CARD_INPUT)
+                        }
+                        PaymentMethod.PAYONE_SEPA -> {
+                            SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_PAYONE_SEPA)
                         }
                         else -> {
                             Logger.e("Payment method requires no credentials or is unsupported")

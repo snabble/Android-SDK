@@ -117,5 +117,10 @@ enum class CheckoutState {
     /**
      * No shop was selected
      */
-    NO_SHOP
+    NO_SHOP,
+
+    /**
+     * SEPA mandate for PAYONE is needed
+     */
+    PAYONE_SEPA_MANDATE_REQUIRED,
 }

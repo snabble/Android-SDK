@@ -13,13 +13,11 @@ import io.snabble.sdk.ui.cart.ShoppingCartActivity
 import io.snabble.sdk.ui.checkout.CheckoutActivity
 import io.snabble.sdk.ui.coupon.CouponDetailActivity
 import io.snabble.sdk.ui.payment.*
+import io.snabble.sdk.ui.payment.payone.sepa.form.PayoneSepaActivity
 import io.snabble.sdk.ui.scanner.SelfScanningActivity
 import io.snabble.sdk.ui.search.ProductSearchActivity
 import io.snabble.sdk.ui.utils.UIUtils
 import java.lang.ref.WeakReference
-import kotlin.collections.get
-import kotlin.collections.mutableMapOf
-import kotlin.collections.remove
 import kotlin.collections.set
 
 /***
@@ -31,12 +29,14 @@ import kotlin.collections.set
  * of the default Activites.
  */
 object SnabbleUI {
+
     enum class Event {
         SHOW_CHECKOUT,
         SHOW_CHECKOUT_DONE,
         SHOW_SCANNER,
         SHOW_BARCODE_SEARCH,
         SHOW_SEPA_CARD_INPUT,
+        SHOW_PAYONE_SEPA,
         SHOW_CREDIT_CARD_INPUT,
         SHOW_PAYONE_INPUT,
         SHOW_PAYDIREKT_INPUT,
@@ -53,20 +53,24 @@ object SnabbleUI {
 
     private class ActivityCallback(
         var activity: WeakReference<AppCompatActivity>,
-        val action: Action
+        val action: Action,
     )
 
     private var actions = mutableMapOf<Event, ActivityCallback?>()
 
     @JvmStatic
-    @Deprecated("Use Snabble.checkedInProject instead",
-        ReplaceWith( "requireNotNull(Snabble.checkedInProject.value)", "io.snabble.sdk.Snabble"))
+    @Deprecated(
+        "Use Snabble.checkedInProject instead",
+        ReplaceWith("requireNotNull(Snabble.checkedInProject.value)", "io.snabble.sdk.Snabble")
+    )
     val project: Project
         get() = requireNotNull(Snabble.checkedInProject.value)
 
     @JvmStatic
-    @Deprecated("Use Snabble.checkedInProject instead",
-        ReplaceWith( "Snabble.checkedInProject", "io.snabble.sdk.Snabble"))
+    @Deprecated(
+        "Use Snabble.checkedInProject instead",
+        ReplaceWith("Snabble.checkedInProject", "io.snabble.sdk.Snabble")
+    )
     val projectAsLiveData: LiveData<Project?>
         get() = Snabble.checkedInProject
 
@@ -119,23 +123,37 @@ object SnabbleUI {
         } else {
             when (event) {
                 SHOW_CHECKOUT -> CheckoutActivity.startCheckoutFlow(context)
-                SHOW_SCANNER -> startActivity(context, SelfScanningActivity::class.java, args,
-                    canGoBack = true,
-                    unique = true
-                )
-                SHOW_BARCODE_SEARCH -> startActivity(context, ProductSearchActivity::class.java, args,
-                    canGoBack = false,
-                    unique = false
-                )
-                SHOW_SEPA_CARD_INPUT -> startActivity(context, SEPACardInputActivity::class.java, args, false)
-                SHOW_CREDIT_CARD_INPUT -> startActivity(context, CreditCardInputActivity::class.java, args, false)
-                SHOW_PAYONE_INPUT -> startActivity(context, PayoneInputActivity::class.java, args, false)
-                SHOW_PAYDIREKT_INPUT -> startActivity(context, PaydirektInputActivity::class.java, args, false)
+
+                SHOW_SCANNER ->
+                    startActivity(context, SelfScanningActivity::class.java, args, canGoBack = true, unique = true)
+
+                SHOW_BARCODE_SEARCH ->
+                    startActivity(context, ProductSearchActivity::class.java, args, canGoBack = false, unique = false)
+
+                SHOW_SEPA_CARD_INPUT ->
+                    startActivity(context, SEPACardInputActivity::class.java, args, canGoBack = false)
+
+                SHOW_PAYONE_SEPA -> startActivity(context, PayoneSepaActivity::class.java, args, canGoBack = false)
+
+                SHOW_CREDIT_CARD_INPUT ->
+                    startActivity(context, CreditCardInputActivity::class.java, args, canGoBack = false)
+
+                SHOW_PAYONE_INPUT -> startActivity(context, PayoneInputActivity::class.java, args, canGoBack = false)
+
+                SHOW_PAYDIREKT_INPUT ->
+                    startActivity(context, PaydirektInputActivity::class.java, args, canGoBack = false)
+
                 SHOW_SHOPPING_CART -> startActivity(context, ShoppingCartActivity::class.java, args)
-                SHOW_PAYMENT_CREDENTIALS_LIST -> startActivity(context, PaymentCredentialsListActivity::class.java, args)
+
+                SHOW_PAYMENT_CREDENTIALS_LIST ->
+                    startActivity(context, PaymentCredentialsListActivity::class.java, args)
+
                 SHOW_PAYMENT_OPTIONS -> startActivity(context, PaymentOptionsActivity::class.java, args)
+
                 SHOW_PROJECT_PAYMENT_OPTIONS -> startActivity(context, ProjectPaymentOptionsActivity::class.java, args)
+
                 SHOW_AGE_VERIFICATION -> startActivity(context, AgeVerificationInputActivity::class.java, args)
+
                 SHOW_COUPON_DETAILS -> startActivity(context, CouponDetailActivity::class.java, args)
 
                 // unhandled actions
@@ -143,7 +161,7 @@ object SnabbleUI {
                 SHOW_CHECKOUT_DONE,
                 NOT_CHECKED_IN,
                 EXIT_TOKEN_AVAILABLE,
-                null -> {}
+                null -> Unit
             }
         }
     }

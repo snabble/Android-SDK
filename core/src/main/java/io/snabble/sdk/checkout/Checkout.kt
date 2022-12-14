@@ -19,7 +19,9 @@ class Checkout @JvmOverloads constructor(
         project, shoppingCart
     )
 ) {
+
     companion object {
+
         const val INVALID_PRICE = -1
     }
 
@@ -121,7 +123,8 @@ class Checkout @JvmOverloads constructor(
         if (checkoutProcess != null
             && state.value != CheckoutState.PAYMENT_APPROVED
             && state.value != CheckoutState.DENIED_BY_PAYMENT_PROVIDER
-            && state.value != CheckoutState.DENIED_BY_SUPERVISOR) {
+            && state.value != CheckoutState.DENIED_BY_SUPERVISOR
+        ) {
             if (hasAnyFulfillmentAllocationFailed()) {
                 reset()
                 return
@@ -148,7 +151,8 @@ class Checkout @JvmOverloads constructor(
                         notifyStateChanged(CheckoutState.PAYMENT_PROCESSING_ERROR)
                     } else {
                         if (state.value != CheckoutState.PAYMENT_PROCESSING
-                         && state.value != CheckoutState.PAYMENT_APPROVED) {
+                            && state.value != CheckoutState.PAYMENT_APPROVED
+                        ) {
                             val lastState = state.value
 
                             Dispatch.mainThread {
@@ -182,7 +186,8 @@ class Checkout @JvmOverloads constructor(
         if (checkoutProcess != null
             && state.value != CheckoutState.PAYMENT_APPROVED
             && state.value != CheckoutState.DENIED_BY_PAYMENT_PROVIDER
-            && state.value != CheckoutState.DENIED_BY_SUPERVISOR) {
+            && state.value != CheckoutState.DENIED_BY_SUPERVISOR
+        ) {
             checkoutApi.abort(checkoutProcess, null)
         }
         reset()
@@ -205,6 +210,7 @@ class Checkout @JvmOverloads constructor(
     private fun cancelOutstandingCalls() {
         checkoutApi.cancel()
     }
+
     /**
      * Returns true of the checkout is currently available, or false if checkout is disabled
      * for this project
@@ -248,7 +254,8 @@ class Checkout @JvmOverloads constructor(
         }
 
         val backendCart = shoppingCart.toBackendCart()
-        checkoutApi.createCheckoutInfo(backendCart,
+        checkoutApi.createCheckoutInfo(
+            backendCart,
             object : CheckoutInfoResult {
                 override fun onSuccess(
                     signedCheckoutInfo: SignedCheckoutInfo,
@@ -401,7 +408,7 @@ class Checkout @JvmOverloads constructor(
     private fun hasAnyFulfillmentAllocationFailed(): Boolean {
         return checkoutProcess?.fulfillments?.any {
             it.state == FulfillmentState.ALLOCATION_FAILED
-         || it.state == FulfillmentState.ALLOCATION_TIMED_OUT
+                    || it.state == FulfillmentState.ALLOCATION_TIMED_OUT
         } ?: false
     }
 
@@ -465,7 +472,9 @@ class Checkout @JvmOverloads constructor(
             || state == CheckoutState.VERIFYING_PAYMENT_METHOD
             || state == CheckoutState.REQUEST_PAYMENT_AUTHORIZATION_TOKEN
             || state == CheckoutState.PAYMENT_PROCESSING
-            || (state == CheckoutState.PAYMENT_APPROVED && !areAllFulfillmentsClosed())) {
+            || (state == CheckoutState.PAYMENT_APPROVED && !areAllFulfillmentsClosed())
+            || state == CheckoutState.PAYONE_SEPA_MANDATE_REQUIRED
+        ) {
             scheduleNextPoll()
         }
     }
@@ -494,6 +503,12 @@ class Checkout @JvmOverloads constructor(
                         notifyStateChanged(CheckoutState.WAIT_FOR_APPROVAL)
                     }
                 }
+                return false
+            }
+
+            if (isPayoneSepaMandateRequired(checkoutProcess)) {
+                Logger.d("Waiting for PAYONE SEPA mandate")
+                notifyStateChanged(CheckoutState.PAYONE_SEPA_MANDATE_REQUIRED)
                 return false
             }
 
@@ -548,7 +563,8 @@ class Checkout @JvmOverloads constructor(
                 }
                 CheckState.FAILED -> {
                     if (checkoutProcess.paymentResult?.failureCause != null
-                        && checkoutProcess.paymentResult.failureCause == "terminalAbort") {
+                        && checkoutProcess.paymentResult.failureCause == "terminalAbort"
+                    ) {
                         Logger.d("Payment aborted by terminal")
                         notifyStateChanged(CheckoutState.PAYMENT_ABORTED)
                     } else {
@@ -565,6 +581,11 @@ class Checkout @JvmOverloads constructor(
         }
         return false
     }
+
+    private fun isPayoneSepaMandateRequired(checkoutProcess: CheckoutProcessResponse) =
+        checkoutProcess.paymentState == CheckState.UNAUTHORIZED &&
+                checkoutProcess.paymentMethod == PaymentMethod.PAYONE_SEPA &&
+                checkoutProcess.routingTarget != RoutingTarget.SUPERVISOR
 
     private fun approve() {
         Logger.d("dddd approve checkout " + System.identityHashCode(this))

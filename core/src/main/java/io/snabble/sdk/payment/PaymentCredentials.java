@@ -2,6 +2,7 @@ package io.snabble.sdk.payment;
 
 import android.util.Base64;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 
@@ -37,6 +38,7 @@ import io.snabble.sdk.Environment;
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.R;
 import io.snabble.sdk.Snabble;
+import io.snabble.sdk.payment.payone.sepa.PayoneSepaData;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.Utils;
@@ -59,7 +61,9 @@ public class PaymentCredentials {
         LEINWEBER_CUSTOMER_ID("leinweberCustomerID", false, Collections.singletonList(PaymentMethod.LEINWEBER_CUSTOMER_ID)),
         DATATRANS("datatransAlias", true, Arrays.asList(PaymentMethod.TWINT, PaymentMethod.POST_FINANCE_CARD)),
         DATATRANS_CREDITCARD("datatransCreditCardAlias", true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
-        PAYONE_CREDITCARD(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX));
+        PAYONE_CREDITCARD(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
+        PAYONE_SEPA("payoneSepaData", true, Collections.singletonList(PaymentMethod.PAYONE_SEPA)),
+        ;
 
         private final String originType;
         private final boolean requiresProject;
@@ -206,32 +210,42 @@ public class PaymentCredentials {
      * Encrypts and stores SEPA payment credentials.
      */
     public static PaymentCredentials fromSEPA(String name, String iban) {
-        PaymentCredentials pc = new PaymentCredentials();
+        if (name == null || name.length() == 0) throw new IllegalArgumentException("Invalid Name");
+        if (!IBAN.validate(iban)) throw new IllegalArgumentException("Invalid IBAN");
+
+        final SepaData data = new SepaData();
+        data.name = name;
+        data.iban = iban;
+        final String json = GsonHolder.get().toJson(data, SepaData.class);
+        return createForSepa(Type.SEPA, iban, json);
+    }
+
+    /**
+     * Encrypts and stores SEPA payment credentials.
+     */
+    public static PaymentCredentials fromPayoneSepa(@NonNull final PayoneSepaData sepaData) {
+        final String json = GsonHolder.get().toJson(sepaData, PayoneSepaData.class);
+        return createForSepa(Type.PAYONE_SEPA, sepaData.getIban(), json);
+    }
+
+    private static PaymentCredentials createForSepa(
+            @NonNull final Type type,
+            @NonNull final String iban,
+            @NonNull final String jsonData
+    ) {
+        final PaymentCredentials pc = new PaymentCredentials();
         pc.generateId();
-        pc.type = Type.SEPA;
+        pc.type = type;
 
-        List<X509Certificate> certificates = Snabble.getInstance().getPaymentCertificates();
-        if (certificates.size() == 0) {
+        final List<X509Certificate> certificates = Snabble.getInstance().getPaymentCertificates();
+        if (certificates == null || certificates.size() == 0) {
             return null;
-        }
-
-        if (name == null || name.length() == 0) {
-            throw new IllegalArgumentException("Invalid Name");
-        }
-
-        if (!IBAN.validate(iban)) {
-            throw new IllegalArgumentException("Invalid IBAN");
         }
 
         pc.obfuscatedId = pc.obfuscate(iban);
 
-        SepaData data = new SepaData();
-        data.name = name;
-        data.iban = iban;
-        String json = GsonHolder.get().toJson(data, SepaData.class);
-
-        X509Certificate certificate = certificates.get(0);
-        pc.rsaEncryptedData = pc.rsaEncrypt(certificate, json.getBytes());
+        final X509Certificate certificate = certificates.get(0);
+        pc.rsaEncryptedData = pc.rsaEncrypt(certificate, jsonData.getBytes());
         pc.signature = pc.sha256Signature(certificate);
         pc.brand = Brand.UNKNOWN;
         pc.appId = Snabble.getInstance().getConfig().appId;
@@ -242,6 +256,13 @@ public class PaymentCredentials {
 
         return pc;
     }
+
+    private static void throwIfEmpty(@NonNull String value, @Nullable String name) {
+        if (value.length() == 0) {
+            throw new IllegalArgumentException(name != null ? name : "Parameter" + " must not be empty");
+        }
+    }
+
 
     /**
      * Encrypts and stores a Telecash / First Data credit card.
@@ -310,7 +331,7 @@ public class PaymentCredentials {
     @Deprecated
     private static long parseValidTo(String format, String expirationMonth, String expirationYear) {
         if (expirationMonth == null || expirationMonth.equals("")
-         || expirationYear == null || expirationYear.equals("")) {
+                || expirationYear == null || expirationYear.equals("")) {
             return 0;
         }
 
@@ -602,7 +623,7 @@ public class PaymentCredentials {
         }
         sb.append(s.substring(s.length() - numCharsEnd));
 
-        for (int i=4; i<sb.length(); i+=4) {
+        for (int i = 4; i < sb.length(); i += 4) {
             sb.insert(i, ' ');
             i++;
         }
@@ -610,7 +631,9 @@ public class PaymentCredentials {
         return sb.toString();
     }
 
-    /** Asynchronous encryption using the certificate the backend provided for us **/
+    /**
+     * Asynchronous encryption using the certificate the backend provided for us
+     **/
     private String rsaEncrypt(X509Certificate certificate, byte[] data) {
         try {
             if (validateCertificate(certificate)) {
@@ -628,7 +651,9 @@ public class PaymentCredentials {
         }
     }
 
-    /** Synchronous decryption using the user credentials **/
+    /**
+     * Synchronous decryption using the user credentials
+     **/
     private String decryptUsingKeyStore() {
         PaymentCredentialsStore store = Snabble.getInstance().getPaymentCredentialsStore();
 
@@ -725,7 +750,7 @@ public class PaymentCredentials {
     /**
      * Validates the current payment credentials.
      * If this method returns false the payment credentials are not usable anymore.
-     *
+     * <p>
      * E.g. on timed out credit cards or expired certificates.
      */
     public boolean validate() {
@@ -836,6 +861,8 @@ public class PaymentCredentials {
     public PaymentMethod getPaymentMethod() {
         if (getType() == PaymentCredentials.Type.SEPA) {
             return PaymentMethod.DE_DIRECT_DEBIT;
+        } else if (getType() == Type.PAYONE_SEPA) {
+            return PaymentMethod.PAYONE_SEPA;
         } else if (type == Type.TEGUT_EMPLOYEE_CARD) {
             return PaymentMethod.TEGUT_EMPLOYEE_CARD;
         } else if (type == Type.LEINWEBER_CUSTOMER_ID) {
@@ -846,17 +873,25 @@ public class PaymentCredentials {
                 || type == Type.DATATRANS
                 || type == Type.DATATRANS_CREDITCARD) {
             switch (getBrand()) {
-                case VISA: return PaymentMethod.VISA;
-                case AMEX: return PaymentMethod.AMEX;
-                case MASTERCARD: return PaymentMethod.MASTERCARD;
-                case POST_FINANCE_CARD: return PaymentMethod.POST_FINANCE_CARD;
-                case TWINT: return PaymentMethod.TWINT;
+                case VISA:
+                    return PaymentMethod.VISA;
+                case AMEX:
+                    return PaymentMethod.AMEX;
+                case MASTERCARD:
+                    return PaymentMethod.MASTERCARD;
+                case POST_FINANCE_CARD:
+                    return PaymentMethod.POST_FINANCE_CARD;
+                case TWINT:
+                    return PaymentMethod.TWINT;
             }
         } else if (type == Type.PAYONE_CREDITCARD) {
             switch (getBrand()) {
-                case VISA: return PaymentMethod.VISA;
-                case AMEX: return PaymentMethod.AMEX;
-                case MASTERCARD: return PaymentMethod.MASTERCARD;
+                case VISA:
+                    return PaymentMethod.VISA;
+                case AMEX:
+                    return PaymentMethod.AMEX;
+                case MASTERCARD:
+                    return PaymentMethod.MASTERCARD;
             }
         }
 

@@ -10,7 +10,9 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
-import io.snabble.sdk.*
+import io.snabble.sdk.InitializationState
+import io.snabble.sdk.PaymentMethod
+import io.snabble.sdk.Snabble
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.ui.R
@@ -18,6 +20,7 @@ import io.snabble.sdk.utils.Logger
 
 class CheckoutActivity : FragmentActivity() {
     companion object {
+
         const val ARG_PROJECT_ID = "projectId"
 
         @JvmStatic
@@ -59,7 +62,7 @@ class CheckoutActivity : FragmentActivity() {
             Snabble.setup(application)
         }
 
-        Snabble.initializationState.observe(this) initObserver@ {
+        Snabble.initializationState.observe(this) initObserver@{
             when (it) {
                 InitializationState.INITIALIZED -> {
                     Snabble.checkedInProject.observe(this) { project ->
@@ -117,7 +120,6 @@ class CheckoutActivity : FragmentActivity() {
 
     private fun getNavigationId(): Int? {
         val checkout = checkout ?: return null
-
         return when (checkout.state.value) {
             CheckoutState.WAIT_FOR_GATEKEEPER -> {
                 R.id.snabble_nav_routing_gatekeeper
@@ -166,6 +168,9 @@ class CheckoutActivity : FragmentActivity() {
             CheckoutState.NONE -> {
                 finish()
                 null
+            }
+            CheckoutState.PAYONE_SEPA_MANDATE_REQUIRED -> {
+                R.id.snabble_nav_payment_payone_sepa_mandate
             }
             else -> R.id.snabble_nav_payment_status
         }

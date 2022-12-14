@@ -6,8 +6,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.LayoutDirection
-import com.google.android.material.composethemeadapter3.Theme3Parameters
-import com.google.android.material.composethemeadapter3.createMdc3Theme
+import com.google.accompanist.themeadapter.material3.Theme3Parameters
+import com.google.accompanist.themeadapter.material3.createMdc3Theme
 import io.snabble.sdk.dynamicview.theme.properties.Elevation
 import io.snabble.sdk.dynamicview.theme.properties.LocalElevation
 import io.snabble.sdk.dynamicview.theme.properties.LocalPadding
@@ -16,7 +16,7 @@ import io.snabble.sdk.dynamicview.theme.properties.applyElevation
 import io.snabble.sdk.dynamicview.theme.properties.applyPadding
 
 @Composable
-fun ThemeWrapper(content: @Composable () -> Unit) {
+internal fun ThemeWrapper(content: @Composable () -> Unit) {
     val (colorScheme, typography, shapes) = if (!LocalInspectionMode.current) {
         createMdc3Theme(
             context = LocalContext.current,
