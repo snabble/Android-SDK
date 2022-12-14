@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import com.google.accompanist.themeadapter.material3.createMdc3Theme
 
 @Composable
-fun ThemeWrapper(content: @Composable () -> Unit) {
+internal fun ThemeWrapper(content: @Composable () -> Unit) {
     val (colorScheme, typography, shapes) = createMdc3Theme(
         context = LocalContext.current,
         layoutDirection = LayoutDirection.Ltr

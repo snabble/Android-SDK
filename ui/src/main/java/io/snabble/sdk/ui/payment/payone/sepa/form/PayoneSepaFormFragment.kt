@@ -12,7 +12,7 @@ import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.payment.payone.sepa.form.ui.PayoneSepaScreen
+import io.snabble.sdk.ui.payment.payone.sepa.form.ui.PayoneSepaFormScreen
 import io.snabble.sdk.ui.payment.payone.sepa.form.viewmodel.SepaViewModel
 import io.snabble.sdk.ui.utils.KeyguardUtils
 import io.snabble.sdk.ui.utils.ThemeWrapper
@@ -34,7 +34,7 @@ open class PayoneSepaFormFragment : BaseFragment(
             setContent {
                 val isIbanValid = viewModel.isIbanValid.collectAsState().value
                 ThemeWrapper {
-                    PayoneSepaScreen(
+                    PayoneSepaFormScreen(
                         saveData = { data ->
                             if (KeyguardUtils.isDeviceSecure()) {
                                 Keyguard.unlock(

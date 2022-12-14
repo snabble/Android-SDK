@@ -55,7 +55,10 @@ internal fun PayoneSepaMandateScreen(
             LoadingScreen()
         }
 
-        MandateAccepted -> onSuccessAction()
+        MandateAccepted -> {
+            LoadingScreen()
+            onSuccessAction()
+        }
 
         AcceptingMandateFailed -> onErrorAction()
 

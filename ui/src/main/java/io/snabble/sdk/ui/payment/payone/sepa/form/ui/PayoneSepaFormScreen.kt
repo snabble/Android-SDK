@@ -28,7 +28,7 @@ import io.snabble.sdk.ui.payment.payone.sepa.form.ui.widget.IbanFieldWidget
 import io.snabble.sdk.ui.payment.payone.sepa.form.ui.widget.TextFieldWidget
 
 @Composable
-internal fun PayoneSepaScreen(
+internal fun PayoneSepaFormScreen(
     saveData: (data: PayoneSepaData) -> Unit,
     validateIban: (String) -> Unit,
     isIbanValid: Boolean,
@@ -74,7 +74,7 @@ internal fun PayoneSepaScreen(
             onAction = {
                 focusManager.clearFocus()
                 if (areAllInputsValid) {
-                    saveSepaData(saveData, name, iban, city)
+                    saveSepaFormInput(saveData, name, iban, city)
                 }
             },
             focusManager = focusManager,
@@ -109,7 +109,7 @@ internal fun PayoneSepaScreen(
             enabled = areAllInputsValid,
             shape = MaterialTheme.shapes.extraLarge,
             onClick = {
-                saveSepaData(saveData, name, iban, city)
+                saveSepaFormInput(saveData, name, iban, city)
             },
         ) {
             Text(text = stringResource(id = R.string.Snabble_save))
@@ -124,7 +124,7 @@ internal fun PayoneSepaScreen(
     }
 }
 
-private fun saveSepaData(
+private fun saveSepaFormInput(
     saveData: (data: PayoneSepaData) -> Unit,
     name: String,
     iban: String,
@@ -144,8 +144,8 @@ private const val COUNTRY_CODE = "DE"
 
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
-private fun PayoneSepaScreenPreview() {
-    PayoneSepaScreen(
+private fun PayoneSepaFormScreenPreview() {
+    PayoneSepaFormScreen(
         saveData = {},
         validateIban = { it.isNotBlank() },
         isIbanValid = true
