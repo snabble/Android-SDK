@@ -21,7 +21,7 @@ fun TextFieldWidget(
     value: String,
     label: String,
     readOnly: Boolean,
-    onStringChange: (String) -> Unit = {},
+    onValueChange: (String) -> Unit = {},
     onAction: () -> Unit = {},
     focusManager: FocusManager? = null,
     enabled: Boolean = true,
@@ -30,7 +30,10 @@ fun TextFieldWidget(
     @OptIn(ExperimentalMaterial3Api::class)
     OutlinedTextField(
         value = value,
-        onValueChange = onStringChange,
+        onValueChange = { input ->
+            val clearedInput = input.replace('\n', ' ').replace('\r', ' ')
+            onValueChange(clearedInput)
+        },
         modifier = Modifier.fillMaxWidth(),
         textStyle = MaterialTheme.typography.bodyLarge,
         label = { Text(text = label) },

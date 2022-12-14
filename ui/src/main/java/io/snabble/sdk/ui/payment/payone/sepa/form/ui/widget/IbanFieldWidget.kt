@@ -53,7 +53,10 @@ fun IbanFieldWidget(
             modifier = Modifier
                 .padding(start = 8.dp),
             value = iban,
-            onValueChange = onIbanChange,
+            onValueChange = { input ->
+                val clearedInput = input.replace('\n', ' ').replace('\r', ' ')
+                onIbanChange(clearedInput)
+            },
             textStyle = MaterialTheme.typography.bodyLarge,
             label = { Text(text = stringResource(id = R.string.Snabble_Payment_SEPA_iban)) },
             keyboardOptions = KeyboardOptions(

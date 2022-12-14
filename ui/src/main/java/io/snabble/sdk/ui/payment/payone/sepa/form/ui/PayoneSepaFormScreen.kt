@@ -2,6 +2,7 @@ package io.snabble.sdk.ui.payment.payone.sepa.form.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -43,14 +44,14 @@ internal fun PayoneSepaFormScreen(
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .verticalScroll(state = rememberScrollState())
             .padding(all = 16.dp),
     ) {
         TextFieldWidget(
             value = name,
             label = stringResource(id = R.string.Snabble_Payment_SEPA_name),
-            onStringChange = { name = it },
+            onValueChange = { name = it },
             readOnly = false,
             focusManager = focusManager
         )
@@ -70,7 +71,7 @@ internal fun PayoneSepaFormScreen(
             value = city,
             label = stringResource(id = R.string.Snabble_Payment_SEPA_city),
             readOnly = false,
-            onStringChange = { city = it },
+            onValueChange = { city = it },
             onAction = {
                 focusManager.clearFocus()
                 if (areAllInputsValid) {
