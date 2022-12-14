@@ -13,11 +13,11 @@ description = "Snabble UI-Toolkit: Additional views for simple and sample apps u
 android {
     namespace 'io.snabble.sdk.ui.toolkit'
 
-    compileSdkVersion 33
+    compileSdkVersion project.compileSdkVersion
 
     defaultConfig {
         minSdkVersion project.minSdkVersion
-        targetSdkVersion 33
+        targetSdkVersion project.targetSdkVersion
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
