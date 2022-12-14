@@ -15,7 +15,7 @@ import io.snabble.sdk.ui.payment.payone.sepa.mandate.viewmodel.SepaMandateViewMo
 import io.snabble.sdk.ui.utils.ThemeWrapper
 import io.snabble.sdk.utils.Logger
 
-class PayoneSepaMandateFragment : DialogFragment() {
+internal class PayoneSepaMandateFragment : DialogFragment() {
 
     private val viewModel: SepaMandateViewModel by viewModels()
 
