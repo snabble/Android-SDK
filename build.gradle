@@ -40,9 +40,9 @@ allprojects {
         sdkVersion = '0.69.1-beta07'
         versionCode = 1
 
-        compileSdkVersion = 33
+        compileSdkVersion = 31
         minSdkVersion = 21
-        targetSdkVersion = 33
+        targetSdkVersion = 31
 
         okhttpVersion = '4.10.0'
         desugarVersion = '1.1.5'
