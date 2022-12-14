@@ -161,8 +161,7 @@ object SnabbleUI {
                 SHOW_CHECKOUT_DONE,
                 NOT_CHECKED_IN,
                 EXIT_TOKEN_AVAILABLE,
-                null -> {
-                }
+                null -> Unit
             }
         }
     }
