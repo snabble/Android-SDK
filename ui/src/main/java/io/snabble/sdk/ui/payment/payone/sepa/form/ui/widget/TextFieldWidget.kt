@@ -12,8 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.text.input.ImeAction.Companion.Done
 import androidx.compose.ui.text.input.ImeAction.Companion.Next
-import androidx.compose.ui.text.input.ImeAction.Companion.Send
 import androidx.compose.ui.text.input.KeyboardType
 
 @Composable
@@ -37,11 +37,11 @@ fun TextFieldWidget(
         readOnly = readOnly,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Text,
-            imeAction = if (canSend) Send else Next
+            imeAction = if (canSend) Done else Next
         ),
         keyboardActions = KeyboardActions(
             onNext = { focusManager?.moveFocus(FocusDirection.Next) },
-            onSend = { onAction() }
+            onDone = { onAction() }
         ),
         maxLines = 1,
         singleLine = true,
