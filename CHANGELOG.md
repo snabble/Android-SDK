@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 ### Added
 * Added payment method PAYONE SEPA
 
+## [0.69.1-beta07]
+### Fixed
+* Fixed navigation when using manual product search
+* Fixed app crash when removing the last item from the cart
+
 ## [0.69.1-beta06]
 ### Added
 * ui-toolkit: Add VersionWidget to display the app and sdk version (#87)

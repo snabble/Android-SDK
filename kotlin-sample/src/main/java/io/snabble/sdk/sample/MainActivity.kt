@@ -216,6 +216,9 @@ class MainActivity : AppCompatActivity() {
             val isBottomNavigationVisible = arguments?.getBoolean("hideBottomNavigation") != true
             navBarView.isVisible = isBottomNavigationVisible
             navBarView.isEnabled = isBottomNavigationVisible
+            if (destination.id == R.id.not_checked_in && Snabble.checkedInProject.value != null) {
+                navigate(R.id.navigation_scanner)
+            }
         }
     }
 

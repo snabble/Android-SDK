@@ -71,6 +71,7 @@ fun setUpUiEvents(activity: AppCompatActivity, navController: NavController, bot
         activity,
         SnabbleUI.Event.GO_BACK
     ) { _, _ ->
+        navController.popBackStack()
     }
 
     SnabbleUiToolkit.setUiAction(
