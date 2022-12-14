@@ -94,8 +94,8 @@ dependencies {
     implementation 'com.github.sebaslogen.resaca:resaca:2.3.0'
 
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
-    implementation 'com.google.android.material:compose-theme-adapter-3:1.0.20'
     implementation 'com.google.android.material:material:1.6.1'
+    implementation 'com.google.accompanist:accompanist-themeadapter-material3:0.28.0'
 
     implementation 'com.squareup.picasso:picasso:2.8'
 
