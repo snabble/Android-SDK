@@ -13,7 +13,7 @@ import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.payment.payone.sepa.form.ui.PayoneSepaFormScreen
-import io.snabble.sdk.ui.payment.payone.sepa.form.viewmodel.SepaViewModel
+import io.snabble.sdk.ui.payment.payone.sepa.form.viewmodel.PayoneSepaFormViewModel
 import io.snabble.sdk.ui.utils.KeyguardUtils
 import io.snabble.sdk.ui.utils.ThemeWrapper
 import io.snabble.sdk.ui.utils.UIUtils
@@ -23,7 +23,7 @@ open class PayoneSepaFormFragment : BaseFragment(
     waitForProject = false,
 ) {
 
-    private val viewModel: SepaViewModel by viewModels()
+    private val viewModel: PayoneSepaFormViewModel by viewModels()
 
     override fun onActualViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onActualViewCreated(view, savedInstanceState)

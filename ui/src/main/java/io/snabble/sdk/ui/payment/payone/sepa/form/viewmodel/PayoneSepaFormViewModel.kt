@@ -4,13 +4,13 @@ import androidx.lifecycle.ViewModel
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.payment.IBAN
 import io.snabble.sdk.payment.payone.sepa.PayoneSepaData
-import io.snabble.sdk.ui.payment.payone.sepa.form.domain.PayoneSepaRepository
-import io.snabble.sdk.ui.payment.payone.sepa.form.domain.PayoneSepaRepositoryImpl
+import io.snabble.sdk.ui.payment.payone.sepa.form.domain.PayoneSepaFormRepository
+import io.snabble.sdk.ui.payment.payone.sepa.form.domain.PayoneSepaFormRepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class SepaViewModel(
-    val repository: PayoneSepaRepository = PayoneSepaRepositoryImpl(snabble = Snabble),
+class PayoneSepaFormViewModel(
+    val repository: PayoneSepaFormRepository = PayoneSepaFormRepositoryImpl(snabble = Snabble),
 ) : ViewModel() {
 
     private var _isIbanValid = MutableStateFlow(false)

@@ -5,7 +5,7 @@ import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.payment.payone.sepa.PayoneSepaData
 import io.snabble.sdk.ui.telemetry.Telemetry
 
-interface PayoneSepaRepository {
+interface PayoneSepaFormRepository {
 
     /**
      * True if the PayoneSepaData has been saved, false otherwise.
@@ -13,9 +13,9 @@ interface PayoneSepaRepository {
     fun saveSepaData(data: PayoneSepaData): Boolean
 }
 
-class PayoneSepaRepositoryImpl(
+class PayoneSepaFormRepositoryImpl(
     private val snabble: Snabble,
-) : PayoneSepaRepository {
+) : PayoneSepaFormRepository {
 
     override fun saveSepaData(data: PayoneSepaData): Boolean {
         val paymentCredentials = PaymentCredentials.fromPayoneSepa(data) ?: return false
