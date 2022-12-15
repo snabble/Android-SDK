@@ -88,6 +88,9 @@ class CombinedScannerFragment : SelfScanningFragment() {
         Snabble.checkedInProject.observe(viewLifecycleOwner) { project ->
             project?.let {
                 scannerBottomSheetView.cart = it.shoppingCart
+
+                val cartAdapter = ShoppingCartView.ShoppingCartAdapter(scannerBottomSheetView, it.shoppingCart)
+                scannerBottomSheetView.shoppingCartAdapter = cartAdapter
             }
         }
         scannerBottomSheetView.behavior = ScannerBottomSheetBehavior(scannerBottomSheetView).apply {
@@ -118,9 +121,6 @@ class CombinedScannerFragment : SelfScanningFragment() {
                 }
         }
 
-        val cartAdapter = ShoppingCartView.ShoppingCartAdapter(scannerBottomSheetView, cart)
-
-        scannerBottomSheetView.shoppingCartAdapter = cartAdapter
         scannerBottomSheetView.onItemsChangedListener += ::cartChanged
         createItemTouchHelper()
     }

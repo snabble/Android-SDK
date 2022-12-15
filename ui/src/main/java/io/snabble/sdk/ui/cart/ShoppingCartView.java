@@ -626,8 +626,6 @@ public class ShoppingCartView extends FrameLayout {
 
         // for fetching the data from outside of this view
         public void fetchFrom(ShoppingCart cart) {
-            this.cart = cart;
-
             hasAnyImages = false;
 
             for (int i = 0; i < cart.size(); i++) {
