@@ -3,62 +3,70 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
-* Added payment method PAYONE SEPA
+### Changed
+### Removed
+### Fixed
+
+## [0.69.1]
+### Added
+- core,ui: Added payment method PAYONE SEPA (#91)
+- ui-toolkit: DynamicView to build Screens by a _(JSON-)_ Configuration
 
 ### Changed
-* Set the cart adapter after a project change (different fix for the same bug from #90)
+- core: Update CA certificates (#81)
+- ui: Set the cart adapter after a project change (different fix for the same bug from #90) (#93)
+
+### Fixed
+- ui: Fixed app crash when removing the last item from the cart
 
 ## [0.69.1-beta07]
 ### Fixed
-* Fixed navigation when using manual product search
-* Fixed app crash when removing the last item from the cart
+- kotlin-sample: Fixed navigation when using manual product search (#90)
+- ui: Fixed app crash when removing the last item from the cart (#90)
 
 ## [0.69.1-beta06]
 ### Added
-* ui-toolkit: Add VersionWidget to display the app and sdk version (#87)
-* ui-toolkit: Add Developer Settings to the Profile Screen (#88)
+- ui-toolkit: Add VersionWidget to display the app and sdk version (#87)
+- ui-toolkit: Add Developer Settings to the Profile Screen (#88)
 
 ## [0.69.1-beta05]
 ### Added
-* ui-toolkit: Add a screen for the not-checked-in state (#63)
-* ui-toolkit: Add WLANManager for the WifiWidget (#82)
-* ui-toolkit: Support headerless sections (#79)
+- ui-toolkit: Add a screen for the not-checked-in state (#63)
+- ui-toolkit: Add WLANManager for the WifiWidget (#82)
+- ui-toolkit: Support headerless sections (#79)
 
 ### Changed
-* core: Update CA certificates (#81)
-* ui-toolkit: Theme update (#78)
+- core: Update CA certificates (#81)
+- ui-toolkit: Theme update (#78)
 
 ### Fixed
-* ui-toolkit: Fix crash on empty project list (#77)
+- ui-toolkit: Fix crash on empty project list (#77)
 
 ## [0.69.1-beta04] (withdrawn)
 ### Added
-* ui-toolkit: Add a screen for the not-checked-in state (#63)
-* ui-toolkit: Add WLANManager for the WifiWidget (#82)
-* ui-toolkit: Support headerless sections (#79)
+- ui-toolkit: Add a screen for the not-checked-in state (#63)
+- ui-toolkit: Add WLANManager for the WifiWidget (#82)
+- ui-toolkit: Support headerless sections (#79)
 
 ### Changed
-* core: Update CA certificates (#81)
-* ui-toolkit: Theme update (#78)
+- core: Update CA certificates (#81)
+- ui-toolkit: Theme update (#78)
 
 ### Fixed
-* ui-toolkit: Fix crash on empty project list (#77)
+- ui-toolkit: Fix crash on empty project list (#77)
 
 ## [0.69.1-beta03]
 ### Changed
-
-* UI/UX changes for easier customization and styling
+- ui-toolkit: UI/UX changes for easier customization and styling
 
 ## [0.69.1-beta02]
 ### Fixed
-
-- Added accidentally removed sourceSets from ui-toolkit/build.gradle
+- ui-toolkit: Added accidentally removed sourceSets from ui-toolkit/build.gradle
 
 ## [0.69.1-beta01]
 ### Added
-
-- DynamicView to build Screens by a _(JSON)_ Configuration
-- Handle conflict status code when creating a new process (#70)
+- ui-toolkit: DynamicView to build Screens by a _(JSON)_ Configuration
+- ui-toolkit: Handle conflict status code when creating a new process (#70)
 
 ## [0.69.0]
 ### Changed
@@ -150,7 +158,7 @@ We now have a gradle plugin which supports snabble SDK version from this version
 
 - Renamed firebase-detector module to mlkit-scanner-engine
 
-### Changes
+### Changed
 
 - Added support for parsing config files using property files in resources. Use 'snabble_$env_config.xml'.
 - Added support for the new gradle plugin, which automatically generated the config files mentioned above.
