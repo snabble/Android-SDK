@@ -16,7 +16,7 @@ import io.snabble.sdk.dynamicview.theme.properties.applyElevation
 import io.snabble.sdk.dynamicview.theme.properties.applyPadding
 
 @Composable
-internal fun ThemeWrapper(content: @Composable () -> Unit) {
+fun ThemeWrapper(content: @Composable () -> Unit) {
     val (colorScheme, typography, shapes) = if (!LocalInspectionMode.current) {
         createMdc3Theme(
             context = LocalContext.current,
