@@ -16,6 +16,7 @@ io.snabble.sdk.coupons
 io.snabble.sdk.encodedcodes
 io.snabble.sdk.googlepay
 io.snabble.sdk.payment
+io.snabble.sdk.payment.payone.sepa
 module:mlkit-scanner-engine
 io.snabble.sdk.firebase
 module:ui
@@ -25,6 +26,12 @@ io.snabble.sdk.ui.checkout
 io.snabble.sdk.ui.checkout.routingtargets
 io.snabble.sdk.ui.coupon
 io.snabble.sdk.ui.payment
+io.snabble.sdk.ui.payment.payone.sepa.form
+io.snabble.sdk.ui.payment.payone.sepa.form.domain
+io.snabble.sdk.ui.payment.payone.sepa.form.ui.widget
+io.snabble.sdk.ui.payment.payone.sepa.form.viewmodel
+io.snabble.sdk.ui.payment.payone.sepa.mandate
+io.snabble.sdk.ui.payment.payone.sepa.mandate.viewmodel
 io.snabble.sdk.ui.scanner
 io.snabble.sdk.ui.search
 io.snabble.sdk.ui.telemetry
