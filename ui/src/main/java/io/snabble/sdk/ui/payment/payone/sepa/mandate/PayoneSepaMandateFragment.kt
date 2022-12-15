@@ -15,14 +15,14 @@ import io.snabble.sdk.ui.payment.payone.sepa.mandate.viewmodel.SepaMandateViewMo
 import io.snabble.sdk.ui.utils.ThemeWrapper
 import io.snabble.sdk.utils.Logger
 
-internal class PayoneSepaMandateFragment : DialogFragment() {
+open class PayoneSepaMandateFragment : DialogFragment() {
 
     private val viewModel: SepaMandateViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View = ComposeView(inflater.context).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
