@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 ### Added
 * Added payment method PAYONE SEPA
 
+### Changed
+* Set the cart adapter after a project change (different fix for the same bug from #90)
+
 ## [0.69.1-beta07]
 ### Fixed
 * Fixed navigation when using manual product search
