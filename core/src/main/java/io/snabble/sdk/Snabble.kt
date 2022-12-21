@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * The heart of the snabble SDK. Initialization and object access is provided via this facade.
  */
 object Snabble {
+
     /**
      * Retrieve the global instance of snabble.
      *
@@ -303,7 +304,12 @@ object Snabble {
      */
     var error: Error? = null
         private set
-    
+
+    /**
+     * Set to take control over [ShoppingCart.Item.isMergeable] default behavior.
+     */
+    var isMergeable: IsMergeable? = null
+
     /**
      * Setup the snabble SDK.
      *
@@ -355,7 +361,8 @@ object Snabble {
         Logger.setLogEventHandler { message, args -> Events.logErrorEvent(null, message, *args) }
 
         if (!this.config.endpointBaseUrl.startsWith("http://")
-         && !this.config.endpointBaseUrl.startsWith("https://")) {
+            && !this.config.endpointBaseUrl.startsWith("https://")
+        ) {
             dispatchError(Error.CONFIG_ERROR)
             return
         }
@@ -382,14 +389,16 @@ object Snabble {
         paymentCredentialsStore = PaymentCredentialsStore()
 
         checkInLocationManager = CheckInLocationManager(application)
-        checkInManager = CheckInManager(this,
+        checkInManager = CheckInManager(
+            this,
             checkInLocationManager,
             this.config.checkInRadius,
             this.config.checkOutRadius,
             this.config.lastSeenThreshold
         )
 
-        metadataDownloader = MetadataDownloader(okHttpClient, this.config.bundledMetadataAssetPath, this.config.bundledMetadataRawResId)
+        metadataDownloader =
+            MetadataDownloader(okHttpClient, this.config.bundledMetadataAssetPath, this.config.bundledMetadataRawResId)
 
         if (this.config.bundledMetadataAssetPath != null || this.config.bundledMetadataRawResId != 0) {
             dispatchOnReady()
@@ -478,10 +487,12 @@ object Snabble {
 
     private fun registerNetworkCallback(app: Application) {
         val cm = app.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        cm.registerNetworkCallback(NetworkRequest.Builder()
-            .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-            .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR).build(),
-            networkCallback)
+        cm.registerNetworkCallback(
+            NetworkRequest.Builder()
+                .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR).build(),
+            networkCallback
+        )
     }
 
     /**
@@ -708,6 +719,7 @@ object Snabble {
      * Interface for notifying when our metadata is getting updated
      */
     fun interface OnMetadataUpdateListener {
+
         /**
          * Gets called when our metadata has updated
          */
@@ -760,6 +772,7 @@ object Snabble {
      * Exception used for SDK initialization errors
      */
     class SnabbleException internal constructor(val error: Error?) : Exception() {
+
         override fun toString(): String {
             return "SnabbleException{" +
                     "error=" + error +
@@ -771,6 +784,7 @@ object Snabble {
      * Enum describing the error types, which can occur during initialization of the SDK
      */
     enum class Error {
+
         UNSPECIFIED_ERROR,
         NO_APPLICATION_SET,
         CONFIG_ERROR,
@@ -784,4 +798,9 @@ object Snabble {
     fun setDebugLoggingEnabled(enabled: Boolean) {
         Logger.setEnabled(enabled)
     }
+}
+
+fun interface IsMergeable {
+
+    fun isMergeable(scannedCode: ShoppingCart.Item, isMergeable: Boolean): Boolean
 }
