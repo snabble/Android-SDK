@@ -17,6 +17,7 @@ import com.google.gson.JsonObject
 import io.snabble.sdk.auth.TokenRegistry
 import io.snabble.sdk.checkin.CheckInLocationManager
 import io.snabble.sdk.checkin.CheckInManager
+import io.snabble.sdk.customization.IsMergeable
 import io.snabble.sdk.payment.PaymentCredentialsStore
 import io.snabble.sdk.utils.*
 import okhttp3.OkHttpClient
@@ -798,9 +799,4 @@ object Snabble {
     fun setDebugLoggingEnabled(enabled: Boolean) {
         Logger.setEnabled(enabled)
     }
-}
-
-fun interface IsMergeable {
-
-    fun isMergeable(scannedCode: ShoppingCart.Item, isMergeable: Boolean): Boolean
 }
