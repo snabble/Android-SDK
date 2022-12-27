@@ -22,6 +22,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener
@@ -51,6 +52,7 @@ import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.utils.PhoneNumberUtils
 import io.snabble.sdk.utils.isNotNullOrBlank
 import io.snabble.sdk.utils.setTextOrHide
+import kotlinx.coroutines.launch
 import java.text.DateFormatSymbols
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -405,27 +407,30 @@ open class ShopDetailsFragment : Fragment() {
         val checkinAllowed =
             preferences?.projectCode != null && project?.id == Snabble.projects[0].id
         val checkInManager = Snabble.checkInManager
-
-        if (checkinAllowed || debug) {
-            debugCheckin.isVisible = true
-            updateDebugCheckInText()
-            debugCheckin.setOneShotClickListener {
-                if (isCheckedInToShop) {
-                    Snabble.checkedInProject.setValue(null)
-                    checkInManager.shop = null
-                    checkInManager.startUpdating()
-                    locationManager.startTrackingLocation()
+        lifecycleScope.launch {
+            preferences?.devSettingsEnabled?.collect() { devSettingsEnabled ->
+                if (devSettingsEnabled || checkinAllowed || debug) {
+                    debugCheckin.isVisible = true
+                    updateDebugCheckInText()
+                    debugCheckin.setOneShotClickListener {
+                        if (isCheckedInToShop) {
+                            Snabble.checkedInProject.setValue(null)
+                            checkInManager.shop = null
+                            checkInManager.startUpdating()
+                            locationManager.startTrackingLocation()
+                        } else {
+                            checkInManager.shop = shop
+                            Snabble.checkedInProject.setValue(project)
+                            checkInManager.stopUpdating()
+                            locationManager.stopTrackingLocation()
+                        }
+                        updateDebugCheckInText()
+                        updateShopDetails(view)
+                    }
                 } else {
-                    checkInManager.shop = shop
-                    Snabble.checkedInProject.setValue(project)
-                    checkInManager.stopUpdating()
-                    locationManager.stopTrackingLocation()
+                    debugCheckin.isVisible = false
                 }
-                updateDebugCheckInText()
-                updateShopDetails(view)
             }
-        } else {
-            debugCheckin.isVisible = false
         }
     }
 
