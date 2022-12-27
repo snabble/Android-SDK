@@ -29,6 +29,6 @@ internal class DevSettingsLoginRepositoryImpl(
 
     companion object {
 
-        const val KEY_ARE_DEV_SETTINGS_ENABLED = "AreDevSettingsEnabled"
+        const val KEY_ARE_DEV_SETTINGS_ENABLED = "devSettingsEnabled"
     }
 }
