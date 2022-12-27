@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import androidx.preference.PreferenceManager
 import io.snabble.sdk.utils.BuildConfig
+import io.snabble.sdk.widgets.snabble.devsettings.login.usecase.HasEnabledDevSettingsUseCaseImpl
 
 internal class ShopFinderPreferences internal constructor(private val context: Context) {
 
@@ -63,6 +64,8 @@ internal class ShopFinderPreferences internal constructor(private val context: C
                 .putBoolean(KEY_MAPS_ENABLED, enabled)
                 .apply()
         }
+
+    val devSettingsEnabled = HasEnabledDevSettingsUseCaseImpl(sharedPreferences)()
 
     companion object {
 
