@@ -54,7 +54,7 @@ internal fun PayoneSepaFormScreen(
             modifier = Modifier.align(CenterHorizontally),
             text = stringResource(id = R.string.Snabble_Sepa_helper),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = .5f)
+            color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.height(8.dp))
         TextFieldWidget(
