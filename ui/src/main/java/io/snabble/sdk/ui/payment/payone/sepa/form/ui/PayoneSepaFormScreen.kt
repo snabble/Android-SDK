@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -48,6 +49,14 @@ internal fun PayoneSepaFormScreen(
             .verticalScroll(state = rememberScrollState())
             .padding(all = 16.dp),
     ) {
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            modifier = Modifier.align(CenterHorizontally),
+            text = stringResource(id = R.string.Snabble_Sepa_helper),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = .5f)
+        )
+        Spacer(modifier = Modifier.height(8.dp))
         TextFieldWidget(
             value = name,
             label = stringResource(id = R.string.Snabble_Payment_SEPA_name),
@@ -129,7 +138,7 @@ private fun saveSepaFormInput(
     saveData: (data: PayoneSepaData) -> Unit,
     name: String,
     iban: String,
-    city: String
+    city: String,
 ) {
     saveData(
         PayoneSepaData(
