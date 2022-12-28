@@ -153,7 +153,7 @@
     <string name="Snabble.Payment.SEPA.mandate">Referenčné číslo mandátu</string>
     <string name="Snabble.Payment.SEPA.missingCity">Zadaj mesto, prosím.</string>
     <string name="Snabble.Payment.SEPA.missingCountry">Kód krajiny nesmie zostať prázdny.</string>
-    <string name="Snabble.Payment.SEPA.missingIBAN">Please enter a IBAN.</string>
+    <string name="Snabble.Payment.SEPA.missingIBAN">Zadaj IBAN, prosím.</string>
     <string name="Snabble.Payment.SEPA.missingName">Zadaj meno, prosím.</string>
     <string name="Snabble.Payment.SEPA.name">Meno</string>
     <string name="Snabble.Payment.SEPA.payer">Platiteľ</string>
@@ -284,6 +284,7 @@
     <string name="Snabble.Scanner.updateCart">Aktualizovať košík</string>
     <string name="Snabble.SEPA.editingHint">Tvoje SEPA údaje budeme uchovávať len v šifrovanej forme, a preto nemôžu byť spracované.</string>
     <string name="Snabble.SEPA.encryptionError">Chyba pri kódovaní</string>
+    <string name="Snabble.Sepa.helper">Please enter the data for SEPA direct debit.</string>
     <string name="Snabble.SEPA.iAgree">Súhlasím</string>
     <string name="Snabble.SEPA.IbanTransferAlert.message">Chceš uložiť tieto údaje účtu (IBAN: %s) pre nákupy v budúcnosti?</string>
     <string name="Snabble.SEPA.IbanTransferAlert.title">Uložiť údaje účtu</string>

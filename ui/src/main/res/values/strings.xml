@@ -276,6 +276,7 @@
     <string name="Snabble.Scanner.updateCart">Update cart</string>
     <string name="Snabble.SEPA.editingHint">Your SEPA data is only stored in encrypted form and therefore cannot be edited.</string>
     <string name="Snabble.SEPA.encryptionError">Error encrypting data</string>
+    <string name="Snabble.Sepa.helper">Please enter the data for SEPA direct debit.</string>
     <string name="Snabble.SEPA.iAgree">I agree</string>
     <string name="Snabble.SEPA.IbanTransferAlert.message">Would you like to save this account information (IBAN: %s) for future purchases?</string>
     <string name="Snabble.SEPA.IbanTransferAlert.title">Save payment data</string>

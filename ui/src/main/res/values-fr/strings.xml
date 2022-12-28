@@ -280,6 +280,7 @@
     <string name="Snabble.Scanner.updateCart">Actualiser le panier d\'achat</string>
     <string name="Snabble.SEPA.editingHint">Vos données SEPA ne sont enregistrées par nos soins que sous forme cryptée et ne peuvent donc pas être traitées.</string>
     <string name="Snabble.SEPA.encryptionError">Erreur de cryptage</string>
+    <string name="Snabble.Sepa.helper">Please enter the data for SEPA direct debit.</string>
     <string name="Snabble.SEPA.iAgree">J\'accepte</string>
     <string name="Snabble.SEPA.IbanTransferAlert.message">Souhaitez-vous enregistrer ces données de compte (IBAN : %s) pour de futurs achats ?</string>
     <string name="Snabble.SEPA.IbanTransferAlert.title">Enregistrer les données de compte</string>
