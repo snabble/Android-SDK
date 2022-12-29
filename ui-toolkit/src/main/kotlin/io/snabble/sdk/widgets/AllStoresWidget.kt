@@ -15,16 +15,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.dynamicview.domain.model.Padding
-import io.snabble.sdk.dynamicview.domain.model.SeeAllStoresItem
+import io.snabble.sdk.dynamicview.domain.model.SeeStoresItem
 import io.snabble.sdk.dynamicview.domain.model.toPaddingValues
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.viewmodel.DynamicAction
 import io.snabble.sdk.ui.toolkit.R
 
 @Composable
-fun SeeAllStoresWidget(
+fun AllStoresWidget(
     modifier: Modifier = Modifier,
-    model: SeeAllStoresItem,
+    model: SeeStoresItem,
     isChecked: Boolean,
     onAction: OnDynamicAction,
 ) {
@@ -63,9 +63,9 @@ fun SeeAllStoresWidget(
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
-private fun SeeAllStoresCheckedInPreview() {
-    SeeAllStoresWidget(
-        model = SeeAllStoresItem(
+private fun AllStoresCheckedInPreview() {
+    AllStoresWidget(
+        model = SeeStoresItem(
             id = "1",
             padding = Padding(horizontal = 16, vertical = 5)
         ),
@@ -76,9 +76,9 @@ private fun SeeAllStoresCheckedInPreview() {
 
 @Preview(backgroundColor = 0xFFFFFF, showBackground = true)
 @Composable
-private fun SeeAllStoresNotCheckedInPreview() {
-    SeeAllStoresWidget(
-        model = SeeAllStoresItem(
+private fun AllStoresNotCheckedInPreview() {
+    AllStoresWidget(
+        model = SeeStoresItem(
             id = "1",
             padding = Padding(horizontal = 16, vertical = 5)
         ),
