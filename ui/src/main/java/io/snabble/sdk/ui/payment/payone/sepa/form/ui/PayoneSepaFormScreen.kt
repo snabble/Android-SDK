@@ -52,7 +52,7 @@ internal fun PayoneSepaFormScreen(
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             modifier = Modifier.align(CenterHorizontally),
-            text = stringResource(id = R.string.Snabble_Sepa_helper),
+            text = stringResource(id = R.string.Snabble_SEPA_helper),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface
         )

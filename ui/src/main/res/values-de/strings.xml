@@ -276,7 +276,7 @@
     <string name="Snabble.Scanner.updateCart">Warenkorb aktualisieren</string>
     <string name="Snabble.SEPA.editingHint">Deine SEPA-Daten werden von uns nur verschlüsselt gespeichert und können daher nicht bearbeitet werden.</string>
     <string name="Snabble.SEPA.encryptionError">Fehler bei der Verschlüsselung</string>
-    <string name="Snabble.Sepa.helper">Bitte gib die Daten für SEPA-Lastschrift ein.</string>
+    <string name="Snabble.SEPA.helper">Bitte gib die Daten für SEPA-Lastschrift ein.</string>
     <string name="Snabble.SEPA.iAgree">Ich stimme zu</string>
     <string name="Snabble.SEPA.IbanTransferAlert.message">Möchtest du diese Kontodaten (IBAN: %s) für zukünftige Einkäufe speichern?</string>
     <string name="Snabble.SEPA.IbanTransferAlert.title">Kontodaten speichern</string>
