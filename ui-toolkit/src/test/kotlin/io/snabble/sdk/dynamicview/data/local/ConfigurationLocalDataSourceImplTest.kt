@@ -210,7 +210,7 @@ internal class ConfigurationLocalDataSourceImplTest : FreeSpec({
                 val sut = createSut(
                     createJson(
                         """[{
-                            "type": "purchases",
+                            "type": "snabble.lastPurchases",
                             "id": "purchases",
                             "projectId": "ab1234",
                             "padding": [ 16 ]
