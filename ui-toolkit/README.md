@@ -274,11 +274,11 @@ The `style` element can be left empty since its only used for ios configuration.
 | `style`       | `String?`    | no          | `"scroll"` or `"list"` or `""`                         |
 | `padding`     | `Margins?`   | no          | `[ 30, 16 ]`                                           |
 
-The 'padding' can set as: 'all' = '[8]', 'horizontal/vertical' = `[ 30, 16 ]` or each padding explicit as 'left', 'top', 'right', 'bottom'
+The `padding` can set as: `all` = `[8]`, `horizontal/vertical` = `[ 30, 16 ]` or explicit as `left`, `top`, `right`, `bottom`
 
 ### Widgets
 
-The widgets are defined as an array of `"widgets"` in the [JSON Configuration](#config) file. Currently the following widget types are supported:
+The widgets are defined as an array of `"widgets"` in the [JSON Configuration](#configuration) file. Currently the following widget types are supported:
 
 #### User Widgets
 
@@ -290,19 +290,19 @@ The [**User Widgets**](#user-widgets) are used to represent App specific UI elem
 * [Information](#information)
 * [Toogle](#toggle)
 * [Section](#section-widget)
-* [SwitchEnvironment](#switchEnvironment)
+* [SwitchEnvironment](#switch-Environment)
 
 ### SDK Action Widgets
 
-The [**SDK Action Widgets**](#sdk-widgets) are special widgets build into the SDK. These widgets are self contained and implements a predefined action to trigger, if the use taps on it.
+The [**SDK Action Widgets**](#sdk-action-widgets) are special widgets build into the SDK. These widgets are self contained and implements a predefined action to trigger, if the use taps on it.
 
-* [Location Permissions](#locationPermission)
-* [Start Shopping](#startShopping)
-* [Show All Stores](#allStores)
-* [Connect Wlan](#connectWlan)
-* [Customer Card](#customerCard)
-* [Last Purchases](#lastPurchases)
-* [Developer Mode](#developerMode)
+* [Location Permissions](#location-Permission)
+* [Start Shopping](#start-Shopping)
+* [Show All Stores](#all-Stores)
+* [Connect Wlan](#connect-Wlan)
+* [Customer Card](#customer-Card)
+* [Last Purchases](#last-Purchases)
+* [Developer Mode](#developer-Mode)
 * [Version](#version)
 * [AppUserId](#appUserId)
 * [ClientId](#clientId)
@@ -408,18 +408,19 @@ The Section Widget help to group widgets in section.
 
 ## SDK Action Widgets
 
-the *SDK Action Widgets* are special widgets build into the SDK. These widget are self contained and implements a predefined action to trigger if the user taps on it.
+The *SDK Action Widgets* are special widgets build into the SDK.
+These widget are designed to fulfill a specific task.
 
-### LocationPermission
+### Location Permission
 
-Widget to ask the user to grant for location permissions. After the user has approved access the widget will disapear.
+Widget to ask the user to grant for location permissions. After the user has approved access the widget will disappear.
 
 | Parameter     | Type         | Example                                                              |
 |---------------|--------------|----------------------------------------------------------------------|
 | `id`          | `String`     | `"1"`                                                                |
 | `type`        | `String`     | `"snabble.locationPermission"`                                       |
 
-### StartShopping
+### Start Shopping
 
 If the user has entered a shop, a tap on the `Start Shopping` button will start the scanner.
 
@@ -428,7 +429,7 @@ If the user has entered a shop, a tap on the `Start Shopping` button will start 
 | `id`          | `String`     | `"1"`                                                                |
 | `type`        | `String`     | `"snabble.startShopping"`                                            |
 
-### AllStores
+### All Stores
 
 The widget navigates to the Shop Finder view where all shops are listed. The user can select a specific item of the list and the Shop Detail view with a map, shop description and opening hours is displayed.
 
@@ -437,7 +438,7 @@ The widget navigates to the Shop Finder view where all shops are listed. The use
 | `id`          | `String`     | `"1"`                                                                |
 | `type`        | `String`     | `"snabble.allStores"`                                                |
 
-### ConnectWlan
+### Connect Wlan
 
 Widget to ask the user to grant access to a local Wifi network.
 
@@ -446,7 +447,7 @@ Widget to ask the user to grant access to a local Wifi network.
 | `id`          | `String`     | `"1"`                                                                |
 | `type`        | `String`     | `"snabble.connectWifi"`                                              |
 
-### CustomerCard
+### Customer Card
 
 Widget to show a customer card.
 
@@ -457,10 +458,11 @@ Widget to show a customer card.
 | `text`        | `String`     | `"Sample.customerCard.description"`                                  |
 | `image        | `String`     | `"Sample.CustomerCard.image"`                                        |
 
-### LastPurchases
+### Last Purchases
 
 Widget to display one or two of the recent purchases.
 This widget return two values: `more` and `purchases`.
+
 On tap on a receipt the matching id can be handled via the info object of the purchase object
 as shown in the example below.
 If the user taps on a recipe preview item, the detail view for that receipt is can be shown.
@@ -469,6 +471,8 @@ If the user taps on a recipe preview item, the detail view for that receipt is c
 |---------------|--------------|----------------------------------------------------------------------|
 | `id`          | `String`     | `"1"`                                                                |
 | `type`        | `String`     | `"snabble.lastPurchases"`                                            |
+
+#### The following shows an example how to handle purchases events:
 
 ```Kotlin
         when (action.widget.id) {
@@ -487,7 +491,7 @@ If the user taps on a recipe preview item, the detail view for that receipt is c
     }
 ```
 
-### DeveloperMode
+### Developer Mode
 
 Widget to display the developer options.
 
@@ -498,7 +502,7 @@ Widget to display the developer options.
 | `text`        | `String`     | `"Profile.developerMode"`                                            |
 
 
-### SwitchEnvironment
+### Switch Environment
 
 Widget to switch the system environment.
 
@@ -510,7 +514,7 @@ Widget to switch the system environment.
 | `text`        | `String`      | `"Profile.environment"`                                              |
 | `"values"`    | `[(id,text)]` | An array of tuples where the id is assigned to the multiValue id.    |
 
-The following JSON MultiValue definition:
+#### The following shows an example SwitchEnvironment-JSON definition:
 
 ```json
 {
@@ -534,15 +538,14 @@ The following JSON MultiValue definition:
 	]
 }
 ```
-Is rendered as a **Dynamic View** widget to switch the server environment:
 
 ### Version
 
 Widget to display the current version and to switch on developer mode.
 The implementation of the developer mode activation is delegated to the hosting application.
 
-To activate the developer mode this widget can be used with the DevSettingsLoginFragment.
-If used via the DevSettingsLoginFragment().show() function the SDK asks the hosting app for a base64 decoded string with the following id: `"dev_settings_password"`.
+To activate the developer mode this widget can be used with the DevSettingsLoginFragment.<br>
+If used via the `DevSettingsLoginFragment().show()` function the SDK asks the hosting app for a base64 decoded string with the following id: `"dev_settings_password"`.
 The hosting app can provide a app specific password to enable developer mode.
 If the hosting app return `null` the default password `Password` is used to enable developer mode.
 
@@ -653,6 +656,8 @@ The interaction can be handled via the matching viewModels.
 | `home`        | `homeViewModel`        | `"DynamicViewModel"`                                   |
 | `profile`     | `profileViewModel`     | `"DynamicViewModel"`                                   |
 | `devSettings` | `devSettingsViewModel` | `"DynamicViewModel"`                                   |
+
+#### The following shows an example how to handle widgets events with the given viewModel:
 
 ```Kotlin
     private val homeViewModel: DynamicHomeViewModel by viewModels()
