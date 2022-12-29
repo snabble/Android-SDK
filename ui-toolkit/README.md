@@ -278,7 +278,7 @@ The `padding` can set as: `all` = `[8]`, `horizontal/vertical` = `[ 30, 16 ]` or
 
 ### Widgets
 
-The widgets are defined as an array of `"widgets"` in the [JSON Configuration](#configuration) file. Currently the following widget types are supported:
+The widgets are defined as an array of `"widgets"` in the [JSON Configuration](#json-configuration) file. Currently the following widget types are supported:
 
 #### User Widgets
 
