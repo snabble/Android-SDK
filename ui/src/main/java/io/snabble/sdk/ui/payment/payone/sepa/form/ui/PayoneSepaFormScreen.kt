@@ -32,10 +32,11 @@ import io.snabble.sdk.ui.payment.payone.sepa.form.ui.widget.TextFieldWidget
 internal fun PayoneSepaFormScreen(
     saveData: (data: PayoneSepaData) -> Unit,
     validateIban: (String) -> Unit,
+    prefilledIban: String = "",
     isIbanValid: Boolean,
 ) {
     var name by rememberSaveable { mutableStateOf("") }
-    var iban by rememberSaveable { mutableStateOf("") }
+    var iban by rememberSaveable { mutableStateOf(prefilledIban) }
     var city by rememberSaveable { mutableStateOf("") }
 
     val areAllInputsValid = name.isNotBlank() && city.isNotBlank() && isIbanValid
@@ -129,7 +130,7 @@ private fun saveSepaFormInput(
     saveData: (data: PayoneSepaData) -> Unit,
     name: String,
     iban: String,
-    city: String
+    city: String,
 ) {
     saveData(
         PayoneSepaData(
