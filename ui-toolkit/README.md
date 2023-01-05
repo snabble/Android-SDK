@@ -12,7 +12,7 @@ Android UI-Toolkit for Snabble
 
 ### Configuration
 
-The configuration can be set up as JSON or any other type and needs to be deserializes into the
+The configuration can be set up as JSON or any other type which needs to be deserializes into the
 `OnboardingModel` class.
 
 The following shows an example JSON config:
@@ -58,7 +58,7 @@ The following properties can be set:
 
 #### Items
 
-For each item respectively page the following properties can be set:
+For each item, respectively page, the following properties can be set:
 
 | Property         | Description                     | Values                             |
 | :---             | :---                            | :---                               |
@@ -98,7 +98,7 @@ is later used to pass the configuration for your onboarding.
 
 After that navigate to the onboarding fragment and pass the model as argument.
 
-```Kotlin
+```kotlin
 navController.navigate(R.id.frag_onboarding, bundleOf("model" to model))
 ```
 
@@ -133,16 +133,16 @@ Set up the destination:
 
 **Required**
 
-1. The argument `resId` needs to be set as shown in the example, to display at least the Terms or privacy.
-2. The deeplink need to be set to handle the given Uri. The Uri given in the configuration need to match the deeplink to
-   navigate to the terms fragment. optional: imagePath and headerTitle are optional arguments. If set they will be
-   displayed as header on Top of the terms. VectorDrawables in the resources are also supported.
+1. The argument `resId` needs to be set as shown in the example, to display at least the terms or privacy.
+1. The deeplink needs to be set to handle the given Uri. The Uri given in the configuration needs to match the deeplink
+to navigate to the terms fragment. optional: `imagePath` and `headerTitle` are optional arguments. If set they will be
+displayed as header on top of the terms. VectorDrawables in the resources are also supported.
 
-#### Onoarding Finished Event
+#### Onboarding finished event
 
 To handle the onboarding finished event set up the OnboardingViewModel inside your activity or fragment
 
-```Kotlin
+```kotlin
 private val viewModel: OnboardingViewModel by viewModels()
 ```
 
@@ -160,13 +160,14 @@ viewModel.onboardingSeen.observe(this) {
 ### Configuration
 
 For the shop finder and the details page the location tracking needs to be started as soon as permission is granted.
-You can either start location tracking directly via an instance of the location manager or with the snabble check in manager if used.
+You can either start location tracking directly via an instance of the location manager or with the snabble check-in manager if used.
 ```kotlin
 LocationManager.getInstance(this).startTrackingLocation()
+
 Snabble.checkInManager.startUpdating()
 ```
 
-You can stop the tracking over the same stop method.
+You can stop the tracking using the corresponding stop method.
 
 ### Setup
 
@@ -202,9 +203,9 @@ To setup the shop finder:
     SnabbleUiToolkit.executeAction(context,SnabbleUiToolkit.Event.SHOW_SHOP_LIST)
     ```
 
-4. Extend the 'ShopListFragment' to implement custom behaviour (e.g back button for toolbar etc.)
+4. Extend the 'ShopListFragment' to implement custom behaviour _(e.g back button for toolbar etc.)_
 
-    The details page for each shop opens on click by default. If further customizations need to be done
+    The details page for each shop opens on click by default. If further customizations needs to be done
     you can extend the 'ShopDetailsFragment' and navigate to the new destination by overwriting the
     SnabbleUi-Toolkit event `SHOW_SHOP_LIST_DETAILS`:
 
@@ -220,24 +221,25 @@ You can set up a Toolbar title by overwriting the following strings
 
 ```xml
 <resources>
-   <string name="Snabble.Shop.Finder.title" />
-   <string name="Snabble.Shop.Detail.title" />
+   <string name="Snabble.Shop.Finder.title">My custom shop</string>
+   <string name="Snabble.Shop.Detail.title">My custom shop details</string>
 </resources>
 ```
 
-By default the shop list title is set to "shops" and the details page takes the store name as title.
+By default the shop list title is set to "Shops" and the details page takes the store name as title.
 
 #### Optional
 
-You can set up button which only appears after the check in. 
-To set up the button overwrite the following string
+You can configure the button that only appears after the check-in.
+To setup the button overwrite the following string:
+
 ```xml
 <resources>
-    <string name="Snabble.Shop.Detail.shopNow" />
+    <string name="Snabble.Shop.Detail.shopNow">Start shopping!</string>
 </resources>
 ```
 
-To set up an event for the button click set up an ui action for the 'SHOW_DETAILS_BUTTON_ACTION' event
+To setup an event for the button click set up an ui action for the 'SHOW_DETAILS_BUTTON_ACTION' event
 
 ```kotlin
 SnabbleUiToolkit.setUiAction(context, SnabbleUiToolkit.Event.SHOW_DETAILS_BUTTON_ACTION) { _, _ ->
@@ -247,9 +249,9 @@ SnabbleUiToolkit.setUiAction(context, SnabbleUiToolkit.Event.SHOW_DETAILS_BUTTON
 
 ## DynamicView
 
-### JSON Configuration
+### JSON configuration
 
-The description of a **Dynamic View** is done via a JSON file. The file must contains two elements `configuration` and `widgets`.
+The description of a **Dynamic View** is done via a JSON file. The file must contain two elements `configuration` and `widgets`.
 
 ```json
 {
@@ -262,11 +264,10 @@ The description of a **Dynamic View** is done via a JSON file. The file must con
 }
 ```
 
-
 #### Configuration
 
-The `configuration` element use the `image` to display as a background for a **Dynamic View**.
-The `style` element can be left empty since its only used for ios configuration.
+The `configuration` element uses an `image` that is displayed as a background for a **Dynamic View**.
+The `style` element can be left empty since it's only used for iOS configurations.
 
 | Parameter     | Type         | Required    | Example                                                |
 |---------------|--------------|-------------|--------------------------------------------------------|
@@ -274,15 +275,15 @@ The `style` element can be left empty since its only used for ios configuration.
 | `style`       | `String?`    | no          | `"scroll"` or `"list"` or `""`                         |
 | `padding`     | `Margins?`   | no          | `[ 30, 16 ]`                                           |
 
-The `padding` can set as: `all` = `[8]`, `horizontal/vertical` = `[ 30, 16 ]` or explicit as `left`, `top`, `right`, `bottom`
+The `padding` can be set as: `all` = `[8]`, `horizontal/vertical` = `[ 30, 16 ]` or explicitly as `left`, `top`, `right`, `bottom`.
 
 ### Widgets
 
-The widgets are defined as an array of `"widgets"` in the [JSON Configuration](#json-configuration) file. Currently the following widget types are supported:
+The widgets are defined as an array of `"widgets"` in the [JSON Configuration](#json-configuration) file. Currently the following types are supported:
 
 #### User Widgets
 
-The [**User Widgets**](#user-widgets) are used to represent App specific UI elements and actions the App can respond to. The hosting app can return requested UI elements to display. Each widget send an action to the hosting App when the user taps on it.
+The [**User Widgets**](#user-widgets) are used to represent app specific UI elements and actions the app can respond to. The hosting app can return requested UI elements to display. Each widget sends an action to the hosting app when the user taps on it.
 
 * [Text](#text)
 * [Image](#image)
@@ -294,7 +295,7 @@ The [**User Widgets**](#user-widgets) are used to represent App specific UI elem
 
 ### SDK Action Widgets
 
-The [**SDK Action Widgets**](#sdk-action-widgets) are special widgets build into the SDK. These widgets are self contained and implements a predefined action to trigger, if the use taps on it.
+The [**SDK Action Widgets**](#sdk-action-widgets) are specialized widgets build into the SDK. These widgets are self contained and implements a predefined action to trigger, if the use taps on it.
 
 * [Location Permissions](#location-Permission)
 * [Start Shopping](#start-Shopping)
@@ -306,8 +307,6 @@ The [**SDK Action Widgets**](#sdk-action-widgets) are special widgets build into
 * [Version](#version)
 * [AppUserId](#appUserId)
 * [ClientId](#clientId)
-
-
 
 ## Widget Reference
 
@@ -379,10 +378,9 @@ Widget to display an optional image on the left side of an informational text.
 | `text`        | `String`     | `"Sample.Dashboard.Information.text"`                                |
 | `imageSource` | `String?`    | `"Sample.Dashboard.Information.image"`                               |
 
-### Toggle
+### Toggle / Switch
 
-Widget to display an text on the left side of an toggle button.
-
+Widget to display a text on the left side of a toggle button.
 
 | Parameter     | Type         | Example                                                              |
 |---------------|--------------|----------------------------------------------------------------------|
@@ -391,12 +389,11 @@ Widget to display an text on the left side of an toggle button.
 | `text`        | `String`     | `"Profile.showOnboarding"`                                           |
 | `key`         | `String`     | `"io.snabble.sample.showOnboarding"`                                 |
 
-The toogle feature is bound to the 'key' and should be unique.
+The toggle/switch feature is bound to the 'key' and should be unique.
 
 ### Section
 
 The Section Widget help to group widgets in section.
-
 
 | Parameter     | Type         | Example                                                              |
 |---------------|--------------|----------------------------------------------------------------------|
@@ -405,15 +402,13 @@ The Section Widget help to group widgets in section.
 | `header`      | `String`     | `"Profile.header"`                                                   |
 | `items`       | `[Widget]`   | Contains an array of child widgets                                   |
 
-
 ## SDK Action Widgets
 
-The *SDK Action Widgets* are special widgets build into the SDK.
-These widget are designed to fulfill a specific task.
+The *SDK Action Widgets* are specialized widgets build into the SDK. These widget are designed to fulfill a specific task.
 
 ### Location Permission
 
-Widget to ask the user to grant for location permissions. After the user has approved access the widget will disappear.
+Widget to ask the user to grant location permissions. After the user has granted access the widget will disappear.
 
 | Parameter     | Type         | Example                                                              |
 |---------------|--------------|----------------------------------------------------------------------|
@@ -422,7 +417,7 @@ Widget to ask the user to grant for location permissions. After the user has app
 
 ### Start Shopping
 
-If the user has entered a shop, a tap on the `Start Shopping` button will start the scanner.
+If the user has checked into a shop, a tap on the `Start Shopping` button will start the scanner.
 
 | Parameter     | Type         | Example                                                              |
 |---------------|--------------|----------------------------------------------------------------------|
@@ -431,14 +426,14 @@ If the user has entered a shop, a tap on the `Start Shopping` button will start 
 
 ### All Stores
 
-The widget navigates to the Shop Finder view where all shops are listed. The user can select a specific item of the list and the Shop Detail view with a map, shop description and opening hours is displayed.
+The widget navigates to the shop finder view where all shops are listed. The user can select a specific item of the list and the shop detail screen with a map, shop description and opening hours is displayed.
 
 | Parameter     | Type         | Example                                                              |
 |---------------|--------------|----------------------------------------------------------------------|
 | `id`          | `String`     | `"1"`                                                                |
 | `type`        | `String`     | `"snabble.allStores"`                                                |
 
-### Connect Wlan
+### Connect WLAN
 
 Widget to ask the user to grant access to a local Wifi network.
 
@@ -447,7 +442,7 @@ Widget to ask the user to grant access to a local Wifi network.
 | `id`          | `String`     | `"1"`                                                                |
 | `type`        | `String`     | `"snabble.connectWifi"`                                              |
 
-### Customer Card
+### Customer card
 
 Widget to show a customer card.
 
@@ -458,14 +453,12 @@ Widget to show a customer card.
 | `text`        | `String`     | `"Sample.customerCard.description"`                                  |
 | `image        | `String`     | `"Sample.CustomerCard.image"`                                        |
 
-### Last Purchases
+### Last purchases
 
-Widget to display one or two of the recent purchases.
-This widget return two values: `more` and `purchases`.
+Widget to display one or two of the recent purchases. This widget returns two values: `more` and `purchases`.
 
-On tap on a receipt the matching id can be handled via the info object of the purchase object
-as shown in the example below.
-If the user taps on a recipe preview item, the detail view for that receipt is can be shown.
+On tap on a receipt the matching id can be handled via the info object of the purchase object as shown in the example below.
+If the user taps on a receipt preview item, the detail view for that receipt can be shown.
 
 | Parameter     | Type         | Example                                                              |
 |---------------|--------------|----------------------------------------------------------------------|
@@ -475,23 +468,22 @@ If the user taps on a recipe preview item, the detail view for that receipt is c
 #### The following shows an example how to handle purchases events:
 
 ```Kotlin
-        when (action.widget.id) {
+when (action.widget.id) {
+    "lastPurchases" -> {
+        when (action.info?.get("action")) {
+            "more" -> //To something
             "lastPurchases" -> {
-                when (action.info?.get("action")) {
-                    "more" -> //To something
-                    "lastPurchases" -> {
-                        (action.info?.get("id") as? String)?.let {
-                            // Do something with the specific purchase id
-                        }
-                    }
+                (action.info?.get("id") as? String)?.let {
+                    // Do something with the specific purchase id
                 }
             }
-            else -> Unit
         }
     }
+    else -> Unit
+}
 ```
 
-### Developer Mode
+### Developer mode
 
 Widget to display the developer options.
 
@@ -501,11 +493,9 @@ Widget to display the developer options.
 | `type`        | `String`     | `"snabble.devSettings"`                                              |
 | `text`        | `String`     | `"Profile.developerMode"`                                            |
 
-
 ### Switch Environment
 
 Widget to switch the system environment.
-
 
 | Parameter     | Type          | Example                                                              |
 |---------------|---------------|----------------------------------------------------------------------|
@@ -518,35 +508,35 @@ Widget to switch the system environment.
 
 ```json
 {
-	"type": "snabble.switchEnvironment",
+    "type": "snabble.switchEnvironment",
     "id": "io.snabble.environment",
     "text": "Profile.environment",
     "padding": [16, 0],
-	"values" : [
-		{
-			"id": "io.snabble.environment.testing",
-			"text": "Profile.Environment.testing"
-		},
-		{
-			"id": "io.snabble.environment.staging",
-			"text": "Profile.Environment.staging"
-		},
-		{
-			"id": "io.snabble.environment.production",
-			"text": "Profile.Environment.production"
-		}
-	]
+    "values" : [
+        {
+            "id": "io.snabble.environment.testing",
+            "text": "Profile.Environment.testing"
+        },
+        {
+            "id": "io.snabble.environment.staging",
+            "text": "Profile.Environment.staging"
+        },
+        {
+            "id": "io.snabble.environment.production",
+            "text": "Profile.Environment.production"
+        }
+    ]
 }
 ```
 
 ### Version
 
-Widget to display the current version and to switch on developer mode.
+Widget to display the current version and to switch on the developer mode.
 The implementation of the developer mode activation is delegated to the hosting application.
 
-To activate the developer mode this widget can be used with the DevSettingsLoginFragment.<br>
-If used via the `DevSettingsLoginFragment().show()` function the SDK asks the hosting app for a base64 decoded string with the following id: `"dev_settings_password"`.
-The hosting app can provide a app specific password to enable developer mode.
+To activate the developer mode this widget can be used with the DevSettingsLoginFragment.
+If used via the `DevSettingsLoginFragment().show()` function the SDK asks the hosting app for a base64 decoded string resource with the following id: `dev_settings_password`.
+The hosting app can provide an app specific password to enable developer mode.
 If the hosting app return `null` the default password `Password` is used to enable developer mode.
 
 | Parameter     | Type         | Example                                                              |
@@ -572,11 +562,10 @@ Widget to show the current ClientId. On click copies the ClientId to the clipboa
 | `id`          | `String`     | `"clientId"`                                                         |
 | `type`        | `String`     | `"snabble.clientId"`                                                 |
 
-
 ## Screens
 
-The following Screens can be setUp with just providing the matching config as json file.
-The config has to be provided via the assets directory.
+The following screens can be setup by simply providing the matching config as json file.
+The config has to be provided via the Android assets directory.
 
 | Screen        | config name         | Type                                                   |
 |---------------|---------------------|--------------------------------------------------------|
@@ -586,7 +575,7 @@ The config has to be provided via the assets directory.
 
 ### Setup Example
 
-JSON Example of SnabbleSampleApp file `homeConfig.json` to describe the **Start** tap (Home) as a **Dynamic View**.
+JSON example of SnabbleSampleApp file `homeConfig.json` to describe the **Start** tap (Home) as a **Dynamic View**.
 
 ```json
 {
@@ -647,9 +636,9 @@ JSON Example of SnabbleSampleApp file `homeConfig.json` to describe the **Start*
   ]
 }
 ```
-### Interactions Example
+### Interactions example
 
-The interaction can be handled via the matching viewModels.
+The interaction can be handled via the matching ViewModels.
 
 | Screen        | ViewModel              | Type                                                   |
 |---------------|------------------------|--------------------------------------------------------|
@@ -659,28 +648,28 @@ The interaction can be handled via the matching viewModels.
 
 #### The following shows an example how to handle widgets events with the given viewModel:
 
-```Kotlin
-    private val homeViewModel: DynamicHomeViewModel by viewModels()
+```kotlin
+private val homeViewModel: DynamicHomeViewModel by viewModels()
 
-    homeViewModel.actions.asLiveData().observe(this, ::handleHomeScreenAction)
+homeViewModel.actions.asLiveData().observe(this, ::handleHomeScreenAction)
 
-    private fun handleHomeScreenAction(action: DynamicAction) {
-        when (action.widget.id) {
-            "startShopping" -> navBarView.selectedItemId = R.id.navigation_scanner
-            "purchases" -> {
-                when (action.info?.get("action")) {
-                    "more" -> SnabbleUiToolkit.executeAction(context = this, SHOW_RECEIPT_LIST)
+private fun handleHomeScreenAction(action: DynamicAction) {
+    when (action.widget.id) {
+        "startShopping" -> navBarView.selectedItemId = R.id.navigation_scanner
+        "purchases" -> {
+            when (action.info?.get("action")) {
+                "more" -> SnabbleUiToolkit.executeAction(context = this, SHOW_RECEIPT_LIST)
 
-                    "lastPurchases" -> {
-                        (action.info?.get("id") as? String)?.let {
-                            lifecycleScope.launch {
-                                showDetails(this@MainActivity.findViewById(android.R.id.content), it)
-                            }
+                "lastPurchases" -> {
+                    (action.info?.get("id") as? String)?.let {
+                        lifecycleScope.launch {
+                            showDetails(this@MainActivity.findViewById(android.R.id.content), it)
                         }
                     }
                 }
             }
-            else -> Unit
         }
+        else -> Unit
     }
+}
 ```
