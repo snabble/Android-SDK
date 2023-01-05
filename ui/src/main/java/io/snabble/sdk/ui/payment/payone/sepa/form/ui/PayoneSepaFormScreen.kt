@@ -49,7 +49,6 @@ internal fun PayoneSepaFormScreen(
             .verticalScroll(state = rememberScrollState())
             .padding(all = 16.dp),
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
         Text(
             modifier = Modifier.align(CenterHorizontally),
             text = stringResource(id = R.string.Snabble_SEPA_helper),
