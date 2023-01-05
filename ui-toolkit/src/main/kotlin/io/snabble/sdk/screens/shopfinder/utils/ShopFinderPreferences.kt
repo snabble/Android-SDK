@@ -65,7 +65,7 @@ internal class ShopFinderPreferences internal constructor(private val context: C
                 .apply()
         }
 
-    val devSettingsEnabled = HasEnabledDevSettingsUseCaseImpl(sharedPreferences)()
+    val areDevSettingsEnabled = HasEnabledDevSettingsUseCaseImpl(sharedPreferences)()
 
     companion object {
 

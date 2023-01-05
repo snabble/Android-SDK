@@ -408,7 +408,7 @@ open class ShopDetailsFragment : Fragment() {
             preferences?.projectCode != null && project?.id == Snabble.projects[0].id
         val checkInManager = Snabble.checkInManager
         lifecycleScope.launch {
-            preferences?.devSettingsEnabled?.collect() { devSettingsEnabled ->
+            preferences?.areDevSettingsEnabled?.collect { devSettingsEnabled ->
                 if (devSettingsEnabled || checkinAllowed || debug) {
                     debugCheckin.isVisible = true
                     updateDebugCheckInText()
