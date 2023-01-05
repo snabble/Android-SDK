@@ -1,6 +1,7 @@
 package io.snabble.sdk.dynamicview.data.dto.mapper
 
 import android.content.Context
+import io.snabble.sdk.dynamicview.data.dto.AllStoresDto
 import io.snabble.sdk.dynamicview.data.dto.AppUserIdDto
 import io.snabble.sdk.dynamicview.data.dto.ButtonDto
 import io.snabble.sdk.dynamicview.data.dto.ClientIdDto
@@ -14,7 +15,6 @@ import io.snabble.sdk.dynamicview.data.dto.InformationDto
 import io.snabble.sdk.dynamicview.data.dto.LocationPermissionDto
 import io.snabble.sdk.dynamicview.data.dto.PurchasesDto
 import io.snabble.sdk.dynamicview.data.dto.SectionDto
-import io.snabble.sdk.dynamicview.data.dto.SeeAllStoresDto
 import io.snabble.sdk.dynamicview.data.dto.SsidProvider
 import io.snabble.sdk.dynamicview.data.dto.StartShoppingDto
 import io.snabble.sdk.dynamicview.data.dto.SwitchEnvironmentDto
@@ -22,6 +22,7 @@ import io.snabble.sdk.dynamicview.data.dto.TextDto
 import io.snabble.sdk.dynamicview.data.dto.ToggleDto
 import io.snabble.sdk.dynamicview.data.dto.VersionDto
 import io.snabble.sdk.dynamicview.data.dto.WidgetDto
+import io.snabble.sdk.dynamicview.data.dto.toAllStores
 import io.snabble.sdk.dynamicview.data.dto.toAppUserId
 import io.snabble.sdk.dynamicview.data.dto.toButton
 import io.snabble.sdk.dynamicview.data.dto.toClientId
@@ -33,7 +34,6 @@ import io.snabble.sdk.dynamicview.data.dto.toInformation
 import io.snabble.sdk.dynamicview.data.dto.toLocationPermission
 import io.snabble.sdk.dynamicview.data.dto.toPadding
 import io.snabble.sdk.dynamicview.data.dto.toPurchases
-import io.snabble.sdk.dynamicview.data.dto.toSeeAllStores
 import io.snabble.sdk.dynamicview.data.dto.toStartShopping
 import io.snabble.sdk.dynamicview.data.dto.toSwitchEnvironmentItem
 import io.snabble.sdk.dynamicview.data.dto.toText
@@ -106,7 +106,7 @@ internal class ConfigMapperImpl(private val context: Context, private val ssidPr
 
                 is SectionDto -> toSection()
 
-                is SeeAllStoresDto -> toSeeAllStores()
+                is AllStoresDto -> toAllStores()
 
                 is StartShoppingDto -> toStartShopping()
 

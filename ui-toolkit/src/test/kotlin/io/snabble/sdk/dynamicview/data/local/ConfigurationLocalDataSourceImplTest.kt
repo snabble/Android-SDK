@@ -22,7 +22,7 @@ import io.snabble.sdk.dynamicview.domain.model.LocationPermissionItem
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.domain.model.PurchasesItem
 import io.snabble.sdk.dynamicview.domain.model.SectionItem
-import io.snabble.sdk.dynamicview.domain.model.SeeAllStoresItem
+import io.snabble.sdk.dynamicview.domain.model.SeeStoresItem
 import io.snabble.sdk.dynamicview.domain.model.StartShoppingItem
 import io.snabble.sdk.dynamicview.domain.model.TextItem
 import io.snabble.sdk.dynamicview.domain.model.ToggleItem
@@ -210,7 +210,7 @@ internal class ConfigurationLocalDataSourceImplTest : FreeSpec({
                 val sut = createSut(
                     createJson(
                         """[{
-                            "type": "purchases",
+                            "type": "snabble.lastPurchases",
                             "id": "purchases",
                             "projectId": "ab1234",
                             "padding": [ 16 ]
@@ -256,7 +256,7 @@ internal class ConfigurationLocalDataSourceImplTest : FreeSpec({
                           }]"""
                     )
                 )
-                sut.getConfig("").widgets.first() shouldBe SeeAllStoresItem(
+                sut.getConfig("").widgets.first() shouldBe SeeStoresItem(
                     id = "all_stores",
                     padding = Padding(8, 8, 8, 8)
                 )

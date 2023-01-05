@@ -15,7 +15,7 @@ import io.snabble.sdk.dynamicview.domain.model.InformationItem
 import io.snabble.sdk.dynamicview.domain.model.LocationPermissionItem
 import io.snabble.sdk.dynamicview.domain.model.PurchasesItem
 import io.snabble.sdk.dynamicview.domain.model.SectionItem
-import io.snabble.sdk.dynamicview.domain.model.SeeAllStoresItem
+import io.snabble.sdk.dynamicview.domain.model.SeeStoresItem
 import io.snabble.sdk.dynamicview.domain.model.StartShoppingItem
 import io.snabble.sdk.dynamicview.domain.model.TextItem
 import io.snabble.sdk.dynamicview.domain.model.ToggleItem
@@ -77,7 +77,7 @@ internal fun Widget(
 
     is PurchasesItem -> PurchaseWidget(model = widget, onAction = onAction)
 
-    is SeeAllStoresItem -> SeeAllStoresWidget(model = widget, onAction = onAction)
+    is SeeStoresItem -> SeeAllStoresWidget(model = widget, onAction = onAction)
 
     is StartShoppingItem -> StartShoppingWidget(model = widget, onAction = onAction)
 
