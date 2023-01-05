@@ -145,7 +145,7 @@
     <string name="Snabble.Payment.SEPA.mandate">Megbízás hivatkozási sz.</string>
     <string name="Snabble.Payment.SEPA.missingCity">Add meg a várost.</string>
     <string name="Snabble.Payment.SEPA.missingCountry">Az országkód nem lehet üres.</string>
-    <string name="Snabble.Payment.SEPA.missingIBAN">Please enter a IBAN.</string>
+    <string name="Snabble.Payment.SEPA.missingIBAN">Add meg az IBAN-számot.</string>
     <string name="Snabble.Payment.SEPA.missingName">Add meg a neved.</string>
     <string name="Snabble.Payment.SEPA.name">Név</string>
     <string name="Snabble.Payment.SEPA.payer">Fizetésre kötelezett</string>
@@ -276,6 +276,7 @@
     <string name="Snabble.Scanner.updateCart">Kosár frissítése</string>
     <string name="Snabble.SEPA.editingHint">A SEPA-adatokat kódolva tároljuk, éppen ezért nem tudjuk feldolgozni.</string>
     <string name="Snabble.SEPA.encryptionError">Hiba a titkosítás során</string>
+    <string name="Snabble.SEPA.helper">Please enter the data for SEPA direct debit.</string>
     <string name="Snabble.SEPA.iAgree">Hozzájárulok</string>
     <string name="Snabble.SEPA.IbanTransferAlert.message">Elmented ezeket a számlaadatokat (IBAN: %s) a jövőbeni bevásárlásokhoz?</string>
     <string name="Snabble.SEPA.IbanTransferAlert.title">Számla adatainak mentése</string>
