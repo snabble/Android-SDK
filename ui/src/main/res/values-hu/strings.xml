@@ -276,7 +276,7 @@
     <string name="Snabble.Scanner.updateCart">Kosár frissítése</string>
     <string name="Snabble.SEPA.editingHint">A SEPA-adatokat kódolva tároljuk, éppen ezért nem tudjuk feldolgozni.</string>
     <string name="Snabble.SEPA.encryptionError">Hiba a titkosítás során</string>
-    <string name="Snabble.SEPA.helper"/>
+    <string name="Snabble.SEPA.helper">Please enter the data for SEPA direct debit.</string>
     <string name="Snabble.SEPA.iAgree">Hozzájárulok</string>
     <string name="Snabble.SEPA.IbanTransferAlert.message">Elmented ezeket a számlaadatokat (IBAN: %s) a jövőbeni bevásárlásokhoz?</string>
     <string name="Snabble.SEPA.IbanTransferAlert.title">Számla adatainak mentése</string>
