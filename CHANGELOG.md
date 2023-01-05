@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
+* ui-toolkit: Enable debug check-in for all environments, including production
+
 ### Changed
 ### Removed
 ### Fixed
