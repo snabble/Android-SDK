@@ -140,6 +140,7 @@ open class ShopDetailsFragment : Fragment() {
         companyName = findViewById(R.id.company_name)
         companyStreet = findViewById(R.id.company_street)
         companyZip = findViewById(R.id.company_zip)
+        debugCheckin = findViewById(R.id.debug_checkin)
 
         preferences = ShopFinderPreferences.getInstance(requireContext())
         locationManager = Snabble.checkInLocationManager
@@ -190,7 +191,6 @@ open class ShopDetailsFragment : Fragment() {
 
         applyBottomSheetPeekHeight(view)
         updateShopDetails(view)
-
     }
 
     private fun getShop(): Shop = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -365,7 +365,7 @@ open class ShopDetailsFragment : Fragment() {
         }
 
         setUpTimeTable()
-        setUpDebugCheckIn(view)
+        setupDebugCheckIn(view)
 
         val startScanner = view.findViewById<Button>(R.id.start_scanner)
         val startScannerTitle = resources.getText(R.string.Snabble_Scanner_start)
@@ -400,36 +400,41 @@ open class ShopDetailsFragment : Fragment() {
         }
     }
 
-    @SuppressLint("MissingPermission")
-    private fun setUpDebugCheckIn(view: View) {
-        debugCheckin = view.findViewById(R.id.debug_checkin)
-        val debug = preferences?.isDebuggingAvailable == true
-        val checkinAllowed =
-            preferences?.projectCode != null && project?.id == Snabble.projects[0].id
-        val checkInManager = Snabble.checkInManager
+    private fun setupDebugCheckIn(view: View) {
+        val isDebuggingAvailable = preferences?.isDebuggingAvailable == true
+        val isCheckInAllowed = preferences?.projectCode != null && project?.id == Snabble.projects[0].id
         lifecycleScope.launch {
-            preferences?.areDevSettingsEnabled?.collect { devSettingsEnabled ->
-                if (devSettingsEnabled || checkinAllowed || debug) {
-                    debugCheckin.isVisible = true
-                    updateDebugCheckInText()
-                    debugCheckin.setOneShotClickListener {
-                        if (isCheckedInToShop) {
-                            Snabble.checkedInProject.setValue(null)
-                            checkInManager.shop = null
-                            checkInManager.startUpdating()
-                            locationManager.startTrackingLocation()
-                        } else {
-                            checkInManager.shop = shop
-                            Snabble.checkedInProject.setValue(project)
-                            checkInManager.stopUpdating()
-                            locationManager.stopTrackingLocation()
-                        }
-                        updateDebugCheckInText()
-                        updateShopDetails(view)
-                    }
+            preferences?.areDevSettingsEnabled?.collect { areDevSettingsEnabled ->
+                val isDebugCheckInEnabled = areDevSettingsEnabled || isCheckInAllowed || isDebuggingAvailable
+                enableDebugCheckIn(isDebugCheckInEnabled, view)
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun enableDebugCheckIn(
+        isDebugCheckInEnabled: Boolean,
+        view: View,
+    ) {
+        debugCheckin.isVisible = isDebugCheckInEnabled
+
+        if (isDebugCheckInEnabled) {
+            updateDebugCheckInText()
+            debugCheckin.setOneShotClickListener {
+                val checkInManager = Snabble.checkInManager
+                if (isCheckedInToShop) {
+                    Snabble.checkedInProject.setValue(null)
+                    checkInManager.shop = null
+                    checkInManager.startUpdating()
+                    locationManager.startTrackingLocation()
                 } else {
-                    debugCheckin.isVisible = false
+                    checkInManager.shop = shop
+                    Snabble.checkedInProject.setValue(project)
+                    checkInManager.stopUpdating()
+                    locationManager.stopTrackingLocation()
                 }
+                updateDebugCheckInText()
+                updateShopDetails(view)
             }
         }
     }
