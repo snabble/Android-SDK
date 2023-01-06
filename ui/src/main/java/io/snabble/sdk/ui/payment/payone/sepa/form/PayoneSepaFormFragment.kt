@@ -1,25 +1,25 @@
 package io.snabble.sdk.ui.payment.payone.sepa.form
 
 import android.app.AlertDialog
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.checkout.PaymentOriginCandidateHelper
-import io.snabble.sdk.ui.payment.SEPACardInputActivity
+import io.snabble.sdk.ui.checkout.PaymentOriginCandidateHelper.PaymentOriginCandidate
 import io.snabble.sdk.ui.payment.payone.sepa.form.ui.PayoneSepaFormScreen
 import io.snabble.sdk.ui.payment.payone.sepa.form.viewmodel.PayoneSepaFormViewModel
 import io.snabble.sdk.ui.utils.KeyguardUtils
 import io.snabble.sdk.ui.utils.ThemeWrapper
 import io.snabble.sdk.ui.utils.UIUtils
+import io.snabble.sdk.ui.utils.serializableExtra
 
 open class PayoneSepaFormFragment : BaseFragment(
     layoutResId = R.layout.snabble_fragment_sepa_input_payone,
@@ -28,24 +28,10 @@ open class PayoneSepaFormFragment : BaseFragment(
 
     private val viewModel: PayoneSepaFormViewModel by viewModels()
 
-    var paymentOriginCandidate: PaymentOriginCandidateHelper.PaymentOriginCandidate? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        paymentOriginCandidate = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            arguments?.getSerializable(SEPACardInputActivity.ARG_PAYMENT_ORIGIN_CANDIDATE,
-                PaymentOriginCandidateHelper.PaymentOriginCandidate::class.java)
-        } else {
-            @Suppress("DEPRECATION")
-            arguments?.getSerializable(SEPACardInputActivity.ARG_PAYMENT_ORIGIN_CANDIDATE)
-                    as? PaymentOriginCandidateHelper.PaymentOriginCandidate
-        }
-    }
-
     override fun onActualViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onActualViewCreated(view, savedInstanceState)
 
+        val paymentOriginCandidate: PaymentOriginCandidate? = arguments?.serializableExtra(ARG_PAYMENT_ORIGIN_CANDIDATE)
         val prefilledIban = paymentOriginCandidate?.origin?.substring(2) ?: ""
 
         view.findViewById<ComposeView>(R.id.compose_view).apply {
@@ -101,5 +87,15 @@ open class PayoneSepaFormFragment : BaseFragment(
 
     private fun finish() {
         context?.let { SnabbleUI.executeAction(it, SnabbleUI.Event.GO_BACK) }
+    }
+
+    companion object {
+
+        const val ARG_PAYMENT_ORIGIN_CANDIDATE = "paymentOriginCandidate"
+
+        fun createFragment(paymentOriginCandidate: PaymentOriginCandidate? = null): PayoneSepaFormFragment =
+            PayoneSepaFormFragment().apply {
+                arguments = bundleOf(ARG_PAYMENT_ORIGIN_CANDIDATE to paymentOriginCandidate)
+            }
     }
 }

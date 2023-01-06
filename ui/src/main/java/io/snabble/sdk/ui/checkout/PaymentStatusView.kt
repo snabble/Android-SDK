@@ -2,14 +2,12 @@ package io.snabble.sdk.ui.checkout
 
 import android.animation.LayoutTransition
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
@@ -149,9 +147,11 @@ class PaymentStatusView @JvmOverloads constructor(
         addIbanLayout.isVisible = false
         addIbanButton.setOnClickListener {
             if (project.checkout.selectedPaymentMethod == PaymentMethod.PAYONE_SEPA) {
-                startActivity(PayoneSepaActivity::class.java)
+                val intent = PayoneSepaActivity.newIntent(context, paymentOriginCandidate)
+                context?.startActivity(intent)
             } else {
-                startActivity(SEPACardInputActivity::class.java)
+                val intent = SEPACardInputActivity.newIntent(context, paymentOriginCandidate)
+                context?.startActivity(intent)
             }
             addIbanLayout.isVisible = false
             hasShownSEPAInput = true
@@ -160,13 +160,6 @@ class PaymentStatusView @JvmOverloads constructor(
         val activity = getFragmentActivity()
         activity?.lifecycle?.addObserver(this)
         activity?.onBackPressedDispatcher?.addCallback(backPressedCallback)
-    }
-
-    fun <T : AppCompatActivity> startActivity(activity: Class<T>) {
-        val intent = Intent(context, activity)
-        intent.putExtra(SEPACardInputActivity.ARG_PAYMENT_ORIGIN_CANDIDATE, paymentOriginCandidate)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
-        context?.startActivity(intent)
     }
 
     private fun sendRating(rating: String) {
