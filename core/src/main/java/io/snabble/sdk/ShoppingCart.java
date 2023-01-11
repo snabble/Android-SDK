@@ -29,9 +29,9 @@ import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.coupons.Coupon;
 import io.snabble.sdk.coupons.CouponType;
+import io.snabble.sdk.customization.IsMergeable;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
-import io.snabble.sdk.utils.Logger;
 
 /**
  * Class representing the snabble shopping cart
@@ -232,7 +232,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
     /**
      * Returns a cart item that contains the given product, if that cart item
      * can be merged.
-     *
+     * <p>
      * A cart item is not mergeable if it uses encoded data of a scanned code (e.g. a different price)
      */
     public Item getExistingMergeableProduct(Product product) {
@@ -288,7 +288,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
 
     /**
      * The number items in the cart.
-     *
+     * <p>
      * This is not the sum of articles.
      */
     public int size() {
@@ -304,7 +304,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
 
     /**
      * Backups the cart, so it can be restured using {@link #restore()} later.
-     *
+     * <p>
      * A cart is restorable for up to 5 minutes.
      */
     public void backup() {
@@ -336,7 +336,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         if (isRestorable()) {
             data = oldData;
             data.applyShoppingCart(this);
-            
+
             clearBackup();
             checkLimits();
             updatePrices(false);
@@ -346,6 +346,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
 
     /**
      * The last time the cart was backed up by using {@link #backup()}
+     *
      * @return
      */
     public long getBackupTimestamp() {
@@ -481,10 +482,10 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
 
     /**
      * Generate a new uuid.
-     *
+     * <p>
      * UUID's are used to uniquely identify a specific purchase made by the user. If a new UUID
      * is generated a new checkout can be made.
-     *
+     * <p>
      * If a checkout already exist with the same UUID, the checkout will get continued.
      */
     public void generateNewUUID() {
@@ -494,10 +495,10 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
 
     /**
      * The UUID of the cart
-     *
+     * <p>
      * UUID's are used to uniquely identify a specific purchase made by the user. If a new UUID
      * is generated a new checkout can be made.
-     *
+     * <p>
      * If a checkout already exist with the same UUID, the checkout will get continued.
      */
     public String getUUID() {
@@ -540,7 +541,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
 
     /**
      * Returns the total price of the cart.
-     *
+     * <p>
      * If the cart was updated by the backend, the online price is used. If no update was made
      * a locally calculated price will be used
      */
@@ -923,15 +924,24 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
          * Returns true if the item can be merged with items that conain the same product and type
          */
         public boolean isMergeable() {
+            @Nullable final IsMergeable isMergeableOverride = Snabble.getInstance().isMergeable();
+            final boolean isMergeable = isMergeableDefault();
+            if (isMergeableOverride == null) {
+                return isMergeable;
+            } else {
+                return isMergeableOverride.isMergeable(this, isMergeable);
+            }
+        }
+
+        private boolean isMergeableDefault() {
             if (product == null && lineItem != null) return false;
             if (coupon != null) return false;
 
-            boolean b = product.getType() == Product.Type.Article
+            return product.getType() == Product.Type.Article
                     && getUnit() != PIECE
                     && product.getPrice(cart.project.getCustomerCardId()) != 0
                     && scannedCode.getEmbeddedData() == 0
                     && !isUsingSpecifiedQuantity;
-            return b;
         }
 
         /**
@@ -1043,7 +1053,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
 
         /**
          * Gets text displaying quantity, can be a weight or price depending on the type
-         *
+         * <p>
          * E.g. "1" or "100g" or "2,03 €"
          */
         public String getQuantityText() {
@@ -1070,7 +1080,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
 
         /**
          * Gets text displaying price, including the calculation.
-         *
+         * <p>
          * E.g. "2 * 3,99 € = 7,98 €"
          */
         public String getFullPriceText() {
@@ -1115,7 +1125,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
 
         /**
          * Gets text displaying price, including the calculation.
-         *
+         * <p>
          * E.g. "3,99 €" or "2,99 € /kg = 0,47 €"
          */
         public String getPriceText() {
@@ -1530,13 +1540,16 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         }
 
         @Override
-        public void onCheckoutLimitReached(ShoppingCart list) {}
+        public void onCheckoutLimitReached(ShoppingCart list) {
+        }
 
         @Override
-        public void onOnlinePaymentLimitReached(ShoppingCart list) {}
+        public void onOnlinePaymentLimitReached(ShoppingCart list) {
+        }
 
         @Override
-        public void onViolationDetected(@NonNull List<ViolationNotification> violations) {}
+        public void onViolationDetected(@NonNull List<ViolationNotification> violations) {
+        }
 
         @Override
         public void onCartDataChanged(ShoppingCart list) {
