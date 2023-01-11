@@ -3,11 +3,16 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
-* ui-toolkit: Enable debug check-in for all environments, including production
-
 ### Changed
 ### Removed
 ### Fixed
+
+## [0.69.2]
+### Added
+* core: Add customizable ShoppingCart::isMergeable() behavior
+
+### Changed
+* ui-toolkit: Enable debug check-in for all environments, including production
 
 ## [0.69.1]
 ### Added
