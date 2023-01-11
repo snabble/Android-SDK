@@ -31,12 +31,11 @@ import io.snabble.sdk.ui.payment.payone.sepa.form.ui.widget.TextFieldWidget
 @Composable
 internal fun PayoneSepaFormScreen(
     saveData: (data: PayoneSepaData) -> Unit,
-    validateIban: (String) -> Unit,
-    prefilledIban: String = "",
+    ibanNumber: String = "",
+    onIbanNumberChange: (String) -> Unit,
     isIbanValid: Boolean,
 ) {
     var name by rememberSaveable { mutableStateOf("") }
-    var iban by rememberSaveable { mutableStateOf(prefilledIban) }
     var city by rememberSaveable { mutableStateOf("") }
 
     val areAllInputsValid = name.isNotBlank() && city.isNotBlank() && isIbanValid
@@ -59,11 +58,8 @@ internal fun PayoneSepaFormScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
         IbanFieldWidget(
-            iban = iban,
-            onIbanChange = {
-                validateIban("$COUNTRY_CODE$it")
-                iban = it
-            },
+            iban = ibanNumber,
+            onIbanChange = { onIbanNumberChange(it) },
             focusManager = focusManager
         )
 
@@ -76,7 +72,7 @@ internal fun PayoneSepaFormScreen(
             onAction = {
                 focusManager.clearFocus()
                 if (areAllInputsValid) {
-                    saveSepaFormInput(saveData, name, iban, city)
+                    saveSepaFormInput(saveData, name, ibanNumber, city)
                 }
             },
             focusManager = focusManager,
@@ -90,7 +86,7 @@ internal fun PayoneSepaFormScreen(
             readOnly = true,
             enabled = false,
         )
-        if (!isIbanValid && iban.isNotBlank()) {
+        if (!isIbanValid && ibanNumber.isNotBlank()) {
             Spacer(modifier = Modifier.heightIn(8.dp))
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -111,7 +107,7 @@ internal fun PayoneSepaFormScreen(
             enabled = areAllInputsValid,
             shape = MaterialTheme.shapes.extraLarge,
             onClick = {
-                saveSepaFormInput(saveData, name, iban, city)
+                saveSepaFormInput(saveData, name, ibanNumber, city)
             },
         ) {
             Text(text = stringResource(id = R.string.Snabble_save))
@@ -129,13 +125,13 @@ internal fun PayoneSepaFormScreen(
 private fun saveSepaFormInput(
     saveData: (data: PayoneSepaData) -> Unit,
     name: String,
-    iban: String,
+    ibanNumbers: String,
     city: String,
 ) {
     saveData(
         PayoneSepaData(
             name = name,
-            iban = "$COUNTRY_CODE$iban",
+            iban = "$COUNTRY_CODE$ibanNumbers",
             city = city,
             countryCode = COUNTRY_CODE,
         )
@@ -149,7 +145,7 @@ private const val COUNTRY_CODE = "DE"
 private fun PayoneSepaFormScreenPreview() {
     PayoneSepaFormScreen(
         saveData = {},
-        validateIban = { it.isNotBlank() },
+        onIbanNumberChange = { it.isNotBlank() },
         isIbanValid = true
     )
 }

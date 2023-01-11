@@ -9,6 +9,8 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.DEFAULT_ARGS_KEY
+import androidx.lifecycle.viewmodel.MutableCreationExtras
 import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
@@ -26,19 +28,30 @@ open class PayoneSepaFormFragment : BaseFragment(
     waitForProject = false,
 ) {
 
-    private val viewModel: PayoneSepaFormViewModel by viewModels()
+    private val viewModel: PayoneSepaFormViewModel by viewModels(
+        extrasProducer = {
+            MutableCreationExtras(defaultViewModelCreationExtras).also { extras ->
+                extras[DEFAULT_ARGS_KEY] = arguments
+                    ?.serializableExtra<PaymentOriginCandidate>(ARG_PAYMENT_ORIGIN_CANDIDATE)
+                    .let {
+                        val ibanNumber = it?.origin?.substring(startIndex = 2)
+                        bundleOf(PayoneSepaFormViewModel.ARG_PAYMENT_ORIGIN_CANDIDATE to ibanNumber)
+                    }
+            }
+        }
+    ) {
+        PayoneSepaFormViewModel.Factory
+    }
 
     override fun onActualViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onActualViewCreated(view, savedInstanceState)
-
-        val paymentOriginCandidate: PaymentOriginCandidate? = arguments?.serializableExtra(ARG_PAYMENT_ORIGIN_CANDIDATE)
-        val prefilledIban = paymentOriginCandidate?.origin?.substring(2) ?: ""
 
         view.findViewById<ComposeView>(R.id.compose_view).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
                 val isIbanValid = viewModel.isIbanValid.collectAsState().value
+                val iban = viewModel.ibanNumber.collectAsState().value ?: ""
                 ThemeWrapper {
                     PayoneSepaFormScreen(
                         saveData = { data ->
@@ -75,9 +88,9 @@ open class PayoneSepaFormFragment : BaseFragment(
                                     .show()
                             }
                         },
-                        validateIban = { viewModel.validateIban(it) },
+                        ibanNumber = iban,
+                        onIbanNumberChange = viewModel::onIbanNumberChange,
                         isIbanValid = isIbanValid,
-                        prefilledIban = prefilledIban
                     )
                 }
             }
@@ -95,7 +108,7 @@ open class PayoneSepaFormFragment : BaseFragment(
 
         fun createFragment(paymentOriginCandidate: PaymentOriginCandidate? = null): PayoneSepaFormFragment =
             PayoneSepaFormFragment().apply {
-                arguments = bundleOf(ARG_PAYMENT_ORIGIN_CANDIDATE to paymentOriginCandidate)
+                arguments = paymentOriginCandidate?.let { bundleOf(ARG_PAYMENT_ORIGIN_CANDIDATE to it) }
             }
     }
 }

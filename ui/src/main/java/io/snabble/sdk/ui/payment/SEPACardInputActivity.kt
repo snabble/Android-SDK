@@ -9,9 +9,8 @@ import io.snabble.sdk.ui.utils.serializableExtra
 
 class SEPACardInputActivity : BaseFragmentActivity() {
 
-    override fun onCreateFragment(): Fragment {
-        return SEPACardInputFragment.createFragment(intent.serializableExtra(ARG_PAYMENT_ORIGIN_CANDIDATE))
-    }
+    override fun onCreateFragment(): Fragment =
+        SEPACardInputFragment.createFragment(intent.serializableExtra(ARG_PAYMENT_ORIGIN_CANDIDATE))
 
     companion object {
 
@@ -21,7 +20,7 @@ class SEPACardInputActivity : BaseFragmentActivity() {
             context: Context,
             paymentOriginCandidate: PaymentOriginCandidateHelper.PaymentOriginCandidate? = null,
         ): Intent = Intent(context, SEPACardInputActivity::class.java).apply {
-            putExtra(ARG_PAYMENT_ORIGIN_CANDIDATE, paymentOriginCandidate)
+            paymentOriginCandidate?.let { putExtra(ARG_PAYMENT_ORIGIN_CANDIDATE, it) }
             addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
         }
     }

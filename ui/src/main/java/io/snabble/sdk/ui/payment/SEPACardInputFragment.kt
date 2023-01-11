@@ -6,7 +6,6 @@ import androidx.core.os.bundleOf
 import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.checkout.PaymentOriginCandidateHelper.PaymentOriginCandidate
-import io.snabble.sdk.ui.payment.payone.sepa.form.PayoneSepaFormFragment
 import io.snabble.sdk.ui.utils.serializableExtra
 
 open class SEPACardInputFragment : BaseFragment(
@@ -15,11 +14,9 @@ open class SEPACardInputFragment : BaseFragment(
 ) {
 
     override fun onActualViewCreated(view: View, savedInstanceState: Bundle?) {
-        val v = view as SEPACardInputView
-        val paymentOriginCandidate: PaymentOriginCandidate? = arguments?.serializableExtra(ARG_PAYMENT_ORIGIN_CANDIDATE)
-        paymentOriginCandidate?.let {
-            v.setPrefilledPaymentOriginCandidate(paymentOriginCandidate)
-        }
+        arguments
+            ?.serializableExtra<PaymentOriginCandidate>(ARG_PAYMENT_ORIGIN_CANDIDATE)
+            ?.let { (view as? SEPACardInputView)?.setPrefilledPaymentOriginCandidate(it) }
     }
 
     companion object {
@@ -28,7 +25,7 @@ open class SEPACardInputFragment : BaseFragment(
 
         fun createFragment(paymentOriginCandidate: PaymentOriginCandidate? = null): SEPACardInputFragment =
             SEPACardInputFragment().apply {
-                arguments = bundleOf(PayoneSepaFormFragment.ARG_PAYMENT_ORIGIN_CANDIDATE to paymentOriginCandidate)
+                arguments = paymentOriginCandidate?.let { bundleOf(ARG_PAYMENT_ORIGIN_CANDIDATE to it) }
             }
     }
 }
