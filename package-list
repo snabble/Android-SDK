@@ -13,6 +13,7 @@ io.snabble.sdk.codes.gs1
 io.snabble.sdk.codes.templates
 io.snabble.sdk.codes.templates.groups
 io.snabble.sdk.coupons
+io.snabble.sdk.customization
 io.snabble.sdk.encodedcodes
 io.snabble.sdk.googlepay
 io.snabble.sdk.payment
