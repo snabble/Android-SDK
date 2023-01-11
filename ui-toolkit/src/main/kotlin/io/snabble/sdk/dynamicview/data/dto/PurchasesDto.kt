@@ -5,7 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@SerialName("purchases")
+@SerialName("snabble.lastPurchases")
 internal data class PurchasesDto(
     @SerialName("id") override val id: String,
     @SerialName("padding") val padding: PaddingDto,
