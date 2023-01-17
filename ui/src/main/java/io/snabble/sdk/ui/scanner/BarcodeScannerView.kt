@@ -1,17 +1,17 @@
 package io.snabble.sdk.ui.scanner
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Color
 import android.graphics.ImageFormat
 import android.graphics.Rect
+import android.graphics.YuvImage
+import android.os.Environment
 import android.util.AttributeSet
 import android.util.Log
 import android.util.Size
 import android.view.Gravity
-import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewTreeObserver
@@ -32,10 +32,15 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import io.snabble.sdk.BarcodeFormat
+import io.snabble.sdk.ui.BuildConfig
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.Logger
+import java.io.BufferedOutputStream
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
 import java.nio.ByteBuffer
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -59,9 +64,8 @@ open class BarcodeScannerView @JvmOverloads constructor(
     private var cameraUnavailableView = TextView(context)
     private var scanIndicatorView = ImageView(context).apply {
         setImageResource(R.drawable.snabble_ic_barcode)
-        layoutParams = LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply {
-            gravity = Gravity.CENTER
-        }
+        layoutParams = LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
+            .apply { gravity = Gravity.CENTER }
     }
 
     var barcodeDetector: BarcodeDetector
@@ -89,7 +93,7 @@ open class BarcodeScannerView @JvmOverloads constructor(
         fakePauseView.apply {
             layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
             setBackgroundColor(Color.BLACK)
-            visibility = View.GONE
+            isVisible = false
         }
         addView(fakePauseView)
 
@@ -101,7 +105,7 @@ open class BarcodeScannerView @JvmOverloads constructor(
             gravity = Gravity.CENTER
             setTextColor(UIUtils.getColorByAttribute(context, android.R.attr.textColorPrimary))
             setBackgroundResource(UIUtils.getColorByAttribute(context, android.R.attr.background))
-            visibility = GONE
+            isVisible = false
         }
         addView(cameraUnavailableView)
 
@@ -145,7 +149,6 @@ open class BarcodeScannerView @JvmOverloads constructor(
     private fun bindPreview(cp: ProcessCameraProvider) {
         val rotation = previewView.display?.rotation ?: return
 
-        Log.d("xx", "::bindPreview Rotation: $rotation")
         cameraProvider = cp
         cameraExecutor = Executors.newSingleThreadExecutor()
 
@@ -153,13 +156,15 @@ open class BarcodeScannerView @JvmOverloads constructor(
             .requireLensFacing(CameraSelector.LENS_FACING_BACK)
             .build()
 
+        val imageSize = Size(IMAGE_WIDTH, IMAGE_HEIGHT)
+
         this.preview = Preview.Builder()
-            .setTargetResolution(Size(720, 1280))
+            .setTargetResolution(imageSize)
             .setTargetRotation(rotation)
             .build()
 
         val imageAnalyzer = ImageAnalysis.Builder()
-            .setTargetResolution(Size(720, 1280))
+            .setTargetResolution(imageSize)
             .setTargetRotation(rotation)
             .setImageQueueDepth(1)
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
@@ -207,7 +212,7 @@ open class BarcodeScannerView @JvmOverloads constructor(
     fun pause() {
         isPaused = true
         fakePauseView.setImageBitmap(previewView.bitmap)
-        fakePauseView.visibility = View.VISIBLE
+        fakePauseView.isVisible = true
     }
 
     /**
@@ -215,7 +220,7 @@ open class BarcodeScannerView @JvmOverloads constructor(
      */
     fun resume() {
         isPaused = false
-        fakePauseView.visibility = View.GONE
+        fakePauseView.isVisible = false
     }
 
     private fun startAutoFocus() {
@@ -228,7 +233,7 @@ open class BarcodeScannerView @JvmOverloads constructor(
                     val point = factory.createPoint(width / 2f, height / 2f)
                     camera?.cameraControl?.startFocusAndMetering(
                         FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF)
-                            .apply { setAutoCancelDuration(2, TimeUnit.SECONDS) }
+                            .setAutoCancelDuration(2, TimeUnit.SECONDS)
                             .build()
                     )
                 }
@@ -236,63 +241,59 @@ open class BarcodeScannerView @JvmOverloads constructor(
         })
     }
 
-    @SuppressLint("InlinedApi")
+    private val imageSaver = ImageSaver()
+
     private fun processImage(image: ImageProxy, rotation: Int) {
         if (isPaused) {
             image.close()
             return
         }
 
-        val isSupportedYuvImage = image.format in
-                listOf(ImageFormat.YUV_420_888, ImageFormat.YUV_422_888, ImageFormat.YUV_444_888) &&
-                image.planes.size == 3
-        if (isSupportedYuvImage) {
-            val luminanceImagePlane = image.planes.first()
-            val luminanceBytes = luminanceImagePlane.buffer // Y plane of a YUV buffer
-            val rowStride = luminanceImagePlane.rowStride
-            val rect = if (scanIndicatorView.visibility == View.VISIBLE && restrictScanningToIndicator) {
-                val isImagePortrait = image.height >= image.width
-                if (isImagePortrait) {
-                    val height = image.height / 3
-                    val top = (image.height / 2) - height
-                    val bottom = (image.height / 2) + height
-                    Rect(0, top, image.width, bottom)
-                } else {
-                    val width = image.width / 4
-                    val left = (image.width / 2) - width
-                    val right = (image.width / 2) + width
-                    Rect(left, 0, right, image.height)
-                }
+        if (BuildConfig.DEBUG) imageSaver.save(image)
+
+        val yPlane = image.planes.first()
+        val yBytes = yPlane.buffer
+        val yRowStride = yPlane.rowStride
+        val cropRect = if (scanIndicatorView.isVisible && restrictScanningToIndicator) {
+            val isImagePortrait = image.height >= image.width
+            if (isImagePortrait) {
+                val height = image.height / 3
+                val top = (image.height / 2) - height
+                val bottom = (image.height / 2) + height
+                Rect(0, top, image.width, bottom)
             } else {
-                Rect(0, 0, image.width, image.height)
+                val width = image.width / 4
+                val left = (image.width / 2) - width
+                val right = (image.width / 2) + width
+                Rect(left, 0, right, image.height)
             }
-            Log.d(
-                "xx",
-                "hasIndicator: ${scanIndicatorView.isVisible}, " +
-                        "isRestricted: $restrictScanningToIndicator, " +
-                        "isPortrait: ${image.height >= image.width}, " +
-                        "Rotation: ${previewView.display?.rotation}, " +
-                        "Rect: ${rect.left}/${rect.top} ${rect.width()}:${rect.height()}, " +
-                        "Image: ${image.width}:${image.height}, " +
-                        "Display: ${display.width}:${display.height}"
-            )
+        } else {
+            Rect(0, 0, image.width, image.height)
+        }
+        Log.d(
+            "xx",
+            "hasIndicator: ${scanIndicatorView.isVisible}, " +
+                    "isRestricted: $restrictScanningToIndicator, " +
+                    "isPortrait: ${image.height >= image.width}, " +
+                    "Rotation: ${previewView.display?.rotation}, " +
+                    "CropRect: ${cropRect.left}/${cropRect.top} ${cropRect.width()}:${cropRect.height()}, " +
+                    "Image: ${image.width}:${image.height}, " +
+                    "Display: ${display.width}:${display.height}"
+        )
 
-            // Use the rowStride instead of the width to avoid analysis errors by ignoring the
-            // attentional bytes at the end of each row. On one device we had a diff of 32 bytes
-            // per row and the last image line has those 32 bytes missing. Since the last image
-            // line should not contain any useful data we will just skip it to avoid accessing
-            // the last 32 bytes which causes some out of bounds exceptions.
-            // See also https://issuetracker.google.com/issues/134740191
-            val barcode = barcodeDetector.detect(
-                luminanceBytes.toByteArray(),
-                rowStride, image.height - 1, 8, rect, rotation
-            )
+        // Use the rowStride instead of the width to avoid analysis errors by ignoring the
+        // attentional bytes at the end of each row. On one device we had a diff of 32 bytes
+        // per row and the last image line has those 32 bytes missing. Since the last image
+        // line should not contain any useful data we will just skip it to avoid accessing
+        // the last 32 bytes which causes some out of bounds exceptions.
+        // See also https://issuetracker.google.com/issues/134740191
+        val barcode = barcodeDetector
+            .detect(yBytes.toByteArray(), yRowStride, image.height - 1, 8, cropRect, rotation)
 
-            if (barcode != null) {
-                Dispatch.mainThread {
-                    if (!isPaused) {
-                        callback?.onBarcodeDetected(barcode)
-                    }
+        if (barcode != null) {
+            Dispatch.mainThread {
+                if (!isPaused) {
+                    callback?.onBarcodeDetected(barcode)
                 }
             }
         }
@@ -364,5 +365,59 @@ open class BarcodeScannerView @JvmOverloads constructor(
     interface Callback {
 
         fun onBarcodeDetected(barcode: Barcode?)
+    }
+
+    private companion object {
+
+        const val IMAGE_WIDTH = 720
+        const val IMAGE_HEIGHT = 1280
+    }
+}
+
+class ImageSaver {
+
+    private var savedImage: Boolean = false
+    private var skipped = 0
+
+    fun save(image: ImageProxy, oneShot: Boolean = true) {
+        skipped++
+        if (skipped <= SKIPS) return
+        if (oneShot && savedImage) return
+
+        try {
+            val yBuffer: ByteBuffer = image.planes[0].buffer
+            val uBuffer: ByteBuffer = image.planes[1].buffer
+            val vBuffer: ByteBuffer = image.planes[2].buffer
+            val ySize = yBuffer.remaining()
+            val uSize = uBuffer.remaining()
+            val vSize = vBuffer.remaining()
+
+            val nv21 = ByteArray(ySize + uSize + vSize)
+
+            // For NV21, U and V are swapped
+            yBuffer[nv21, 0, ySize]
+            vBuffer[nv21, ySize, vSize]
+            uBuffer[nv21, ySize + vSize, uSize]
+
+            val out = ByteArrayOutputStream()
+            YuvImage(nv21, ImageFormat.NV21, image.width, image.height, null)
+                .compressToJpeg(Rect(0, 0, image.width, image.height), 80, out)
+            val imageFile = File(
+                "${Environment.getExternalStorageDirectory().path}/Pictures",
+                "${System.currentTimeMillis()}.jpeg"
+            )
+            BufferedOutputStream(FileOutputStream(imageFile)).use {
+                it.write(out.toByteArray())
+                it.flush()
+            }
+        } catch (e: Exception) {
+            Log.w("ImageSaver", "${e.message}")
+        }
+        savedImage = true
+    }
+
+    private companion object {
+
+        const val SKIPS = 3
     }
 }
