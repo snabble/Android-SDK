@@ -2,11 +2,11 @@ package io.snabble.sdk.ui.scanner
 
 import android.graphics.Rect
 
-data class CropRect(
+internal data class CropRect(
     val left: Int,
     val top: Int,
     val right: Int,
-    val bottom: Int
+    val bottom: Int,
 ) {
 
     companion object {
@@ -14,7 +14,7 @@ data class CropRect(
         fun from(
             width: Int,
             height: Int,
-            scanRectHeight: Float
+            scanRectHeight: Float,
         ): CropRect {
             val actualWidth: Int = maxOf(width, height)
             val actualHeight: Int = minOf(width, height)
@@ -34,4 +34,4 @@ data class CropRect(
     }
 }
 
-fun CropRect.toRect(): Rect = Rect(this.left, this.top, this.right, this.bottom)
+internal fun CropRect.toRect(): Rect = Rect(this.left, this.top, this.right, this.bottom)
