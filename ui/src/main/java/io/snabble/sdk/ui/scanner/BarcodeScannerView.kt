@@ -4,12 +4,8 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Color
-import android.graphics.ImageFormat
 import android.graphics.Rect
-import android.graphics.YuvImage
-import android.os.Environment
 import android.util.AttributeSet
-import android.util.Log
 import android.util.Size
 import android.view.Gravity
 import android.view.ViewGroup
@@ -32,15 +28,10 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import io.snabble.sdk.BarcodeFormat
-import io.snabble.sdk.ui.BuildConfig
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.Logger
-import java.io.BufferedOutputStream
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
 import java.nio.ByteBuffer
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -241,45 +232,20 @@ open class BarcodeScannerView @JvmOverloads constructor(
         })
     }
 
-    private val imageSaver = ImageSaver()
-
     private fun processImage(image: ImageProxy, rotation: Int) {
         if (isPaused) {
             image.close()
             return
         }
 
-        if (BuildConfig.DEBUG) imageSaver.save(image)
-
         val yPlane = image.planes.first()
         val yBytes = yPlane.buffer
         val yRowStride = yPlane.rowStride
         val cropRect = if (scanIndicatorView.isVisible && restrictScanningToIndicator) {
-            val isImagePortrait = image.height >= image.width
-            if (isImagePortrait) {
-                val height = image.height / 3
-                val top = (image.height / 2) - height
-                val bottom = (image.height / 2) + height
-                Rect(0, top, image.width, bottom)
-            } else {
-                val width = image.width / 4
-                val left = (image.width / 2) - width
-                val right = (image.width / 2) + width
-                Rect(left, 0, right, image.height)
-            }
+            CropRect.from(image.width, image.height, scanRectHeight = .5f).toRect()
         } else {
             Rect(0, 0, image.width, image.height)
         }
-        Log.d(
-            "xx",
-            "hasIndicator: ${scanIndicatorView.isVisible}, " +
-                    "isRestricted: $restrictScanningToIndicator, " +
-                    "isPortrait: ${image.height >= image.width}, " +
-                    "Rotation: ${previewView.display?.rotation}, " +
-                    "CropRect: ${cropRect.left}/${cropRect.top} ${cropRect.width()}:${cropRect.height()}, " +
-                    "Image: ${image.width}:${image.height}, " +
-                    "Display: ${display.width}:${display.height}"
-        )
 
         // Use the rowStride instead of the width to avoid analysis errors by ignoring the
         // attentional bytes at the end of each row. On one device we had a diff of 32 bytes
@@ -371,53 +337,5 @@ open class BarcodeScannerView @JvmOverloads constructor(
 
         const val IMAGE_WIDTH = 720
         const val IMAGE_HEIGHT = 1280
-    }
-}
-
-class ImageSaver {
-
-    private var savedImage: Boolean = false
-    private var skipped = 0
-
-    fun save(image: ImageProxy, oneShot: Boolean = true) {
-        skipped++
-        if (skipped <= SKIPS) return
-        if (oneShot && savedImage) return
-
-        try {
-            val yBuffer: ByteBuffer = image.planes[0].buffer
-            val uBuffer: ByteBuffer = image.planes[1].buffer
-            val vBuffer: ByteBuffer = image.planes[2].buffer
-            val ySize = yBuffer.remaining()
-            val uSize = uBuffer.remaining()
-            val vSize = vBuffer.remaining()
-
-            val nv21 = ByteArray(ySize + uSize + vSize)
-
-            // For NV21, U and V are swapped
-            yBuffer[nv21, 0, ySize]
-            vBuffer[nv21, ySize, vSize]
-            uBuffer[nv21, ySize + vSize, uSize]
-
-            val out = ByteArrayOutputStream()
-            YuvImage(nv21, ImageFormat.NV21, image.width, image.height, null)
-                .compressToJpeg(Rect(0, 0, image.width, image.height), 80, out)
-            val imageFile = File(
-                "${Environment.getExternalStorageDirectory().path}/Pictures",
-                "${System.currentTimeMillis()}.jpeg"
-            )
-            BufferedOutputStream(FileOutputStream(imageFile)).use {
-                it.write(out.toByteArray())
-                it.flush()
-            }
-        } catch (e: Exception) {
-            Log.w("ImageSaver", "${e.message}")
-        }
-        savedImage = true
-    }
-
-    private companion object {
-
-        const val SKIPS = 3
     }
 }
