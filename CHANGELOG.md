@@ -4,12 +4,14 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 ### Added
 ### Changed
+### Removed
+### Fixed
+
+## [0.69.3]
+### Changed
 * ui: Set the screen orientation of the 'CheckoutActivity' to 'userPortrait'
 * ui: Adjust detection rect implementation
 * ui: Speed up ZXing's barcode by using TRY_HARDER mode
-
-### Removed
-### Fixed
 
 ## [0.69.2]
 ### Added
