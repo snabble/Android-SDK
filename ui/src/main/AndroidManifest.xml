@@ -8,6 +8,7 @@
     <application>
         <activity
             android:name=".checkout.CheckoutActivity"
+            android:screenOrientation="userPortrait"
             android:exported="false" />
         <activity
             android:name=".payment.SEPACardInputActivity"
