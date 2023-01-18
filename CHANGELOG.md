@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 ### Added
 ### Changed
+* ui: Adjust detection rect implementation
+* ui: Speed up ZXing's barcode by using TRY_HARDER mode
+
 ### Removed
 ### Fixed
 
