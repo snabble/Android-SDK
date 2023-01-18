@@ -2,20 +2,26 @@ package io.snabble.sdk.ui.scanner
 
 import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.graphics.Color
-import android.graphics.ImageFormat
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.util.Size
 import android.view.Gravity
-import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewTreeObserver
 import android.widget.FrameLayout
+import android.widget.FrameLayout.LayoutParams.WRAP_CONTENT
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.camera.core.*
+import androidx.camera.core.Camera
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.FocusMeteringAction
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageProxy
+import androidx.camera.core.Preview
+import androidx.camera.core.TorchState
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
@@ -32,8 +38,11 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 open class BarcodeScannerView @JvmOverloads constructor(
-        context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
+
     private var startRequested: Boolean = false
     private var cameraProvider: ProcessCameraProvider? = null
     private var preview: Preview? = null
@@ -46,9 +55,8 @@ open class BarcodeScannerView @JvmOverloads constructor(
     private var cameraUnavailableView = TextView(context)
     private var scanIndicatorView = ImageView(context).apply {
         setImageResource(R.drawable.snabble_ic_barcode)
-        layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
-            gravity = Gravity.CENTER
-        }
+        layoutParams = LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
+            .apply { gravity = Gravity.CENTER }
     }
 
     var barcodeDetector: BarcodeDetector
@@ -56,13 +64,11 @@ open class BarcodeScannerView @JvmOverloads constructor(
 
     private var isPaused: Boolean = false
 
-    var restrictScanningToIndicator: Boolean = true
+    private var restrictScanningToIndicator: Boolean = true
     var callback: Callback? = null
 
     init {
-        previewView.layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT)
+        previewView.layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
 
         // WORKAROUND: prevents black screen issue when resuming from multi-window
         // (and possible other cases where onresume is used)
@@ -75,24 +81,23 @@ open class BarcodeScannerView @JvmOverloads constructor(
         previewView.implementationMode = PreviewView.ImplementationMode.COMPATIBLE
         addView(previewView)
 
-        fakePauseView.layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT)
-        fakePauseView.setBackgroundColor(Color.BLACK)
-        fakePauseView.visibility = View.GONE
+        fakePauseView.apply {
+            layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
+            setBackgroundColor(Color.BLACK)
+            isVisible = false
+        }
         addView(fakePauseView)
 
         addView(scanIndicatorView)
 
-        cameraUnavailableView.layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT)
-        cameraUnavailableView.setText(R.string.Snabble_Scanner_Camera_accessDenied)
-        cameraUnavailableView.gravity = Gravity.CENTER
-        cameraUnavailableView.setTextColor(UIUtils.getColorByAttribute(context, android.R.attr.textColorPrimary))
-        cameraUnavailableView.setBackgroundResource(UIUtils.getColorByAttribute(context, android.R.attr.background))
-        cameraUnavailableView.visibility = GONE
-
+        cameraUnavailableView.apply {
+            layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
+            setText(R.string.Snabble_Scanner_Camera_accessDenied)
+            gravity = Gravity.CENTER
+            setTextColor(UIUtils.getColorByAttribute(context, android.R.attr.textColorPrimary))
+            setBackgroundResource(UIUtils.getColorByAttribute(context, android.R.attr.background))
+            isVisible = false
+        }
         addView(cameraUnavailableView)
 
         barcodeDetector = BarcodeDetectorFactory.getDefaultBarcodeDetectorFactory().create()
@@ -106,8 +111,7 @@ open class BarcodeScannerView @JvmOverloads constructor(
      * @throws RuntimeException if no permission to access the camera is present
      */
     fun start() {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PERMISSION_GRANTED) {
             throw RuntimeException("Missing camera permission")
         }
 
@@ -121,65 +125,67 @@ open class BarcodeScannerView @JvmOverloads constructor(
 
             previewView.post {
                 val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
-                cameraProviderFuture.addListener({
-                    val cameraProvider = cameraProviderFuture.get()
-                    bindPreview(cameraProvider)
-                    startRequested = false
-                }, ContextCompat.getMainExecutor(context))
+                cameraProviderFuture.addListener(
+                    {
+                        val cameraProvider = cameraProviderFuture.get()
+                        bindPreview(cameraProvider)
+                        startRequested = false
+                    },
+                    ContextCompat.getMainExecutor(context)
+                )
             }
         }
     }
 
     private fun bindPreview(cp: ProcessCameraProvider) {
-        previewView.display?.rotation?.let { rotation ->
-            cameraProvider = cp
-            cameraExecutor = Executors.newSingleThreadExecutor()
+        val rotation = previewView.display?.rotation ?: return
 
-            val cameraSelector = CameraSelector.Builder()
-                    .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-                    .build()
+        cameraProvider = cp
+        cameraExecutor = Executors.newSingleThreadExecutor()
 
-            this.preview = Preview.Builder()
-                    .setTargetResolution(Size(720, 1280))
-                    .setTargetRotation(rotation)
-                    .build()
+        val cameraSelector = CameraSelector.Builder()
+            .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+            .build()
 
-            val imageAnalyzer = ImageAnalysis.Builder()
-                    .setTargetResolution(Size(720, 1280))
-                    .setTargetRotation(rotation)
-                    .setImageQueueDepth(1)
-                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                    .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888)
-                    .build()
-                    .also {
-                        cameraExecutor?.let { exec ->
-                            it.setAnalyzer(exec) { image ->
-                                processImage(image)
-                            }
-                        }
-                    }
+        val imageSize = Size(IMAGE_WIDTH, IMAGE_HEIGHT)
 
-            cameraProvider?.unbindAll()
+        this.preview = Preview.Builder()
+            .setTargetResolution(imageSize)
+            .setTargetRotation(rotation)
+            .build()
 
-            try {
-                val activity = UIUtils.getHostFragmentActivity(context)
-                camera = cameraProvider?.bindToLifecycle(activity,
-                    cameraSelector,
-                    preview,
-                    imageAnalyzer)
+        val imageAnalyzer = ImageAnalysis.Builder()
+            .setTargetResolution(imageSize)
+            .setTargetRotation(rotation)
+            .setImageQueueDepth(1)
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888)
+            .build()
 
-                preview?.setSurfaceProvider(previewView.surfaceProvider)
-            } catch (e: Exception) {
-                cameraUnavailableView.visibility = View.VISIBLE
-                scanIndicatorView.visibility = View.GONE
-            }
-
-            if (isPaused) {
-                fakePauseView.visibility = View.VISIBLE
-            } else {
-                fakePauseView.visibility = View.GONE
+        cameraExecutor?.let { executorService ->
+            imageAnalyzer.setAnalyzer(executorService) { image ->
+                processImage(image, rotation)
             }
         }
+
+        cameraProvider?.unbindAll()
+
+        try {
+            val activity = UIUtils.getHostFragmentActivity(context)
+            camera = cameraProvider?.bindToLifecycle(
+                activity,
+                cameraSelector,
+                preview,
+                imageAnalyzer
+            )
+
+            preview?.setSurfaceProvider(previewView.surfaceProvider)
+        } catch (ignored: Exception) {
+            cameraUnavailableView.isVisible = true
+            scanIndicatorView.isVisible = false
+        }
+
+        fakePauseView.isVisible = isPaused
     }
 
     /**
@@ -197,7 +203,7 @@ open class BarcodeScannerView @JvmOverloads constructor(
     fun pause() {
         isPaused = true
         fakePauseView.setImageBitmap(previewView.bitmap)
-        fakePauseView.visibility = View.VISIBLE
+        fakePauseView.isVisible = true
     }
 
     /**
@@ -205,7 +211,7 @@ open class BarcodeScannerView @JvmOverloads constructor(
      */
     fun resume() {
         isPaused = false
-        fakePauseView.visibility = View.GONE
+        fakePauseView.isVisible = false
     }
 
     private fun startAutoFocus() {
@@ -217,53 +223,43 @@ open class BarcodeScannerView @JvmOverloads constructor(
                     val factory = previewView.meteringPointFactory
                     val point = factory.createPoint(width / 2f, height / 2f)
                     camera?.cameraControl?.startFocusAndMetering(
-                            FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF).apply {
-                                setAutoCancelDuration(2, TimeUnit.SECONDS)
-                            }.build()
+                        FocusMeteringAction.Builder(point, FocusMeteringAction.FLAG_AF)
+                            .setAutoCancelDuration(2, TimeUnit.SECONDS)
+                            .build()
                     )
                 }
             }
         })
     }
 
-    private fun processImage(image: ImageProxy) {
+    private fun processImage(image: ImageProxy, rotation: Int) {
         if (isPaused) {
             image.close()
             return
         }
 
-        if (image.format == ImageFormat.YUV_420_888
-                || image.format == ImageFormat.YUV_422_888
-                || image.format == ImageFormat.YUV_444_888
-                && image.planes.size == 3) {
-            val luminanceImagePlane = image.planes.first()
-            val luminanceBytes = luminanceImagePlane.buffer // Y plane of a YUV buffer
-            val rowStride = luminanceImagePlane.rowStride
-            val rect = if (scanIndicatorView.visibility == View.VISIBLE && restrictScanningToIndicator) {
-                val height = image.height / 3
-                val top = (image.height / 2) - height
-                val bottom = (image.height / 2) + height
-                Rect(0, top, image.width, bottom)
-            } else {
-                Rect(0, 0, image.width, image.height)
-            }
+        val yPlane = image.planes.first()
+        val yBytes = yPlane.buffer
+        val yRowStride = yPlane.rowStride
+        val cropRect = if (scanIndicatorView.isVisible && restrictScanningToIndicator) {
+            CropRect.from(image.width, image.height, scanRectHeight = .5f).toRect()
+        } else {
+            Rect(0, 0, image.width, image.height)
+        }
 
-            previewView.display?.rotation?.let { rotation ->
-                // Use the rowStride instead of the width to avoid analysis errors by ignoring the
-                // attentional bytes at the end of each row. On one device we had a diff of 32 bytes
-                // per row and the last image line has those 32 bytes missing. Since the last image
-                // line should not contain any useful data we will just skip it to avoid accessing
-                // the last 32 bytes which causes some out of bounds exceptions.
-                // See also https://issuetracker.google.com/issues/134740191
-                val barcode = barcodeDetector.detect(luminanceBytes.toByteArray(),
-                        rowStride, image.height - 1, 8, rect, rotation)
+        // Use the rowStride instead of the width to avoid analysis errors by ignoring the
+        // attentional bytes at the end of each row. On one device we had a diff of 32 bytes
+        // per row and the last image line has those 32 bytes missing. Since the last image
+        // line should not contain any useful data we will just skip it to avoid accessing
+        // the last 32 bytes which causes some out of bounds exceptions.
+        // See also https://issuetracker.google.com/issues/134740191
+        val barcode = barcodeDetector
+            .detect(yBytes.toByteArray(), yRowStride, image.height - 1, 8, cropRect, rotation)
 
-                if (barcode != null) {
-                    Dispatch.mainThread {
-                        if (!isPaused) {
-                            callback?.onBarcodeDetected(barcode)
-                        }
-                    }
+        if (barcode != null) {
+            Dispatch.mainThread {
+                if (!isPaused) {
+                    callback?.onBarcodeDetected(barcode)
                 }
             }
         }
@@ -314,6 +310,7 @@ open class BarcodeScannerView @JvmOverloads constructor(
     fun removeAllBarcodeFormats() {
         supportedBarcodeFormats.clear()
     }
+
     /**
      * Enabled or disables the scan indicator.
      */
@@ -332,6 +329,13 @@ open class BarcodeScannerView @JvmOverloads constructor(
     }
 
     interface Callback {
+
         fun onBarcodeDetected(barcode: Barcode?)
+    }
+
+    private companion object {
+
+        const val IMAGE_WIDTH = 720
+        const val IMAGE_HEIGHT = 1280
     }
 }
