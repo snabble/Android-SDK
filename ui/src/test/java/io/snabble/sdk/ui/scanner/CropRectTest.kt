@@ -7,7 +7,7 @@ class CropRectTest : FreeSpec({
 
     "An image w/ the size 1280x720" - {
 
-        "should product a CropRect w/ scanRectHeight" - {
+        "should produce a CropRect w/ scanRectHeight" - {
 
             "1/2 of the size 640x720" {
                 val cropRect = CropRect.from(width = 1280, height = 720, scanRectHeight = 1 / 2f)
@@ -26,7 +26,7 @@ class CropRectTest : FreeSpec({
 
     "An image w/ the size 720x1280" - {
 
-        "should product a crop rect w/ scanRectHeight " - {
+        "should produce a crop rect w/ scanRectHeight" - {
 
             "1/2 of the size 720x640" {
                 val cropRect = CropRect.from(width = 720, height = 1280, scanRectHeight = 1 / 2f)
