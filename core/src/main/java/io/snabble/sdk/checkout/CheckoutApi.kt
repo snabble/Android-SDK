@@ -4,13 +4,13 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
-import io.snabble.sdk.ShoppingCart.BackendCart
-import io.snabble.sdk.payment.PaymentCredentials
-import io.snabble.sdk.Product
-import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.FulfillmentState
 import io.snabble.sdk.PaymentMethod
-import java.lang.Exception
+import io.snabble.sdk.Product
+import io.snabble.sdk.ShoppingCart.BackendCart
+import io.snabble.sdk.coupons.Coupon
+import io.snabble.sdk.payment.PaymentCredentials
+import java.io.Serializable
 import java.util.*
 
 /**
@@ -20,6 +20,7 @@ import java.util.*
  * https://docs.snabble.io/docs/api/api_checkout
  */
 interface CheckoutApi {
+
     /**
      * Cancel all operations
      */
@@ -27,7 +28,7 @@ interface CheckoutApi {
 
     fun abort(
         checkoutProcessResponse: CheckoutProcessResponse,
-        paymentAbortResult: PaymentAbortResult?
+        paymentAbortResult: PaymentAbortResult?,
     )
 
     /**
@@ -38,7 +39,7 @@ interface CheckoutApi {
     fun createCheckoutInfo(
         backendCart: BackendCart,
         checkoutInfoResult: CheckoutInfoResult? = null,
-        timeout: Long = -1
+        timeout: Long = -1,
     )
 
     /**
@@ -46,7 +47,7 @@ interface CheckoutApi {
      */
     fun updatePaymentProcess(
         checkoutProcessResponse: CheckoutProcessResponse,
-        paymentProcessResult: PaymentProcessResult?
+        paymentProcessResult: PaymentProcessResult?,
     )
 
     /**
@@ -60,7 +61,7 @@ interface CheckoutApi {
         processedOffline: Boolean,
         paymentCredentials: PaymentCredentials?,
         finalizedAt: Date?,
-        paymentProcessResult: PaymentProcessResult?
+        paymentProcessResult: PaymentProcessResult?,
     )
 
     /**
@@ -71,20 +72,22 @@ interface CheckoutApi {
     fun authorizePayment(
         checkoutProcessResponse: CheckoutProcessResponse,
         authorizePaymentRequest: AuthorizePaymentRequest,
-        authorizePaymentResult: AuthorizePaymentResult?
+        authorizePaymentResult: AuthorizePaymentResult?,
     )
 }
 
 interface AuthorizePaymentResult {
+
     fun onSuccess()
     fun onError()
 }
 
 interface CheckoutInfoResult {
+
     fun onSuccess(
         signedCheckoutInfo: SignedCheckoutInfo,
         onlinePrice: Int,
-        availablePaymentMethods: List<PaymentMethodInfo>
+        availablePaymentMethods: List<PaymentMethodInfo>,
     )
 
     fun onNoShopFound()
@@ -96,59 +99,95 @@ interface CheckoutInfoResult {
 }
 
 interface PaymentProcessResult {
+
     fun onSuccess(checkoutProcessResponse: CheckoutProcessResponse?, rawResponse: String?)
     fun onError()
     fun onNotFound()
 }
 
 interface PaymentAbortResult {
+
     fun onSuccess()
     fun onError()
 }
 
 enum class LineItemType {
-    @SerializedName("default") DEFAULT,
-    @SerializedName("deposit") DEPOSIT,
-    @SerializedName("discount") DISCOUNT,
-    @SerializedName("giveaway") GIVEAWAY,
-    @SerializedName("coupon") COUPON
+    @SerializedName("default")
+    DEFAULT,
+
+    @SerializedName("deposit")
+    DEPOSIT,
+
+    @SerializedName("discount")
+    DISCOUNT,
+
+    @SerializedName("giveaway")
+    GIVEAWAY,
+
+    @SerializedName("coupon")
+    COUPON
 }
 
 enum class CheckState {
-    @SerializedName("unauthorized") UNAUTHORIZED,
-    @SerializedName("pending") PENDING,
-    @SerializedName("processing")  PROCESSING,
-    @SerializedName("successful") SUCCESSFUL,
-    @SerializedName("failed") FAILED
+    @SerializedName("unauthorized")
+    UNAUTHORIZED,
+
+    @SerializedName("pending")
+    PENDING,
+
+    @SerializedName("processing")
+    PROCESSING,
+
+    @SerializedName("successful")
+    SUCCESSFUL,
+
+    @SerializedName("failed")
+    FAILED
 }
 
 enum class CheckType {
-    @SerializedName("min_age") MIN_AGE,
-    @SerializedName("supervisor_approval") SUPERVISOR
+    @SerializedName("min_age")
+    MIN_AGE,
+
+    @SerializedName("supervisor_approval")
+    SUPERVISOR
 }
 
 enum class Performer {
-    @SerializedName("app") APP,
-    @SerializedName("supervisor") SUPERVISOR,
-    @SerializedName("backend") BACKEND,
-    @SerializedName("payment") PAYMENT
+    @SerializedName("app")
+    APP,
+
+    @SerializedName("supervisor")
+    SUPERVISOR,
+
+    @SerializedName("backend")
+    BACKEND,
+
+    @SerializedName("payment")
+    PAYMENT
 }
 
 enum class RoutingTarget {
-    @SerializedName("gatekeeper") GATEKEEPER,
-    @SerializedName("supervisor") SUPERVISOR,
-    @SerializedName("none") NONE
+    @SerializedName("gatekeeper")
+    GATEKEEPER,
+
+    @SerializedName("supervisor")
+    SUPERVISOR,
+
+    @SerializedName("none")
+    NONE
 }
 
 data class Href(
     val href: String? = null,
-)
+) : Serializable
 
 data class SignedCheckoutInfo(
     val checkoutInfo: JsonObject? = null,
     val signature: String? = null,
     val links: Map<String, Href>? = null,
 ) {
+
     val checkoutProcessLink: String?
         get() = links?.get("checkoutProcess")?.href
 
@@ -275,7 +314,7 @@ data class CheckoutProcessRequest(
 data class PaymentMethodInfo(
     val id: String? = null,
     val isTesting: Boolean = false,
-    val acceptedOriginTypes: List<String> = emptyList()
+    val acceptedOriginTypes: List<String> = emptyList(),
 )
 
 data class PaymentResult(
@@ -295,6 +334,7 @@ data class Check(
     val performedBy: Performer? = null,
     val state: CheckState? = null,
 ) {
+
     val selfLink: String?
         get() = links?.get("self")?.href
 }
@@ -306,6 +346,7 @@ data class Fulfillment(
     val refersTo: List<String> = emptyList(),
     val links: Map<String, Href>? = null,
 ) {
+
     val selfLink: String?
         get() = links?.get("self")?.href
 }
@@ -326,6 +367,7 @@ data class CheckoutProcessResponse(
     val paymentResult: PaymentResult? = null,
     val fulfillments: List<Fulfillment> = emptyList(),
 ) {
+
     val selfLink: String?
         get() = links?.get("self")?.href
 
