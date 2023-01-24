@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 ### Removed
 ### Fixed
+* core: Fix add IBAN crash by implementing missing Serializable interface
 
 ## [0.69.3]
 ### Changed
