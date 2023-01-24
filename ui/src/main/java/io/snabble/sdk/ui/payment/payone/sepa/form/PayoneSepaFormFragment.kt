@@ -48,7 +48,11 @@ open class PayoneSepaFormFragment : BaseFragment(
 
             setContent {
                 val isIbanValid = viewModel.isIbanValid.collectAsState().value
+                val areAllInputsValid = viewModel.areAllInputsValid.collectAsState().value
                 val iban = viewModel.ibanNumber.collectAsState().value ?: ""
+                val name = viewModel.name.collectAsState().value
+                val city = viewModel.city.collectAsState().value
+
                 ThemeWrapper {
                     PayoneSepaFormScreen(
                         saveData = { data ->
@@ -88,6 +92,12 @@ open class PayoneSepaFormFragment : BaseFragment(
                         ibanNumber = iban,
                         onIbanNumberChange = viewModel::onIbanNumberChange,
                         isIbanValid = isIbanValid,
+                        name = name,
+                        onNameChange = viewModel::onNameChange,
+                        city = city,
+                        onCityChange = viewModel::onCityChange,
+                        areAllInputsValid = areAllInputsValid
+
                     )
                 }
             }

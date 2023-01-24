@@ -26,9 +26,19 @@ class PayoneSepaFormViewModel(
     private var _isIbanValid = MutableStateFlow(false)
     internal val isIbanValid: StateFlow<Boolean> = _isIbanValid.asStateFlow()
 
+    private var _areAllInputsValid = MutableStateFlow(false)
+    internal val areAllInputsValid: StateFlow<Boolean> = _areAllInputsValid.asStateFlow()
+
     private val ibanDigits: String? = savedStateHandle.get<String?>(ARG_IBAN)?.substring(startIndex = 2)
+
     private var _ibanNumber = MutableStateFlow(ibanDigits)
     internal val ibanNumber: StateFlow<String?> = _ibanNumber.asStateFlow()
+
+    private var _name = MutableStateFlow("")
+    internal val name: StateFlow<String> = _name.asStateFlow()
+
+    private var _city = MutableStateFlow("")
+    internal val city: StateFlow<String> = _city.asStateFlow()
 
     init {
         ibanNumber
@@ -38,6 +48,21 @@ class PayoneSepaFormViewModel(
 
     fun onIbanNumberChange(iban: String) {
         _ibanNumber.tryEmit(iban)
+        validateInputs()
+    }
+
+    fun onNameChange(iban: String) {
+        _name.tryEmit(iban)
+        validateInputs()
+    }
+
+    fun onCityChange(iban: String) {
+        _city.tryEmit(iban)
+        validateInputs()
+    }
+
+    private fun validateInputs() {
+        _areAllInputsValid.tryEmit(name.value.isNotBlank() && city.value.isNotBlank() && isIbanValid.value)
     }
 
     /**

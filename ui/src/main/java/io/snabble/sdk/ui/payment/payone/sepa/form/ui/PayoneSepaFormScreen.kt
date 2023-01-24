@@ -14,10 +14,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -34,13 +30,13 @@ internal fun PayoneSepaFormScreen(
     saveData: (data: PayoneSepaData) -> Unit,
     ibanNumber: String = "",
     onIbanNumberChange: (String) -> Unit,
+    name: String = "",
+    onNameChange: (String) -> Unit,
+    city: String = "",
+    onCityChange: (String) -> Unit,
     isIbanValid: Boolean,
+    areAllInputsValid: Boolean,
 ) {
-    var name by rememberSaveable { mutableStateOf("") }
-    var city by rememberSaveable { mutableStateOf("") }
-
-    val areAllInputsValid = name.isNotBlank() && city.isNotBlank() && isIbanValid
-
     val focusManager = LocalFocusManager.current
 
     Column(
@@ -59,11 +55,10 @@ internal fun PayoneSepaFormScreen(
         TextFieldWidget(
             value = name,
             label = stringResource(id = R.string.Snabble_Payment_SEPA_name),
-            onValueChange = { name = it },
+            onValueChange = { onNameChange(it) },
             readOnly = false,
             focusManager = focusManager
         )
-
         Spacer(modifier = Modifier.height(8.dp))
         IbanFieldWidget(
             iban = ibanNumber,
@@ -76,7 +71,7 @@ internal fun PayoneSepaFormScreen(
             value = city,
             label = stringResource(id = R.string.Snabble_Payment_SEPA_city),
             readOnly = false,
-            onValueChange = { city = it },
+            onValueChange = { onCityChange(it) },
             onAction = {
                 focusManager.clearFocus()
                 if (areAllInputsValid) {
@@ -154,6 +149,9 @@ private fun PayoneSepaFormScreenPreview() {
     PayoneSepaFormScreen(
         saveData = {},
         onIbanNumberChange = { it.isNotBlank() },
-        isIbanValid = true
+        onCityChange = { it.isNotBlank() },
+        onNameChange = { it.isNotBlank() },
+        isIbanValid = true,
+        areAllInputsValid = true
     )
 }
