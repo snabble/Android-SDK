@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
+* ui: Pre-fill IBAN for PAYONE SEPA after checkout (#99)
 ### Changed
 ### Removed
 ### Fixed
