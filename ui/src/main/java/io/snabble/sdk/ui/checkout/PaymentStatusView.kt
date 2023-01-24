@@ -146,13 +146,8 @@ class PaymentStatusView @JvmOverloads constructor(
 
         addIbanLayout.isVisible = false
         addIbanButton.setOnClickListener {
-            if (project.checkout.selectedPaymentMethod == PaymentMethod.PAYONE_SEPA) {
-                val intent = PayoneSepaActivity.newIntent(context, paymentOriginCandidate)
-                context?.startActivity(intent)
-            } else {
-                val intent = SEPACardInputActivity.newIntent(context, paymentOriginCandidate)
-                context?.startActivity(intent)
-            }
+            context.startActivity(createAddIbanIntent())
+
             addIbanLayout.isVisible = false
             hasShownSEPAInput = true
         }
@@ -161,6 +156,13 @@ class PaymentStatusView @JvmOverloads constructor(
         activity?.lifecycle?.addObserver(this)
         activity?.onBackPressedDispatcher?.addCallback(backPressedCallback)
     }
+
+    private fun createAddIbanIntent() =
+        if (project.paymentMethodDescriptors.any { it.paymentMethod == PaymentMethod.PAYONE_SEPA }) {
+            PayoneSepaActivity.newIntent(context, paymentOriginCandidate)
+        } else {
+            SEPACardInputActivity.newIntent(context, paymentOriginCandidate)
+        }
 
     private fun sendRating(rating: String) {
         project.events.analytics("rating", rating, ratingMessage ?: "")
