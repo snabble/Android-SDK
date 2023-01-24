@@ -14,33 +14,28 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.snabble.sdk.payment.payone.sepa.PayoneSepaData
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.payment.payone.sepa.form.ui.widget.IbanFieldWidget
 import io.snabble.sdk.ui.payment.payone.sepa.form.ui.widget.TextFieldWidget
 
 @Composable
 internal fun PayoneSepaFormScreen(
-    saveData: (data: PayoneSepaData) -> Unit,
-    validateIban: (String) -> Unit,
+    name: String = "",
+    onNameChange: (String) -> Unit,
+    ibanNumber: String = "",
+    onIbanNumberChange: (String) -> Unit,
+    city: String = "",
+    onCityChange: (String) -> Unit,
+    onSaveClick: () -> Unit,
     isIbanValid: Boolean,
+    areAllInputsValid: Boolean,
 ) {
-    var name by rememberSaveable { mutableStateOf("") }
-    var iban by rememberSaveable { mutableStateOf("") }
-    var city by rememberSaveable { mutableStateOf("") }
-
-    val areAllInputsValid = name.isNotBlank() && city.isNotBlank() && isIbanValid
-
     val focusManager = LocalFocusManager.current
 
     Column(
@@ -59,18 +54,14 @@ internal fun PayoneSepaFormScreen(
         TextFieldWidget(
             value = name,
             label = stringResource(id = R.string.Snabble_Payment_SEPA_name),
-            onValueChange = { name = it },
+            onValueChange = { onNameChange(it) },
             readOnly = false,
             focusManager = focusManager
         )
-
         Spacer(modifier = Modifier.height(8.dp))
         IbanFieldWidget(
-            iban = iban,
-            onIbanChange = {
-                validateIban("$COUNTRY_CODE$it")
-                iban = it
-            },
+            iban = ibanNumber,
+            onIbanChange = { onIbanNumberChange(it) },
             focusManager = focusManager
         )
 
@@ -79,12 +70,10 @@ internal fun PayoneSepaFormScreen(
             value = city,
             label = stringResource(id = R.string.Snabble_Payment_SEPA_city),
             readOnly = false,
-            onValueChange = { city = it },
+            onValueChange = { onCityChange(it) },
             onAction = {
                 focusManager.clearFocus()
-                if (areAllInputsValid) {
-                    saveSepaFormInput(saveData, name, iban, city)
-                }
+                if (areAllInputsValid) onSaveClick()
             },
             focusManager = focusManager,
             canSend = true,
@@ -97,7 +86,7 @@ internal fun PayoneSepaFormScreen(
             readOnly = true,
             enabled = false,
         )
-        if (!isIbanValid && iban.isNotBlank()) {
+        if (!isIbanValid && ibanNumber.isNotBlank()) {
             Spacer(modifier = Modifier.heightIn(8.dp))
             Text(
                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -117,9 +106,7 @@ internal fun PayoneSepaFormScreen(
             ),
             enabled = areAllInputsValid,
             shape = MaterialTheme.shapes.extraLarge,
-            onClick = {
-                saveSepaFormInput(saveData, name, iban, city)
-            },
+            onClick = { onSaveClick() },
         ) {
             Text(text = stringResource(id = R.string.Snabble_save))
         }
@@ -133,30 +120,15 @@ internal fun PayoneSepaFormScreen(
     }
 }
 
-private fun saveSepaFormInput(
-    saveData: (data: PayoneSepaData) -> Unit,
-    name: String,
-    iban: String,
-    city: String,
-) {
-    saveData(
-        PayoneSepaData(
-            name = name,
-            iban = "$COUNTRY_CODE$iban",
-            city = city,
-            countryCode = COUNTRY_CODE,
-        )
-    )
-}
-
-private const val COUNTRY_CODE = "DE"
-
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 private fun PayoneSepaFormScreenPreview() {
     PayoneSepaFormScreen(
-        saveData = {},
-        validateIban = { it.isNotBlank() },
-        isIbanValid = true
+        onSaveClick = {},
+        onIbanNumberChange = { it.isNotBlank() },
+        onCityChange = { it.isNotBlank() },
+        onNameChange = { it.isNotBlank() },
+        isIbanValid = true,
+        areAllInputsValid = true
     )
 }
