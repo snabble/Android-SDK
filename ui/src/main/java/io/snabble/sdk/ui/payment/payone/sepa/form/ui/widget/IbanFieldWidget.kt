@@ -1,7 +1,6 @@
 package io.snabble.sdk.ui.payment.payone.sepa.form.ui.widget
 
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardActions
@@ -31,13 +30,11 @@ fun IbanFieldWidget(
     @OptIn(ExperimentalMaterial3Api::class)
     Row(
         modifier = Modifier
-            .fillMaxWidth(),
+            .wrapContentSize(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         OutlinedTextField(
-            modifier = Modifier
-                .wrapContentSize()
-                .weight(1f),
+            modifier = Modifier.weight(1f),
             value = "DE",
             onValueChange = {},
             label = {},
@@ -47,10 +44,13 @@ fun IbanFieldWidget(
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 disabledLabelColor = MaterialTheme.colorScheme.onSurface,
                 disabledTextColor = MaterialTheme.colorScheme.onSurface,
-            )
+            ),
+            singleLine = true,
+            maxLines = 1,
         )
         OutlinedTextField(
             modifier = Modifier
+                .weight(5f)
                 .padding(start = 8.dp),
             value = iban,
             onValueChange = { input ->
