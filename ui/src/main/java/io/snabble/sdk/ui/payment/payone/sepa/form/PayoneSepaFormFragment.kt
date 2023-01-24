@@ -55,9 +55,15 @@ open class PayoneSepaFormFragment : BaseFragment(
 
                 ThemeWrapper {
                     PayoneSepaFormScreen(
-                        saveData = { data ->
+                        name = name,
+                        onNameChange = viewModel::onNameChange,
+                        ibanNumber = iban,
+                        onIbanNumberChange = viewModel::onIbanNumberChange,
+                        city = city,
+                        onCityChange = viewModel::onCityChange,
+                        onSaveClick = {
                             onKeyGuardSecureEvent {
-                                val hasBeenSaved = viewModel.saveData(data = data)
+                                val hasBeenSaved = viewModel.saveData()
                                 if (!hasBeenSaved) {
                                     Toast
                                         .makeText(
@@ -71,13 +77,7 @@ open class PayoneSepaFormFragment : BaseFragment(
                                 }
                             }
                         },
-                        ibanNumber = iban,
-                        onIbanNumberChange = viewModel::onIbanNumberChange,
                         isIbanValid = isIbanValid,
-                        name = name,
-                        onNameChange = viewModel::onNameChange,
-                        city = city,
-                        onCityChange = viewModel::onCityChange,
                         areAllInputsValid = areAllInputsValid
 
                     )
