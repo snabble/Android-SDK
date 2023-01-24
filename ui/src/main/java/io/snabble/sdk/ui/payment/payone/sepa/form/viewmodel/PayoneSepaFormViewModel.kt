@@ -10,7 +10,6 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.payment.IBAN
 import io.snabble.sdk.payment.payone.sepa.PayoneSepaData
-import io.snabble.sdk.ui.checkout.PaymentOriginCandidateHelper.PaymentOriginCandidate
 import io.snabble.sdk.ui.payment.payone.sepa.form.domain.PayoneSepaFormRepository
 import io.snabble.sdk.ui.payment.payone.sepa.form.domain.PayoneSepaFormRepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,15 +26,13 @@ class PayoneSepaFormViewModel(
     private var _isIbanValid = MutableStateFlow(false)
     internal val isIbanValid: StateFlow<Boolean> = _isIbanValid.asStateFlow()
 
-    private val paymentOrigin: PaymentOriginCandidate? = savedStateHandle[ARG_PAYMENT_ORIGIN_CANDIDATE]
-    private var _ibanNumber = MutableStateFlow(paymentOrigin?.origin?.substring(startIndex = 2))
+    private val ibanDigits: String? = savedStateHandle.get<String?>(ARG_IBAN)?.substring(startIndex = 2)
+    private var _ibanNumber = MutableStateFlow(ibanDigits)
     internal val ibanNumber: StateFlow<String?> = _ibanNumber.asStateFlow()
 
     init {
         ibanNumber
-            .onEach { iban ->
-                _isIbanValid.tryEmit(IBAN.validate("DE$iban"))
-            }
+            .onEach { iban -> _isIbanValid.tryEmit(IBAN.validate("DE$iban")) }
             .launchIn(viewModelScope)
     }
 
@@ -50,7 +47,7 @@ class PayoneSepaFormViewModel(
 
     companion object {
 
-        const val ARG_PAYMENT_ORIGIN_CANDIDATE = "paymentOriginCandidate"
+        const val ARG_IBAN = "iban"
 
         val Factory: ViewModelProvider.Factory = viewModelFactory {
 

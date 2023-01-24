@@ -33,10 +33,7 @@ open class PayoneSepaFormFragment : BaseFragment(
             MutableCreationExtras(defaultViewModelCreationExtras).also { extras ->
                 extras[DEFAULT_ARGS_KEY] = arguments
                     ?.serializableExtra<PaymentOriginCandidate>(ARG_PAYMENT_ORIGIN_CANDIDATE)
-                    .let {
-                        val ibanNumber = it?.origin?.substring(startIndex = 2)
-                        bundleOf(PayoneSepaFormViewModel.ARG_PAYMENT_ORIGIN_CANDIDATE to ibanNumber)
-                    }
+                    .let { bundleOf(PayoneSepaFormViewModel.ARG_IBAN to it?.origin) }
             }
         }
     ) {
