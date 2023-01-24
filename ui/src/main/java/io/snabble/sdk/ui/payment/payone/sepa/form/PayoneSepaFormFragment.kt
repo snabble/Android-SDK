@@ -56,37 +56,19 @@ open class PayoneSepaFormFragment : BaseFragment(
                 ThemeWrapper {
                     PayoneSepaFormScreen(
                         saveData = { data ->
-                            if (KeyguardUtils.isDeviceSecure()) {
-                                Keyguard.unlock(
-                                    UIUtils.getHostFragmentActivity(context),
-                                    object : Keyguard.Callback {
-
-                                        override fun success() {
-                                            val hasBeenSaved = viewModel.saveData(data = data)
-                                            if (!hasBeenSaved) {
-                                                Toast
-                                                    .makeText(
-                                                        context,
-                                                        "Could not verify payment credentials",
-                                                        Toast.LENGTH_LONG
-                                                    )
-                                                    .show()
-                                            } else {
-                                                finish()
-                                            }
-                                        }
-
-                                        override fun error() {
-                                            // ignored
-                                        }
-                                    }
-                                )
-                            } else {
-                                AlertDialog.Builder(context)
-                                    .setMessage(R.string.Snabble_Keyguard_requireScreenLock)
-                                    .setPositiveButton(R.string.Snabble_ok, null)
-                                    .setCancelable(false)
-                                    .show()
+                            onKeyGuardSecureEvent {
+                                val hasBeenSaved = viewModel.saveData(data = data)
+                                if (!hasBeenSaved) {
+                                    Toast
+                                        .makeText(
+                                            context,
+                                            "Could not verify payment credentials",
+                                            Toast.LENGTH_LONG
+                                        )
+                                        .show()
+                                } else {
+                                    finish()
+                                }
                             }
                         },
                         ibanNumber = iban,
@@ -107,6 +89,30 @@ open class PayoneSepaFormFragment : BaseFragment(
 
     private fun finish() {
         context?.let { SnabbleUI.executeAction(it, SnabbleUI.Event.GO_BACK) }
+    }
+
+    private fun onKeyGuardSecureEvent(onSuccessAction: () -> Unit) {
+        if (KeyguardUtils.isDeviceSecure()) {
+            Keyguard.unlock(
+                UIUtils.getHostFragmentActivity(context),
+                object : Keyguard.Callback {
+
+                    override fun success() {
+                        onSuccessAction()
+                    }
+
+                    override fun error() {
+                        // ignored
+                    }
+                }
+            )
+        } else {
+            AlertDialog.Builder(context)
+                .setMessage(R.string.Snabble_Keyguard_requireScreenLock)
+                .setPositiveButton(R.string.Snabble_ok, null)
+                .setCancelable(false)
+                .show()
+        }
     }
 
     companion object {
