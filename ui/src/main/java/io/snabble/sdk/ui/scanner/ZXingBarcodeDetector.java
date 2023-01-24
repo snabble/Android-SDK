@@ -38,6 +38,7 @@ public class ZXingBarcodeDetector implements BarcodeDetector {
         }
 
         hints.put(DecodeHintType.POSSIBLE_FORMATS, formats);
+        hints.put(DecodeHintType.TRY_HARDER, null);
         multiFormatReader.setHints(hints);
     }
 
@@ -48,9 +49,9 @@ public class ZXingBarcodeDetector implements BarcodeDetector {
 
     @Override
     public Barcode detect(byte[] data, int width, int height, int bitsPerPixel, Rect detectionRect, int displayOrientation) {
-        Result result = detectInternal(data, width, height, bitsPerPixel, detectionRect, displayOrientation, false);
+        Result result = detectInternal(data, width, bitsPerPixel, detectionRect, displayOrientation, false);
         if (result == null) {
-            result = detectInternal(data, width, height, bitsPerPixel, detectionRect, displayOrientation, true);
+            result = detectInternal(data, width, bitsPerPixel, detectionRect, displayOrientation, true);
         }
 
         if (result != null) {
@@ -82,8 +83,8 @@ public class ZXingBarcodeDetector implements BarcodeDetector {
         return null;
     }
 
-    private Result detectInternal(byte[] data, int width, int height, int bitsPerPixel, Rect detectionRect, int displayOrientation, boolean rotate) {
-        byte[] buf = getRotatedData(data, width, height, bitsPerPixel, detectionRect, displayOrientation, rotate);
+    private Result detectInternal(byte[] data, int width, int bitsPerPixel, Rect detectionRect, int displayOrientation, boolean rotate) {
+        byte[] buf = getRotatedData(data, width, bitsPerPixel, detectionRect, displayOrientation, rotate);
 
         int tWidth = detectionRect.width();
         int tHeight = detectionRect.height();
@@ -114,7 +115,7 @@ public class ZXingBarcodeDetector implements BarcodeDetector {
         return null;
     }
 
-    private byte[] getRotatedData(byte[] data, int width, int height, int bitsPerPixel, Rect detectionRect, int displayOrientation, boolean rotate90deg) {
+    private byte[] getRotatedData(byte[] data, int width, int bitsPerPixel, Rect detectionRect, int displayOrientation, boolean rotate90deg) {
         int size = detectionRect.width() * detectionRect.height() * bitsPerPixel / 8;
         if (cropBuffer == null || cropBuffer.length != size) {
             cropBuffer = new byte[size];
@@ -128,18 +129,6 @@ public class ZXingBarcodeDetector implements BarcodeDetector {
         int bottom = detectionRect.bottom;
 
         int tWidth = detectionRect.width();
-        int tHeight = detectionRect.height();
-
-        // special cases for reversed orientations, we don't flip the image
-        // because zxing is able to detect flipped images
-        // but we need to adjust the camera region
-        if (displayOrientation == 180) { // reverse-landscape
-            top = height - top - tHeight;
-            bottom = top + tHeight;
-        } else if (displayOrientation == 270) { // reverse-portrait
-            left = width - left - tWidth;
-            right = left + tWidth;
-        }
 
         if (rotate90deg) {
             int i = 0;

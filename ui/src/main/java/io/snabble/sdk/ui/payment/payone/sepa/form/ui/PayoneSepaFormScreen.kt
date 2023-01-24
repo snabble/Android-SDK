@@ -48,6 +48,13 @@ internal fun PayoneSepaFormScreen(
             .verticalScroll(state = rememberScrollState())
             .padding(all = 16.dp),
     ) {
+        Text(
+            modifier = Modifier.align(CenterHorizontally),
+            text = stringResource(id = R.string.Snabble_SEPA_helper),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Spacer(modifier = Modifier.height(8.dp))
         TextFieldWidget(
             value = name,
             label = stringResource(id = R.string.Snabble_Payment_SEPA_name),

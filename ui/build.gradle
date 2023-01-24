@@ -54,6 +54,8 @@ android {
 }
 
 dependencies {
+    def kotest_version = '5.4.0'
+
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:${project.desugarVersion}"
 
     implementation project(':utils')
@@ -91,7 +93,7 @@ dependencies {
     //noinspection GradleDependency
     implementation 'commons-io:commons-io:2.5'
     //noinspection GradleDependency
-    implementation 'com.google.zxing:core:3.3.3'
+    implementation 'com.google.zxing:core:3.5.1'
     implementation 'com.squareup.picasso:picasso:2.8'
 
     androidTestImplementation 'androidx.test:runner:1.4.0'
@@ -112,4 +114,14 @@ dependencies {
 
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1'
     implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.6.0-alpha02'
+
+    testImplementation "io.kotest:kotest-runner-junit5:$kotest_version"
+    testImplementation "io.kotest:kotest-assertions-core:$kotest_version"
+    testImplementation 'io.mockk:mockk:1.13.3'
+}
+
+android.testOptions {
+    unitTests.all {
+        useJUnitPlatform()
+    }
 }

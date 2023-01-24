@@ -9,6 +9,7 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.snabble.sdk.dynamicview.data.dto.AllStoresDto
 import io.snabble.sdk.dynamicview.data.dto.AppUserIdDto
 import io.snabble.sdk.dynamicview.data.dto.ButtonDto
 import io.snabble.sdk.dynamicview.data.dto.ClientIdDto
@@ -22,7 +23,6 @@ import io.snabble.sdk.dynamicview.data.dto.InformationDto
 import io.snabble.sdk.dynamicview.data.dto.LocationPermissionDto
 import io.snabble.sdk.dynamicview.data.dto.PaddingDto
 import io.snabble.sdk.dynamicview.data.dto.SectionDto
-import io.snabble.sdk.dynamicview.data.dto.SeeAllStoresDto
 import io.snabble.sdk.dynamicview.data.dto.StartShoppingDto
 import io.snabble.sdk.dynamicview.data.dto.SwitchEnvironmentDto
 import io.snabble.sdk.dynamicview.data.dto.TextDto
@@ -39,7 +39,7 @@ import io.snabble.sdk.dynamicview.domain.model.InformationItem
 import io.snabble.sdk.dynamicview.domain.model.LocationPermissionItem
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.domain.model.SectionItem
-import io.snabble.sdk.dynamicview.domain.model.SeeAllStoresItem
+import io.snabble.sdk.dynamicview.domain.model.SeeStoresItem
 import io.snabble.sdk.dynamicview.domain.model.StartShoppingItem
 import io.snabble.sdk.dynamicview.domain.model.SwitchEnvironmentItem
 import io.snabble.sdk.dynamicview.domain.model.TextItem
@@ -306,7 +306,7 @@ internal class ConfigMapperImplTest : FreeSpec({
 
             "SeeAllStoresDto to SeeAllStoresItem" - {
 
-                val seeAllStoreDto = SeeAllStoresDto(
+                val seeAllStoreDto = AllStoresDto(
                     id = "a.store",
                     padding = PaddingDto(0, 0, 0, 0)
                 )
@@ -314,13 +314,13 @@ internal class ConfigMapperImplTest : FreeSpec({
                 val rootDto = setupSutDto(seeAllStoreDto)
                 val sut = createMapper().mapDtoToItems(rootDto)
 
-                val seeAllStoresItem = sut.widgets.first().shouldBeTypeOf<SeeAllStoresItem>()
+                val seeStoresItem = sut.widgets.first().shouldBeTypeOf<SeeStoresItem>()
 
                 "id" {
-                    seeAllStoresItem.id shouldBe "a.store"
+                    seeStoresItem.id shouldBe "a.store"
                 }
                 "padding" {
-                    seeAllStoresItem.padding shouldBe Padding(0, 0, 0, 0)
+                    seeStoresItem.padding shouldBe Padding(0, 0, 0, 0)
                 }
             }
 

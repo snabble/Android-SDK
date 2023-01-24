@@ -7,6 +7,19 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.69.3]
+### Changed
+* ui: Set the screen orientation of the 'CheckoutActivity' to 'userPortrait'
+* ui: Adjust detection rect implementation
+* ui: Speed up ZXing's barcode by using TRY_HARDER mode
+
+## [0.69.2]
+### Added
+* core: Add customizable ShoppingCart::isMergeable() behavior
+
+### Changed
+* ui-toolkit: Enable debug check-in for all environments, including production
+
 ## [0.69.1]
 ### Added
 - core,ui: Added payment method PAYONE SEPA (#91)
