@@ -30,7 +30,6 @@ class PayoneSepaFormViewModel(
     internal val areAllInputsValid: StateFlow<Boolean> = _areAllInputsValid.asStateFlow()
 
     private val ibanDigits: String? = savedStateHandle.get<String?>(ARG_IBAN)?.substring(startIndex = 2)
-
     private var _ibanNumber = MutableStateFlow(ibanDigits)
     internal val ibanNumber: StateFlow<String?> = _ibanNumber.asStateFlow()
 
@@ -42,35 +41,49 @@ class PayoneSepaFormViewModel(
 
     init {
         ibanNumber
-            .onEach { iban -> _isIbanValid.tryEmit(IBAN.validate("DE$iban")) }
+            .onEach { iban -> _isIbanValid.tryEmit(IBAN.validate("$COUNTRY_CODE$iban")) }
             .launchIn(viewModelScope)
     }
 
     fun onIbanNumberChange(iban: String) {
         _ibanNumber.tryEmit(iban)
-        validateInputs()
+        updateInputsValid()
     }
 
-    fun onNameChange(iban: String) {
-        _name.tryEmit(iban)
-        validateInputs()
+    fun onNameChange(name: String) {
+        _name.tryEmit(name)
+        updateInputsValid()
     }
 
-    fun onCityChange(iban: String) {
-        _city.tryEmit(iban)
-        validateInputs()
+    fun onCityChange(city: String) {
+        _city.tryEmit(city)
+        updateInputsValid()
     }
 
-    private fun validateInputs() {
-        _areAllInputsValid.tryEmit(name.value.isNotBlank() && city.value.isNotBlank() && isIbanValid.value)
+    private fun updateInputsValid() {
+        _areAllInputsValid.tryEmit(areAllInputsValid())
     }
+
+    private fun areAllInputsValid() = name.value.isNotBlank() && city.value.isNotBlank() && isIbanValid.value
 
     /**
-     * True if the PayoneSepaData has been saved, false otherwise.
+     * True if the PayoneSepaData is valid and has been saved, false otherwise.
      */
-    fun saveData(data: PayoneSepaData): Boolean = repository.saveSepaData(data)
+    fun saveData(): Boolean {
+        if (!areAllInputsValid()) return false
+
+        val data = PayoneSepaData(
+            name = name.value,
+            iban = "$COUNTRY_CODE${ibanNumber.value}",
+            city = city.value,
+            countryCode = COUNTRY_CODE
+        )
+        return repository.saveSepaData(data)
+    }
 
     companion object {
+
+        private const val COUNTRY_CODE = "DE"
 
         const val ARG_IBAN = "iban"
 

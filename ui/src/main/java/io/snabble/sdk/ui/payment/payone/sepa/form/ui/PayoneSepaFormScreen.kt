@@ -20,20 +20,19 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.snabble.sdk.payment.payone.sepa.PayoneSepaData
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.payment.payone.sepa.form.ui.widget.IbanFieldWidget
 import io.snabble.sdk.ui.payment.payone.sepa.form.ui.widget.TextFieldWidget
 
 @Composable
 internal fun PayoneSepaFormScreen(
-    saveData: (data: PayoneSepaData) -> Unit,
-    ibanNumber: String = "",
-    onIbanNumberChange: (String) -> Unit,
     name: String = "",
     onNameChange: (String) -> Unit,
+    ibanNumber: String = "",
+    onIbanNumberChange: (String) -> Unit,
     city: String = "",
     onCityChange: (String) -> Unit,
+    onSaveClick: () -> Unit,
     isIbanValid: Boolean,
     areAllInputsValid: Boolean,
 ) {
@@ -74,9 +73,7 @@ internal fun PayoneSepaFormScreen(
             onValueChange = { onCityChange(it) },
             onAction = {
                 focusManager.clearFocus()
-                if (areAllInputsValid) {
-                    saveSepaFormInput(saveData, name, ibanNumber, city)
-                }
+                if (areAllInputsValid) onSaveClick()
             },
             focusManager = focusManager,
             canSend = true,
@@ -109,9 +106,7 @@ internal fun PayoneSepaFormScreen(
             ),
             enabled = areAllInputsValid,
             shape = MaterialTheme.shapes.extraLarge,
-            onClick = {
-                saveSepaFormInput(saveData, name, ibanNumber, city)
-            },
+            onClick = { onSaveClick() },
         ) {
             Text(text = stringResource(id = R.string.Snabble_save))
         }
@@ -125,29 +120,11 @@ internal fun PayoneSepaFormScreen(
     }
 }
 
-private fun saveSepaFormInput(
-    saveData: (data: PayoneSepaData) -> Unit,
-    name: String,
-    ibanNumbers: String,
-    city: String,
-) {
-    saveData(
-        PayoneSepaData(
-            name = name,
-            iban = "$COUNTRY_CODE$ibanNumbers",
-            city = city,
-            countryCode = COUNTRY_CODE,
-        )
-    )
-}
-
-private const val COUNTRY_CODE = "DE"
-
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 private fun PayoneSepaFormScreenPreview() {
     PayoneSepaFormScreen(
-        saveData = {},
+        onSaveClick = {},
         onIbanNumberChange = { it.isNotBlank() },
         onCityChange = { it.isNotBlank() },
         onNameChange = { it.isNotBlank() },

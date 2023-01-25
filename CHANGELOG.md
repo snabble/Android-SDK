@@ -3,9 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
+* ui: Pre-fill IBAN for PAYONE SEPA after checkout (#99)
 ### Changed
 ### Removed
 ### Fixed
+* core: Fix add IBAN crash by implementing missing Serializable interface
 
 ## [0.69.3]
 ### Changed
