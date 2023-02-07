@@ -31,11 +31,19 @@
                 android:text="@string/Snabble.Payment.presentCode"
                 android:textAppearance="?attr/textAppearanceBodyLarge" />
 
-            <include
-                android:id="@+id/checkout_header"
-                layout="@layout/snabble_checkout_header"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <include
+                    android:id="@+id/checkout_header"
+                    layout="@layout/snabble_checkout_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/helper_text"
