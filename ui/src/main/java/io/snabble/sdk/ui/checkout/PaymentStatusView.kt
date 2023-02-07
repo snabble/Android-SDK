@@ -2,7 +2,6 @@ package io.snabble.sdk.ui.checkout
 
 import android.animation.LayoutTransition
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.View
@@ -18,14 +17,15 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputLayout
 import io.snabble.sdk.*
-import io.snabble.sdk.ui.checkout.PaymentOriginCandidateHelper.PaymentOriginCandidate
-import io.snabble.sdk.ui.checkout.PaymentOriginCandidateHelper.PaymentOriginCandidateAvailableListener
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.checkout.Fulfillment
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.ui.checkout.PaymentOriginCandidateHelper.PaymentOriginCandidate
+import io.snabble.sdk.ui.checkout.PaymentOriginCandidateHelper.PaymentOriginCandidateAvailableListener
 import io.snabble.sdk.ui.payment.SEPACardInputActivity
+import io.snabble.sdk.ui.payment.payone.sepa.form.PayoneSepaActivity
 import io.snabble.sdk.ui.scanner.BarcodeView
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.executeUiAction
@@ -34,11 +34,11 @@ import io.snabble.sdk.ui.utils.observeView
 import io.snabble.sdk.ui.utils.requireFragmentActivity
 import io.snabble.sdk.utils.Dispatch
 
-
 class PaymentStatusView @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0,
 ) : ScrollView(context, attrs, defStyleAttr),
     LifecycleObserver, PaymentOriginCandidateAvailableListener {
+
     init {
         inflate(getContext(), R.layout.snabble_view_payment_status, this)
     }
@@ -70,7 +70,6 @@ class PaymentStatusView @JvmOverloads constructor(
 
     private val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-
         }
     }
 
@@ -147,11 +146,8 @@ class PaymentStatusView @JvmOverloads constructor(
 
         addIbanLayout.isVisible = false
         addIbanButton.setOnClickListener {
-            val paymentOriginCandidate = paymentOriginCandidate
-            val intent = Intent(context, SEPACardInputActivity::class.java)
-            intent.putExtra(SEPACardInputActivity.ARG_PAYMENT_ORIGIN_CANDIDATE, paymentOriginCandidate)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
-            context?.startActivity(intent)
+            context.startActivity(createAddIbanIntent())
+
             addIbanLayout.isVisible = false
             hasShownSEPAInput = true
         }
@@ -160,6 +156,13 @@ class PaymentStatusView @JvmOverloads constructor(
         activity?.lifecycle?.addObserver(this)
         activity?.onBackPressedDispatcher?.addCallback(backPressedCallback)
     }
+
+    private fun createAddIbanIntent() =
+        if (project.paymentMethodDescriptors.any { it.paymentMethod == PaymentMethod.PAYONE_SEPA }) {
+            PayoneSepaActivity.newIntent(context, paymentOriginCandidate)
+        } else {
+            SEPACardInputActivity.newIntent(context, paymentOriginCandidate)
+        }
 
     private fun sendRating(rating: String) {
         project.events.analytics("rating", rating, ratingMessage ?: "")
@@ -191,7 +194,8 @@ class PaymentStatusView @JvmOverloads constructor(
 
         when (state) {
             CheckoutState.PAYMENT_PROCESSING,
-            CheckoutState.VERIFYING_PAYMENT_METHOD -> {
+            CheckoutState.VERIFYING_PAYMENT_METHOD,
+            -> {
                 payment.state = PaymentStatusItemView.State.IN_PROGRESS
             }
             CheckoutState.PAYMENT_APPROVED -> {
@@ -398,7 +402,8 @@ class PaymentStatusView @JvmOverloads constructor(
             if (it.type == "tobaccolandEWA") {
                 if (state == null || state.isFailure) {
                     if (it.state == FulfillmentState.ALLOCATION_FAILED
-                        || it.state == FulfillmentState.ALLOCATION_TIMED_OUT) {
+                        || it.state == FulfillmentState.ALLOCATION_TIMED_OUT
+                    ) {
                         handlePaymentAborted()
                     }
 

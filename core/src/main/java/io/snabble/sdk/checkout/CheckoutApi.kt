@@ -10,6 +10,7 @@ import io.snabble.sdk.Product
 import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.FulfillmentState
 import io.snabble.sdk.PaymentMethod
+import java.io.Serializable
 import java.lang.Exception
 import java.util.*
 
@@ -142,7 +143,7 @@ enum class RoutingTarget {
 
 data class Href(
     val href: String? = null,
-)
+) : Serializable
 
 data class SignedCheckoutInfo(
     val checkoutInfo: JsonObject? = null,
