@@ -65,18 +65,6 @@
                 android:layout_height="168dp"
                 app:format="QR_CODE"
                 tools:ignore="RtlHardcoded" />
-
-            <TextView
-                android:id="@+id/checkout_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="2dp"
-                android:layout_marginRight="16dp"
-                android:gravity="top|center_horizontal"
-                android:textAppearance="?attr/textAppearanceBodyLarge"
-                tools:text="a64b" />
-
         </LinearLayout>
     </ScrollView>
 

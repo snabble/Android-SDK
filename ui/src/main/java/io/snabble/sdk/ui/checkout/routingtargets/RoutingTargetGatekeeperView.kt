@@ -10,10 +10,9 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle
-import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.scanner.BarcodeView
@@ -25,14 +24,15 @@ import io.snabble.sdk.utils.Logger
 import kotlin.math.roundToInt
 
 class RoutingTargetGatekeeperView @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0,
 ) : FrameLayout(context, attrs, defStyleAttr) {
+
     private var checkout: Checkout
     private var checkoutIdCode: BarcodeView
     private var cancel: View
     private var cancelProgress: View
     private var helperTextNoImage: TextView
-    private var helperImage: ImageView
+    private var helperImage: ImageView?
     private var upArrow: View
 
     private var currentState: CheckoutState? = null
@@ -58,14 +58,6 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
             abort()
         }
 
-        val checkoutId = findViewById<TextView>(R.id.checkout_id)
-        val id = checkout.id
-        if (id != null && id.length >= 4) {
-            checkoutId.text = id.substring(id.length - 4)
-        } else {
-            checkoutId.visibility = GONE
-        }
-
         checkoutIdCode.visibility = VISIBLE
 
         val handoverInformation = checkout.checkoutProcess?.paymentInformation?.handoverInformation
@@ -74,11 +66,13 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
             handoverInformation != null -> {
                 handoverInformation
             }
+
             qrCodeContent != null -> {
                 qrCodeContent
             }
+
             else -> {
-                id
+                checkout.id
             }
         }
         Logger.d("QRCode content: $content")
@@ -96,6 +90,8 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
     @SuppressLint("DrawAllocation")
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
+
+        val helperImage = helperImage ?: return
 
         // if layout is starved for space, hide the helper image
         if (changed) {
@@ -142,6 +138,7 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
     }
 
     fun setHelperImage(bitmap: Bitmap?) {
+        val helperImage = helperImage ?: return
         if (bitmap != null) {
             helperImage.setImageBitmap(bitmap)
             helperImage.visibility = VISIBLE
