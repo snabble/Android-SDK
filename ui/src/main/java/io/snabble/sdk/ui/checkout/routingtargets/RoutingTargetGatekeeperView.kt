@@ -10,6 +10,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.checkout.Checkout
@@ -58,7 +59,7 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
             abort()
         }
 
-        checkoutIdCode.visibility = VISIBLE
+        checkoutIdCode.isVisible = true
 
         val handoverInformation = checkout.checkoutProcess?.paymentInformation?.handoverInformation
         val qrCodeContent = checkout.checkoutProcess?.paymentInformation?.qrCodeContent
@@ -104,11 +105,6 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
                         helperImage.height / 2
                     )
                 }
-            } else {
-                helperImage.layoutParams = LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
             }
         }
     }
@@ -137,17 +133,21 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
         currentState = state
     }
 
-    fun setHelperImage(bitmap: Bitmap?) {
-        val helperImage = helperImage ?: return
+    private fun setHelperImage(bitmap: Bitmap?) {
+        val helperImage = helperImage
+        if (helperImage == null) {
+            helperTextNoImage.isVisible = false
+            return
+        }
         if (bitmap != null) {
             helperImage.setImageBitmap(bitmap)
-            helperImage.visibility = VISIBLE
-            upArrow.visibility = VISIBLE
-            helperTextNoImage.visibility = GONE
+            helperImage.isVisible = true
+            upArrow.isVisible = true
+            helperTextNoImage.isVisible = false
         } else {
-            helperImage.visibility = GONE
-            upArrow.visibility = GONE
-            helperTextNoImage.visibility = VISIBLE
+            helperImage.isVisible = false
+            upArrow.isVisible = false
+            helperTextNoImage.isVisible = true
         }
     }
 }
