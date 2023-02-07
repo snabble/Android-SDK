@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         tools:ignore="ContentDescription"
-        tools:src="@drawable/snabble_ic_delete"
+        tools:src="@drawable/snabble_ic_rating_3"
         tools:visibility="visible" />
 
 </merge>
