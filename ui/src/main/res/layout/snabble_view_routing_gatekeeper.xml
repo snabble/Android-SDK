@@ -71,8 +71,8 @@
                 android:id="@+id/checkout_id_code"
                 android:layout_width="match_parent"
                 android:layout_height="168dp"
-                app:format="QR_CODE"
-                tools:ignore="RtlHardcoded" />
+                app:format="QR_CODE" />
+
         </LinearLayout>
     </ScrollView>
 
