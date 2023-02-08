@@ -25,7 +25,9 @@ import io.snabble.sdk.utils.Logger
 import kotlin.math.roundToInt
 
 class RoutingTargetGatekeeperView @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0,
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
 
     private var checkout: Checkout
@@ -59,22 +61,12 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
             abort()
         }
 
-        checkoutIdCode.isVisible = true
-
         val handoverInformation = checkout.checkoutProcess?.paymentInformation?.handoverInformation
         val qrCodeContent = checkout.checkoutProcess?.paymentInformation?.qrCodeContent
         val content = when {
-            handoverInformation != null -> {
-                handoverInformation
-            }
-
-            qrCodeContent != null -> {
-                qrCodeContent
-            }
-
-            else -> {
-                checkout.id
-            }
+            handoverInformation != null -> handoverInformation
+            qrCodeContent != null -> qrCodeContent
+            else -> checkout.id
         }
         Logger.d("QRCode content: $content")
         checkoutIdCode.setText(content)
