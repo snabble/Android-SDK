@@ -39,7 +39,7 @@ import io.snabble.sdk.utils.Dispatch
 
 class PaymentStatusView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0,
-) : ScrollView(context, attrs, defStyleAttr),
+) : FrameLayout(context, attrs, defStyleAttr),
     LifecycleObserver, PaymentOriginCandidateAvailableListener {
 
     init {
@@ -185,10 +185,16 @@ class PaymentStatusView @JvmOverloads constructor(
         sendFeedback?.isVisible = true
         sendExtraFeedBack?.isVisible = true
         inputBadRatingLayout.isVisible = true
-        inputBadRatingLayout.requestFocus()
+        inputBadRatingLayout.editText?.requestFocusWithKeyboard()
         inputBadRatingLayout.editText?.addTextChangedListener { s ->
             ratingMessage = s.toString()
         }
+    }
+
+    private fun EditText.requestFocusWithKeyboard() {
+        requestFocus()
+        (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+            .showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
     }
 
     private fun closeInputKeyboard() {
