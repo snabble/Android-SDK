@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="Snabble.ShapeAppearanceOverlay.RoundedCorners" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">4dp</item>
@@ -10,12 +11,16 @@
     </style>
 
     <style name="Snabble.Widget.MaterialComponents.Button" parent="Widget.Material3.Button" />
+
     <style name="Snabble.Widget.MaterialComponents.Button.Passive" parent="Snabble.Widget.MaterialComponents.Button">
         <item name="backgroundTint">?attr/colorSurface</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
+
     <style name="Snabble.Widget.MaterialComponents.Button.TextButton" parent="Widget.Material3.Button.TextButton" />
+
     <style name="Snabble.Widget.MaterialComponents.Button.Icon" parent="Widget.Material3.Button.Icon" />
+
     <style name="Snabble.Widget.MaterialComponents.Button.OutlinedButton" parent="Widget.Material3.Button.OutlinedButton" />
 
     <style name="Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon" parent="Widget.Material3.Button.OutlinedButton.Icon">
@@ -29,7 +34,9 @@
     </style>
 
     <style name="Snabble" />
+
     <style name="Snabble.CouponDetail" />
+
     <style name="Snabble.CouponDetail.ActivateButtonStyle" parent="Widget.Material3.Button">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -39,7 +46,9 @@
         <item name="android:layout_marginRight">16dp</item>
         <item name="android:text">@string/Snabble.Coupon.activate</item>
     </style>
+
     <style name="ThemeOverlay.Snabble.CouponDetail.ActivateButtonStyle" parent="Snabble.CouponDetail.ActivateButtonStyle" />
+
     <style name="Snabble.CouponDetail.AppliedButtonStyle" parent="Widget.Material3.Button">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -51,6 +60,20 @@
         <item name="android:visibility">gone</item>
         <item name="android:text">@string/Snabble.Coupon.activated</item>
     </style>
+
     <style name="ThemeOverlay.Snabble.CouponDetail.AppliedButtonStyle" parent="Snabble.CouponDetail.AppliedButtonStyle" />
+
     <style name="Snabble.TextAppearance.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium" />
+
+    <style name="Snabble.Rating.One" parent="@android:style/Widget.CompoundButton.RadioButton">
+        <item name="android:button">@drawable/rating_1</item>
+    </style>
+
+    <style name="Snabble.Rating.two" parent="@android:style/Widget.CompoundButton.RadioButton">
+        <item name="android:button">@drawable/rating_1</item>
+    </style>
+
+    <style name="Snabble.Rating.three" parent="@android:style/Widget.CompoundButton.RadioButton">
+        <item name="android:button">@drawable/rating_1</item>
+    </style>
 </resources>
