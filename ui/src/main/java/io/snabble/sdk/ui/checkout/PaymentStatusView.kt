@@ -206,7 +206,7 @@ class PaymentStatusView @JvmOverloads constructor(
     private fun sendRating(rating: String) {
         project.events.analytics("rating", rating, ratingMessage ?: "")
         Telemetry.event(Telemetry.Event.Rating, rating)
-        ratingTitle.setText(R.string.Snabble_PaymentStatus_Ratings_thanks)
+        ratingTitle.setText(R.string.Snabble_PaymentStatus_Ratings_thanksForFeedback)
         ratingContainer.isVisible = false
         ratingMessage = null
         closeInputKeyboard()

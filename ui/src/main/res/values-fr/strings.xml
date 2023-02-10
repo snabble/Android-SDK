@@ -142,6 +142,14 @@
     <string name="Snabble.Payment.SEPA.city">City</string>
     <string name="Snabble.Payment.SEPA.countryCode">Country</string>
     <string name="Snabble.Payment.SEPA.hint">Remarque : afin de vous protéger, ainsi que nos commerçants, contre les abus, le commerçant demandera à voir votre carte bancaire lors de votre premier paiement par prélèvement SEPA.</string>
+    <string name="Snabble.Payment.SEPA.Hint.account">Account number</string>
+    <string name="Snabble.Payment.SEPA.Hint.accountType">Account type</string>
+    <string name="Snabble.Payment.SEPA.Hint.bank">Bank number</string>
+    <string name="Snabble.Payment.SEPA.Hint.branchCode">Branch code</string>
+    <string name="Snabble.Payment.SEPA.Hint.checksum">Checksum</string>
+    <string name="Snabble.Payment.SEPA.Hint.controlCode">Control code</string>
+    <string name="Snabble.Payment.SEPA.Hint.miscCode">Other function</string>
+    <string name="Snabble.Payment.SEPA.Hint.regionCode">Region code</string>
     <string name="Snabble.Payment.SEPA.iban">IBAN</string>
     <string name="Snabble.Payment.SEPA.invalidIBAN">L\'IBAN que vous avez saisi n\'est pas valide.</string>
     <string name="Snabble.Payment.SEPA.invalidIBANCountry">The entered IBAN country code is incorrect.</string>
@@ -154,6 +162,7 @@
     <string name="Snabble.Payment.SEPA.name">Nom</string>
     <string name="Snabble.Payment.SEPA.payer">Payer</string>
     <string name="Snabble.Payment.SEPA.title">Prélèvement SEPA</string>
+    <string name="Snabble.Payment.SEPA.validIBAN">Valid IBAN</string>
     <string name="Snabble.Payment.success">Merci beaucoup pour votre achat</string>
     <string name="Snabble.Payment.Twint.error">Une erreur est survenue lors du traitement de votre compte TWINT.</string>
     <string name="Snabble.Payment.usableAt">À utiliser jusqu\'au : %s</string>
@@ -189,7 +198,9 @@
     <string name="Snabble.PaymentStatus.Payment.tryAgain">Réessayer</string>
     <string name="Snabble.PaymentStatus.Rating.send">Envoyer</string>
     <string name="Snabble.PaymentStatus.Rating.title">Tout s\'est bien passé ?</string>
+    <string name="Snabble.PaymentStatus.Rating.title2">What can we do even better?</string>
     <string name="Snabble.PaymentStatus.Ratings.thanks">Merci !</string>
+    <string name="Snabble.PaymentStatus.Ratings.thanksForFeedback">Thanks for your feedback!</string>
     <string name="Snabble.PaymentStatus.Ratings.title">Votre expérience d\'achat vous a-t-elle plu ?</string>
     <string name="Snabble.PaymentStatus.Receipt.title">Ticket de caisse</string>
     <string name="Snabble.PaymentStatus.step1">Localisation dans la zone des caisses</string>
@@ -365,6 +376,7 @@
     </plurals>
     <string name="Snabble.Shoppingcart.removeItem">Supprimer vraiment %s ?</string>
     <string name="Snabble.Shoppingcart.removeItems">Supprimer vraiment tous les produits du panier ?</string>
+    <string name="Snabble.Shoppingcart.saved">saved</string>
     <string name="Snabble.ShoppingCart.title">Panier d\'achat</string>
     <!-- Hinweiß der angezeigt wird wenn ein Artikel der Einkaufsliste hinzugefügt wurde -->
     <string name="Snabble.ShoppingList.added">%s sauvegardé</string>
