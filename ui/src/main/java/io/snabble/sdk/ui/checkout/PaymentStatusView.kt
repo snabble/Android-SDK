@@ -49,9 +49,9 @@ class PaymentStatusView @JvmOverloads constructor(
     private val image = findViewById<ImageView>(R.id.image)
     private val back = findViewById<MaterialButton>(R.id.back)
     private var selectedRating = ""
-    private val rating1 = findViewById<ImageView>(R.id.rating_1)
-    private val rating2 = findViewById<ImageView>(R.id.rating_2)
-    private val rating3 = findViewById<ImageView>(R.id.rating_3)
+    private val rating1 = findViewById<RadioButton>(R.id.rating_1)
+    private val rating2 = findViewById<RadioButton>(R.id.rating_2)
+    private val rating3 = findViewById<RadioButton>(R.id.rating_3)
     private val ratingLayout = findViewById<View>(R.id.rating_layout)
     private val sendExtraFeedBack: View? = findViewById(R.id.checkout_extra_feedback_button)
     private val sendFeedback: View? = findViewById(R.id.send_feedback)
