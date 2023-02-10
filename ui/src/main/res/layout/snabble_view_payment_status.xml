@@ -14,134 +14,173 @@
         android:clipToPadding="false"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center"
-            android:padding="16dp"
-            android:text="@string/Snabble.PaymentStatus.Title.inProgress"
-            android:textAppearance="?attr/textAppearanceBodyLarge"
-            android:textStyle="bold" />
-
-        <FrameLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/header"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="40dp">
-
-            <ImageView
-                android:id="@+id/image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/snabble_ic_payment_success_big"
-                android:visibility="invisible" />
-
-            <ProgressBar
-                android:id="@+id/progress"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:visibility="visible"
-                tools:visibility="visible" />
-        </FrameLayout>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/status_container_card"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:clipChildren="false"
-            android:clipToPadding="false"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="2dp">
+            android:layout_height="wrap_content">
 
-            <LinearLayout
-                android:id="@+id/status_container"
+            <com.airbnb.lottie.LottieAnimationView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toTopOf="@id/status_container_card"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:lottie_autoPlay="true"
+                app:lottie_clipToCompositionBounds="false"
+                app:lottie_fileName="success-animation.json"
+                app:lottie_loop="true" />
+
+            <TextView
+                android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:animateLayoutChanges="true"
-                android:orientation="vertical">
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:padding="16dp"
+                android:text="@string/Snabble.PaymentStatus.Title.inProgress"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <io.snabble.sdk.ui.checkout.PaymentStatusItemView
-                    android:id="@+id/payment"
-                    android:layout_width="match_parent"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="36dp"
+                app:layout_constraintBottom_toTopOf="@id/status_container_card"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/title"
+                app:layout_constraintVertical_bias="0.0">
+
+                <ImageView
+                    android:id="@+id/image"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="gone" />
+                    android:src="@drawable/snabble_ic_payment_success_big"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.50"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ProgressBar
+                    android:id="@+id/progress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="@+id/image"
+                    app:layout_constraintEnd_toEndOf="@+id/image"
+                    app:layout_constraintHorizontal_bias="0.50"
+                    app:layout_constraintStart_toStartOf="@+id/image"
+                    app:layout_constraintTop_toTopOf="@+id/image"
+                    app:layout_constraintVertical_bias="0.50"
+                    tools:visibility="visible" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/status_container_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintVertical_bias="0.0">
 
                 <LinearLayout
-                    android:id="@+id/fulfillment_container"
+                    android:id="@+id/status_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" />
-
-                <LinearLayout
-                    android:id="@+id/exit_token_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
+                    android:animateLayoutChanges="true"
+                    android:orientation="vertical">
 
                     <io.snabble.sdk.ui.checkout.PaymentStatusItemView
-                        android:id="@+id/exit_token"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                    <io.snabble.sdk.ui.scanner.BarcodeView
-                        android:id="@+id/exit_token_barcode"
-                        android:layout_width="match_parent"
-                        android:layout_height="120dp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:background="@android:color/transparent"
-                        android:textAppearance="?attr/textAppearanceBodyLarge"
-                        tools:visibility="visible" />
-
-                    <TextView
+                        android:id="@+id/payment"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_horizontal"
-                        android:paddingHorizontal="16dp"
-                        android:paddingVertical="8dp"
-                        android:text="@string/Snabble.PaymentStatus.ExitCode.openExitGateTimed"
-                        android:textAppearance="?attr/textAppearanceBodyMedium" />
+                        android:visibility="gone" />
+
+                    <LinearLayout
+                        android:id="@+id/fulfillment_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+
+                    <LinearLayout
+                        android:id="@+id/exit_token_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <io.snabble.sdk.ui.checkout.PaymentStatusItemView
+                            android:id="@+id/exit_token"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <io.snabble.sdk.ui.scanner.BarcodeView
+                            android:id="@+id/exit_token_barcode"
+                            android:layout_width="match_parent"
+                            android:layout_height="120dp"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="16dp"
+                            android:background="@android:color/transparent"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            tools:visibility="visible" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:paddingHorizontal="16dp"
+                            android:paddingVertical="8dp"
+                            android:text="@string/Snabble.PaymentStatus.ExitCode.openExitGateTimed"
+                            android:textAppearance="?attr/textAppearanceBodyMedium" />
+                    </LinearLayout>
+
+                    <io.snabble.sdk.ui.checkout.PaymentStatusItemView
+                        android:id="@+id/receipt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone" />
+
+                    <LinearLayout
+                        android:id="@+id/add_iban_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:id="@+id/add_iban_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/Snabble.PaymentStatus.AddDebitCard.message"
+                            android:textAppearance="?attr/textAppearanceBodyLarge" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/add_iban_button"
+                            style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="0dp"
+                            android:text="@string/Snabble.PaymentStatus.AddDebitCard.button"
+                            android:textAppearance="?attr/textAppearanceBodyLarge" />
+                    </LinearLayout>
                 </LinearLayout>
-
-                <io.snabble.sdk.ui.checkout.PaymentStatusItemView
-                    android:id="@+id/receipt"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone" />
-
-                <LinearLayout
-                    android:id="@+id/add_iban_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:id="@+id/add_iban_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/Snabble.PaymentStatus.AddDebitCard.message"
-                        android:textAppearance="?attr/textAppearanceBodyLarge" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/add_iban_button"
-                        style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="0dp"
-                        android:text="@string/Snabble.PaymentStatus.AddDebitCard.button"
-                        android:textAppearance="?attr/textAppearanceBodyLarge" />
-                </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+            </com.google.android.material.card.MaterialCardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/rating_layout"
