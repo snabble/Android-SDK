@@ -159,6 +159,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="16dp"
                 android:gravity="center_horizontal|bottom"
                 android:orientation="vertical">
 
@@ -167,9 +168,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginVertical="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="16dp"
                     android:gravity="center"
                     android:text="@string/Snabble.PaymentStatus.Ratings.title"
                     android:textAppearance="?attr/textAppearanceBodyLarge"
@@ -180,15 +179,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginHorizontal="16dp"
                     android:orientation="vertical">
 
                     <RadioGroup
                         android:id="@+id/ratings_layout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
                         android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="16dp"
                         android:gravity="center_horizontal"
                         android:orientation="horizontal">
 
@@ -218,6 +216,7 @@
                         android:id="@+id/input_bad_rating_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
                         android:visibility="gone"
                         app:boxStrokeWidth="0dp"
                         app:placeholderText="Gib uns gerne auch noch mehr Feedback (optional)">
@@ -238,7 +237,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:layout_marginBottom="16dp"
                         android:text="@string/Snabble.PaymentStatus.Rating.send"
                         android:visibility="gone" />
 
