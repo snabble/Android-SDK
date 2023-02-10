@@ -181,13 +181,13 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginHorizontal="16dp"
-                    android:layout_marginBottom="16dp"
                     android:orientation="vertical">
 
                     <RadioGroup
                         android:id="@+id/ratings_layout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
                         android:layout_gravity="center_horizontal"
                         android:gravity="center_horizontal"
                         android:orientation="horizontal">
