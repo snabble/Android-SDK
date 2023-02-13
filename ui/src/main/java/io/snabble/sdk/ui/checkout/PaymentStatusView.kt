@@ -49,13 +49,13 @@ class PaymentStatusView @JvmOverloads constructor(
     private val image = findViewById<ImageView>(R.id.image)
     private val back = findViewById<MaterialButton>(R.id.back)
     private var selectedRating = ""
-    private val sendExtraFeedBack: View? = findViewById(R.id.checkout_extra_feedback_button)
     private val sendFeedback: View? = findViewById(R.id.send_feedback)
     private val inputBadRatingLayout = findViewById<TextInputLayout>(R.id.input_bad_rating_layout)
     private var addIbanLayout = findViewById<LinearLayout>(R.id.add_iban_layout)
     private var addIbanButton = findViewById<Button>(R.id.add_iban_button)
     private var payment = findViewById<PaymentStatusItemView>(R.id.payment)
     private val ratingCardLayout = findViewById<View>(R.id.ratingCardLayout)
+    private val ratingExtraFeedBackView: View? = findViewById(R.id.checkout_extra_feedback_view)
     private var ratingLayoutGroup = findViewById<View>(R.id.ratingLayoutGroup)
     private var ratingTitle = findViewById<TextView>(R.id.rating_title)
     private val ratingButtonNegative = findViewById<RadioButton>(R.id.ratingButtonNegative)
@@ -151,7 +151,7 @@ class PaymentStatusView @JvmOverloads constructor(
             inputBadRatingLayout.isVisible = false
         }
 
-        sendExtraFeedBack?.setOnClickListener {
+        ratingExtraFeedBackView?.setOnClickListener {
             val url = it.tag.toString()
             if (URLUtil.isValidUrl(url)) {
                 context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
@@ -182,7 +182,7 @@ class PaymentStatusView @JvmOverloads constructor(
         selectedRating = rating
         ratingMessage = ""
         sendFeedback?.isVisible = true
-        sendExtraFeedBack?.isVisible = true
+        ratingExtraFeedBackView?.isVisible = true
         inputBadRatingLayout.isVisible = true
         inputBadRatingLayout.editText?.requestFocusWithKeyboard()
         inputBadRatingLayout.editText?.addTextChangedListener { s ->
