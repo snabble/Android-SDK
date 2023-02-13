@@ -49,18 +49,18 @@ class PaymentStatusView @JvmOverloads constructor(
     private val image = findViewById<ImageView>(R.id.image)
     private val back = findViewById<MaterialButton>(R.id.back)
     private var selectedRating = ""
-    private val rating1 = findViewById<RadioButton>(R.id.rating_1)
-    private val rating2 = findViewById<RadioButton>(R.id.rating_2)
-    private val rating3 = findViewById<RadioButton>(R.id.rating_3)
-    private val ratingLayout = findViewById<View>(R.id.rating_layout)
-    private val sendExtraFeedBack: View? = findViewById(R.id.checkout_extra_feedback_button)
     private val sendFeedback: View? = findViewById(R.id.send_feedback)
     private val inputBadRatingLayout = findViewById<TextInputLayout>(R.id.input_bad_rating_layout)
     private var addIbanLayout = findViewById<LinearLayout>(R.id.add_iban_layout)
     private var addIbanButton = findViewById<Button>(R.id.add_iban_button)
-    private var ratingTitle = findViewById<TextView>(R.id.rating_title)
-    private var ratingContainer = findViewById<LinearLayout>(R.id.rating_container)
     private var payment = findViewById<PaymentStatusItemView>(R.id.payment)
+    private val ratingCardLayout = findViewById<View>(R.id.ratingCardLayout)
+    private val ratingExtraFeedBackView: View? = findViewById(R.id.checkout_extra_feedback_view)
+    private var ratingLayoutGroup = findViewById<View>(R.id.ratingLayoutGroup)
+    private var ratingTitle = findViewById<TextView>(R.id.rating_title)
+    private val ratingButtonNegative = findViewById<RadioButton>(R.id.ratingButtonNegative)
+    private val ratingButtonNeutral = findViewById<RadioButton>(R.id.ratingButtonNeutral)
+    private val ratingButtonPositive = findViewById<RadioButton>(R.id.ratingButtonPositive)
     private var receipt = findViewById<PaymentStatusItemView>(R.id.receipt)
     private var title = findViewById<TextView>(R.id.title)
     private var progress = findViewById<ProgressBar>(R.id.progress)
@@ -134,15 +134,15 @@ class PaymentStatusView @JvmOverloads constructor(
             onFulfillmentStateChanged(it)
         }
 
-        rating1.setOnClickListener {
+        ratingButtonNegative.setOnClickListener {
             createMessageForRating("1")
         }
 
-        rating2.setOnClickListener {
+        ratingButtonNeutral.setOnClickListener {
             createMessageForRating("2")
         }
 
-        rating3.setOnClickListener {
+        ratingButtonPositive.setOnClickListener {
             sendRating("3")
         }
 
@@ -151,7 +151,7 @@ class PaymentStatusView @JvmOverloads constructor(
             inputBadRatingLayout.isVisible = false
         }
 
-        sendExtraFeedBack?.setOnClickListener {
+        ratingExtraFeedBackView?.setOnClickListener {
             val url = it.tag.toString()
             if (URLUtil.isValidUrl(url)) {
                 context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
@@ -182,7 +182,7 @@ class PaymentStatusView @JvmOverloads constructor(
         selectedRating = rating
         ratingMessage = ""
         sendFeedback?.isVisible = true
-        sendExtraFeedBack?.isVisible = true
+        ratingExtraFeedBackView?.isVisible = true
         inputBadRatingLayout.isVisible = true
         inputBadRatingLayout.editText?.requestFocusWithKeyboard()
         inputBadRatingLayout.editText?.addTextChangedListener { s ->
@@ -206,7 +206,7 @@ class PaymentStatusView @JvmOverloads constructor(
         project.events.analytics("rating", rating, ratingMessage ?: "")
         Telemetry.event(Telemetry.Event.Rating, rating)
         ratingTitle.setText(R.string.Snabble_PaymentStatus_Ratings_thanksForFeedback)
-        ratingContainer.isVisible = false
+        ratingLayoutGroup.isVisible = false
         ratingMessage = null
         closeInputKeyboard()
     }
@@ -252,7 +252,7 @@ class PaymentStatusView @JvmOverloads constructor(
                 }
                 back.text = resources.getString(R.string.Snabble_PaymentStatus_back)
                 backPressedCallback.isEnabled = false
-                ratingLayout.isVisible = true
+                ratingCardLayout.isVisible = true
                 paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkout.checkoutProcess)
             }
 
