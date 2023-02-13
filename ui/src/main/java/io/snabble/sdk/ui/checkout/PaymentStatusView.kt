@@ -136,7 +136,6 @@ class PaymentStatusView @JvmOverloads constructor(
 
         rating1.setOnClickListener {
             createMessageForRating("1")
-
         }
 
         rating2.setOnClickListener {
