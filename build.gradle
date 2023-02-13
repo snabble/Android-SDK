@@ -16,7 +16,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.dokka:dokka-base:$kotlin_version"
-        classpath 'com.android.tools.build:gradle:7.3.1'
+        classpath 'com.android.tools.build:gradle:7.4.1'
         classpath 'gradle.plugin.com.github.jlouns:gradle-cross-platform-exec-plugin:0.5.0'
         classpath 'gradle.plugin.gmazzo:sqlite-plugin:0.2'
         classpath 'com.github.bjoernq:unmockplugin:0.7.9'
@@ -42,7 +42,7 @@ allprojects {
 
         compileSdkVersion = 33
         minSdkVersion = 21
-        targetSdkVersion = 33
+        targetSdkVersion = 32
 
         okhttpVersion = '4.10.0'
         desugarVersion = '1.1.5'
