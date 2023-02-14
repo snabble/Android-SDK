@@ -35,7 +35,7 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:${project.desugarVersion}"
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:1.1.5"
 
     implementation project(':core')
     implementation project(':ui')
@@ -46,7 +46,7 @@ dependencies {
     // implementation 'io.snabble.sdk:core:{currentVersion}'
     // implementation 'io.snabble.sdk:ui:{currentVersion}'
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.0"
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.6.1'

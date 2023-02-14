@@ -1,0 +1,69 @@
+[versions]
+compileSdk = "33"
+targetSdk = "32"
+minSdk = "21"
+gradlePlugin = "7.4.1"
+desugarVersion = "1.1.5"
+okhttpVersion = "4.10.0"
+# @pin always, manually updated to ensure overall dependency support
+kotlin = "1.8.0"
+navigation = "2.5.3"
+# @#pin
+compose_version = "1.2.1"
+snabbleSdk = "0.69.4"
+
+[libraries]
+android-material = "com.google.android.material:material:1.8.0"
+androidx-appcompat = "androidx.appcompat:appcompat:1.6.0"
+androidx-constraintlayout = "androidx.constraintlayout:constraintlayout:2.1.4"
+androidx-core-ktx = "androidx.core:core-ktx:1.9.0"
+androidx-core-splashscreen = "androidx.core:core-splashscreen:1.0.0"
+androidx-gridlayout = "androidx.gridlayout:gridlayout:1.0.0"
+androidx-navigation-fragmentKtx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigation" }
+androidx-navigation-runtimeKtx = { module = "androidx.navigation:navigation-runtime-ktx", version.ref = "navigation" }
+androidx-navigation-uiKtx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigation" }
+androidx-viewpager2 = "androidx.viewpager2:viewpager2:1.0.0"
+# @pin this version because w/ the update to 2.6 crashes will occur (2021-07-08)
+commonsIo = "commons-io:commons-io:2.5"
+firebase-bom = "com.google.firebase:firebase-bom:31.2.0"
+googlePlayServices-location = "com.google.android.gms:play-services-location:21.0.1"
+googlePlayServices-maps = "com.google.android.gms:play-services-maps:18.1.0"
+googlePlayServices-ossLicenses = "com.google.android.gms:play-services-oss-licenses:17.0.0"
+jakewhartonProcessPhoenix = "com.jakewharton:process-phoenix:2.1.2"
+kotlinCoroutinesOkHttp = "ru.gildor.coroutines:kotlin-coroutines-okhttp:1.0"
+picasso = "com.squareup.picasso:picasso:2.8"
+# @pin : Check change for new major release
+microsoftAppcenterAnalytics = "com.microsoft.appcenter:appcenter-analytics:4.4.5"
+rekisoftLazyWorker = "eu.rekisoft.android.util:LazyWorker:2.1.0"
+# @pin
+sentryAndroid = "io.sentry:sentry-android:5.7.3"
+# @pin until a newer version been tested successfully: https://developer.android.com/studio/write/java8-support#library-desugaring-versions
+desugarJdkLibs = "com.android.tools:desugar_jdk_libs:1.1.5"
+snabbleSdk-core = { module = "io.snabble.sdk:core", version.ref = "snabbleSdk" }
+snabbleSdk-ui = { module = "io.snabble.sdk:ui", version.ref = "snabbleSdk" }
+snabbleSdk-utils = { module = "io.snabble.sdk:utils", version.ref = "snabbleSdk" }
+# Testing
+junit = "junit:junit:4.13.2"
+test-ext-junit = "androidx.test.ext:junit:1.1.5"
+test-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
+# Classpath dependencies
+classpath-androidGradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "gradlePlugin" }
+classpath-kotlinAndroidPlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+classpath-gms-googleServices = "com.google.gms:google-services:4.3.15"
+classpath-gms-ossLicensesPlugin = "com.google.android.gms:oss-licenses-plugin:0.10.6"
+classpath-firebaseCrashlytics = "com.google.firebase:firebase-crashlytics-gradle:2.9.2"
+classpath-androidxNavigationSafeArgsPlugin = { module = "androidx.navigation:navigation-safe-args-gradle-plugin", version.ref = "navigation" }
+
+[plugins]
+androidApplication = { id = "com.android.application", version.ref = "gradlePlugin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+navigationSafeargsKotlin = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigation" }
+gmsOssLicenses = "com.google.android.gms.oss-licenses-plugin:0.10.6"
+deeplinkBuilder = "eu.rekisoft.android.deeplink-builder:1.0.0"
+undercouchDownload = "de.undercouch.download:5.3.1"
+snabbleSetup = "io.snabble.setup:1.0.1"
+tripletPlayPublisher = "com.github.triplet.play:3.8.1"
+firebaseCrashlytics = "com.google.firebase.crashlytics:2.9.2"
+benManesVersions = "com.github.ben-manes.versions:0.45.0"
+versionCatalogUpdate = "nl.littlerobots.version-catalog-update:0.7.0"

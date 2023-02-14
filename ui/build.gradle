@@ -9,11 +9,11 @@ description = 'Snabble UI: The Android User Interface snabble SDK'
 android {
     namespace 'io.snabble.sdk.ui'
 
-    compileSdkVersion project.compileSdkVersion
+    compileSdkVersion 33
 
     defaultConfig {
-        minSdkVersion project.minSdkVersion
-        targetSdkVersion project.targetSdkVersion
+        minSdkVersion 21
+        targetSdkVersion 32
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
@@ -56,7 +56,7 @@ android {
 dependencies {
     def kotest_version = '5.4.0'
 
-    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:${project.desugarVersion}"
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:1.1.5"
 
     implementation project(':utils')
     api project(':core')
@@ -99,14 +99,14 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.4.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
-    implementation "androidx.compose.material:material:$compose_version"
+    implementation "androidx.compose.material:material:1.2.1"
     implementation 'androidx.compose.material3:material3:1.0.0-rc01'
-    implementation "androidx.compose.ui:ui:$compose_version"
-    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
+    implementation "androidx.compose.ui:ui:1.2.1"
+    implementation "androidx.compose.ui:ui-tooling-preview:1.2.1"
     implementation "com.google.accompanist:accompanist-themeadapter-material3:0.28.0"
 
-    debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
-    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
+    debugImplementation "androidx.compose.ui:ui-tooling:1.2.1"
+    debugImplementation "androidx.compose.ui:ui-test-manifest:1.2.1"
 
     // Compose previews won't work w/o this: https://issuetracker.google.com/issues/227767363
     debugImplementation 'androidx.customview:customview:1.2.0-alpha02'
