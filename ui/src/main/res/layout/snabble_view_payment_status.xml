@@ -188,12 +188,22 @@
                         send_feedback,
                         snabble_feedback_external_layout" />
 
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/badRatingLayoutGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:constraint_referenced_ids="
+                        input_bad_rating_layout,
+                        send_feedback,
+                        snabble_feedback_external_layout" />
+
                 <RadioGroup
                     android:id="@+id/ratings_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginTop="16dp"
                     android:gravity="center_horizontal"
                     android:orientation="horizontal"
                     app:layout_constraintEnd_toEndOf="parent"

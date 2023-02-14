@@ -57,6 +57,7 @@ class PaymentStatusView @JvmOverloads constructor(
     private val ratingCardLayout = findViewById<View>(R.id.ratingCardLayout)
     private val ratingExtraFeedBackView: View? = findViewById(R.id.checkout_extra_feedback_view)
     private var ratingLayoutGroup = findViewById<View>(R.id.ratingLayoutGroup)
+    private var badRatingLayoutGroup = findViewById<View>(R.id.badRatingLayoutGroup)
     private var ratingTitle = findViewById<TextView>(R.id.rating_title)
     private val ratingButtonNegative = findViewById<RadioButton>(R.id.ratingButtonNegative)
     private val ratingButtonNeutral = findViewById<RadioButton>(R.id.ratingButtonNeutral)
@@ -181,6 +182,7 @@ class PaymentStatusView @JvmOverloads constructor(
     private fun createMessageForRating(rating: String) {
         selectedRating = rating
         ratingMessage = ""
+        badRatingLayoutGroup.isVisible = true
         sendFeedback?.isVisible = true
         ratingExtraFeedBackView?.isVisible = true
         inputBadRatingLayout.isVisible = true
