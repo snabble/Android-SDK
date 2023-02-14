@@ -203,6 +203,7 @@
     <string name="Snabble.PaymentStatus.Rating.send">Odoslať</string>
     <string name="Snabble.PaymentStatus.Rating.title">Čo sa ti nepáčilo?</string>
     <string name="Snabble.PaymentStatus.Rating.title2">Čo by sme mohli vylepšiť?</string>
+    <string name="Snabble.PaymentStatus.Ratings.feedbackPlaceholder">Feel free to give us more feedback (optional)</string>
     <string name="Snabble.PaymentStatus.Ratings.thanks">Ďakujem!</string>
     <string name="Snabble.PaymentStatus.Ratings.thanksForFeedback">Thanks for your feedback!</string>
     <string name="Snabble.PaymentStatus.Ratings.title">Páčilo sa ti nakupovanie?</string>

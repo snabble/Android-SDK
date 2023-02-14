@@ -243,7 +243,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/ratings_layout"
-                    app:placeholderText="Gib uns gerne auch noch mehr Feedback (optional)"
+                    app:placeholderText="@string/Snabble.PaymentStatus.Ratings.feedbackPlaceholder"
                     tools:visibility="visible">
 
                     <com.google.android.material.textfield.TextInputEditText
