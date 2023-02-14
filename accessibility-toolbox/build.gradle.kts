@@ -55,7 +55,6 @@ android {
         )
         jvmTarget = "1.8"
     }
-
     lint.disable.add("LabelFor")
     lint.disable.add("MissingTranslation")
 }
