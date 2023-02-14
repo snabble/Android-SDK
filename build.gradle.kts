@@ -16,7 +16,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.20")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0")
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:1.7.20")
         classpath("org.jetbrains.dokka:dokka-base:1.7.20")
         classpath("com.android.tools.build:gradle:7.4.1")
