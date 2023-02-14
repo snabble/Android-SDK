@@ -3,5 +3,5 @@
     <item name="snabble_asset_load_id" type="id" />
     <item name="snabble_accessibility_toolbox" type="id" />
 
-    <item name="checkout_extra_feedback_button" type="id" />
+    <item name="checkout_extra_feedback_view" type="id" />
 </resources>

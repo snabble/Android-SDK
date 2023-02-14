@@ -42,7 +42,7 @@ allprojects {
 
         compileSdkVersion = 33
         minSdkVersion = 21
-        targetSdkVersion = 33
+        targetSdkVersion = 32
 
         okhttpVersion = '4.10.0'
         desugarVersion = '1.1.5'
