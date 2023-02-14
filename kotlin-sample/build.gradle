@@ -12,7 +12,7 @@ android {
     defaultConfig {
         applicationId 'io.snabble.sdk.sample'
         minSdkVersion 21
-        targetSdkVersion 33
+        targetSdkVersion 32
         versionCode 1
         versionName '1.0'
 

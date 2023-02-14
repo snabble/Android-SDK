@@ -10,10 +10,10 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
-import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.scanner.BarcodeView
@@ -25,14 +25,17 @@ import io.snabble.sdk.utils.Logger
 import kotlin.math.roundToInt
 
 class RoutingTargetGatekeeperView @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
+
     private var checkout: Checkout
     private var checkoutIdCode: BarcodeView
     private var cancel: View
     private var cancelProgress: View
     private var helperTextNoImage: TextView
-    private var helperImage: ImageView
+    private var helperImage: ImageView?
     private var upArrow: View
 
     private var currentState: CheckoutState? = null
@@ -58,28 +61,12 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
             abort()
         }
 
-        val checkoutId = findViewById<TextView>(R.id.checkout_id)
-        val id = checkout.id
-        if (id != null && id.length >= 4) {
-            checkoutId.text = id.substring(id.length - 4)
-        } else {
-            checkoutId.visibility = GONE
-        }
-
-        checkoutIdCode.visibility = VISIBLE
-
         val handoverInformation = checkout.checkoutProcess?.paymentInformation?.handoverInformation
         val qrCodeContent = checkout.checkoutProcess?.paymentInformation?.qrCodeContent
         val content = when {
-            handoverInformation != null -> {
-                handoverInformation
-            }
-            qrCodeContent != null -> {
-                qrCodeContent
-            }
-            else -> {
-                id
-            }
+            handoverInformation != null -> handoverInformation
+            qrCodeContent != null -> qrCodeContent
+            else -> checkout.id
         }
         Logger.d("QRCode content: $content")
         checkoutIdCode.setText(content)
@@ -97,6 +84,8 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
 
+        val helperImage = helperImage ?: return
+
         // if layout is starved for space, hide the helper image
         if (changed) {
             val dm = resources.displayMetrics
@@ -108,11 +97,6 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
                         helperImage.height / 2
                     )
                 }
-            } else {
-                helperImage.layoutParams = LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
             }
         }
     }
@@ -141,16 +125,21 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
         currentState = state
     }
 
-    fun setHelperImage(bitmap: Bitmap?) {
+    private fun setHelperImage(bitmap: Bitmap?) {
+        val helperImage = helperImage
+        if (helperImage == null) {
+            helperTextNoImage.isVisible = false
+            return
+        }
         if (bitmap != null) {
             helperImage.setImageBitmap(bitmap)
-            helperImage.visibility = VISIBLE
-            upArrow.visibility = VISIBLE
-            helperTextNoImage.visibility = GONE
+            helperImage.isVisible = true
+            upArrow.isVisible = true
+            helperTextNoImage.isVisible = false
         } else {
-            helperImage.visibility = GONE
-            upArrow.visibility = GONE
-            helperTextNoImage.visibility = VISIBLE
+            helperImage.isVisible = false
+            upArrow.isVisible = false
+            helperTextNoImage.isVisible = true
         }
     }
 }

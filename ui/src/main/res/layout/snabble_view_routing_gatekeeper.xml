@@ -11,13 +11,14 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/cancel_layout"
         android:fillViewport="true">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:orientation="vertical"
             android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:gravity="center">
+            android:paddingBottom="16dp">
 
             <TextView
                 android:id="@+id/helper_text_no_image"
@@ -30,77 +31,78 @@
                 android:text="@string/Snabble.Payment.presentCode"
                 android:textAppearance="?attr/textAppearanceBodyLarge" />
 
-            <ImageView
-                android:id="@+id/helper_image"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"/>
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <include
+                    android:id="@+id/checkout_header"
+                    layout="@layout/snabble_checkout_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/helper_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:gravity="center"
                 android:layout_marginTop="16dp"
+                android:gravity="center"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
-                android:visibility="gone"
-                android:textAppearance="?attr/textAppearanceBodyLarge" />
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/arrow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/snabble_ic_arrow_upward"
                 android:layout_margin="16dp"
+                android:src="@drawable/snabble_ic_arrow_upward"
                 android:visibility="gone"
-                app:tint="?attr/colorOnSurface" />
+                app:tint="?attr/colorOnSurface"
+                tools:ignore="ContentDescription" />
 
             <io.snabble.sdk.ui.scanner.BarcodeView
                 android:id="@+id/checkout_id_code"
                 android:layout_width="match_parent"
                 android:layout_height="168dp"
-                app:format="QR_CODE"
-                tools:ignore="RtlHardcoded" />
+                app:format="QR_CODE" />
 
-            <TextView
-                android:id="@+id/checkout_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="top|center_horizontal"
-                tools:text="a64b"
-                android:layout_marginTop="2dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:textAppearance="?attr/textAppearanceBodyLarge" />
         </LinearLayout>
     </ScrollView>
 
-    <FrameLayout android:id="@+id/cancel_layout"
+    <FrameLayout
+        android:id="@+id/cancel_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true">
+
         <com.google.android.material.button.MaterialButton
-            style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
             android:id="@+id/cancel"
+            style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:gravity="center"
-            android:layout_marginRight="8dp"
             android:layout_marginLeft="8dp"
-            android:text="@string/Snabble.cancel"/>
+            android:layout_marginRight="8dp"
+            android:gravity="center"
+            android:text="@string/Snabble.cancel" />
 
         <ProgressBar
+            android:id="@+id/cancel_progress"
             android:layout_width="16dp"
             android:layout_height="16dp"
+            android:layout_gravity="end|center_vertical"
             android:layout_marginStart="4dp"
-            android:indeterminateOnly="true"
             android:indeterminate="true"
-            android:id="@+id/cancel_progress"
-            android:visibility="invisible"
-            android:layout_gravity="end|center_vertical" />
+            android:indeterminateOnly="true"
+            android:visibility="invisible" />
+
     </FrameLayout>
 </RelativeLayout>
