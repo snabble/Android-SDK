@@ -66,14 +66,14 @@
     <style name="Snabble.TextAppearance.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium" />
 
     <style name="Snabble.Rating.Negative" parent="@android:style/Widget.CompoundButton.RadioButton">
-        <item name="android:button">@drawable/snabble_rating_1</item>
+        <item name="android:button">@drawable/snabble_rating_negative</item>
     </style>
 
     <style name="Snabble.Rating.Neutral" parent="@android:style/Widget.CompoundButton.RadioButton">
-        <item name="android:button">@drawable/snabble_rating_2</item>
+        <item name="android:button">@drawable/snabble_rating_neutral</item>
     </style>
 
     <style name="Snabble.Rating.Positive" parent="@android:style/Widget.CompoundButton.RadioButton">
-        <item name="android:button">@drawable/snabble_rating_3</item>
+        <item name="android:button">@drawable/snabble_rating_positive</item>
     </style>
 </resources>
