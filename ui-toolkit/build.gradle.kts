@@ -65,7 +65,9 @@ android {
         kotlinCompilerExtensionVersion = "1.4.1"
     }
 
-    lint.disable.add("MissingTranslation")
+    lint{
+        disable.add("MissingTranslation")
+    }
 }
 
 dependencies {

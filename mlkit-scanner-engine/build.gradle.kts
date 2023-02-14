@@ -4,17 +4,17 @@ plugins {
     id("com.android.library")
     id("kotlin-android")
     id("org.jetbrains.dokka")
-    id("org.jetbrains.kotlin.plugin.parcelize")
 }
 
 apply {
     from("../scripts/maven.gradle")
 }
 
-description = "Accessibility-Toolbox: Make it easy to make your app accessibile"
+description = "ML Kit Scanner Engine: The ML Kit scanner engine implementation for the snabble SDK"
 
 android {
-    namespace = "io.snabble.accessibility"
+    namespace = "io.snabble.sdk.firebase"
+
 
     compileSdk = 33
 
@@ -36,16 +36,11 @@ android {
         }
     }
 
+
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
-    sourceSets {
-        getByName("main").java.srcDirs("src/main/kotlin")
-        getByName("test").java.srcDirs("src/test/kotlin")
-        getByName("androidTest").java.srcDirs("src/androidTest/kotlin")
     }
 
     kotlinOptions {
@@ -57,14 +52,19 @@ android {
     }
 
     lint{
-        disable.addAll(listOf("LabelFor","MissingTranslation"))
+        abortOnError = false
     }
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
+    coreLibraryDesugaring ("com.android.tools:desugar_jdk_libs:1.1.5")
 
-    implementation(project(":utils"))
+    implementation (project(":core"))
+    implementation (project(":ui"))
+    implementation (project(":utils"))
+    implementation ("com.google.mlkit:barcode-scanning:17.0.2")
 
-    implementation("androidx.core:core-ktx:1.8.0")
+    testImplementation ("junit:junit:4.13.2")
+    androidTestImplementation ("androidx.test:runner:1.4.0")
+    androidTestImplementation ("androidx.test.espresso:espresso-core:3.4.0")
 }

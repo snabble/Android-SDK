@@ -58,8 +58,9 @@ android {
         kotlinCompilerExtensionVersion = "1.4.1"
     }
 
-    lint.disable.add("LabelFor")
-    lint.disable.add("MissingTranslation")
+    lint{
+        disable.addAll(listOf("LabelFor","MissingTranslation"))
+    }
 }
 
 dependencies {
