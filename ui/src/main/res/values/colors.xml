@@ -6,4 +6,5 @@
     <color name="snabble_info_text_color_warning">#000000</color>
     <color name="snabble_info_color_positive">#009000</color>
     <color name="snabble_info_text_color_positive">#FFFFFF</color>
+    <color name="text_input">#DDDDDD</color>
 </resources>

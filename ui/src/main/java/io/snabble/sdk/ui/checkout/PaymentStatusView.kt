@@ -2,13 +2,16 @@ package io.snabble.sdk.ui.checkout
 
 import android.animation.LayoutTransition
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.webkit.URLUtil
 import android.widget.*
 import androidx.activity.OnBackPressedCallback
-import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Lifecycle
@@ -36,7 +39,7 @@ import io.snabble.sdk.utils.Dispatch
 
 class PaymentStatusView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0,
-) : ScrollView(context, attrs, defStyleAttr),
+) : FrameLayout(context, attrs, defStyleAttr),
     LifecycleObserver, PaymentOriginCandidateAvailableListener {
 
     init {
@@ -45,16 +48,20 @@ class PaymentStatusView @JvmOverloads constructor(
 
     private val image = findViewById<ImageView>(R.id.image)
     private val back = findViewById<MaterialButton>(R.id.back)
-    private val rating1 = findViewById<ImageView>(R.id.rating_1)
-    private val rating2 = findViewById<ImageView>(R.id.rating_2)
-    private val rating3 = findViewById<ImageView>(R.id.rating_3)
-    private val ratingLayout = findViewById<View>(R.id.rating_layout)
+    private var selectedRating = ""
+    private val sendFeedback: View? = findViewById(R.id.send_feedback)
     private val inputBadRatingLayout = findViewById<TextInputLayout>(R.id.input_bad_rating_layout)
     private var addIbanLayout = findViewById<LinearLayout>(R.id.add_iban_layout)
     private var addIbanButton = findViewById<Button>(R.id.add_iban_button)
-    private var ratingTitle = findViewById<TextView>(R.id.rating_title)
-    private var ratingContainer = findViewById<LinearLayout>(R.id.rating_container)
     private var payment = findViewById<PaymentStatusItemView>(R.id.payment)
+    private val ratingCardLayout = findViewById<View>(R.id.ratingCardLayout)
+    private val ratingExtraFeedBackView: View? = findViewById(R.id.checkout_extra_feedback_view)
+    private var ratingLayoutGroup = findViewById<View>(R.id.ratingLayoutGroup)
+    private var badRatingLayoutGroup = findViewById<View>(R.id.badRatingLayoutGroup)
+    private var ratingTitle = findViewById<TextView>(R.id.rating_title)
+    private val ratingButtonNegative = findViewById<RadioButton>(R.id.ratingButtonNegative)
+    private val ratingButtonNeutral = findViewById<RadioButton>(R.id.ratingButtonNeutral)
+    private val ratingButtonPositive = findViewById<RadioButton>(R.id.ratingButtonPositive)
     private var receipt = findViewById<PaymentStatusItemView>(R.id.receipt)
     private var title = findViewById<TextView>(R.id.title)
     private var progress = findViewById<ProgressBar>(R.id.progress)
@@ -128,20 +135,28 @@ class PaymentStatusView @JvmOverloads constructor(
             onFulfillmentStateChanged(it)
         }
 
-        rating1.setOnClickListener {
-            ratingMessage = ""
-            inputBadRatingLayout.isVisible = true
-            inputBadRatingLayout.editText?.addTextChangedListener { s ->
-                ratingMessage = s.toString()
-            }
+        ratingButtonNegative.setOnClickListener {
+            createMessageForRating("1")
         }
 
-        rating2.setOnClickListener {
-            sendRating("2")
+        ratingButtonNeutral.setOnClickListener {
+            createMessageForRating("2")
         }
 
-        rating3.setOnClickListener {
+        ratingButtonPositive.setOnClickListener {
             sendRating("3")
+        }
+
+        sendFeedback?.setOnClickListener {
+            sendRating(selectedRating)
+            inputBadRatingLayout.isVisible = false
+        }
+
+        ratingExtraFeedBackView?.setOnClickListener {
+            val url = it.tag.toString()
+            if (URLUtil.isValidUrl(url)) {
+                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            }
         }
 
         addIbanLayout.isVisible = false
@@ -164,12 +179,38 @@ class PaymentStatusView @JvmOverloads constructor(
             SEPACardInputActivity.newIntent(context, paymentOriginCandidate)
         }
 
+    private fun createMessageForRating(rating: String) {
+        selectedRating = rating
+        ratingMessage = ""
+        badRatingLayoutGroup.isVisible = true
+        sendFeedback?.isVisible = true
+        ratingExtraFeedBackView?.isVisible = true
+        inputBadRatingLayout.isVisible = true
+        inputBadRatingLayout.editText?.requestFocusWithKeyboard()
+        inputBadRatingLayout.editText?.addTextChangedListener { s ->
+            ratingMessage = s.toString()
+        }
+    }
+
+    private fun EditText.requestFocusWithKeyboard() {
+        requestFocus()
+        (context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+            .showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+    }
+
+    private fun closeInputKeyboard() {
+        val keyboardManager: InputMethodManager =
+            context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        keyboardManager.hideSoftInputFromWindow(this.windowToken, 0)
+    }
+
     private fun sendRating(rating: String) {
         project.events.analytics("rating", rating, ratingMessage ?: "")
         Telemetry.event(Telemetry.Event.Rating, rating)
-        ratingTitle.setText(R.string.Snabble_PaymentStatus_Ratings_thanks)
-        ratingContainer.isInvisible = true
+        ratingTitle.setText(R.string.Snabble_PaymentStatus_Ratings_thanksForFeedback)
+        ratingLayoutGroup.isVisible = false
         ratingMessage = null
+        closeInputKeyboard()
     }
 
     private fun onStateChanged(state: CheckoutState?) {
@@ -198,6 +239,7 @@ class PaymentStatusView @JvmOverloads constructor(
             -> {
                 payment.state = PaymentStatusItemView.State.IN_PROGRESS
             }
+
             CheckoutState.PAYMENT_APPROVED -> {
                 title.text = resources.getString(R.string.Snabble_PaymentStatus_Title_success)
                 image.setImageResource(R.drawable.snabble_ic_payment_success_big)
@@ -212,29 +254,35 @@ class PaymentStatusView @JvmOverloads constructor(
                 }
                 back.text = resources.getString(R.string.Snabble_PaymentStatus_back)
                 backPressedCallback.isEnabled = false
-                ratingLayout.isVisible = true
+                ratingCardLayout.isVisible = true
                 paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkout.checkoutProcess)
             }
+
             CheckoutState.PAYMENT_PROCESSING_ERROR -> {
                 Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider)
                 handlePaymentAborted()
             }
+
             CheckoutState.DENIED_TOO_YOUNG -> {
                 Telemetry.event(Telemetry.Event.CheckoutDeniedByTooYoung)
                 handlePaymentAborted()
             }
+
             CheckoutState.DENIED_BY_PAYMENT_PROVIDER -> {
                 Telemetry.event(Telemetry.Event.CheckoutDeniedByPaymentProvider)
                 handlePaymentAborted()
             }
+
             CheckoutState.DENIED_BY_SUPERVISOR -> {
                 Telemetry.event(Telemetry.Event.CheckoutDeniedBySupervisor)
                 handlePaymentAborted()
             }
+
             CheckoutState.PAYMENT_ABORTED -> {
                 Telemetry.event(Telemetry.Event.CheckoutAbortByUser)
                 handlePaymentAborted()
             }
+
             CheckoutState.REQUEST_PAYMENT_AUTHORIZATION_TOKEN -> {
                 val price = checkout.verifiedOnlinePrice
                 if (price != -1) {
@@ -248,6 +296,7 @@ class PaymentStatusView @JvmOverloads constructor(
                     checkout.abort()
                 }
             }
+
             else -> Unit
         }
 
@@ -325,18 +374,6 @@ class PaymentStatusView @JvmOverloads constructor(
         stopPollingForPaymentOriginCandidate()
 
         isStopped = true
-
-        if (ratingMessage != null) {
-            sendRating("1")
-        }
-    }
-
-    override fun onVisibilityChanged(changedView: View, visibility: Int) {
-        super.onVisibilityChanged(changedView, visibility)
-
-        if (visibility != VISIBLE && ratingMessage != null) {
-            sendRating("1")
-        }
     }
 
     override fun onAttachedToWindow() {
@@ -349,10 +386,6 @@ class PaymentStatusView @JvmOverloads constructor(
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-
-        if (ratingMessage != null) {
-            sendRating("1")
-        }
 
         stopPollingForPaymentOriginCandidate()
     }

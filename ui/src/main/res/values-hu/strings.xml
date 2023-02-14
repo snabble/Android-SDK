@@ -138,6 +138,14 @@
     <string name="Snabble.Payment.SEPA.city">Város</string>
     <string name="Snabble.Payment.SEPA.countryCode">Ország</string>
     <string name="Snabble.Payment.SEPA.hint">Megjegyzés: A te és a kereskedőink visszaélésekkel szembeni védelme érdekében az első SEPA terhelési megbízásos fizetésednél a kereskedőnél megjelenik a bankkártyád.</string>
+    <string name="Snabble.Payment.SEPA.Hint.account">Számlaszám</string>
+    <string name="Snabble.Payment.SEPA.Hint.accountType">Számla típusa</string>
+    <string name="Snabble.Payment.SEPA.Hint.bank">Bankazonosító kód</string>
+    <string name="Snabble.Payment.SEPA.Hint.branchCode">Fiók száma</string>
+    <string name="Snabble.Payment.SEPA.Hint.checksum">Ellenőrző összeg</string>
+    <string name="Snabble.Payment.SEPA.Hint.controlCode">Ellenőrző jel</string>
+    <string name="Snabble.Payment.SEPA.Hint.miscCode">egyéb funkció</string>
+    <string name="Snabble.Payment.SEPA.Hint.regionCode">Regionális kód</string>
     <string name="Snabble.Payment.SEPA.iban">IBAN</string>
     <string name="Snabble.Payment.SEPA.invalidIBAN">A megadott IBAN érvénytelen.</string>
     <string name="Snabble.Payment.SEPA.invalidIBANCountry">A megadott IBAN-országkód hibás.</string>
@@ -150,6 +158,7 @@
     <string name="Snabble.Payment.SEPA.name">Név</string>
     <string name="Snabble.Payment.SEPA.payer">Fizetésre kötelezett</string>
     <string name="Snabble.Payment.SEPA.title">SEPA terhelési megbízás</string>
+    <string name="Snabble.Payment.SEPA.validIBAN">Érvényes IBAN</string>
     <string name="Snabble.Payment.success">Köszönjük a vásárlásodat</string>
     <string name="Snabble.Payment.Twint.error">A TWINT-fiókod feldolgozása során hiba történt</string>
     <string name="Snabble.Payment.usableAt">Itt használható: %s</string>
@@ -185,7 +194,10 @@
     <string name="Snabble.PaymentStatus.Payment.tryAgain">Megpróbálom újra</string>
     <string name="Snabble.PaymentStatus.Rating.send">Elküldés</string>
     <string name="Snabble.PaymentStatus.Rating.title">Mi nem volt jó?</string>
+    <string name="Snabble.PaymentStatus.Rating.title2">Mit tudnánk még jobban csinálni?</string>
+    <string name="Snabble.PaymentStatus.Ratings.feedbackPlaceholder">Feel free to give us more feedback (optional)</string>
     <string name="Snabble.PaymentStatus.Ratings.thanks">Köszönjük!</string>
+    <string name="Snabble.PaymentStatus.Ratings.thanksForFeedback">Thanks for your feedback!</string>
     <string name="Snabble.PaymentStatus.Ratings.title">Tetszett a vásárlás?</string>
     <string name="Snabble.PaymentStatus.Receipt.title">Nyugta</string>
     <string name="Snabble.PaymentStatus.step1">Helymeghatározás a pénztár területén</string>
@@ -276,7 +288,7 @@
     <string name="Snabble.Scanner.updateCart">Kosár frissítése</string>
     <string name="Snabble.SEPA.editingHint">A SEPA-adatokat kódolva tároljuk, éppen ezért nem tudjuk feldolgozni.</string>
     <string name="Snabble.SEPA.encryptionError">Hiba a titkosítás során</string>
-    <string name="Snabble.SEPA.helper">Please enter the data for SEPA direct debit.</string>
+    <string name="Snabble.SEPA.helper">Kérlek, add meg az adatokat a SEPA terhelési megbízáshoz.</string>
     <string name="Snabble.SEPA.iAgree">Hozzájárulok</string>
     <string name="Snabble.SEPA.IbanTransferAlert.message">Elmented ezeket a számlaadatokat (IBAN: %s) a jövőbeni bevásárlásokhoz?</string>
     <string name="Snabble.SEPA.IbanTransferAlert.title">Számla adatainak mentése</string>
@@ -359,6 +371,7 @@
     </plurals>
     <string name="Snabble.Shoppingcart.removeItem">%s tényleg eltávolítod?</string>
     <string name="Snabble.Shoppingcart.removeItems">Az összes terméket eltávolítod a kosárból?</string>
+    <string name="Snabble.Shoppingcart.saved">megtakarítva</string>
     <string name="Snabble.ShoppingCart.title">Kosár</string>
     <!-- Hinweiß der angezeigt wird wenn ein Artikel der Einkaufsliste hinzugefügt wurde -->
     <string name="Snabble.ShoppingList.added">%s mentve</string>

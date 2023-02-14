@@ -146,6 +146,14 @@
     <string name="Snabble.Payment.SEPA.city">Mesto</string>
     <string name="Snabble.Payment.SEPA.countryCode">Krajina</string>
     <string name="Snabble.Payment.SEPA.hint">Poznámka: Za účelom tvojej ochrany a ochrany našich obchodníkov pred zneužitím si obchodník pri tvojej prvej platbe prostredníctvom SEPA inkasa vyžiada tvoju bankovú kartu.</string>
+    <string name="Snabble.Payment.SEPA.Hint.account">Číslo účtu</string>
+    <string name="Snabble.Payment.SEPA.Hint.accountType">Typ účtu</string>
+    <string name="Snabble.Payment.SEPA.Hint.bank">Identifikačný kód banky</string>
+    <string name="Snabble.Payment.SEPA.Hint.branchCode">Číslo pobočky</string>
+    <string name="Snabble.Payment.SEPA.Hint.checksum">Kontrolný súčet</string>
+    <string name="Snabble.Payment.SEPA.Hint.controlCode">Kontrolný znak</string>
+    <string name="Snabble.Payment.SEPA.Hint.miscCode">Ďalšia funkcia</string>
+    <string name="Snabble.Payment.SEPA.Hint.regionCode">Kód regiónu</string>
     <string name="Snabble.Payment.SEPA.iban">IBAN</string>
     <string name="Snabble.Payment.SEPA.invalidIBAN">Zadaný IBAN je neplatný.</string>
     <string name="Snabble.Payment.SEPA.invalidIBANCountry">Zadaný IBAN kód krajiny je nesprávny.</string>
@@ -158,6 +166,7 @@
     <string name="Snabble.Payment.SEPA.name">Meno</string>
     <string name="Snabble.Payment.SEPA.payer">Platiteľ</string>
     <string name="Snabble.Payment.SEPA.title">SEPA inkaso</string>
+    <string name="Snabble.Payment.SEPA.validIBAN">Platný IBAN</string>
     <string name="Snabble.Payment.success">Ďakujeme za tvoj nákup</string>
     <string name="Snabble.Payment.Twint.error">Pri spracovaní tvojho účtu TWINT sa vyskytla chyba</string>
     <string name="Snabble.Payment.usableAt">Použiteľné tu: %s</string>
@@ -193,7 +202,10 @@
     <string name="Snabble.PaymentStatus.Payment.tryAgain">Skúsiť znovu</string>
     <string name="Snabble.PaymentStatus.Rating.send">Odoslať</string>
     <string name="Snabble.PaymentStatus.Rating.title">Čo sa ti nepáčilo?</string>
+    <string name="Snabble.PaymentStatus.Rating.title2">Čo by sme mohli vylepšiť?</string>
+    <string name="Snabble.PaymentStatus.Ratings.feedbackPlaceholder">Feel free to give us more feedback (optional)</string>
     <string name="Snabble.PaymentStatus.Ratings.thanks">Ďakujem!</string>
+    <string name="Snabble.PaymentStatus.Ratings.thanksForFeedback">Thanks for your feedback!</string>
     <string name="Snabble.PaymentStatus.Ratings.title">Páčilo sa ti nakupovanie?</string>
     <string name="Snabble.PaymentStatus.Receipt.title">Pokladničný blok</string>
     <string name="Snabble.PaymentStatus.step1">Lokalizácia v oblasti pokladní</string>
@@ -284,7 +296,7 @@
     <string name="Snabble.Scanner.updateCart">Aktualizovať košík</string>
     <string name="Snabble.SEPA.editingHint">Tvoje SEPA údaje budeme uchovávať len v šifrovanej forme, a preto nemôžu byť spracované.</string>
     <string name="Snabble.SEPA.encryptionError">Chyba pri kódovaní</string>
-    <string name="Snabble.SEPA.helper">Please enter the data for SEPA direct debit.</string>
+    <string name="Snabble.SEPA.helper">Zadaj údaje pre SEPA inkaso.</string>
     <string name="Snabble.SEPA.iAgree">Súhlasím</string>
     <string name="Snabble.SEPA.IbanTransferAlert.message">Chceš uložiť tieto údaje účtu (IBAN: %s) pre nákupy v budúcnosti?</string>
     <string name="Snabble.SEPA.IbanTransferAlert.title">Uložiť údaje účtu</string>
@@ -371,6 +383,7 @@
     </plurals>
     <string name="Snabble.Shoppingcart.removeItem">Naozaj chceš odstrániť %s z košíka?</string>
     <string name="Snabble.Shoppingcart.removeItems">Naozaj chceš odstrániť všetky produkty z košíka?</string>
+    <string name="Snabble.Shoppingcart.saved">ušetrená suma</string>
     <string name="Snabble.ShoppingCart.title">Košík</string>
     <!-- Hinweiß der angezeigt wird wenn ein Artikel der Einkaufsliste hinzugefügt wurde -->
     <string name="Snabble.ShoppingList.added">%s uložené</string>
