@@ -250,7 +250,7 @@
                         android:id="@+id/input_bad_rating_"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/snabble_text_input_grey"
+                        android:background="@drawable/snabble_text_input"
                         android:gravity="top|start"
                         android:inputType="textMultiLine"
                         android:minLines="5" />
