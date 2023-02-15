@@ -196,6 +196,7 @@
     <string name="Snabble.PaymentStatus.Payment.error">Votre paiement n\'a pas pu être effectué Réessayez ou choisissez un autre mode de paiement.</string>
     <string name="Snabble.PaymentStatus.Payment.title">Paiement</string>
     <string name="Snabble.PaymentStatus.Payment.tryAgain">Réessayer</string>
+    <!-- Button to submit the feedback on the checkout screen after a successful checkout. -->
     <string name="Snabble.PaymentStatus.Rating.send">Envoyer</string>
     <string name="Snabble.PaymentStatus.Rating.title">Tout s\'est bien passé ?</string>
     <string name="Snabble.PaymentStatus.Rating.title2">What can we do even better?</string>
