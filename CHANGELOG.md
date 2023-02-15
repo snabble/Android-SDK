@@ -7,6 +7,12 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.69.5]
+### Added
+* ui: Add animation for a successful checkout (#111)
+* ui: Add new payment status UI with additional feedback option (#110)
+* ui: Add support for a custom checkout header (#109)
+
 ## [0.69.4]
 ### Added
 * ui: Pre-fill IBAN for PAYONE SEPA after checkout
