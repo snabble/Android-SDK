@@ -1,10 +1,11 @@
 @file:Suppress("UnstableApiUsage")
 
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("com.android.library")
-    id("kotlin-android")
-    id("org.jetbrains.dokka")
-    id("de.mobilej.unmock")
+    id(libs.plugins.androidLibrary.get().pluginId)
+    id(libs.plugins.kotlin.android.get().pluginId)
+    id(libs.plugins.dokka.get().pluginId)
+    id(libs.plugins.unmock.get().pluginId)
 }
 
 apply {
@@ -16,11 +17,12 @@ description = "Snabble Utils: Util collection for the snabble SDK integration"
 android {
     namespace = "io.snabble.sdk.utils"
 
-    compileSdk = 33
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = 21
-        targetSdk = 32
+        minSdk = libs.versions.minSdk.get().toInt()
+        @Suppress("Deprecation")
+        targetSdk = libs.versions.targetSdk.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -53,24 +55,22 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring ("com.android.tools:desugar_jdk_libs:1.1.5")
+    coreLibraryDesugaring(libs.desugarJdkLibs)
 
     //noinspection GradleDependency
-    implementation ("commons-io:commons-io:2.5")
-    implementation ("com.squareup.okhttp3:okhttp:4.10.0")
-    implementation ("com.squareup.okhttp3:okhttp-tls:4.10.0")
-    implementation ("androidx.appcompat:appcompat:1.3.1")
-    implementation ("com.google.code.gson:gson:2.9.1")
-    implementation ("androidx.core:core-ktx:1.8.0")
-
-    testImplementation ("junit:junit:4.13.2")
-    androidTestImplementation ("androidx.test.ext:junit:1.1.3")
-    androidTestImplementation ("androidx.test.espresso:espresso-core:3.4.0")
+    implementation(libs.androidx.appcompat)
+    implementation (libs.androidx.core.ktx)
+    implementation(libs.commonsIo)
+    implementation (libs.gson)
+    implementation (libs.squareup.okhttp3.okhttp)
+    implementation (libs.squareup.okhttp3.tls)
 
     // for testing
-    testImplementation ("junit:junit:4.13.2")
-    testImplementation ("org.mockito.kotlin:mockito-kotlin:4.0.0")
-    unmock ("org.robolectric:android-all:4.3_r2-robolectric-0")
+    testImplementation (libs.junit)
+    testImplementation (libs.mockito.kotlin)
+    androidTestImplementation (libs.test.ext.junit)
+    androidTestImplementation (libs.test.espressoCore)
+    unmock (libs.roboletric.androidAll)
 }
 
 unMock {

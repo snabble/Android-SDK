@@ -1,10 +1,11 @@
 @file:Suppress("UnstableApiUsage")
 
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("com.android.library")
-    id("kotlin-android")
-    id("org.jetbrains.dokka")
-    id("org.jetbrains.kotlin.plugin.parcelize")
+    id(libs.plugins.androidLibrary.get().pluginId)
+    id(libs.plugins.kotlin.android.get().pluginId)
+    id(libs.plugins.dokka.get().pluginId)
+    id(libs.plugins.kotlin.parcelize.get().pluginId)
 }
 
 apply {
@@ -15,11 +16,12 @@ description = "Snabble Core: The business logic of the snabble SDK"
 android {
     namespace = "io.snabble.sdk"
 
-    compileSdk = 33
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = 21
-        targetSdk = 32
+        minSdk = libs.versions.minSdk.get().toInt()
+        @Suppress("Deprecation")
+        targetSdk = libs.versions.targetSdk.get().toInt()
         consumerProguardFile("proguard-rules.pro")
         buildConfigField("String", "VERSION_NAME", "\"${project.extra.get("sdkVersion")}\"")
 
@@ -60,30 +62,29 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
+    coreLibraryDesugaring(libs.desugarJdkLibs)
 
     implementation(project(":utils"))
 
     //noinspection GradleDependency
-    implementation("commons-io:commons-io:2.5")
-    implementation("org.apache.commons:commons-lang3:3.12.0")
-    implementation("org.iban4j:iban4j:3.2.1")
-    implementation("com.caverock:androidsvg-aar:1.4")
-    implementation("com.google.android.gms:play-services-wallet:19.1.0")
-    implementation("androidx.appcompat:appcompat:1.4.2")
-    implementation("androidx.biometric:biometric:1.2.0-alpha04")
-    implementation("androidx.lifecycle:lifecycle-process:2.5.1")
-    implementation("androidx.lifecycle:lifecycle-common:2.5.1")
+    implementation(libs.apache.commonsLang3)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.biometric)
+    implementation(libs.androidx.lifecycle.common)
+    implementation(libs.androidx.lifecycle.process)
+    implementation(libs.caverock.androidsvgAar)
+    implementation(libs.commonsIo)
+    implementation(libs.iban4j)
+    implementation(libs.googlePlayServices.wallet)
+    api(libs.gson)
+    implementation(libs.rekisoftLazyWorker)
 
-    api("com.squareup.okhttp3:okhttp:4.10.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
-    implementation("eu.rekisoft.android.util:LazyWorker:2.1.0")
+    api(libs.squareup.okhttp3.okhttp)
+    implementation(libs.squareup.okhttp3.loggingInterceptor)
 
-    api("com.google.code.gson:gson:2.9.1")
-
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("org.robolectric:robolectric:4.8.1")
-    testImplementation("com.squareup.okhttp3:mockwebserver:4.10.0")
-    testImplementation("org.jetbrains.kotlin:kotlin-reflect:1.8.0")
-    testImplementation("androidx.arch.core:core-testing:2.1.0")
+    testImplementation(libs.junit)
+    testImplementation(libs.roboletric)
+    testImplementation(libs.squareup.okhttp3.mockwebserver)
+    testImplementation(libs.koltin.reflect)
+    testImplementation(libs.androidx.coreTesting)
 }

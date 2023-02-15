@@ -1,10 +1,11 @@
 @file:Suppress("UnstableApiUsage")
 
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("com.android.library")
-    id("kotlin-android")
-    id("org.jetbrains.dokka")
-    id("org.jetbrains.kotlin.plugin.parcelize")
+    id(libs.plugins.androidLibrary.get().pluginId)
+    id(libs.plugins.kotlin.android.get().pluginId)
+    id(libs.plugins.dokka.get().pluginId)
+    id(libs.plugins.kotlin.parcelize.get().pluginId)
 }
 
 apply {
@@ -16,11 +17,12 @@ description = "Accessibility-Toolbox: Make it easy to make your app accessibile"
 android {
     namespace = "io.snabble.accessibility"
 
-    compileSdk = 33
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = 21
-        targetSdk = 32
+        minSdk = libs.versions.minSdk.get().toInt()
+        @Suppress("Deprecation")
+        targetSdk = libs.versions.targetSdk.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -62,9 +64,9 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
+    coreLibraryDesugaring(libs.desugarJdkLibs)
 
     implementation(project(":utils"))
 
-    implementation("androidx.core:core-ktx:1.8.0")
+    implementation(libs.androidx.core.ktx)
 }

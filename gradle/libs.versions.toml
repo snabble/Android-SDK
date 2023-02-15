@@ -7,57 +7,177 @@ desugarVersion = "1.1.5"
 okhttpVersion = "4.10.0"
 # @pin always, manually updated to ensure overall dependency support
 kotlin = "1.8.0"
+# @pin always, manually updated to ensure overall dependency support
+compose-compiler = "1.4.1"
 navigation = "2.5.3"
 # @#pin
 compose_version = "1.2.1"
 snabbleSdk = "0.69.4"
 
 [libraries]
-android-material = "com.google.android.material:material:1.8.0"
+
+androidx-activityCompose = "androidx.activity:activity-compose:1.6.0"
 androidx-appcompat = "androidx.appcompat:appcompat:1.6.0"
-androidx-constraintlayout = "androidx.constraintlayout:constraintlayout:2.1.4"
+androidx-biometric = "androidx.biometric:biometric:1.2.0-alpha04"
+androidx-camera-camera2 = "androidx.camera:camera-camera2:1.2.1"
+androidx-camera-core = "androidx.camera:camera-core:1.2.1"
+androidx-camera-extension = "androidx.camera:camera-extensions:1.2.1"
+androidx-camera-lifecycle = "androidx.camera:camera-lifecycle:1.2.1"
+androidx-camera-view = "androidx.camera:camera-view:1.2.1"
+androidx-cardview = "androidx.cardview:cardview:1.0.0"
 androidx-core-ktx = "androidx.core:core-ktx:1.9.0"
-androidx-core-splashscreen = "androidx.core:core-splashscreen:1.0.0"
+androidx-constraintlayoutCompose = "androidx.constraintlayout:constraintlayout-compose:1.0.1"
+# Compose previews won't work w/o this: https://issuetracker.google.com/issues/227767363
+androidx-customview = "androidx.customview:customview:1.2.0-alpha02"
+androidx-customview-poolingcontainer = "androidx.customview:customview-poolingcontainer:1.0.0"
 androidx-gridlayout = "androidx.gridlayout:gridlayout:1.0.0"
+androidx-lifecycle-process = "androidx.lifecycle:lifecycle-process:2.5.1"
+androidx-lifecycle-common = "androidx.lifecycle:lifecycle-common:2.5.1"
+androidx-lifecycleRuntimeCompose = "androidx.lifecycle:lifecycle-runtime-compose:2.6.0-alpha02"
+androidx-lifecycleViewmodelCompose = "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1"
+android-material = "com.google.android.material:material:1.8.0"
 androidx-navigation-fragmentKtx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigation" }
 androidx-navigation-runtimeKtx = { module = "androidx.navigation:navigation-runtime-ktx", version.ref = "navigation" }
 androidx-navigation-uiKtx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigation" }
+androidx-preferences = "androidx.preference:preference-ktx:1.2.0"
+androidx-recyclerview = "androidx.recyclerview:recyclerview:1.2.1"
+androidx-startupRuntime = "androidx.startup:startup-runtime:1.1.1"
+androidx-swiperefreshlayout = "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 androidx-viewpager2 = "androidx.viewpager2:viewpager2:1.0.0"
-# @pin this version because w/ the update to 2.6 crashes will occur (2021-07-08)
+androidx-webkit = "androidx.webkit:webkit:1.4.0"
+apache-commonsLang3 = "org.apache.commons:commons-lang3:3.12.0"
+caverock-androidsvgAar = "com.caverock:androidsvg-aar:1.4"
+compose-material = "androidx.compose.material:material:1.2.1"
+compose-material3 = "androidx.compose.material3:material3:1.0.0-rc01"
+compose-material3Themeadapter = "com.google.accompanist:accompanist-themeadapter-material3:0.28.0"
+compose-ui = "androidx.compose.ui:ui:1.2.1"
+compose-uiTestManifest = "androidx.compose.ui:ui-test-manifest:1.2.1"
+compose-uiTooling = "androidx.compose.ui:ui-tooling:1.2.1"
+compose-uiToolingPreview = "androidx.compose.ui:ui-tooling-preview:1.2.1"
 commonsIo = "commons-io:commons-io:2.5"
+datatrans-androidSdk = "ch.datatrans:android-sdk:1.5.0"
+# @pin until a newer version been tested successfully: https://developer.android.com/studio/write/java8-support#library-desugaring-versions
+desugarJdkLibs = "com.android.tools:desugar_jdk_libs:1.1.5"
+googlePlayServices-maps = "com.google.android.gms:play-services-maps:18.1.0"
+googlePlayServices-wallet = "com.google.android.gms:play-services-wallet:19.1.0"
+google-mlkit-barcodeScanning = "com.google.mlkit:barcode-scanning:17.0.2"
+google-zxing-core = "com.google.zxing:core:3.5.1"
+gson = "com.google.code.gson:gson:2.9.1"
+iban4j = "org.iban4j:iban4j:3.2.1"
+picasso = "com.squareup.picasso:picasso:2.8"
+rekisoftLazyWorker = "eu.rekisoft.android.util:LazyWorker:2.1.0"
+relex-circleindicator = "me.relex:circleindicator:2.1.6"
+squareup-okhttp3-loggingInterceptor = "com.squareup.okhttp3:logging-interceptor:4.10.0"
+squareup-okhttp3-okhttp = "com.squareup.okhttp3:okhttp:4.10.0"
+squareup-okhttp3-tls= "com.squareup.okhttp3:okhttp-tls:4.10.0"
+# Testing
+androidx-coreTesting = "androidx.arch.core:core-testing:2.1.0"
+junit = "junit:junit:4.13.2"
+koin-android = "io.insert-koin:koin-android:3.2.0"
+koin-androidCompat = "io.insert-koin:koin-android-compat:3.2.0"
+koin-androidxCompose = "io.insert-koin:koin-androidx-compose:3.2.0"
+koin-core = "io.insert-koin:koin-core:3.2.0"
+kotest-runnerJunit = "io.kotest:kotest-runner-junit5:5.4.0"
+kotest-assertionsCore = "io.kotest:kotest-assertions-core:5.4.0"
+koltin-reflect = "org.jetbrains.kotlin:kotlin-reflect:1.8.0"
+kotlinx-serializationJson = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0"
+mock = "io.mockk:mockk:1.13.3"
+mockito-kotlin = "org.mockito.kotlin:mockito-kotlin:4.0.0"
+roboletric = "org.robolectric:robolectric:4.8.1"
+roboletric-androidAll = "org.robolectric:android-all:4.3_r2-robolectric-0"
+sebaslogen-resaca = "com.github.sebaslogen.resaca:resaca:2.3.0"
+squareup-okhttp3-mockwebserver = "com.squareup.okhttp3:mockwebserver:4.10.0"
+test-espressoCore = "androidx.test.espresso:espresso-core:3.5.1"
+test-ext-junit = "androidx.test.ext:junit:1.1.5"
+test-runner = "androidx.test:runner:1.4.0"
+
+
+
+
+
+androidx-constraintlayout = "androidx.constraintlayout:constraintlayout:2.1.4"
+androidx-core-splashscreen = "androidx.core:core-splashscreen:1.0.0"
+# @pin this version because w/ the update to 2.6 crashes will occur (2021-07-08)
 firebase-bom = "com.google.firebase:firebase-bom:31.2.0"
 googlePlayServices-location = "com.google.android.gms:play-services-location:21.0.1"
-googlePlayServices-maps = "com.google.android.gms:play-services-maps:18.1.0"
 googlePlayServices-ossLicenses = "com.google.android.gms:play-services-oss-licenses:17.0.0"
 jakewhartonProcessPhoenix = "com.jakewharton:process-phoenix:2.1.2"
 kotlinCoroutinesOkHttp = "ru.gildor.coroutines:kotlin-coroutines-okhttp:1.0"
-picasso = "com.squareup.picasso:picasso:2.8"
 # @pin : Check change for new major release
 microsoftAppcenterAnalytics = "com.microsoft.appcenter:appcenter-analytics:4.4.5"
-rekisoftLazyWorker = "eu.rekisoft.android.util:LazyWorker:2.1.0"
 # @pin
 sentryAndroid = "io.sentry:sentry-android:5.7.3"
-# @pin until a newer version been tested successfully: https://developer.android.com/studio/write/java8-support#library-desugaring-versions
-desugarJdkLibs = "com.android.tools:desugar_jdk_libs:1.1.5"
 snabbleSdk-core = { module = "io.snabble.sdk:core", version.ref = "snabbleSdk" }
 snabbleSdk-ui = { module = "io.snabble.sdk:ui", version.ref = "snabbleSdk" }
 snabbleSdk-utils = { module = "io.snabble.sdk:utils", version.ref = "snabbleSdk" }
-# Testing
-junit = "junit:junit:4.13.2"
-test-ext-junit = "androidx.test.ext:junit:1.1.5"
-test-espresso-core = "androidx.test.espresso:espresso-core:3.5.1"
+
 # Classpath dependencies
 classpath-androidGradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "gradlePlugin" }
 classpath-kotlinAndroidPlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+classpath-dokkaGradlePlugin = "org.jetbrains.dokka:dokka-gradle-plugin:1.7.20"
+classpath-dokkaBase = "org.jetbrains.dokka:dokka-base:1.7.20"
+classpath-jlouns-gradleCrossPlatformExecPlugin = "gradle.plugin.com.github.jlouns:gradle-cross-platform-exec-plugin:0.5.0"
+classpath-qmazzo-sqlitePlugin = "gradle.plugin.gmazzo:sqlite-plugin:0.2"
+classpath-bjoernq-unmockPlugin = "com.github.bjoernq:unmockplugin:0.7.9"
+
+
+
 classpath-gms-googleServices = "com.google.gms:google-services:4.3.15"
 classpath-gms-ossLicensesPlugin = "com.google.android.gms:oss-licenses-plugin:0.10.6"
 classpath-firebaseCrashlytics = "com.google.firebase:firebase-crashlytics-gradle:2.9.2"
 classpath-androidxNavigationSafeArgsPlugin = { module = "androidx.navigation:navigation-safe-args-gradle-plugin", version.ref = "navigation" }
 
+[bundles]
+
+camera = [
+    "androidx-camera-core",
+    "androidx-camera-camera2",
+    "androidx-camera-lifecycle",
+    "androidx-camera-view",
+    "androidx-camera-extension"
+]
+
+navigation = [
+    "androidx-navigation-fragmentKtx",
+    "androidx-navigation-runtimeKtx",
+    "androidx-navigation-uiKtx"
+]
+
+compose = [
+    "compose-material",
+    "compose-material3",
+    "compose-ui",
+    "compose-uiToolingPreview",
+    "compose-material3Themeadapter",
+    "androidx-lifecycleViewmodelCompose",
+    "androidx-lifecycleRuntimeCompose"
+]
+
+compose-debug = [
+    "compose-uiTooling",
+    "compose-uiTestManifest",
+    "androidx-customview",
+    "androidx-customview-poolingcontainer"
+]
+
+koin = [
+    "koin-core",
+    "koin-android",
+    "koin-androidCompat",
+    "koin-androidxCompose"
+]
+
 [plugins]
+
+dokka = "org.jetbrains.dokka:1.7.20"
 androidApplication = { id = "com.android.application", version.ref = "gradlePlugin" }
+androidLibrary = { id = "com.android.library", version.ref = "gradlePlugin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+unmock = "de.mobilej.unmock:0.7.1"
+
+
 navigationSafeargsKotlin = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigation" }
 gmsOssLicenses = "com.google.android.gms.oss-licenses-plugin:0.10.6"
 deeplinkBuilder = "eu.rekisoft.android.deeplink-builder:1.0.0"

@@ -2,9 +2,10 @@ import org.jetbrains.dokka.gradle.AbstractDokkaTask
 import org.jetbrains.dokka.gradle.DokkaTask
 import java.net.URI
 
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
+    alias(libs.plugins.dokka)
     id("maven-publish")
-    id("org.jetbrains.dokka")
 }
 
 buildscript {
@@ -16,13 +17,13 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0")
-        classpath("org.jetbrains.dokka:dokka-gradle-plugin:1.7.20")
-        classpath("org.jetbrains.dokka:dokka-base:1.7.20")
-        classpath("com.android.tools.build:gradle:7.4.1")
-        classpath("gradle.plugin.com.github.jlouns:gradle-cross-platform-exec-plugin:0.5.0")
-        classpath("gradle.plugin.gmazzo:sqlite-plugin:0.2")
-        classpath("com.github.bjoernq:unmockplugin:0.7.9")
+        classpath(libs.classpath.androidGradlePlugin)
+        classpath(libs.classpath.bjoernq.unmockPlugin)
+        classpath(libs.classpath.dokkaBase)
+        classpath(libs.classpath.dokkaGradlePlugin)
+        classpath(libs.classpath.jlouns.gradleCrossPlatformExecPlugin)
+        classpath(libs.classpath.kotlinAndroidPlugin)
+        classpath(libs.classpath.qmazzo.sqlitePlugin)
     }
 }
 

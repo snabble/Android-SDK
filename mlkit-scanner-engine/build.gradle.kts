@@ -1,9 +1,10 @@
 @file:Suppress("UnstableApiUsage")
 
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("com.android.library")
-    id("kotlin-android")
-    id("org.jetbrains.dokka")
+    id(libs.plugins.androidLibrary.get().pluginId)
+    id(libs.plugins.kotlin.android.get().pluginId)
+    id(libs.plugins.dokka.get().pluginId)
 }
 
 apply {
@@ -15,12 +16,12 @@ description = "ML Kit Scanner Engine: The ML Kit scanner engine implementation f
 android {
     namespace = "io.snabble.sdk.firebase"
 
-
-    compileSdk = 33
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = 21
-        targetSdk = 32
+        minSdk = libs.versions.minSdk.get().toInt()
+        @Suppress("Deprecation")
+        targetSdk = libs.versions.targetSdk.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -57,14 +58,15 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring ("com.android.tools:desugar_jdk_libs:1.1.5")
+    coreLibraryDesugaring(libs.desugarJdkLibs)
 
     implementation (project(":core"))
     implementation (project(":ui"))
     implementation (project(":utils"))
-    implementation ("com.google.mlkit:barcode-scanning:17.0.2")
 
-    testImplementation ("junit:junit:4.13.2")
-    androidTestImplementation ("androidx.test:runner:1.4.0")
-    androidTestImplementation ("androidx.test.espresso:espresso-core:3.4.0")
+    implementation (libs.google.mlkit.barcodeScanning)
+
+    testImplementation (libs.junit)
+    androidTestImplementation (libs.test.espressoCore)
+    androidTestImplementation (libs.test.runner)
 }
