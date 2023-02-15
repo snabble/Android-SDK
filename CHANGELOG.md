@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.69.6]
+### Changed
+* ui: Update translations
+
 ## [0.69.5]
 ### Added
 * ui: Add animation for a successful checkout (#111)

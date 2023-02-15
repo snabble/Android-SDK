@@ -192,7 +192,8 @@
     <string name="Snabble.PaymentStatus.Payment.error">Your payment could not be processed. Try again or choose another payment method.</string>
     <string name="Snabble.PaymentStatus.Payment.title">Payment</string>
     <string name="Snabble.PaymentStatus.Payment.tryAgain">Try again</string>
-    <string name="Snabble.PaymentStatus.Rating.send">Send</string>
+    <!-- Button to submit the feedback on the checkout screen after a successful checkout. -->
+    <string name="Snabble.PaymentStatus.Rating.send">Submit Feedback</string>
     <string name="Snabble.PaymentStatus.Rating.title">What was not good?</string>
     <string name="Snabble.PaymentStatus.Rating.title2">What can we do even better?</string>
     <string name="Snabble.PaymentStatus.Ratings.feedbackPlaceholder">Feel free to give us more feedback (optional)</string>

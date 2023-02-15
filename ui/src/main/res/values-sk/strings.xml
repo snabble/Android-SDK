@@ -200,6 +200,7 @@
     <string name="Snabble.PaymentStatus.Payment.error">Tvoja platba nemohla byť vykonaná. Skús znovu alebo vyber iný spôsob platby.</string>
     <string name="Snabble.PaymentStatus.Payment.title">Platba</string>
     <string name="Snabble.PaymentStatus.Payment.tryAgain">Skúsiť znovu</string>
+    <!-- Button to submit the feedback on the checkout screen after a successful checkout. -->
     <string name="Snabble.PaymentStatus.Rating.send">Odoslať</string>
     <string name="Snabble.PaymentStatus.Rating.title">Čo sa ti nepáčilo?</string>
     <string name="Snabble.PaymentStatus.Rating.title2">Čo by sme mohli vylepšiť?</string>

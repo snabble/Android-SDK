@@ -192,6 +192,7 @@
     <string name="Snabble.PaymentStatus.Payment.error">Fizetésed nem sikerült teljesíteni. Próbáld meg újra, vagy válassz másik fizetési módot.</string>
     <string name="Snabble.PaymentStatus.Payment.title">Fizetés</string>
     <string name="Snabble.PaymentStatus.Payment.tryAgain">Megpróbálom újra</string>
+    <!-- Button to submit the feedback on the checkout screen after a successful checkout. -->
     <string name="Snabble.PaymentStatus.Rating.send">Elküldés</string>
     <string name="Snabble.PaymentStatus.Rating.title">Mi nem volt jó?</string>
     <string name="Snabble.PaymentStatus.Rating.title2">Mit tudnánk még jobban csinálni?</string>
