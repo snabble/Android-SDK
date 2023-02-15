@@ -17,6 +17,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import com.airbnb.lottie.LottieAnimationView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputLayout
 import io.snabble.sdk.*
@@ -50,6 +51,7 @@ class PaymentStatusView @JvmOverloads constructor(
     private val back = findViewById<MaterialButton>(R.id.back)
     private var selectedRating = ""
     private val sendFeedback: View? = findViewById(R.id.send_feedback)
+    private val successAnimation: LottieAnimationView = findViewById(R.id.success_animation)
     private val inputBadRatingLayout = findViewById<TextInputLayout>(R.id.input_bad_rating_layout)
     private var addIbanLayout = findViewById<LinearLayout>(R.id.add_iban_layout)
     private var addIbanButton = findViewById<Button>(R.id.add_iban_button)
@@ -244,6 +246,7 @@ class PaymentStatusView @JvmOverloads constructor(
                 title.text = resources.getString(R.string.Snabble_PaymentStatus_Title_success)
                 image.setImageResource(R.drawable.snabble_ic_payment_success_big)
                 image.isVisible = true
+                successAnimation.playAnimation()
                 progress.isVisible = false
                 payment.state = PaymentStatusItemView.State.SUCCESS
                 val checkoutProcess = checkout.checkoutProcess
@@ -252,7 +255,7 @@ class PaymentStatusView @JvmOverloads constructor(
                 } else {
                     receipt.state = PaymentStatusItemView.State.NOT_EXECUTED
                 }
-                back.text = resources.getString(R.string.Snabble_PaymentStatus_back)
+                back.text = resources.getString(R.string.Snabble_PaymentStatus_close)
                 backPressedCallback.isEnabled = false
                 ratingCardLayout.isVisible = true
                 paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkout.checkoutProcess)
