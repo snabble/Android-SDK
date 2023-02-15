@@ -196,6 +196,7 @@
     <string name="Snabble.PaymentStatus.Rating.send">Elküldés</string>
     <string name="Snabble.PaymentStatus.Rating.title">Mi nem volt jó?</string>
     <string name="Snabble.PaymentStatus.Rating.title2">Mit tudnánk még jobban csinálni?</string>
+    <!-- Placeholder text in the input text field on the checkout screen after a successful checkout. -->
     <string name="Snabble.PaymentStatus.Ratings.feedbackPlaceholder">Feel free to give us more feedback (optional)</string>
     <string name="Snabble.PaymentStatus.Ratings.thanks">Köszönjük!</string>
     <string name="Snabble.PaymentStatus.Ratings.thanksForFeedback">Thanks for your feedback!</string>
