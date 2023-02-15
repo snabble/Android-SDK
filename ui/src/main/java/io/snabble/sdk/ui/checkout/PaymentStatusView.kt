@@ -255,7 +255,7 @@ class PaymentStatusView @JvmOverloads constructor(
                 } else {
                     receipt.state = PaymentStatusItemView.State.NOT_EXECUTED
                 }
-                back.text = resources.getString(R.string.Snabble_PaymentStatus_back)
+                back.text = resources.getString(R.string.Snabble_PaymentStatus_close)
                 backPressedCallback.isEnabled = false
                 ratingCardLayout.isVisible = true
                 paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkout.checkoutProcess)
