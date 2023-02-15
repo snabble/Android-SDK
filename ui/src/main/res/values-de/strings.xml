@@ -196,7 +196,8 @@
     <string name="Snabble.PaymentStatus.Rating.send">Feedback absenden</string>
     <string name="Snabble.PaymentStatus.Rating.title">Was war nicht gut?</string>
     <string name="Snabble.PaymentStatus.Rating.title2">Was können wir noch besser machen?</string>
-    <string name="Snabble.PaymentStatus.Ratings.feedbackPlaceholder">Gib uns gerne auch noch mehr Feedback (optional)</string>
+    <!-- Placeholder text in the input text field on the checkout screen after a successful checkout. -->
+    <string name="Snabble.PaymentStatus.Ratings.feedbackPlaceholder">Gib uns gerne noch mehr Feedback (optional)</string>
     <string name="Snabble.PaymentStatus.Ratings.thanks">Danke!</string>
     <string name="Snabble.PaymentStatus.Ratings.thanksForFeedback">Danke für dein Feedback!</string>
     <string name="Snabble.PaymentStatus.Ratings.title">Hat dir der Einkauf gefallen?</string>

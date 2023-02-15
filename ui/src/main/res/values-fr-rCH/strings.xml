@@ -200,6 +200,7 @@
     <string name="Snabble.PaymentStatus.Rating.send">Submit Feedback</string>
     <string name="Snabble.PaymentStatus.Rating.title">What was not good?</string>
     <string name="Snabble.PaymentStatus.Rating.title2">What can we do even better?</string>
+    <!-- Placeholder text in the input text field on the checkout screen after a successful checkout. -->
     <string name="Snabble.PaymentStatus.Ratings.feedbackPlaceholder">Feel free to give us more feedback (optional)</string>
     <string name="Snabble.PaymentStatus.Ratings.thanks">Thank you!</string>
     <string name="Snabble.PaymentStatus.Ratings.thanksForFeedback">Thanks for your feedback!</string>
