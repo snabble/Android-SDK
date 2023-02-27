@@ -2,20 +2,22 @@
 
 import java.util.Properties
 
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("com.android.application")
-    id("kotlin-android")
+    id(libs.plugins.androidApplication.get().pluginId)
+    id(libs.plugins.kotlin.android.get().pluginId)
 }
 
 android {
     namespace = "io.snabble.testapp"
 
-    compileSdk = 33
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = namespace
-        minSdk = 21
-        targetSdk = 32
+        minSdk = libs.versions.minSdk.get().toInt()
+        @Suppress("Deprecation")
+        targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
 
@@ -65,7 +67,7 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring ("com.android.tools:desugar_jdk_libs:1.1.5")
+    coreLibraryDesugaring(libs.desugarJdkLibs)
 
     implementation(project(":core"))
     implementation(project(":ui"))
@@ -74,13 +76,13 @@ dependencies {
     // implementation 'io.snabble.sdk:core:{currentVersion}'
     // implementation 'io.snabble.sdk:ui:{currentVersion}'
 
-    implementation("androidx.appcompat:appcompat:1.4.1")
+    implementation(libs.androidx.appcompat)
 
     //noinspection GradleDependency
-    implementation ("commons-io:commons-io:2.5")
-    implementation ("com.google.android.material:material:1.6.1")
+    implementation (libs.android.material)
+    implementation (libs.commonsIo)
 
-    testImplementation ("junit:junit:4.13.2")
-    androidTestImplementation ("androidx.test:runner:1.4.0")
-    androidTestImplementation ("androidx.test.espresso:espresso-core:3.4.0")
+    testImplementation (libs.junit)
+    androidTestImplementation (libs.test.espressoCore)
+    androidTestImplementation (libs.test.runner)
 }
