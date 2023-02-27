@@ -46,7 +46,7 @@
             app:argType="boolean" />
         <argument
             android:name="model"
-            app:argType="io.snabble.sdk.onboarding.entities.OnboardingModel" />
+            app:argType="io.snabble.sdk.screens.onboarding.data.OnboardingModel" />
     </fragment>
 
     <fragment
