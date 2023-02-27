@@ -115,8 +115,8 @@ class CouponOverviewView @JvmOverloads constructor(
             coupons.observe(lifecycleOwner, this)
         }
 
-        override fun onChanged(coupons: List<CouponItem>?) {
-            updateList(coupons)
+        override fun onChanged(value: List<CouponItem>) {
+            updateList(value)
         }
 
         fun updateList(model: List<CouponItem>?) {

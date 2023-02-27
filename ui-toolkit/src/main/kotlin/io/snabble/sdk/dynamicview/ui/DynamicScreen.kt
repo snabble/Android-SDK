@@ -7,7 +7,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.snabble.sdk.dynamicview.domain.model.Configuration
 import io.snabble.sdk.dynamicview.domain.model.DynamicConfig
@@ -28,7 +27,6 @@ internal fun DynamicScreen(
     dynamicViewModel: DynamicViewModel,
     onAction: OnDynamicAction = dynamicViewModel::sendAction,
 ) {
-    @OptIn(ExperimentalLifecycleComposeApi::class)
     val configState = dynamicViewModel.dynamicConfig.collectAsStateWithLifecycle()
     val config = configState.value ?: return
     DynamicView(

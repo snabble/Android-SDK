@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebaslogen.resaca.viewModelScoped
 import io.snabble.sdk.di.KoinProvider
@@ -26,7 +25,6 @@ internal fun LocationPermissionWidget(
 ) {
     val launcher = createActivityResultLauncher(viewModel)
 
-    @OptIn(ExperimentalLifecycleComposeApi::class)
     val hasLocationPermissionState = viewModel.hasLocationPermission.collectAsStateWithLifecycle()
     if (!hasLocationPermissionState.value) {
         LocationPermission(

@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.snabble.sdk.di.KoinProvider
 import io.snabble.sdk.dynamicview.domain.model.AppUserIdItem
@@ -47,7 +46,6 @@ import io.snabble.sdk.widgets.snabble.version.ui.VersionWidget
 import org.koin.core.component.inject
 import io.snabble.sdk.dynamicview.theme.properties.Padding as OuterPadding
 
-@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 fun SectionWidget(
     modifier: Modifier = Modifier,
