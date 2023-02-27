@@ -1,19 +1,21 @@
 @file:Suppress("UnstableApiUsage")
 
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("com.android.application")
-    id("kotlin-android")
+    id(libs.plugins.androidApplication.get().pluginId)
+    id(libs.plugins.kotlin.android.get().pluginId)
 }
 
 android {
     namespace = "io.snabble.sdk.composesample"
 
-    compileSdk = 33
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = namespace
-        minSdk = 21
-        targetSdk = 32
+        minSdk = libs.versions.minSdk.get().toInt()
+        @Suppress("Deprecation")
+        targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
 
@@ -51,31 +53,31 @@ android {
 
     packagingOptions {
         resources {
-            excludes.add( "/META-INF/{AL2.0,LGPL2.1}")
+            excludes.add("/META-INF/{AL2.0,LGPL2.1}")
         }
     }
 }
 
 dependencies {
-    implementation (project(":core"))
-    implementation (project(":ui"))
+    implementation(project(":core"))
+    implementation(project(":ui"))
 
-    implementation ("androidx.core:core-ktx:1.8.0")
-    implementation ("androidx.compose.ui:ui:1.2.1")
-    implementation ("androidx.compose.ui:ui-viewbinding:1.2.1")
-    implementation ("androidx.compose.material3:material3:1.0.0-beta01")
-    implementation ("com.google.android.material:material:1.6.1")
-    implementation ("androidx.compose.ui:ui-tooling-preview:1.2.1")
-    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
-    implementation ("androidx.activity:activity-compose:1.5.1")
-    implementation ("androidx.navigation:navigation-compose:2.5.1")
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.android.material)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.uiToolingPreview)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.uiViewBinding)
+    implementation(libs.androidx.lifecycleRuntimeKtx)
+    implementation(libs.androidx.activityCompose)
+    implementation(libs.compose.navigation)
 
-    testImplementation ("junit:junit:4.13.2")
+    testImplementation(libs.junit)
 
-    androidTestImplementation ("androidx.test.ext:junit:1.1.3")
-    androidTestImplementation ("androidx.test.espresso:espresso-core:3.4.0")
-    androidTestImplementation ("androidx.compose.ui:ui-test-junit4:1.2.1")
+    androidTestImplementation(libs.test.ext.junit)
+    androidTestImplementation(libs.test.espressoCore)
+    androidTestImplementation(libs.compose.uiTestJunit)
 
-    debugImplementation ("androidx.compose.ui:ui-tooling:1.2.1")
-    debugImplementation ("androidx.compose.ui:ui-test-manifest:1.2.1")
+    debugImplementation(libs.compose.uiTooling)
+    debugImplementation(libs.compose.uiTestManifest)
 }
