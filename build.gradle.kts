@@ -40,8 +40,7 @@ allprojects {
     }
 
     project.extra.apply {
-        val suffix = project.properties.getOrElse("versionSuffix") { "" }
-        set("sdkVersion", "${sdkVersion}$suffix")
+        set("sdkVersion", "${System.getenv("VERSION_CODE")?.toIntOrNull()?: "def"}")
     }
 
 }

@@ -17,6 +17,8 @@ jobs:
       - name: Build
         run: ./gradlew build
       - name: Publish to Maven Repository
+        env:
+          VERSION_CODE: ${{ github.run_number }}
         run: |
           eval $(ssh-agent -s)
           ssh-add - <<< "${{ secrets.MAVEN_DEPLOY }}"
