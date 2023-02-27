@@ -102,24 +102,6 @@ test-espressoCore = "androidx.test.espresso:espresso-core:3.5.1"
 test-ext-junit = "androidx.test.ext:junit:1.1.5"
 test-runner = "androidx.test:runner:1.4.0"
 
-
-
-
-
-androidx-core-splashscreen = "androidx.core:core-splashscreen:1.0.0"
-# @pin this version because w/ the update to 2.6 crashes will occur (2021-07-08)
-firebase-bom = "com.google.firebase:firebase-bom:31.2.0"
-googlePlayServices-location = "com.google.android.gms:play-services-location:21.0.1"
-googlePlayServices-ossLicenses = "com.google.android.gms:play-services-oss-licenses:17.0.0"
-kotlinCoroutinesOkHttp = "ru.gildor.coroutines:kotlin-coroutines-okhttp:1.0"
-# @pin : Check change for new major release
-microsoftAppcenterAnalytics = "com.microsoft.appcenter:appcenter-analytics:4.4.5"
-# @pin
-sentryAndroid = "io.sentry:sentry-android:5.7.3"
-snabbleSdk-core = { module = "io.snabble.sdk:core", version.ref = "snabbleSdk" }
-snabbleSdk-ui = { module = "io.snabble.sdk:ui", version.ref = "snabbleSdk" }
-snabbleSdk-utils = { module = "io.snabble.sdk:utils", version.ref = "snabbleSdk" }
-
 # Classpath dependencies
 classpath-androidGradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "gradlePlugin" }
 classpath-kotlinAndroidPlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -128,13 +110,6 @@ classpath-dokkaBase = "org.jetbrains.dokka:dokka-base:1.7.20"
 classpath-jlouns-gradleCrossPlatformExecPlugin = "gradle.plugin.com.github.jlouns:gradle-cross-platform-exec-plugin:0.5.0"
 classpath-qmazzo-sqlitePlugin = "gradle.plugin.gmazzo:sqlite-plugin:0.2"
 classpath-bjoernq-unmockPlugin = "com.github.bjoernq:unmockplugin:0.7.9"
-
-
-
-classpath-gms-googleServices = "com.google.gms:google-services:4.3.15"
-classpath-gms-ossLicensesPlugin = "com.google.android.gms:oss-licenses-plugin:0.10.6"
-classpath-firebaseCrashlytics = "com.google.firebase:firebase-crashlytics-gradle:2.9.2"
-classpath-androidxNavigationSafeArgsPlugin = { module = "androidx.navigation:navigation-safe-args-gradle-plugin", version.ref = "navigation" }
 
 [bundles]
 
@@ -187,12 +162,5 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 snabbleSetup = "io.snabble.setup:1.0.1"
 unmock = "de.mobilej.unmock:0.7.1"
 
-
-navigationSafeargsKotlin = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigation" }
-gmsOssLicenses = "com.google.android.gms.oss-licenses-plugin:0.10.6"
-deeplinkBuilder = "eu.rekisoft.android.deeplink-builder:1.0.0"
-undercouchDownload = "de.undercouch.download:5.3.1"
-tripletPlayPublisher = "com.github.triplet.play:3.8.1"
-firebaseCrashlytics = "com.google.firebase.crashlytics:2.9.2"
 benManesVersions = "com.github.ben-manes.versions:0.45.0"
 versionCatalogUpdate = "nl.littlerobots.version-catalog-update:0.7.0"
