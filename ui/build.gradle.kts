@@ -72,6 +72,7 @@ dependencies {
     api (project(":core"))
     api (project(":accessibility-toolbox"))
 
+    implementation(libs.airbnb.lottie)
     implementation(libs.androidx.appcompat)
     implementation (libs.androidx.biometric)
     implementation (libs.androidx.cardview)

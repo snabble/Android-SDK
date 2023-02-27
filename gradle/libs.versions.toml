@@ -12,10 +12,11 @@ compose-compiler = "1.4.1"
 navigation = "2.5.3"
 # @#pin
 compose_version = "1.2.1"
-snabbleSdk = "0.69.4"
+snabbleSdk = "0.69.6"
 
 [libraries]
 
+airbnb-lottie = "com.airbnb.android:lottie:5.2.0"
 androidx-activityCompose = "androidx.activity:activity-compose:1.6.0"
 androidx-appcompat = "androidx.appcompat:appcompat:1.6.0"
 androidx-biometric = "androidx.biometric:biometric:1.2.0-alpha04"
