@@ -27,6 +27,7 @@ androidx-camera-lifecycle = "androidx.camera:camera-lifecycle:1.2.1"
 androidx-camera-view = "androidx.camera:camera-view:1.2.1"
 androidx-cardview = "androidx.cardview:cardview:1.0.0"
 androidx-core-ktx = "androidx.core:core-ktx:1.9.0"
+androidx-constraintlayout = "androidx.constraintlayout:constraintlayout:2.1.4"
 androidx-constraintlayoutCompose = "androidx.constraintlayout:constraintlayout-compose:1.0.1"
 # Compose previews won't work w/o this: https://issuetracker.google.com/issues/227767363
 androidx-customview = "androidx.customview:customview:1.2.0-alpha02"
@@ -34,6 +35,7 @@ androidx-customview-poolingcontainer = "androidx.customview:customview-poolingco
 androidx-gridlayout = "androidx.gridlayout:gridlayout:1.0.0"
 androidx-lifecycle-common = "androidx.lifecycle:lifecycle-common:2.5.1"
 androidx-lifecycleExtension = "androidx.lifecycle:lifecycle-extensions:2.2.0"
+androidx-lifecycleLiveData = "androidx.lifecycle:lifecycle-livedata-ktx:2.5.1"
 androidx-lifecycle-process = "androidx.lifecycle:lifecycle-process:2.5.1"
 androidx-lifecycleRuntimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
 androidx-lifecycleRuntimeCompose = "androidx.lifecycle:lifecycle-runtime-compose:2.6.0-alpha02"
@@ -59,6 +61,7 @@ compose-uiTestManifest = "androidx.compose.ui:ui-test-manifest:1.2.1"
 compose-uiTestJunit = "androidx.compose.ui:ui-test-junit4:1.2.1"
 compose-uiTooling = "androidx.compose.ui:ui-tooling:1.2.1"
 compose-uiToolingPreview = "androidx.compose.ui:ui-tooling-preview:1.2.1"
+compose-uiUtil = "androidx.compose.ui:ui-util:1.2.1"
 compose-uiViewBinding= "androidx.compose.ui:ui-viewbinding:1.2.1"
 commonsIo = "commons-io:commons-io:2.5"
 datatrans-androidSdk = "ch.datatrans:android-sdk:1.5.0"
@@ -70,6 +73,7 @@ google-mlkit-barcodeScanning = "com.google.mlkit:barcode-scanning:17.0.2"
 google-zxing-core = "com.google.zxing:core:3.5.1"
 gson = "com.google.code.gson:gson:2.9.1"
 iban4j = "org.iban4j:iban4j:3.2.1"
+jakewhartonProcessPhoenix = "com.jakewharton:process-phoenix:2.1.2"
 picasso = "com.squareup.picasso:picasso:2.8"
 rekisoftLazyWorker = "eu.rekisoft.android.util:LazyWorker:2.1.0"
 relex-circleindicator = "me.relex:circleindicator:2.1.6"
@@ -102,13 +106,11 @@ test-runner = "androidx.test:runner:1.4.0"
 
 
 
-androidx-constraintlayout = "androidx.constraintlayout:constraintlayout:2.1.4"
 androidx-core-splashscreen = "androidx.core:core-splashscreen:1.0.0"
 # @pin this version because w/ the update to 2.6 crashes will occur (2021-07-08)
 firebase-bom = "com.google.firebase:firebase-bom:31.2.0"
 googlePlayServices-location = "com.google.android.gms:play-services-location:21.0.1"
 googlePlayServices-ossLicenses = "com.google.android.gms:play-services-oss-licenses:17.0.0"
-jakewhartonProcessPhoenix = "com.jakewharton:process-phoenix:2.1.2"
 kotlinCoroutinesOkHttp = "ru.gildor.coroutines:kotlin-coroutines-okhttp:1.0"
 # @pin : Check change for new major release
 microsoftAppcenterAnalytics = "com.microsoft.appcenter:appcenter-analytics:4.4.5"
@@ -176,12 +178,13 @@ koin = [
 
 [plugins]
 
-dokka = "org.jetbrains.dokka:1.7.20"
 androidApplication = { id = "com.android.application", version.ref = "gradlePlugin" }
 androidLibrary = { id = "com.android.library", version.ref = "gradlePlugin" }
+dokka = "org.jetbrains.dokka:1.7.20"
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+snabbleSetup = "io.snabble.setup:1.0.1"
 unmock = "de.mobilej.unmock:0.7.1"
 
 
@@ -189,7 +192,6 @@ navigationSafeargsKotlin = { id = "androidx.navigation.safeargs.kotlin", version
 gmsOssLicenses = "com.google.android.gms.oss-licenses-plugin:0.10.6"
 deeplinkBuilder = "eu.rekisoft.android.deeplink-builder:1.0.0"
 undercouchDownload = "de.undercouch.download:5.3.1"
-snabbleSetup = "io.snabble.setup:1.0.1"
 tripletPlayPublisher = "com.github.triplet.play:3.8.1"
 firebaseCrashlytics = "com.google.firebase.crashlytics:2.9.2"
 benManesVersions = "com.github.ben-manes.versions:0.45.0"
