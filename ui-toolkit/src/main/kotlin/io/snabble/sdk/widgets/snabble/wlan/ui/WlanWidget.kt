@@ -3,7 +3,6 @@ package io.snabble.sdk.widgets.snabble.wlan.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebaslogen.resaca.viewModelScoped
 import io.snabble.sdk.di.KoinProvider
@@ -14,7 +13,6 @@ import io.snabble.sdk.widgets.snabble.purchase.OnLifecycleEvent
 import io.snabble.sdk.widgets.snabble.wlan.viewmodel.WlanViewModel
 import org.koin.core.component.get
 
-@OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
 internal fun ConnectWlanWidget(
     modifier: Modifier = Modifier,

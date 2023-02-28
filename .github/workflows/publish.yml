@@ -2,7 +2,7 @@ name: Publish
 
 on:
   release:
-    types: [published]
+    types: [ published ]
 
 jobs:
   build:
@@ -17,6 +17,8 @@ jobs:
       - name: Build
         run: ./gradlew build
       - name: Publish to Maven Repository
+        env:
+          SDK_VERSION_NAME: ${{ github.ref_name }}
         run: |
           eval $(ssh-agent -s)
           ssh-add - <<< "${{ secrets.MAVEN_DEPLOY }}"

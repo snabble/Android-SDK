@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebaslogen.resaca.viewModelScoped
 import io.snabble.sdk.di.KoinProvider
@@ -55,7 +54,6 @@ internal fun PurchaseWidget(
         viewModel.updatePurchases()
     }
 
-    @OptIn(ExperimentalLifecycleComposeApi::class)
     val state = viewModel.state.collectAsStateWithLifecycle()
 
     when (val uiState = state.value) {

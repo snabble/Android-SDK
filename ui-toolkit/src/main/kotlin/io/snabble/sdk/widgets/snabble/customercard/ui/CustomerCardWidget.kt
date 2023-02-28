@@ -2,7 +2,6 @@ package io.snabble.sdk.widgets.snabble.customercard.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sebaslogen.resaca.viewModelScoped
 import io.snabble.sdk.di.KoinProvider
@@ -20,7 +19,6 @@ internal fun CustomerCardWidget(
     model: CustomerCardItem,
     onAction: OnDynamicAction,
 ) {
-    @OptIn(ExperimentalLifecycleComposeApi::class)
     val isCardVisibleState = customerCardViewModel.isCustomerCardVisible.collectAsStateWithLifecycle()
     if (isCardVisibleState.value) {
         CustomerCardWidget(

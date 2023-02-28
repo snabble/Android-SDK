@@ -8,7 +8,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.snabble.sdk.ui.payment.payone.sepa.mandate.ui.PayoneSepaMandateScreen
 import io.snabble.sdk.ui.payment.payone.sepa.mandate.viewmodel.SepaMandateViewModel
@@ -27,7 +26,6 @@ open class PayoneSepaMandateFragment : DialogFragment() {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
         setContent {
-            @OptIn(ExperimentalLifecycleComposeApi::class)
             val uiState = viewModel.mandateFlow.collectAsStateWithLifecycle().value
 
             ThemeWrapper {

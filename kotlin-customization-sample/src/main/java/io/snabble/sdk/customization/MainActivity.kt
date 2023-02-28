@@ -2,6 +2,7 @@ package io.snabble.sdk.customization
 
 import android.Manifest
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -14,24 +15,55 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.preference.PreferenceManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
 import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.checkin.OnCheckInStateChangedListener
+import io.snabble.sdk.customization.repository.OnboardingRepository
+import io.snabble.sdk.customization.repository.OnboardingRepositoryImpl
 import io.snabble.sdk.screens.onboarding.data.OnboardingModel
 import io.snabble.sdk.ui.SnabbleUI
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private lateinit var navView: BottomNavigationView
     private lateinit var toolbar: Toolbar
 
     lateinit var locationPermission: ActivityResultLauncher<String>
+
+    private val sharedPreferences: SharedPreferences
+        get() = PreferenceManager.getDefaultSharedPreferences(this)
+
+    private var showOnboarding: Boolean?
+        get() {
+            return if (sharedPreferences.contains(PREF_KEY_SHOW_ONBOARDING)) {
+                sharedPreferences.getBoolean(PREF_KEY_SHOW_ONBOARDING, true)
+            } else {
+                null
+            }
+        }
+        set(showOnboardingSeen) {
+            if (showOnboardingSeen != null) {
+                sharedPreferences.edit()
+                    .putBoolean(PREF_KEY_SHOW_ONBOARDING, showOnboardingSeen)
+                    .apply()
+            } else {
+                sharedPreferences.edit().remove(PREF_KEY_SHOW_ONBOARDING).apply()
+            }
+        }
+
+    private val onboardingRepo: OnboardingRepository by lazy {
+        OnboardingRepositoryImpl(assets, Gson())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,10 +85,15 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
         toolbar.setNavigationOnClickListener { onBackPressed() }
 
-        if (savedInstanceState == null) {
-            val json = resources.assets.open("onboardingConfig.json").bufferedReader().readText()
-            val model = Gson().fromJson(json, OnboardingModel::class.java)
-            navController.navigate(R.id.frag_onboarding, bundleOf("model" to model))
+        if (savedInstanceState == null && showOnboarding != false) {
+            lifecycleScope.launch {
+                val model = onboardingRepo.getOnboardingModel()
+                SnabbleUiToolkit.executeAction(
+                    context = this@MainActivity,
+                    SnabbleUiToolkit.Event.SHOW_ONBOARDING,
+                    bundleOf(getString(R.string.bundle_key_model) to model)
+                )
+            }
         }
 
         navController.addOnDestinationChangedListener { _, destination, arguments ->
@@ -159,6 +196,11 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         Snabble.checkInManager.stopUpdating()
+    }
+
+    companion object {
+
+        const val PREF_KEY_SHOW_ONBOARDING = "snabble.show.onboarding"
     }
 }
 
