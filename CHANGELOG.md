@@ -4,11 +4,17 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 ### Added
 ### Changed
+### Removed
+### Fixed
+
+## [0.69.7]
+### Changed
 * Convert all grade files to gradle.kts files
 * Add version catalog and dependency update plugin
 * Add release on tag
-### Removed
+
 ### Fixed
+* Serialization Exception due to usage of com.google.gson.internal.LinkedTreeMap
 
 ## [0.69.6]
 ### Changed
@@ -23,6 +29,7 @@ All notable changes to this project will be documented in this file.
 ## [0.69.4]
 ### Added
 * ui: Pre-fill IBAN for PAYONE SEPA after checkout
+
 ### Fixed
 * core: Fix add IBAN crash by implementing missing Serializable interface
 * ui: Fix PAYONE SEPA country code ui
