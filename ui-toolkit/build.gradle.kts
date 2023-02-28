@@ -1,7 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
-@Suppress("DSL_SCOPE_VIOLATION")
-plugins {
+@Suppress("DSL_SCOPE_VIOLATION") plugins {
     id(libs.plugins.androidLibrary.get().pluginId)
     id(libs.plugins.kotlin.android.get().pluginId)
     id(libs.plugins.dokka.get().pluginId)
@@ -67,46 +66,46 @@ android {
         kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 
-    lint{
+    lint {
         disable.add("MissingTranslation")
+    }
+
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
     }
 }
 
 dependencies {
     coreLibraryDesugaring(libs.desugarJdkLibs)
 
-    implementation (project (":accessibility-toolbox"))
-    implementation (project (":utils"))
-    implementation (project (":ui"))
-    
-    implementation (libs.android.material)
-    implementation (libs.androidx.activityCompose)
+    implementation(project(":accessibility-toolbox"))
+    implementation(project(":utils"))
+    implementation(project(":ui"))
+
+    implementation(libs.android.material)
+    implementation(libs.androidx.activityCompose)
     implementation(libs.androidx.appcompat)
-    implementation (libs.androidx.constraintlayoutCompose)
-    implementation (libs.androidx.core.ktx)
-    implementation (libs.androidx.gridlayout)
-    implementation (libs.androidx.navigation.fragmentKtx)
-    implementation (libs.androidx.navigation.runtimeKtx)
+    implementation(libs.androidx.constraintlayoutCompose)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.gridlayout)
+    implementation(libs.androidx.navigation.fragmentKtx)
+    implementation(libs.androidx.navigation.runtimeKtx)
     api(libs.androidx.preferences)
-    implementation (libs.androidx.startupRuntime)
-    implementation (libs.commonsIo)
-    implementation (libs.googlePlayServices.maps)
-    implementation (libs.kotlinx.serializationJson)
-    implementation (libs.picasso)
-    implementation (libs.sebaslogen.resaca)
+    implementation(libs.androidx.startupRuntime)
+    implementation(libs.commonsIo)
+    implementation(libs.googlePlayServices.maps)
+    implementation(libs.kotlinx.serializationJson)
+    implementation(libs.picasso)
+    implementation(libs.sebaslogen.resaca)
 
     implementation(libs.bundles.compose)
     debugImplementation(libs.bundles.compose.debug)
 
     implementation(libs.bundles.koin)
 
-    testImplementation (libs.kotest.assertionsCore)
-    testImplementation (libs.kotest.runnerJunit)
-    testImplementation (libs.mock)
-}
-
-android.testOptions {
-    unitTests.all {
-        it.useJUnitPlatform()
-    }
+    testImplementation(libs.kotest.assertionsCore)
+    testImplementation(libs.kotest.runnerJunit)
+    testImplementation(libs.mock)
 }

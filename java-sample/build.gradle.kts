@@ -2,8 +2,7 @@
 
 import java.util.Properties
 
-@Suppress("DSL_SCOPE_VIOLATION")
-plugins {
+@Suppress("DSL_SCOPE_VIOLATION") plugins {
     id(libs.plugins.androidApplication.get().pluginId)
     id(libs.plugins.kotlin.android.get().pluginId)
 }
@@ -16,7 +15,6 @@ android {
     defaultConfig {
         applicationId = namespace
         minSdk = libs.versions.minSdk.get().toInt()
-        @Suppress("Deprecation")
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
@@ -35,7 +33,7 @@ android {
             secret = properties.getProperty("snabble.secret", secret)
         }
 
-        manifestPlaceholders.putAll( mapOf("appId" to appId, "endpoint" to endpoint, "secret" to secret))
+        manifestPlaceholders.putAll(mapOf("appId" to appId, "endpoint" to endpoint, "secret" to secret))
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -58,7 +56,7 @@ android {
     }
 
     kotlinOptions {
-        freeCompilerArgs =  listOf(
+        freeCompilerArgs = listOf(
             *kotlinOptions.freeCompilerArgs.toTypedArray(),
             "-Xjvm-default=all"
         )
@@ -79,10 +77,10 @@ dependencies {
     implementation(libs.androidx.appcompat)
 
     //noinspection GradleDependency
-    implementation (libs.android.material)
-    implementation (libs.commonsIo)
+    implementation(libs.android.material)
+    implementation(libs.commonsIo)
 
-    testImplementation (libs.junit)
-    androidTestImplementation (libs.test.espressoCore)
-    androidTestImplementation (libs.test.runner)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.test.espressoCore)
+    androidTestImplementation(libs.test.runner)
 }

@@ -1,7 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
-@Suppress("DSL_SCOPE_VIOLATION")
-plugins {
+@Suppress("DSL_SCOPE_VIOLATION") plugins {
     id(libs.plugins.androidApplication.get().pluginId)
     id(libs.plugins.kotlin.android.get().pluginId)
 }
@@ -14,7 +13,6 @@ android {
     defaultConfig {
         applicationId = namespace
         minSdk = libs.versions.minSdk.get().toInt()
-        @Suppress("Deprecation")
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
@@ -36,8 +34,8 @@ android {
 
     kotlinOptions {
         freeCompilerArgs = listOf(
-                *kotlinOptions.freeCompilerArgs.toTypedArray(),
-                "-Xjvm-default=all"
+            *kotlinOptions.freeCompilerArgs.toTypedArray(),
+            "-Xjvm-default=all"
         )
         jvmTarget = "1.8"
     }

@@ -1,7 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
-@Suppress("DSL_SCOPE_VIOLATION")
-plugins {
+@Suppress("DSL_SCOPE_VIOLATION") plugins {
     id(libs.plugins.androidLibrary.get().pluginId)
     id(libs.plugins.kotlin.android.get().pluginId)
     id(libs.plugins.dokka.get().pluginId)
@@ -11,7 +10,7 @@ apply {
     from("../scripts/maven.gradle")
 }
 
-description = "ML Kit Scanner Engine: The ML Kit scanner engine implementation for the snabble SDK"
+description = "ML Kit Scanner Engine: The ML Kit scanner engine implementation for the Snabble SDK"
 
 android {
     namespace = "io.snabble.sdk.firebase"
@@ -37,7 +36,6 @@ android {
         }
     }
 
-
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -52,7 +50,7 @@ android {
         jvmTarget = "1.8"
     }
 
-    lint{
+    lint {
         abortOnError = false
     }
 }
@@ -60,13 +58,13 @@ android {
 dependencies {
     coreLibraryDesugaring(libs.desugarJdkLibs)
 
-    implementation (project(":core"))
-    implementation (project(":ui"))
-    implementation (project(":utils"))
+    implementation(project(":core"))
+    implementation(project(":ui"))
+    implementation(project(":utils"))
 
-    implementation (libs.google.mlkit.barcodeScanning)
+    implementation(libs.google.mlkit.barcodeScanning)
 
-    testImplementation (libs.junit)
-    androidTestImplementation (libs.test.espressoCore)
-    androidTestImplementation (libs.test.runner)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.test.espressoCore)
+    androidTestImplementation(libs.test.runner)
 }

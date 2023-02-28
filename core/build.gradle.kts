@@ -1,7 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
-@Suppress("DSL_SCOPE_VIOLATION")
-plugins {
+@Suppress("DSL_SCOPE_VIOLATION") plugins {
     id(libs.plugins.androidLibrary.get().pluginId)
     id(libs.plugins.kotlin.android.get().pluginId)
     id(libs.plugins.dokka.get().pluginId)
@@ -11,7 +10,8 @@ plugins {
 apply {
     from("../scripts/maven.gradle")
 }
-description = "Snabble Core: The business logic of the snabble SDK"
+
+description = "Snabble Core: The business logic of the Snabble SDK"
 
 android {
     namespace = "io.snabble.sdk"

@@ -2,8 +2,7 @@ import org.jetbrains.dokka.gradle.AbstractDokkaTask
 import org.jetbrains.dokka.gradle.DokkaTask
 import java.net.URI
 
-@Suppress("DSL_SCOPE_VIOLATION")
-plugins {
+@Suppress("DSL_SCOPE_VIOLATION") plugins {
     alias(libs.plugins.benManesVersions)
     alias(libs.plugins.versionCatalogUpdate)
     alias(libs.plugins.dokka)
@@ -11,7 +10,6 @@ plugins {
 }
 
 buildscript {
-
     repositories {
         google()
         mavenCentral()
@@ -40,9 +38,12 @@ allprojects {
     }
 
     project.extra.apply {
-        set("sdkVersion", "${System.getenv("VERSION_CODE")?.toIntOrNull()?: "def"}")
+        set(
+            "sdkVersion",
+            (System.getenv("SDK_VERSION_NAME")?.replace("v", "") ?: "dev") +
+                    (project.properties["versionSuffix"] ?: "")
+        )
     }
-
 }
 
 afterEvaluate {
@@ -98,9 +99,11 @@ tasks.withType(AbstractDokkaTask::class.java) {
         )
     )
 }
+
 tasks.register("printVersion") {
     println(libs.versions.snabbleSdk)
 }
+
 tasks.register("clean", Delete::class) {
     delete(rootProject.buildDir)
 }

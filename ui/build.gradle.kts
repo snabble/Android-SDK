@@ -1,7 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
-@Suppress("DSL_SCOPE_VIOLATION")
-plugins {
+@Suppress("DSL_SCOPE_VIOLATION") plugins {
     id(libs.plugins.androidLibrary.get().pluginId)
     id(libs.plugins.kotlin.android.get().pluginId)
     id(libs.plugins.dokka.get().pluginId)
@@ -12,7 +11,7 @@ apply {
     from("../scripts/maven.gradle")
 }
 
-description = "Snabble UI: The Android User Interface snabble SDK"
+description = "Snabble UI: The Android User Interface Snabble SDK"
 
 android {
     namespace = "io.snabble.sdk.ui"
@@ -60,37 +59,43 @@ android {
         kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 
-    lint{
-        disable.addAll(listOf("LabelFor","MissingTranslation"))
+    lint {
+        disable.addAll(listOf("LabelFor", "MissingTranslation"))
+    }
+
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
     }
 }
 
 dependencies {
     coreLibraryDesugaring(libs.desugarJdkLibs)
 
-    implementation (project(":utils"))
-    api (project(":core"))
-    api (project(":accessibility-toolbox"))
+    implementation(project(":utils"))
+    api(project(":core"))
+    api(project(":accessibility-toolbox"))
 
     implementation(libs.airbnb.lottie)
     implementation(libs.androidx.appcompat)
-    implementation (libs.androidx.biometric)
-    implementation (libs.androidx.cardview)
-    implementation (libs.androidx.core.ktx)
-    implementation (libs.androidx.gridlayout)
-    implementation (libs.android.material)
-    implementation (libs.androidx.recyclerview)
-    implementation (libs.androidx.startupRuntime)
-    implementation (libs.androidx.swiperefreshlayout)
-    implementation (libs.androidx.viewpager2)
-    implementation (libs.androidx.webkit)
-    implementation (libs.commonsIo)
-    implementation (libs.datatrans.androidSdk)
-    implementation (libs.google.zxing.core)
-    implementation (libs.googlePlayServices.wallet)
-    implementation (libs.picasso)
-    implementation (libs.rekisoftLazyWorker)
-    implementation (libs.relex.circleindicator)
+    implementation(libs.androidx.biometric)
+    implementation(libs.androidx.cardview)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.gridlayout)
+    implementation(libs.android.material)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.startupRuntime)
+    implementation(libs.androidx.swiperefreshlayout)
+    implementation(libs.androidx.viewpager2)
+    implementation(libs.androidx.webkit)
+    implementation(libs.commonsIo)
+    implementation(libs.datatrans.androidSdk)
+    implementation(libs.google.zxing.core)
+    implementation(libs.googlePlayServices.wallet)
+    implementation(libs.picasso)
+    implementation(libs.rekisoftLazyWorker)
+    implementation(libs.relex.circleindicator)
 
     implementation(libs.bundles.camera)
     implementation(libs.bundles.navigation)
@@ -98,15 +103,9 @@ dependencies {
     implementation(libs.bundles.compose)
     debugImplementation(libs.bundles.compose.debug)
 
-    testImplementation (libs.kotest.assertionsCore)
-    testImplementation (libs.kotest.runnerJunit)
-    testImplementation (libs.mock)
-    androidTestImplementation (libs.test.espressoCore)
-    androidTestImplementation (libs.test.runner)
-}
-
-android.testOptions {
-    unitTests.all {
-        it.useJUnitPlatform()
-    }
+    testImplementation(libs.kotest.assertionsCore)
+    testImplementation(libs.kotest.runnerJunit)
+    testImplementation(libs.mock)
+    androidTestImplementation(libs.test.espressoCore)
+    androidTestImplementation(libs.test.runner)
 }

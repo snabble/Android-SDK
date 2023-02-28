@@ -1,7 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
-@Suppress("DSL_SCOPE_VIOLATION")
-plugins {
+@Suppress("DSL_SCOPE_VIOLATION") plugins {
     id(libs.plugins.androidApplication.get().pluginId)
     id(libs.plugins.kotlin.android.get().pluginId)
     alias(libs.plugins.snabbleSetup)
@@ -15,7 +14,6 @@ android {
     defaultConfig {
         applicationId = namespace
         minSdk = libs.versions.minSdk.get().toInt()
-        @Suppress("Deprecation")
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
@@ -105,5 +103,4 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.test.espressoCore)
     androidTestImplementation(libs.test.ext.junit)
-
 }

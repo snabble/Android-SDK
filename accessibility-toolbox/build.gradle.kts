@@ -1,7 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
-@Suppress("DSL_SCOPE_VIOLATION")
-plugins {
+@Suppress("DSL_SCOPE_VIOLATION") plugins {
     id(libs.plugins.androidLibrary.get().pluginId)
     id(libs.plugins.kotlin.android.get().pluginId)
     id(libs.plugins.dokka.get().pluginId)
@@ -12,7 +11,7 @@ apply {
     from("../scripts/maven.gradle")
 }
 
-description = "Accessibility-Toolbox: Make it easy to make your app accessibile"
+description = "Accessibility-Toolbox: Make it easy to make your app accessible"
 
 android {
     namespace = "io.snabble.accessibility"
@@ -58,8 +57,8 @@ android {
         jvmTarget = "1.8"
     }
 
-    lint{
-        disable.addAll(listOf("LabelFor","MissingTranslation"))
+    lint {
+        disable.addAll(listOf("LabelFor", "MissingTranslation"))
     }
 }
 
