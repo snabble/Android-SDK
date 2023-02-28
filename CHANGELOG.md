@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 ### Added
 ### Changed
+* Convert all grade files to gradle.kts files
+* Add version catalog and dependency update plugin
+* Add release on tag
 ### Removed
 ### Fixed
 
