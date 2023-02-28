@@ -3,13 +3,13 @@ package io.snabble.sdk.ui.checkout
 import androidx.annotation.RestrictTo
 import com.google.gson.JsonObject
 import io.snabble.sdk.Project
-import io.snabble.sdk.checkout.CheckoutProcessResponse
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.utils.SimpleJsonCallback
-import io.snabble.sdk.payment.PaymentCredentials
+import io.snabble.sdk.checkout.CheckoutProcessResponse
 import io.snabble.sdk.checkout.Href
+import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
+import io.snabble.sdk.utils.SimpleJsonCallback
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -19,6 +19,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 class PaymentOriginCandidateHelper(val project: Project) {
+
     private val listeners: MutableList<PaymentOriginCandidateAvailableListener> = CopyOnWriteArrayList()
     private var isPolling = false
     private var call: Call? = null
@@ -48,7 +49,12 @@ class PaymentOriginCandidateHelper(val project: Project) {
 
             call = project.okHttpClient.newCall(request)
             call?.enqueue(object : SimpleJsonCallback<PaymentOriginCandidate>(PaymentOriginCandidate::class.java) {
+
                 override fun success(paymentOriginCandidate: PaymentOriginCandidate) {
+                    // Map away from com.google.gson.internal.LinkedTreeMap to java.util.LinkedHashMap
+                    // See https://github.com/google/gson/issues/621
+                    paymentOriginCandidate.links = paymentOriginCandidate.links?.toMap()
+
                     if (paymentOriginCandidate.isValid) {
                         paymentOriginCandidate.projectId = project.id
                         notifyPaymentOriginCandidateAvailable(paymentOriginCandidate)
@@ -95,10 +101,14 @@ class PaymentOriginCandidateHelper(val project: Project) {
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     class PaymentOriginCandidate : Serializable {
+
         var projectId: String? = null
+
         @JvmField
         var origin: String? = null
+
         var links: Map<String, Href>? = null
+
         fun promote(paymentCredentials: PaymentCredentials, result: PromoteResult) {
             val promoteLink = promoteLink
             if (promoteLink == null) {
@@ -133,23 +143,28 @@ class PaymentOriginCandidateHelper(val project: Project) {
         private val promoteLink: String?
             get() {
                 val link = links!!["promote"]
-                return if (link != null && link.href != null) {
-                    link.href
-                } else null
+                return if (link?.href != null) link.href else null
             }
 
         val isValid: Boolean
             get() = origin != null && promoteLink != null
+
+        companion object {
+
+            private const val serialVersionUID = 1L
+        }
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     interface PromoteResult {
+
         fun success()
         fun error()
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     interface PaymentOriginCandidateAvailableListener {
+
         fun onPaymentOriginCandidateAvailable(paymentOriginCandidate: PaymentOriginCandidate?)
     }
 }

@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 * Add release on tag
 ### Removed
 ### Fixed
+* Serialization Exception due to usage of com.google.gson.internal.LinkedTreeMap
 
 ## [0.69.6]
 ### Changed
