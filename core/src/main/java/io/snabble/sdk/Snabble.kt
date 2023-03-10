@@ -468,7 +468,7 @@ object Snabble {
         val snabbleError = arrayOfNulls<Error>(1)
         setup(app, config)
         val observer = object : Observer<InitializationState> {
-            override fun onChanged(t: InitializationState?) {
+            override fun onChanged(t: InitializationState) {
                 if (t == InitializationState.INITIALIZED || t == InitializationState.ERROR) {
                     countDownLatch.countDown()
                     initializationState.removeObserver(this)
