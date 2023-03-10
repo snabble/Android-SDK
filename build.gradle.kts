@@ -124,9 +124,6 @@ fun isNonStable(version: String): Boolean {
 
 tasks.withType<com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask> {
     rejectVersionIf {
-        if (candidate.version == "1.4.0-beta02" && !isNonStable(candidate.version)) {
-            println("$candidate ${isNonStable(candidate.version)}")
-        }
         isNonStable(candidate.version)
     }
 }
