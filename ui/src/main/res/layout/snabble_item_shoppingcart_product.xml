@@ -86,11 +86,23 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true">
 
-        <LinearLayout
-            android:id="@+id/controls_default"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
-            android:layout_height="38dp"
-            android:orientation="horizontal">
+            android:layout_height="38dp">
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/controls_default"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                app:constraint_referenced_ids="minus,quantity,plus" />
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/controls_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                app:constraint_referenced_ids="minus" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/minus"
@@ -101,6 +113,10 @@
                 app:icon="@drawable/snabble_ic_minus"
                 app:iconGravity="textStart"
                 app:iconTint="?attr/colorOnSurface"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/quantity"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:strokeColor="@drawable/snabble_stroke" />
 
             <TextView
@@ -112,6 +128,10 @@
                 android:paddingLeft="3dp"
                 android:paddingRight="3dp"
                 android:textAppearance="?attr/textAppearanceBodyLarge"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/plus"
+                app:layout_constraintStart_toEndOf="@+id/minus"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:text="3" />
 
             <com.google.android.material.button.MaterialButton
@@ -123,9 +143,13 @@
                 app:icon="@drawable/snabble_ic_add"
                 app:iconGravity="textStart"
                 app:iconTint="?attr/colorOnSurface"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/quantity"
+                app:layout_constraintTop_toTopOf="parent"
                 app:strokeColor="@drawable/snabble_stroke" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
             android:id="@+id/controls_user_weighed"
