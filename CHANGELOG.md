@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 ### Added
 ### Changed
+* ui: Show bin icon instead of minus if the quantity of the line item is 1
 * ui: Show the trash (minus) icon for all deletable line items
 
 ### Removed
