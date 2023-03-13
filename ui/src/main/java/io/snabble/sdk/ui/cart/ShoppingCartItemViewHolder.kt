@@ -11,9 +11,11 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import com.squareup.picasso.Picasso
 import io.snabble.accessibility.accessibility
 import io.snabble.accessibility.orderViewsForAccessibility
@@ -31,13 +33,14 @@ class ShoppingCartItemViewHolder internal constructor(
     itemView: View,
     private val undoHelper: UndoHelper
 ) : RecyclerView.ViewHolder(itemView) {
+
     var image: ImageView = itemView.findViewById(R.id.helper_image)
     var name: TextView = itemView.findViewById(R.id.name)
     var subtitle: TextView? = itemView.findViewById(R.id.subtitle)
     var quantityTextView: TextView = itemView.findViewById(R.id.quantity)
     var priceTextView: TextView = itemView.findViewById(R.id.price)
     var plus: View = itemView.findViewById(R.id.plus)
-    var minus: View = itemView.findViewById(R.id.minus)
+    var minus: MaterialButton = itemView.findViewById(R.id.minus)
     var quantityEdit: EditText = itemView.findViewById(R.id.quantity_edit)
     var controlsUserWeighed: View = itemView.findViewById(R.id.controls_user_weighed)
     var controlsDefault: View = itemView.findViewById(R.id.controls_default)
@@ -110,8 +113,12 @@ class ShoppingCartItemViewHolder internal constructor(
         controlsUserWeighed.isVisible = row.editable && row.item.product?.type == Product.Type.UserWeighed
         plus.setOnClickListener {
             row.item.quantity++
+
+            updateMinusButtonIcon(row.item.quantity)
+
             Telemetry.event(Telemetry.Event.CartAmountChanged, row.item.product)
         }
+        updateMinusButtonIcon(row.item.quantity)
         minus.setOnClickListener {
             val p = bindingAdapterPosition
             val newQuantity = row.item.quantity - 1
@@ -121,6 +128,8 @@ class ShoppingCartItemViewHolder internal constructor(
                 row.item.quantity = newQuantity
                 Telemetry.event(Telemetry.Event.CartAmountChanged, row.item.product)
             }
+
+            updateMinusButtonIcon(newQuantity)
         }
         quantityEditApply.setOneShotClickListener {
             row.item.quantity = quantityEditValue
@@ -148,6 +157,11 @@ class ShoppingCartItemViewHolder internal constructor(
             false
         }
         quantityEdit.filters = arrayOf(InputFilterMinMax(0, ShoppingCart.MAX_QUANTITY))
+    }
+
+    private fun updateMinusButtonIcon(quantity: Int) {
+        val iconRes = if (quantity == 1) R.drawable.snabble_ic_delete else R.drawable.snabble_ic_minus
+        minus.icon = AppCompatResources.getDrawable(minus.context, iconRes)
     }
 
     fun hideInput() {
