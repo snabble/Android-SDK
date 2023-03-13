@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 ### Added
 ### Changed
+* ui: Show the trash (minus) icon for all deletable line items
+
 ### Removed
 ### Fixed
 
