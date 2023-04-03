@@ -2,8 +2,11 @@ package io.snabble.sdk.ui.checkout
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
@@ -38,8 +41,8 @@ class CheckoutActivity : FragmentActivity() {
         @JvmStatic
         fun restoreCheckoutIfNeeded(context: Context) {
             Snabble.initializationState.observeForever(object : Observer<InitializationState> {
-                override fun onChanged(t: InitializationState) {
-                    if (t == InitializationState.INITIALIZED) {
+                override fun onChanged(value: InitializationState) {
+                    if (value == InitializationState.INITIALIZED) {
                         Snabble.initializationState.removeObserver(this)
                         val project = Snabble.checkedInProject.value
                         if (project?.checkout?.state?.value?.isCheckoutState == true) {
@@ -67,6 +70,7 @@ class CheckoutActivity : FragmentActivity() {
                 InitializationState.INITIALIZED -> {
                     Snabble.checkedInProject.observe(this) { project ->
                         setContentView(R.layout.snabble_activity_checkout)
+                        setUpToolBarAndStatusBar()
 
                         val navHostFragment = supportFragmentManager.findFragmentById(
                             R.id.nav_host_container
@@ -110,6 +114,14 @@ class CheckoutActivity : FragmentActivity() {
                     finishWithError("The snabble SDK is not initialized")
                 }
             }
+        }
+    }
+
+    private fun setUpToolBarAndStatusBar() {
+        val showToolBar = resources.getBoolean(R.bool.showCheckoutToolbar)
+        findViewById<View>(R.id.checkout_toolbar).isVisible = showToolBar
+        if (showToolBar) {
+            window.statusBarColor = Color.parseColor("#06ADC3")
         }
     }
 
