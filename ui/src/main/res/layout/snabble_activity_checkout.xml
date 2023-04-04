@@ -19,7 +19,7 @@
             style="Widget.Material3.Toolbar.Surface"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:title="@string/Snabble.Payment.confirm" />
+            app:title="@string/Snabble.Payment.transferCart" />
     </FrameLayout>
 
     <androidx.fragment.app.FragmentContainerView

@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -16,6 +17,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.navArgs
 import io.snabble.sdk.InitializationState
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Snabble
@@ -73,7 +75,6 @@ class CheckoutActivity : FragmentActivity() {
                 InitializationState.INITIALIZED -> {
                     Snabble.checkedInProject.observe(this) { project ->
                         setContentView(R.layout.snabble_activity_checkout)
-                        setUpToolBarAndStatusBar()
 
                         val navHostFragment = supportFragmentManager.findFragmentById(
                             R.id.nav_host_container
@@ -81,6 +82,7 @@ class CheckoutActivity : FragmentActivity() {
                         val graphInflater = navHostFragment.navController.navInflater
                         navGraph = graphInflater.inflate(R.navigation.snabble_nav_checkout)
                         navController = navHostFragment.navController
+                        setUpToolBarAndStatusBar()
 
                         if (project == null) {
                             finishWithError("Project not set")
@@ -123,6 +125,9 @@ class CheckoutActivity : FragmentActivity() {
     private fun setUpToolBarAndStatusBar() {
         val showToolBar = resources.getBoolean(R.bool.showCheckoutToolbar)
         findViewById<View>(R.id.checkout_toolbar_spacer).isVisible = showToolBar
+        navController.addOnDestinationChangedListener{_, destination, arguments ->
+            findViewById<View>(R.id.checkout_toolbar).isVisible = arguments?.getBoolean("showToolbar",false) == true
+        }
         if (showToolBar) {
             applyInsets()
         }
