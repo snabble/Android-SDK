@@ -168,6 +168,7 @@
     <string name="Snabble.Payment.SEPA.title">SEPA inkaso</string>
     <string name="Snabble.Payment.SEPA.validIBAN">Platný IBAN</string>
     <string name="Snabble.Payment.success">Ďakujeme za tvoj nákup</string>
+    <string name="Snabble.Payment.transferCart">Prenos nákupného koša</string>
     <string name="Snabble.Payment.Twint.error">Pri spracovaní tvojho účtu TWINT sa vyskytla chyba</string>
     <string name="Snabble.Payment.usableAt">Použiteľné tu: %s</string>
     <string name="Snabble.Payment.waiting">Čakanie na potvrdenie</string>
@@ -201,13 +202,13 @@
     <string name="Snabble.PaymentStatus.Payment.title">Platba</string>
     <string name="Snabble.PaymentStatus.Payment.tryAgain">Skúsiť znovu</string>
     <!-- Button to submit the feedback on the checkout screen after a successful checkout. -->
-    <string name="Snabble.PaymentStatus.Rating.send">Odoslať</string>
+    <string name="Snabble.PaymentStatus.Rating.send">Odoslať spätnú väzbu</string>
     <string name="Snabble.PaymentStatus.Rating.title">Čo sa ti nepáčilo?</string>
     <string name="Snabble.PaymentStatus.Rating.title2">Čo by sme mohli vylepšiť?</string>
     <!-- Placeholder text in the input text field on the checkout screen after a successful checkout. -->
-    <string name="Snabble.PaymentStatus.Ratings.feedbackPlaceholder">Feel free to give us more feedback (optional)</string>
+    <string name="Snabble.PaymentStatus.Ratings.feedbackPlaceholder">Neváhaj nám poskytnúť ďalšiu spätnú väzbu (nepovinné)</string>
     <string name="Snabble.PaymentStatus.Ratings.thanks">Ďakujem!</string>
-    <string name="Snabble.PaymentStatus.Ratings.thanksForFeedback">Thanks for your feedback!</string>
+    <string name="Snabble.PaymentStatus.Ratings.thanksForFeedback">Ďakujem za tvoju spätnú väzbu!</string>
     <string name="Snabble.PaymentStatus.Ratings.title">Páčilo sa ti nakupovanie?</string>
     <string name="Snabble.PaymentStatus.Receipt.title">Pokladničný blok</string>
     <string name="Snabble.PaymentStatus.step1">Lokalizácia v oblasti pokladní</string>

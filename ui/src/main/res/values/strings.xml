@@ -160,6 +160,7 @@
     <string name="Snabble.Payment.SEPA.title">SEPA direct debit</string>
     <string name="Snabble.Payment.SEPA.validIBAN">Valid IBAN</string>
     <string name="Snabble.Payment.success">Thank you for shopping</string>
+    <string name="Snabble.Payment.transferCart">Transfer shopping cart</string>
     <string name="Snabble.Payment.Twint.error">There was an error processing your TWINT account</string>
     <string name="Snabble.Payment.usableAt">Usable at: %s</string>
     <string name="Snabble.Payment.waiting">Waiting for confirmation</string>
