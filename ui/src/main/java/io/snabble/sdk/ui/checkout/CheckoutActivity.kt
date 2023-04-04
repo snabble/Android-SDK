@@ -1,12 +1,15 @@
 package io.snabble.sdk.ui.checkout
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.isVisible
+import androidx.core.view.*
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
@@ -119,9 +122,9 @@ class CheckoutActivity : FragmentActivity() {
 
     private fun setUpToolBarAndStatusBar() {
         val showToolBar = resources.getBoolean(R.bool.showCheckoutToolbar)
-        findViewById<View>(R.id.checkout_toolbar).isVisible = showToolBar
+        findViewById<View>(R.id.checkout_toolbar_spacer).isVisible = showToolBar
         if (showToolBar) {
-            window.statusBarColor = Color.parseColor("#06ADC3")
+            applyInsets()
         }
     }
 
@@ -185,6 +188,36 @@ class CheckoutActivity : FragmentActivity() {
                 R.id.snabble_nav_payment_payone_sepa_mandate
             }
             else -> R.id.snabble_nav_payment_status
+        }
+    }
+
+    private fun applyInsets() {
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        val root = findViewById<View>(R.id.root)
+        val windowInsetsController = WindowInsetsControllerCompat(window, root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(root) { view, windowInsets ->
+            window.statusBarColor = Color.parseColor("#22000000")
+            windowInsetsController.isAppearanceLightStatusBars = false
+
+            val types = mutableListOf<Int>().apply {
+                add(WindowInsetsCompat.Type.navigationBars())
+                add(WindowInsetsCompat.Type.ime())
+                add(WindowInsetsCompat.Type.systemBars())
+                add(WindowInsetsCompat.Type.statusBars())
+            }
+
+            val currentInsetTypeMask = types.fold(0) { accumulator, type -> accumulator or type }
+
+            @SuppressLint("WrongConstant")
+            val insets = windowInsets.getInsets(currentInsetTypeMask)
+            view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                updateMargins(insets.left, 0, insets.right, insets.bottom)
+            }
+            val toolbarSpacer = findViewById<View>(R.id.checkout_toolbar_spacer)
+            toolbarSpacer.setPadding(0, insets.top, 0, 0)
+            windowInsets.inset(insets.left, insets.top, insets.right, insets.bottom)
         }
     }
 

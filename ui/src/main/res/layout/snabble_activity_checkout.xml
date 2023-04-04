@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/checkout_toolbar"
-        style="Widget.Material3.Toolbar.Surface"
+    <!-- Workaround for alignment bug in MaterialToolbar when setting padding -->
+    <FrameLayout
+        android:id="@+id/checkout_toolbar_spacer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:title="@string/Snabble.Payment.confirm" />
+        android:background="@color/toolbar"
+        android:visibility="gone">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/checkout_toolbar"
+            style="Widget.Material3.Toolbar.Surface"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:title="@string/Snabble.Payment.confirm" />
+    </FrameLayout>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_container"

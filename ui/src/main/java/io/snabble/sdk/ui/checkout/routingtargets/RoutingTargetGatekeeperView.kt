@@ -127,10 +127,11 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
 
     private fun setHelperImage(bitmap: Bitmap?) {
         val helperImage = helperImage
-        if (helperImage == null) {
-            helperTextNoImage.isVisible = false
+        if (helperImage == null) { // Can be overridden by hosting app using R.layout.snabble_checkout_header
+            helperTextNoImage.isVisible = false // this is not part of the layout thus needs to be hidden
             return
         }
+
         if (bitmap != null) {
             helperImage.setImageBitmap(bitmap)
             helperImage.isVisible = true
