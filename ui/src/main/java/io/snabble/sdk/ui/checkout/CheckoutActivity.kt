@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -17,7 +16,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.navArgs
 import io.snabble.sdk.InitializationState
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Snabble
@@ -125,8 +123,8 @@ class CheckoutActivity : FragmentActivity() {
     private fun setUpToolBarAndStatusBar() {
         val showToolBar = resources.getBoolean(R.bool.showCheckoutToolbar)
         findViewById<View>(R.id.checkout_toolbar_spacer).isVisible = showToolBar
-        navController.addOnDestinationChangedListener{_, destination, arguments ->
-            findViewById<View>(R.id.checkout_toolbar).isVisible = arguments?.getBoolean("showToolbar",false) == true
+        navController.addOnDestinationChangedListener { _, destination, arguments ->
+            findViewById<View>(R.id.checkout_toolbar).isVisible = arguments?.getBoolean("showToolbar", false) == true
         }
         if (showToolBar) {
             applyInsets()
