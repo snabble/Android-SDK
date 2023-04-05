@@ -5,7 +5,7 @@
     <fragment
         android:id="@+id/snabble_nav_routing_gatekeeper"
         android:name="io.snabble.sdk.ui.checkout.routingtargets.RoutingTargetGatekeeperFragment"
-        android:label="@string/Snabble.Checkout.title" >
+        android:label="@string/Snabble.Checkout.title">
         <argument
             android:name="showToolbar"
             android:defaultValue="true"

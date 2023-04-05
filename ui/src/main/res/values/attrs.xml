@@ -9,5 +9,5 @@
 
     <attr name="snabbleToolbarStyle" format="reference" />
 
-    <bool name="showCheckoutToolbar">false</bool>
+    <bool name="showToolbarInCheckout">false</bool>
 </resources>

@@ -11,7 +11,7 @@
         android:id="@+id/checkout_toolbar_spacer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/toolbar"
+        android:background="@color/snabble_toolbar"
         android:visibility="gone">
 
         <com.google.android.material.appbar.MaterialToolbar
