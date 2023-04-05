@@ -160,6 +160,7 @@
     <string name="Snabble.Payment.SEPA.title">SEPA terhelési megbízás</string>
     <string name="Snabble.Payment.SEPA.validIBAN">Érvényes IBAN</string>
     <string name="Snabble.Payment.success">Köszönjük a vásárlásodat</string>
+    <string name="Snabble.Payment.transferCart">Kosár továbbítása</string>
     <string name="Snabble.Payment.Twint.error">A TWINT-fiókod feldolgozása során hiba történt</string>
     <string name="Snabble.Payment.usableAt">Itt használható: %s</string>
     <string name="Snabble.Payment.waiting">Várj a nyugtázásra</string>
@@ -193,13 +194,13 @@
     <string name="Snabble.PaymentStatus.Payment.title">Fizetés</string>
     <string name="Snabble.PaymentStatus.Payment.tryAgain">Megpróbálom újra</string>
     <!-- Button to submit the feedback on the checkout screen after a successful checkout. -->
-    <string name="Snabble.PaymentStatus.Rating.send">Elküldés</string>
+    <string name="Snabble.PaymentStatus.Rating.send">Visszajelzés elküldése</string>
     <string name="Snabble.PaymentStatus.Rating.title">Mi nem volt jó?</string>
     <string name="Snabble.PaymentStatus.Rating.title2">Mit tudnánk még jobban csinálni?</string>
     <!-- Placeholder text in the input text field on the checkout screen after a successful checkout. -->
-    <string name="Snabble.PaymentStatus.Ratings.feedbackPlaceholder">Feel free to give us more feedback (optional)</string>
+    <string name="Snabble.PaymentStatus.Ratings.feedbackPlaceholder">Szívesen fogadjuk további visszajelzésedet (opcionális)</string>
     <string name="Snabble.PaymentStatus.Ratings.thanks">Köszönjük!</string>
-    <string name="Snabble.PaymentStatus.Ratings.thanksForFeedback">Thanks for your feedback!</string>
+    <string name="Snabble.PaymentStatus.Ratings.thanksForFeedback">Köszönjük a visszajelzésedet!</string>
     <string name="Snabble.PaymentStatus.Ratings.title">Tetszett a vásárlás?</string>
     <string name="Snabble.PaymentStatus.Receipt.title">Nyugta</string>
     <string name="Snabble.PaymentStatus.step1">Helymeghatározás a pénztár területén</string>

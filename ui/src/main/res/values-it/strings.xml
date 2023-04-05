@@ -164,6 +164,7 @@
     <string name="Snabble.Payment.SEPA.title">Addebito diretto SEPA</string>
     <string name="Snabble.Payment.SEPA.validIBAN">Valid IBAN</string>
     <string name="Snabble.Payment.success">Grazie per il tuo acquisto</string>
+    <string name="Snabble.Payment.transferCart">Transfer shopping cart</string>
     <string name="Snabble.Payment.Twint.error">Si è verificato un errore nell’elaborazione del tuo account TWINT</string>
     <string name="Snabble.Payment.usableAt">Utilizzabile presso: %s</string>
     <string name="Snabble.Payment.waiting">Attendi una conferma</string>

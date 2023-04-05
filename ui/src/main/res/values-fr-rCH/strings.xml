@@ -164,6 +164,7 @@
     <string name="Snabble.Payment.SEPA.title">Débit SEPA</string>
     <string name="Snabble.Payment.SEPA.validIBAN">Valid IBAN</string>
     <string name="Snabble.Payment.success">Merci pour ton achat !</string>
+    <string name="Snabble.Payment.transferCart">Transfer shopping cart</string>
     <string name="Snabble.Payment.Twint.error">Une erreur s’est produite lors du traitement de ton compte TWINT</string>
     <string name="Snabble.Payment.usableAt">Utilisable pour : %s</string>
     <string name="Snabble.Payment.waiting">Attends la confirmation</string>

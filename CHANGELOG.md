@@ -4,11 +4,15 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 ### Added
 ### Changed
-* ui: Show bin icon instead of minus if the quantity of the line item is 1
-* ui: Show the trash (minus) icon for all deletable line items
+* ui: Add the ability to show a header for the CheckoutActivity
 
 ### Removed
 ### Fixed
+
+## [0.68.8]
+### Changed
+* ui: Show bin icon instead of minus if the quantity of the line item is 1
+* ui: Show the trash (minus) icon for all deletable line items
 
 ## [0.69.7]
 ### Changed

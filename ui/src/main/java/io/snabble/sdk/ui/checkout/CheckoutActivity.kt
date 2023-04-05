@@ -1,9 +1,15 @@
 package io.snabble.sdk.ui.checkout
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.*
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
@@ -38,8 +44,8 @@ class CheckoutActivity : FragmentActivity() {
         @JvmStatic
         fun restoreCheckoutIfNeeded(context: Context) {
             Snabble.initializationState.observeForever(object : Observer<InitializationState> {
-                override fun onChanged(t: InitializationState) {
-                    if (t == InitializationState.INITIALIZED) {
+                override fun onChanged(value: InitializationState) {
+                    if (value == InitializationState.INITIALIZED) {
                         Snabble.initializationState.removeObserver(this)
                         val project = Snabble.checkedInProject.value
                         if (project?.checkout?.state?.value?.isCheckoutState == true) {
@@ -74,6 +80,7 @@ class CheckoutActivity : FragmentActivity() {
                         val graphInflater = navHostFragment.navController.navInflater
                         navGraph = graphInflater.inflate(R.navigation.snabble_nav_checkout)
                         navController = navHostFragment.navController
+                        setUpToolBarAndStatusBar()
 
                         if (project == null) {
                             finishWithError("Project not set")
@@ -110,6 +117,17 @@ class CheckoutActivity : FragmentActivity() {
                     finishWithError("The snabble SDK is not initialized")
                 }
             }
+        }
+    }
+
+    private fun setUpToolBarAndStatusBar() {
+        val showToolBar = resources.getBoolean(R.bool.showToolbarInCheckout)
+        findViewById<View>(R.id.checkout_toolbar_spacer)?.isVisible = showToolBar
+        navController.addOnDestinationChangedListener { _, destination, arguments ->
+            findViewById<View>(R.id.checkout_toolbar)?.isVisible = arguments?.getBoolean("showToolbar", false) == true
+        }
+        if (showToolBar) {
+            applyInsets()
         }
     }
 
@@ -173,6 +191,37 @@ class CheckoutActivity : FragmentActivity() {
                 R.id.snabble_nav_payment_payone_sepa_mandate
             }
             else -> R.id.snabble_nav_payment_status
+        }
+    }
+
+    private fun applyInsets() {
+        val root = findViewById<View>(R.id.root) ?: return
+
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        val windowInsetsController = WindowInsetsControllerCompat(window, root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(root) { view, windowInsets ->
+            window.statusBarColor = Color.parseColor("#22000000")
+            windowInsetsController.isAppearanceLightStatusBars = false
+
+            val currentInsetTypeMask = listOf(
+                WindowInsetsCompat.Type.navigationBars(),
+                WindowInsetsCompat.Type.ime(),
+                WindowInsetsCompat.Type.systemBars(),
+                WindowInsetsCompat.Type.statusBars()
+            ).fold(0) { accumulator, type -> accumulator or type }
+
+            @SuppressLint("WrongConstant")
+            val insets = windowInsets.getInsets(currentInsetTypeMask)
+            view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                updateMargins(insets.left, 0, insets.right, insets.bottom)
+            }
+            findViewById<View>(R.id.checkout_toolbar_spacer)?.apply {
+                setPadding(0, insets.top, 0, 0)
+            }
+
+            windowInsets.inset(insets.left, insets.top, insets.right, insets.bottom)
         }
     }
 

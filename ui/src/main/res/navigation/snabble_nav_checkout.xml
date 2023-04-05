@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/snabble_nav_checkout">
     <fragment
         android:id="@+id/snabble_nav_routing_gatekeeper"
         android:name="io.snabble.sdk.ui.checkout.routingtargets.RoutingTargetGatekeeperFragment"
-        android:label="@string/Snabble.Checkout.title" />
+        android:label="@string/Snabble.Checkout.title">
+        <argument
+            android:name="showToolbar"
+            android:defaultValue="true"
+            app:argType="boolean" />
+    </fragment>
 
     <fragment
         android:id="@+id/snabble_nav_routing_supervisor"
