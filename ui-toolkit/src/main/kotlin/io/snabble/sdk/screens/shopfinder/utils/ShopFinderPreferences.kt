@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.os.Build
 import androidx.preference.PreferenceManager
 import io.snabble.sdk.utils.BuildConfig
 import io.snabble.sdk.widgets.snabble.devsettings.login.usecase.HasEnabledDevSettingsUseCaseImpl
@@ -12,11 +13,24 @@ import io.snabble.sdk.widgets.snabble.devsettings.login.usecase.HasEnabledDevSet
 internal class ShopFinderPreferences internal constructor(private val context: Context) {
 
     val hasGoogleMapsKey: Boolean by lazy {
-        context
-            .packageManager
-            .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
-            .metaData
-            .containsKey("com.google.android.geo.API_KEY")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context
+                .packageManager
+                .getApplicationInfo(
+                    context.packageName,
+                    PackageManager.ApplicationInfoFlags.of(PackageManager.GET_META_DATA.toLong())
+                )
+                .metaData
+                .containsKey("com.google.android.geo.API_KEY")
+        } else {
+            @Suppress("DEPRECATION")
+            context
+                .packageManager
+                .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
+                .metaData
+                .containsKey("com.google.android.geo.API_KEY")
+        }
+
     }
 
     val isInDarkMode: Boolean
