@@ -10,6 +10,7 @@ import android.net.ConnectivityManager.NetworkCallback
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import android.os.Build
 import android.util.Base64
 import androidx.lifecycle.*
 import androidx.lifecycle.Observer
@@ -369,7 +370,15 @@ object Snabble {
         }
 
         val version = try {
-            val pInfo = application.packageManager.getPackageInfo(application.packageName, 0)
+            val pInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                application.packageManager.getPackageInfo(
+                    application.packageName,
+                    PackageManager.PackageInfoFlags.of(0)
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                application.packageManager.getPackageInfo(application.packageName, 0)
+            }
             pInfo?.versionName?.lowercase(Locale.ROOT)?.replace(" ", "") ?: "1.0"
         } catch (e: PackageManager.NameNotFoundException) {
             "1.0"
@@ -468,8 +477,8 @@ object Snabble {
         val snabbleError = arrayOfNulls<Error>(1)
         setup(app, config)
         val observer = object : Observer<InitializationState> {
-            override fun onChanged(t: InitializationState) {
-                if (t == InitializationState.INITIALIZED || t == InitializationState.ERROR) {
+            override fun onChanged(value: InitializationState) {
+                if (value == InitializationState.INITIALIZED || value == InitializationState.ERROR) {
                     countDownLatch.countDown()
                     initializationState.removeObserver(this)
                 }
