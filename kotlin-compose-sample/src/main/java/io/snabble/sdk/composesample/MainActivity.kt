@@ -1,43 +1,35 @@
 package io.snabble.sdk.composesample
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role.Companion.Image
-import androidx.fragment.app.FragmentActivity
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.findNavController
 import io.snabble.sdk.InitializationState
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.composesample.screens.BarcodeSearch
 import io.snabble.sdk.composesample.screens.Cart
 import io.snabble.sdk.composesample.screens.Home
 import io.snabble.sdk.composesample.screens.Scanner
-import io.snabble.sdk.ui.Action
 import io.snabble.sdk.ui.SnabbleUI
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : AppCompatActivity() {
+
     @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,8 +67,7 @@ class MainActivity : AppCompatActivity() {
 
                 Scaffold(
                     topBar = {
-                        SmallTopAppBar(
-                            title = { Text(currentDestination?.label?.toString().orEmpty()) },
+                        TopAppBar(title = { Text(currentDestination?.label?.toString().orEmpty()) },
                             actions = {
                                 IconButton(
                                     content = { Icon(Icons.Filled.Search, "Search") },
@@ -84,8 +75,7 @@ class MainActivity : AppCompatActivity() {
                                         navController.navigate("barcodeSearch")
                                     }
                                 )
-                            }
-                        )
+                            })
                     },
                     bottomBar = {
                         BottomBar(
@@ -96,23 +86,24 @@ class MainActivity : AppCompatActivity() {
                     NavHost(
                         navController = navController,
                         startDestination = Home.route,
-                        modifier = Modifier.padding(innerPadding)) {
-                            composable(Home.route) {
-                                it.destination.label = Home.title
-                                Home()
-                            }
-                            composable(Scanner.route) {
-                                it.destination.label = Scanner.title
-                                Scanner()
-                            }
-                            composable(Cart.route) {
-                                it.destination.label = Cart.title
-                                Cart()
-                            }
-                            composable(BarcodeSearch.route) {
-                                it.destination.label = BarcodeSearch.title
-                                BarcodeSearch()
-                            }
+                        modifier = Modifier.padding(innerPadding)
+                    ) {
+                        composable(Home.route) {
+                            it.destination.label = Home.title
+                            Home()
+                        }
+                        composable(Scanner.route) {
+                            it.destination.label = Scanner.title
+                            Scanner()
+                        }
+                        composable(Cart.route) {
+                            it.destination.label = Cart.title
+                            Cart()
+                        }
+                        composable(BarcodeSearch.route) {
+                            it.destination.label = BarcodeSearch.title
+                            BarcodeSearch()
+                        }
                     }
                 }
             }
