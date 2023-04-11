@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.os.Build
 import androidx.startup.Initializer
 import io.snabble.sdk.utils.Logger
 import okhttp3.Interceptor
@@ -63,7 +64,16 @@ class SnabbleInitializer : Initializer<Snabble> {
             }
         }
 
-        val applicationInfo = app.packageManager.getApplicationInfo(app.packageName, PackageManager.GET_META_DATA)
+        val applicationInfo =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                app.packageManager.getApplicationInfo(
+                    app.packageName,
+                    PackageManager.ApplicationInfoFlags.of(PackageManager.GET_META_DATA.toLong())
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                app.packageManager.getApplicationInfo(app.packageName, PackageManager.GET_META_DATA)
+            }
         with(applicationInfo.metaData) {
             if (getBoolean("snabble_auto_initialization_disabled")) {
                 return Snabble
