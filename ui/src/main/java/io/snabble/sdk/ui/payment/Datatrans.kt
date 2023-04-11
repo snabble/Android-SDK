@@ -2,9 +2,9 @@ package io.snabble.sdk.ui.payment
 
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.LifecycleOwner
 import ch.datatrans.payment.api.Transaction
 import ch.datatrans.payment.api.TransactionListener
 import ch.datatrans.payment.api.TransactionRegistry
@@ -65,12 +65,15 @@ object Datatrans {
 
         val request: Request = Request.Builder()
             .url(Snabble.absoluteUrl(url.href))
-            .post(GsonHolder.get().toJson(
-                DatatransTokenizationRequest(paymentMethod)
-            ).toRequestBody("application/json".toMediaType()))
+            .post(
+                GsonHolder.get().toJson(
+                    DatatransTokenizationRequest(paymentMethod)
+                ).toRequestBody("application/json".toMediaType())
+            )
             .build()
 
-        project.okHttpClient.newCall(request).enqueue(object : SimpleJsonCallback<DatatransTokenizationResponse>(DatatransTokenizationResponse::class.java), Callback {
+        project.okHttpClient.newCall(request).enqueue(object :
+            SimpleJsonCallback<DatatransTokenizationResponse>(DatatransTokenizationResponse::class.java), Callback {
             override fun success(response: DatatransTokenizationResponse) {
                 startDatatransTransaction(activity, response, paymentMethod, project)
             }
@@ -104,10 +107,12 @@ object Datatrans {
         }
     }
 
-    private fun startDatatransTransaction(activity: FragmentActivity,
-                                          tokenizationResponse: DatatransTokenizationResponse,
-                                          paymentMethod: PaymentMethod,
-                                          project: Project) {
+    private fun startDatatransTransaction(
+        activity: FragmentActivity,
+        tokenizationResponse: DatatransTokenizationResponse,
+        paymentMethod: PaymentMethod,
+        project: Project
+    ) {
         val transaction = Transaction(tokenizationResponse.mobileToken)
         transaction.listener = object : TransactionListener {
             override fun onTransactionSuccess(result: TransactionSuccess) {
@@ -147,7 +152,8 @@ object Datatrans {
                             }
 
                             override fun error() {
-                                Toast.makeText(activity, R.string.Snabble_SEPA_encryptionError, Toast.LENGTH_LONG).show()
+                                Toast.makeText(activity, R.string.Snabble_SEPA_encryptionError, Toast.LENGTH_LONG)
+                                    .show()
                             }
                         })
                     } else {
@@ -177,9 +183,8 @@ fun FragmentActivity.runOnUiThreadWhenResumed(task: () -> Unit) {
                 task()
             }
         } else {
-            lifecycle.addObserver(object : LifecycleObserver {
-                @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-                fun onResume() {
+            lifecycle.addObserver(object : DefaultLifecycleObserver {
+                override fun onResume(owner: LifecycleOwner) {
                     Dispatch.mainThread {
                         task()
                     }
