@@ -14,9 +14,8 @@ import android.widget.*
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import com.airbnb.lottie.LottieAnimationView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputLayout
@@ -41,7 +40,7 @@ import io.snabble.sdk.utils.Dispatch
 class PaymentStatusView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0,
 ) : FrameLayout(context, attrs, defStyleAttr),
-    LifecycleObserver, PaymentOriginCandidateAvailableListener {
+    DefaultLifecycleObserver, PaymentOriginCandidateAvailableListener {
 
     init {
         inflate(getContext(), R.layout.snabble_view_payment_status, this)
@@ -79,6 +78,7 @@ class PaymentStatusView @JvmOverloads constructor(
 
     private val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
+            // Do nothing
         }
     }
 
@@ -364,18 +364,15 @@ class PaymentStatusView @JvmOverloads constructor(
         paymentOriginCandidateHelper.stopPolling()
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
-    private fun onStart() {
+    override fun onStart(owner: LifecycleOwner) {
         startPollingForPaymentOriginCandidate()
 
         onStateChanged(checkout.state.value)
         isStopped = false
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    private fun onStop() {
+    override fun onStop(owner: LifecycleOwner) {
         stopPollingForPaymentOriginCandidate()
-
         isStopped = true
     }
 

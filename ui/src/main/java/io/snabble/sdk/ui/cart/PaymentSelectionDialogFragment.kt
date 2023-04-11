@@ -33,7 +33,7 @@ class PaymentSelectionDialogFragment : BottomSheetDialogFragment() {
             }
 
             if (args.containsKey(ARG_ENTRIES)) {
-                val selectedEntry: PaymentSelectionHelper.Entry? = args.serializableExtra(ARG_SELECTED_ENTRY)
+                val selectedEntry = args.serializableExtra<PaymentSelectionHelper.Entry>(ARG_SELECTED_ENTRY)
                 (args.serializableExtra<ArrayList<*>>(ARG_ENTRIES))?.mapNotNull { it as? PaymentSelectionHelper.Entry }
                     ?.let { entries ->
                         val hasAnyAddedMethods = entries.any { it.isAdded }
