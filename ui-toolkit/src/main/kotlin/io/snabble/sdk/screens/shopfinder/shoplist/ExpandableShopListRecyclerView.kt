@@ -6,6 +6,7 @@ import android.app.Application
 import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Context
 import android.location.Location
+import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
@@ -178,7 +179,19 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
         }
 
         @SuppressLint("RestrictedApi")
-        private constructor(source: Parcel) : this(requireNotNull(source.readParcelable(RecyclerView.SavedState::class.java.classLoader))) {
+        private constructor(source: Parcel) : this(
+            requireNotNull(
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    source.readParcelable(
+                        ClassLoader.getSystemClassLoader(),
+                        RecyclerView.SavedState::class.java
+                    )
+                } else {
+                    @Suppress("DEPRECATION")
+                    source.readParcelable(RecyclerView.SavedState::class.java.classLoader)
+                }
+            )
+        ) {
             expanded = source.createStringArray() ?: emptyArray()
         }
 
