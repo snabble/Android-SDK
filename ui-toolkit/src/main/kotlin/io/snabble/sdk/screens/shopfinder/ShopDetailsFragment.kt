@@ -27,11 +27,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener
 import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import io.snabble.accessibility.isTalkBackActive
 import io.snabble.accessibility.setClickDescription
@@ -627,8 +623,15 @@ open class ShopDetailsFragment : Fragment() {
         @SuppressLint("QueryPermissionsNeeded")
         fun isIntentAvailable(context: Context, intent: Intent): Boolean {
             val packageManager = context.packageManager
-            val list =
+            val list = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                packageManager.queryIntentActivities(
+                    intent,
+                    PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY.toLong())
+                )
+            } else {
+                @Suppress("DEPRECATION")
                 packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+            }
             return list.isNotEmpty()
         }
     }
