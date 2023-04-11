@@ -10,8 +10,8 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -25,6 +25,7 @@ import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.utils.executeUiAction
 import io.snabble.sdk.ui.utils.getFragmentActivity
 import io.snabble.sdk.ui.utils.loadAsset
+import kotlin.collections.set
 
 open class PaymentOptionsView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -46,16 +47,16 @@ open class PaymentOptionsView @JvmOverloads constructor(
 
         Snabble.paymentCredentialsStore.addCallback(listener)
 
-        getFragmentActivity()?.lifecycle?.addObserver(object : LifecycleObserver {
-            @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-            fun onResume() {
-                adapter.submitList(getEntries())
-            }
-
-            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-            fun onDestroy() {
-                getFragmentActivity()?.lifecycle?.removeObserver(this)
-                Snabble.paymentCredentialsStore.removeCallback(listener)
+        getFragmentActivity()?.lifecycle?.addObserver(object : LifecycleEventObserver {
+            override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+                when (event) {
+                    Lifecycle.Event.ON_RESUME -> adapter.submitList(getEntries())
+                    Lifecycle.Event.ON_DESTROY -> {
+                        getFragmentActivity()?.lifecycle?.removeObserver(this)
+                        Snabble.paymentCredentialsStore.removeCallback(listener)
+                    }
+                    else -> Unit
+                }
             }
         })
     }
@@ -144,12 +145,14 @@ open class PaymentOptionsView @JvmOverloads constructor(
     )
 
     class EntryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
         val text: TextView = itemView.findViewById(R.id.text)
         val count: TextView = itemView.findViewById(R.id.count)
         val image: ImageView = itemView.findViewById(R.id.helper_image)
     }
 
     class EntryAdapter : ListAdapter<Entry, EntryViewHolder>(EntryItemDiffer()) {
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EntryViewHolder {
             val inflater = LayoutInflater.from(parent.context)
             return EntryViewHolder(inflater.inflate(R.layout.snabble_item_payment_options_entry, parent, false))
@@ -182,6 +185,7 @@ open class PaymentOptionsView @JvmOverloads constructor(
     }
 
     class EntryItemDiffer : DiffUtil.ItemCallback<Entry>() {
+
         override fun areItemsTheSame(oldItem: Entry, newItem: Entry): Boolean {
             return oldItem === newItem
         }
