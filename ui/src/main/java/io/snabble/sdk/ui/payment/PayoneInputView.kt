@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.res.Configuration
+import android.os.Build
 import android.util.AttributeSet
 import android.webkit.*
 import android.widget.FrameLayout
@@ -14,8 +15,8 @@ import androidx.annotation.Keep
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
 import eu.rekisoft.android.util.LazyWorker
@@ -46,7 +47,9 @@ import java.text.NumberFormat
 import java.util.*
 import java.util.concurrent.CancellationException
 
-class PayoneInputView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr), LifecycleObserver {
+class PayoneInputView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) :
+    FrameLayout(context, attrs, defStyleAttr), LifecycleEventObserver {
+
     private lateinit var webView: WebView
     private lateinit var progressBar: ProgressBar
     private var isActivityResumed = false
@@ -97,6 +100,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         progressBar.isIndeterminate = true
         webView = findViewById(R.id.web_view)
         webView.webViewClient = object : WebViewClient() {
+            @Deprecated("Deprecated in Java")
             override fun onReceivedError(
                 view: WebView,
                 errorCode: Int,
@@ -120,6 +124,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         webView.addJavascriptInterface(JsInterface(), "snabble")
 
         webView.webViewClient = object : WebViewClient() {
+            @Deprecated("Deprecated in Java")
             override fun onReceivedError(
                 view: WebView,
                 errorCode: Int,
@@ -152,7 +157,6 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             }
         }
 
-
         // this disables credit card storage prompt for google pay
         ViewCompat.setImportantForAutofill(webView, IMPORTANT_FOR_AUTOFILL_NO)
         CookieManager.getInstance().setAcceptCookie(true)
@@ -164,7 +168,14 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         val nightModeFlags = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES && WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
             // Force dark mode when in dark mode
-            WebSettingsCompat.setForceDark(webView.settings, WebSettingsCompat.FORCE_DARK_ON)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
+                    WebSettingsCompat.setAlgorithmicDarkeningAllowed(webView.settings, true)
+                }
+            } else {
+                @Suppress("DEPRECATION")
+                WebSettingsCompat.setForceDark(webView.settings, WebSettingsCompat.FORCE_DARK_ON)
+            }
         }
         if (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {
             WebView.setWebContentsDebuggingEnabled(true)
@@ -200,19 +211,19 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
                 resources.openRawResource(R.raw.snabble_payoneform),
                 Charset.forName("UTF-8")
             ).replace("{{hash}}", tokenizationData.hash)
-            .replace("{{merchantID}}", tokenizationData.merchantID)
-            .replace("{{portalID}}", tokenizationData.portalID)
-            .replace("{{accountID}}", tokenizationData.accountID)
-            .replace("{{mode}}", if(tokenizationData.isTesting) "test" else "live")
-            .replace("{{language}}", language)
-            .replace("{{supportedCardType}}", ccType)
-            .replace("{{lastname}}", context.getString(R.string.Snabble_Payone_lastname))
-            .replace("{{cardNumberLabel}}", context.getString(R.string.Snabble_Payone_cardNumber))
-            .replace("{{cvcLabel}}", context.getString(R.string.Snabble_Payone_cvc))
-            .replace("{{expireMonthLabel}}", context.getString(R.string.Snabble_Payone_expireMonth))
-            .replace("{{expireYearLabel}}", context.getString(R.string.Snabble_Payone_expireYear))
-            .replace("{{saveButtonLabel}}", context.getString(R.string.Snabble_save))
-            .replace("{{incompleteForm}}", context.getString(R.string.Snabble_Payone_incompleteForm))
+                .replace("{{merchantID}}", tokenizationData.merchantID)
+                .replace("{{portalID}}", tokenizationData.portalID)
+                .replace("{{accountID}}", tokenizationData.accountID)
+                .replace("{{mode}}", if (tokenizationData.isTesting) "test" else "live")
+                .replace("{{language}}", language)
+                .replace("{{supportedCardType}}", ccType)
+                .replace("{{lastname}}", context.getString(R.string.Snabble_Payone_lastname))
+                .replace("{{cardNumberLabel}}", context.getString(R.string.Snabble_Payone_cardNumber))
+                .replace("{{cvcLabel}}", context.getString(R.string.Snabble_Payone_cvc))
+                .replace("{{expireMonthLabel}}", context.getString(R.string.Snabble_Payone_expireMonth))
+                .replace("{{expireYearLabel}}", context.getString(R.string.Snabble_Payone_expireYear))
+                .replace("{{saveButtonLabel}}", context.getString(R.string.Snabble_save))
+                .replace("{{incompleteForm}}", context.getString(R.string.Snabble_Payone_incompleteForm))
             // URL is required for an origin check
             webView.loadDataWithBaseURL(
                 "https://snabble.io",
@@ -225,7 +236,8 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             val numberFormat = NumberFormat.getCurrencyInstance(
                 project.currencyLocale
             )
-            val chargeTotal = BigDecimal(tokenizationData.preAuthInfo.amount ?: 0).divide(BigDecimal(100)) // TODO check currency
+            val chargeTotal =
+                BigDecimal(tokenizationData.preAuthInfo.amount ?: 0).divide(BigDecimal(100)) // TODO check currency
             threeDHint.visibility = VISIBLE
             threeDHint.text = resources.getString(
                 R.string.Snabble_CC_3dsecureHint_retailerWithPrice,
@@ -336,17 +348,6 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         } ?: true
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    fun onResume() {
-        isActivityResumed = true
-        if (creditCardInfo != null) polling.doNow()
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    fun onPause() {
-        isActivityResumed = false
-    }
-
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         UIUtils.getHostFragmentActivity(context)?.lifecycle?.removeObserver(this)
@@ -363,6 +364,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
 
     @Keep
     private inner class JsInterface {
+
         @JavascriptInterface
         fun saveCard(
             pseudocardpan: String?,
@@ -407,8 +409,20 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
     }
 
     companion object {
+
         const val ARG_PROJECT_ID = "projectId"
         const val ARG_PAYMENT_TYPE = "paymentType"
         const val ARG_TOKEN_DATA = "tokenData"
+    }
+
+    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+        when (event) {
+            Lifecycle.Event.ON_RESUME -> {
+                isActivityResumed = true
+                if (creditCardInfo != null) polling.doNow()
+            }
+            Lifecycle.Event.ON_PAUSE -> isActivityResumed = false
+            else -> Unit
+        }
     }
 }
