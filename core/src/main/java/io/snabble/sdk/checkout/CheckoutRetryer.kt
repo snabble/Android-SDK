@@ -8,6 +8,8 @@ import android.content.SharedPreferences
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import com.google.gson.reflect.TypeToken
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Product
@@ -67,13 +69,27 @@ internal class CheckoutRetryer(project: Project, fallbackPaymentMethod: PaymentM
         }
     }
 
+    private fun ConnectivityManager.isNetworkConnected(): Boolean{
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+           val activeNetworks = activeNetwork ?: return false
+            val networkCap = getNetworkCapabilities(activeNetworks) ?: return false
+            return when {
+                networkCap.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                networkCap.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                networkCap.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+                networkCap.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH) -> true
+                else -> false
+            }
+        }else{
+            @Suppress("DEPRECATION")
+            return this.activeNetworkInfo?.isConnected ?: false
+        }
+    }
+
     fun processPendingCheckouts() {
         val context: Context = instance.application
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo = cm.activeNetworkInfo
-        if (networkInfo?.isConnected == false) {
-            return
-        }
+        if (cm.isNetworkConnected()) return
 
         Dispatch.mainThread {
             if ((countDownLatch?.count ?: 0) > 0) {
