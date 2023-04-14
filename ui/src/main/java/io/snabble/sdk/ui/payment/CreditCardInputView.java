@@ -40,12 +40,16 @@ import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.payment.data.CreditCardInfo;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.utils.SimpleJsonCallback;
+import kotlin.jvm.internal.SerializedIr;
+import kotlinx.serialization.SerialName;
+import kotlinx.serialization.Serializable;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
@@ -295,7 +299,7 @@ public class CreditCardInputView extends RelativeLayout {
     private void save(CreditCardInfo info) {
         PaymentCredentials.Brand ccBrand;
 
-        switch (info.brand) {
+        switch (info.getBrand()) {
             case "VISA":
                 ccBrand = PaymentCredentials.Brand.VISA;
                 break;
@@ -310,14 +314,14 @@ public class CreditCardInputView extends RelativeLayout {
                 break;
         }
 
-        final PaymentCredentials pc = PaymentCredentials.fromCreditCardData(info.cardHolder,
+        final PaymentCredentials pc = PaymentCredentials.fromCreditCardData(info.getCardHolder(),
                 ccBrand,
                 projectId,
-                info.obfuscatedCardNumber,
-                info.expirationYear,
-                info.expirationMonth,
-                info.hostedDataId,
-                info.schemeTransactionId,
+                info.getObfuscatedCardNumber(),
+                info.getExpirationYear(),
+                info.getExpirationMonth(),
+                info.getHostedDataId(),
+                info.getSchemeTransactionId(),
                 lastHashResponse.storeId);
 
         if (pc == null) {
@@ -347,7 +351,7 @@ public class CreditCardInputView extends RelativeLayout {
             return;
         }
 
-        url = url.replace("{orderID}", creditCardInfo.transactionId);
+        url = url.replace("{orderID}", creditCardInfo.getTransactionId());
 
         Request request = new Request.Builder()
                 .url(Snabble.getInstance().absoluteUrl(url))
@@ -433,35 +437,6 @@ public class CreditCardInputView extends RelativeLayout {
                     isActivityResumed = false;
                 }
             };
-
-    private static class CreditCardInfo {
-        String cardHolder;
-        String obfuscatedCardNumber;
-        String brand;
-        String expirationYear;
-        String expirationMonth;
-        String hostedDataId;
-        String schemeTransactionId;
-        String transactionId;
-
-        public CreditCardInfo(String cardHolder,
-                              String obfuscatedCardNumber,
-                              String brand,
-                              String expirationYear,
-                              String expirationMonth,
-                              String hostedDataId,
-                              String schemeTransactionId,
-                              String transactionId) {
-            this.cardHolder = cardHolder;
-            this.obfuscatedCardNumber = obfuscatedCardNumber;
-            this.brand = brand;
-            this.expirationYear = expirationYear;
-            this.expirationMonth = expirationMonth;
-            this.hostedDataId = hostedDataId;
-            this.schemeTransactionId = schemeTransactionId;
-            this.transactionId = transactionId;
-        }
-    }
 
     @Keep
     private static class HashResponse {

@@ -5,6 +5,7 @@
     id(libs.plugins.kotlin.android.get().pluginId)
     id(libs.plugins.dokka.get().pluginId)
     id(libs.plugins.kotlin.parcelize.get().pluginId)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 apply {
@@ -94,8 +95,11 @@ dependencies {
     implementation(libs.google.zxing.core)
     implementation(libs.googlePlayServices.wallet)
     implementation(libs.picasso)
+    implementation(libs.kotlinx.serializationJson)
+    implementation(libs.koltin.reflect)
     implementation(libs.rekisoftLazyWorker)
     implementation(libs.relex.circleindicator)
+
 
     implementation(libs.bundles.camera)
     implementation(libs.bundles.navigation)
