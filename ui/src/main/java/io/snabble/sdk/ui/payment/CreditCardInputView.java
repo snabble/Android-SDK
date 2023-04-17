@@ -6,7 +6,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.AttributeSet;
-import android.util.Base64;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
@@ -24,14 +23,11 @@ import androidx.core.view.ViewCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 
-import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.charset.Charset;
 import java.text.NumberFormat;
-import java.util.UUID;
 
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.Project;
@@ -41,6 +37,7 @@ import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.payment.creditcard.data.CreditCardInfo;
+import io.snabble.sdk.ui.payment.creditcard.data.CreditCardUrlBuilder;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Dispatch;
@@ -169,15 +166,6 @@ public class CreditCardInputView extends RelativeLayout {
         inflateView();
     }
 
-    private void checkActivityResumed() {
-        FragmentActivity fragmentActivity = UIUtils.getHostFragmentActivity(getContext());
-        if (fragmentActivity != null) {
-            isActivityResumed = fragmentActivity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED);
-        } else {
-            isActivityResumed = true;
-        }
-    }
-
     private void requestHash() {
         Project project = getProject();
 
@@ -204,7 +192,7 @@ public class CreditCardInputView extends RelativeLayout {
             public void success(final HashResponse hashResponse) {
                 lastHashResponse = hashResponse;
                 cancelPreAuthUrl = headers().get("Location");
-                Dispatch.mainThread(() -> loadForm(hashResponse));
+                Dispatch.mainThread(() -> loadUrl(hashResponse));
             }
 
             @Override
@@ -212,6 +200,15 @@ public class CreditCardInputView extends RelativeLayout {
                 Dispatch.mainThread(() -> finishWithError(null));
             }
         });
+    }
+
+    private void checkActivityResumed() {
+        FragmentActivity fragmentActivity = UIUtils.getHostFragmentActivity(getContext());
+        if (fragmentActivity != null) {
+            isActivityResumed = fragmentActivity.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED);
+        } else {
+            isActivityResumed = true;
+        }
     }
 
     @Nullable
@@ -225,52 +222,25 @@ public class CreditCardInputView extends RelativeLayout {
         return project;
     }
 
-    private void loadForm(HashResponse hashResponse) {
-        try {
-            String data = IOUtils.toString(resources.openRawResource(R.raw.snabble_creditcardform), Charset.forName("UTF-8"));
-            data = data.replace("{{url}}", hashResponse.url);
-            data = data.replace("{{hostedDataId}}", UUID.randomUUID().toString());
-            data = data.replace("{{storeId}}", hashResponse.storeId);
-            data = data.replace("{{orderId}}", hashResponse.orderId);
-            data = data.replace("{{date}}", hashResponse.date);
-            data = data.replace("{{currency}}", hashResponse.currency);
-            data = data.replace("{{chargeTotal}}", hashResponse.chargeTotal);
-            data = data.replace("{{hash}}", hashResponse.hash);
+    private void loadUrl(HashResponse hashResponse) {
+        CreditCardUrlBuilder builder = new CreditCardUrlBuilder();
+        String url = builder.createUrlFor(projectId, paymentType);
+        webView.loadUrl(url);
 
-            // hides credit card selection, V = VISA, but in reality we can enter any credit card that is supported
-            switch (paymentType) {
-                case MASTERCARD:
-                    data = data.replace("{{paymentMethod}}", "M");
-                    break;
-                case AMEX:
-                    data = data.replace("{{paymentMethod}}", "A");
-                    break;
-                case VISA:
-                default:
-                    data = data.replace("{{paymentMethod}}", "V");
-                    break;
-            }
-
-            webView.loadData(Base64.encodeToString(data.getBytes(), Base64.DEFAULT), null, "base64");
-
-            Project project = getProject();
-            String companyName = project.getName();
-            if (project.getCompany() != null && project.getCompany().name != null) {
-                companyName = project.getCompany().name;
-            }
-            NumberFormat numberFormat = NumberFormat.getCurrencyInstance(project.getCurrencyLocale());
-            BigDecimal chargeTotal = new BigDecimal(hashResponse.chargeTotal);
-            threeDHint.setVisibility(View.VISIBLE);
-            threeDHint.setText(
-                    resources.getString(R.string.Snabble_CC_3dsecureHint_retailerWithPrice,
-                            numberFormat.format(chargeTotal),
-                            companyName)
-            );
-            isLoaded = true;
-        } catch (IOException e) {
-            Logger.e(e.getMessage());
-            threeDHint.setVisibility(View.GONE);
+        Project project = getProject();
+        String companyName = project.getName();
+        if (project.getCompany() != null && project.getCompany().name != null) {
+            companyName = project.getCompany().name;
         }
+        NumberFormat numberFormat = NumberFormat.getCurrencyInstance(project.getCurrencyLocale());
+        BigDecimal chargeTotal = new BigDecimal(hashResponse.chargeTotal);
+        threeDHint.setVisibility(View.VISIBLE);
+        threeDHint.setText(
+                resources.getString(R.string.Snabble_CC_3dsecureHint_retailerWithPrice,
+                        numberFormat.format(chargeTotal),
+                        companyName)
+        );
+        isLoaded = true;
     }
 
     private void authenticateAndSave(final CreditCardInfo creditCardInfo) {
