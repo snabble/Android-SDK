@@ -1,17 +1,13 @@
-package io.snabble.sdk.ui.scanner
+package io.snabble.sdk.ui.payment.creditcard.data
 
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.shouldBe
-import io.snabble.sdk.ui.payment.data.CreditCardInfo
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
+import io.snabble.sdk.ui.payment.creditcard.data.CreditCardInfo.Companion.toCreditCardInfo
 
-class ScriptTest : FreeSpec({
+class CreditCardInfoTest : FreeSpec({
 
-    "Json to Creditcard" -{
-
-        val format = Json { ignoreUnknownKeys = true }
-       val data =  """
+    "A credit card parsed from a Json should return the matching credit card info" - {
+        val data = """
             {
                 "hosteddataid": "hostedDataId",
                         "schemeTransactionId": "schemeTransactionId",
@@ -26,8 +22,7 @@ class ScriptTest : FreeSpec({
             }
         """.trimIndent()
 
-        val credit = format.decodeFromString<CreditCardInfo>(data)
+        val credit = data.toCreditCardInfo()
         credit.expirationYear.shouldBe("expYear")
-        println(credit)
     }
 })
