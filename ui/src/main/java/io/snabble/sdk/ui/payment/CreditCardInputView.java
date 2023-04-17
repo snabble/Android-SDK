@@ -40,16 +40,13 @@ import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
-import io.snabble.sdk.ui.payment.data.CreditCardInfo;
+import io.snabble.sdk.ui.payment.creditcard.data.CreditCardInfo;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 import io.snabble.sdk.utils.SimpleJsonCallback;
-import kotlin.jvm.internal.SerializedIr;
-import kotlinx.serialization.SerialName;
-import kotlinx.serialization.Serializable;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
@@ -266,8 +263,8 @@ public class CreditCardInputView extends RelativeLayout {
             threeDHint.setVisibility(View.VISIBLE);
             threeDHint.setText(
                     resources.getString(R.string.Snabble_CC_3dsecureHint_retailerWithPrice,
-                    numberFormat.format(chargeTotal),
-                    companyName)
+                            numberFormat.format(chargeTotal),
+                            companyName)
             );
             isLoaded = true;
         } catch (IOException e) {
@@ -383,8 +380,8 @@ public class CreditCardInputView extends RelativeLayout {
         }
 
         Toast.makeText(getContext(),
-                errorMessage,
-                Toast.LENGTH_SHORT)
+                        errorMessage,
+                        Toast.LENGTH_SHORT)
                 .show();
 
         finish();
@@ -452,17 +449,8 @@ public class CreditCardInputView extends RelativeLayout {
     @Keep
     private class JsInterface {
         @JavascriptInterface
-        public void saveCard(final String cardHolder,
-                             final String obfuscatedCardNumber,
-                             final String brand,
-                             final String expirationYear,
-                             final String expirationMonth,
-                             final String hostedDataId,
-                             final String schemeTransactionId,
-                             final String transactionId) {
-            CreditCardInfo creditCardInfo = new CreditCardInfo(cardHolder, obfuscatedCardNumber,
-                    brand, expirationYear,
-                    expirationMonth, hostedDataId, schemeTransactionId, transactionId);
+        public void saveCard(final String card) {
+            CreditCardInfo creditCardInfo = CreditCardInfo.toCreditCardInfo(card);
 
             if (isActivityResumed) {
                 Dispatch.mainThread(() -> authenticateAndSave(creditCardInfo));
