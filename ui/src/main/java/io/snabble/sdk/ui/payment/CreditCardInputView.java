@@ -57,7 +57,6 @@ public class CreditCardInputView extends RelativeLayout {
     private boolean acceptedKeyguard;
     private WebView webView;
     private Resources resources;
-    private HashResponse lastHashResponse;
     private String cancelPreAuthUrl;
     private ProgressBar progressBar;
     private boolean isActivityResumed;
@@ -190,7 +189,6 @@ public class CreditCardInputView extends RelativeLayout {
         project.getOkHttpClient().newCall(request).enqueue(new SimpleJsonCallback<HashResponse>(HashResponse.class) {
             @Override
             public void success(final HashResponse hashResponse) {
-                lastHashResponse = hashResponse;
                 cancelPreAuthUrl = headers().get("Location");
                 Dispatch.mainThread(() -> loadUrl(hashResponse));
             }
@@ -289,7 +287,7 @@ public class CreditCardInputView extends RelativeLayout {
                 info.getExpirationMonth(),
                 info.getHostedDataId(),
                 info.getSchemeTransactionId(),
-                lastHashResponse.storeId);
+                info.getStoreId());
 
         if (pc == null) {
             Toast.makeText(getContext(), "Could not verify payment credentials", Toast.LENGTH_LONG)

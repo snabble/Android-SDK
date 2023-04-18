@@ -10,19 +10,22 @@ class CreditCardInfoTest : FreeSpec({
         val data = """
             {
                 "hosteddataid": "hostedDataId",
-                        "schemeTransactionId": "schemeTransactionId",
-                        "cardnumber": "cardNumber",
-                        "bname": "cardHolder",
-                        "ccbrand": "ccBrand",
-                        "expmonth": "expMonth",
-                        "expyear": "expYear",
-                        "processor_response_code": "responseCode",
-                        "oid": "transactionId",
-                        "fail_reason": "failReason"
+                "schemeTransactionId": "schemeTransactionId",
+                "cardnumber": "cardNumber",
+                "bname": "cardHolder",
+                "ccbrand": "ccBrand",
+                "storeId": "storeId",
+                "expmonth": "expMonth",
+                "expyear": "expYear",
+                "processor_response_code": "responseCode",
+                "oid": "transactionId",
+                "fail_reason": "failReason"  
             }
         """.trimIndent()
 
         val credit = data.toCreditCardInfo()
         credit.expirationYear.shouldBe("expYear")
+        credit.storeId.shouldBe("storeId")
+        println(credit)
     }
 })
