@@ -7,19 +7,21 @@ import kotlinx.serialization.json.Json
 
 @Serializable
 data class CreditCardInfo(
-    @SerialName("bname") val cardHolder: String,
-    @SerialName("cardnumber") val obfuscatedCardNumber: String,
-    @SerialName("ccbrand") val brand: String,
-    @SerialName("expyear") val expirationYear: String,
-    @SerialName("expmonth") val expirationMonth: String,
-    @SerialName("hosteddataid") val hostedDataId: String,
+    @SerialName("cardHolder") val cardHolder: String,
+    @SerialName("cardNumber") val obfuscatedCardNumber: String,
+    @SerialName("ccBrand") val brand: String,
+    @SerialName("expYear") val expirationYear: String,
+    @SerialName("expMonth") val expirationMonth: String,
+    @SerialName("hostedDataId") val hostedDataId: String,
     @SerialName("schemeTransactionId") val schemeTransactionId: String,
-    @SerialName("oid") val transactionId: String,
+    @SerialName("transactionId") val transactionId: String,
     @SerialName("storeId") val storeId: String
-){
+) {
+
     companion object {
+
         @JvmStatic
-        fun String.toCreditCardInfo(): CreditCardInfo{
+        fun String.toCreditCardInfo(): CreditCardInfo {
             val format = Json { ignoreUnknownKeys = true }
             return format.decodeFromString<CreditCardInfo>(this)
         }
