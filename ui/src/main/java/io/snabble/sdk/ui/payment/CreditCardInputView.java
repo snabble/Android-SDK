@@ -283,8 +283,8 @@ public class CreditCardInputView extends RelativeLayout {
                 ccBrand,
                 projectId,
                 info.getObfuscatedCardNumber(),
-                info.getExpirationYear(),
                 info.getExpirationMonth(),
+                info.getExpirationYear(),
                 info.getHostedDataId(),
                 info.getSchemeTransactionId(),
                 info.getStoreId());
@@ -417,7 +417,7 @@ public class CreditCardInputView extends RelativeLayout {
     @Keep
     private class JsInterface {
         @JavascriptInterface
-        public void saveCard(final String card) {
+        public void save(final String card) {
             CreditCardInfo creditCardInfo = CreditCardInfo.toCreditCardInfo(card);
 
             if (isActivityResumed) {
