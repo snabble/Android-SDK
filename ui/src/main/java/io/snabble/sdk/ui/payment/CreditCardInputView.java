@@ -6,7 +6,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.AttributeSet;
-import android.util.Base64;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
@@ -19,19 +18,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Keep;
-import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 
-import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.charset.Charset;
 import java.text.NumberFormat;
-import java.util.UUID;
+import java.util.Currency;
 
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.Project;
@@ -40,17 +35,13 @@ import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.payment.creditcard.data.CreditCardInfo;
+import io.snabble.sdk.ui.payment.creditcard.data.CreditCardUrlBuilder;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
-import io.snabble.sdk.utils.SimpleJsonCallback;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class CreditCardInputView extends RelativeLayout {
     public static final String ARG_PROJECT_ID = "projectId";
@@ -59,15 +50,12 @@ public class CreditCardInputView extends RelativeLayout {
     private boolean acceptedKeyguard;
     private WebView webView;
     private Resources resources;
-    private HashResponse lastHashResponse;
-    private String cancelPreAuthUrl;
     private ProgressBar progressBar;
     private boolean isActivityResumed;
     private CreditCardInfo pendingCreditCardInfo;
 
     private PaymentMethod paymentType;
     private String projectId;
-    private Project lastProject;
     private TextView threeDHint;
     private boolean isLoaded;
 
@@ -121,6 +109,12 @@ public class CreditCardInputView extends RelativeLayout {
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDomStorageEnabled(true);
         webView.addJavascriptInterface(new JsInterface(), "snabble");
+        webView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            if (left != oldLeft || right != oldRight || top != oldTop || bottom != oldBottom) {
+                webView.scrollTo(0, 0);
+            }
+        });
+
 
         // this disables credit card storage prompt for google pay
         ViewCompat.setImportantForAutofill(webView, View.IMPORTANT_FOR_AUTOFILL_NO);
@@ -132,7 +126,8 @@ public class CreditCardInputView extends RelativeLayout {
         threeDHint.setVisibility(View.GONE);
 
         watchForBigSizeChanges();
-        requestHash();
+        setProject();
+        loadUrl();
     }
 
     public void watchForBigSizeChanges() {
@@ -161,6 +156,12 @@ public class CreditCardInputView extends RelativeLayout {
         });
     }
 
+    private void setProject() {
+        if (getProject() == null) {
+            finishWithError("No project");
+        }
+    }
+
     public void load(String projectId, PaymentMethod paymentType) {
         this.projectId = projectId;
         this.paymentType = paymentType;
@@ -177,42 +178,6 @@ public class CreditCardInputView extends RelativeLayout {
         }
     }
 
-    private void requestHash() {
-        Project project = getProject();
-
-        if (project == null) {
-            finishWithError("No project");
-            return;
-        }
-
-        String url = project.getTelecashVaultItemsUrl();
-        if (url == null) {
-            finishWithError("No vault items url provided");
-            return;
-        }
-
-        Request request = new Request.Builder()
-                .url(url)
-                .post(RequestBody.create("", null))
-                .build();
-
-        lastProject = project;
-
-        project.getOkHttpClient().newCall(request).enqueue(new SimpleJsonCallback<HashResponse>(HashResponse.class) {
-            @Override
-            public void success(final HashResponse hashResponse) {
-                lastHashResponse = hashResponse;
-                cancelPreAuthUrl = headers().get("Location");
-                Dispatch.mainThread(() -> loadForm(hashResponse));
-            }
-
-            @Override
-            public void error(Throwable t) {
-                Dispatch.mainThread(() -> finishWithError(null));
-            }
-        });
-    }
-
     @Nullable
     private Project getProject() {
         Project project = null;
@@ -224,57 +189,13 @@ public class CreditCardInputView extends RelativeLayout {
         return project;
     }
 
-    private void loadForm(HashResponse hashResponse) {
-        try {
-            String data = IOUtils.toString(resources.openRawResource(R.raw.snabble_creditcardform), Charset.forName("UTF-8"));
-            data = data.replace("{{url}}", hashResponse.url);
-            data = data.replace("{{hostedDataId}}", UUID.randomUUID().toString());
-            data = data.replace("{{storeId}}", hashResponse.storeId);
-            data = data.replace("{{orderId}}", hashResponse.orderId);
-            data = data.replace("{{date}}", hashResponse.date);
-            data = data.replace("{{currency}}", hashResponse.currency);
-            data = data.replace("{{chargeTotal}}", hashResponse.chargeTotal);
-            data = data.replace("{{hash}}", hashResponse.hash);
-
-            // hides credit card selection, V = VISA, but in reality we can enter any credit card that is supported
-            switch (paymentType) {
-                case MASTERCARD:
-                    data = data.replace("{{paymentMethod}}", "M");
-                    break;
-                case AMEX:
-                    data = data.replace("{{paymentMethod}}", "A");
-                    break;
-                case VISA:
-                default:
-                    data = data.replace("{{paymentMethod}}", "V");
-                    break;
-            }
-
-            webView.loadData(Base64.encodeToString(data.getBytes(), Base64.DEFAULT), null, "base64");
-
-            Project project = getProject();
-            String companyName = project.getName();
-            if (project.getCompany() != null && project.getCompany().name != null) {
-                companyName = project.getCompany().name;
-            }
-            NumberFormat numberFormat = NumberFormat.getCurrencyInstance(project.getCurrencyLocale());
-            BigDecimal chargeTotal = new BigDecimal(hashResponse.chargeTotal);
-            threeDHint.setVisibility(View.VISIBLE);
-            threeDHint.setText(
-                    resources.getString(R.string.Snabble_CC_3dsecureHint_retailerWithPrice,
-                    numberFormat.format(chargeTotal),
-                    companyName)
-            );
-            isLoaded = true;
-        } catch (IOException e) {
-            Logger.e(e.getMessage());
-            threeDHint.setVisibility(View.GONE);
-        }
+    private void loadUrl() {
+        CreditCardUrlBuilder builder = new CreditCardUrlBuilder();
+        String url = builder.createUrlFor(projectId, paymentType);
+        webView.loadUrl(url);
     }
 
     private void authenticateAndSave(final CreditCardInfo creditCardInfo) {
-        cancelPreAuth(creditCardInfo);
-
         Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
             @Override
             public void success() {
@@ -295,7 +216,7 @@ public class CreditCardInputView extends RelativeLayout {
     private void save(CreditCardInfo info) {
         PaymentCredentials.Brand ccBrand;
 
-        switch (info.brand) {
+        switch (info.getBrand()) {
             case "VISA":
                 ccBrand = PaymentCredentials.Brand.VISA;
                 break;
@@ -310,15 +231,15 @@ public class CreditCardInputView extends RelativeLayout {
                 break;
         }
 
-        final PaymentCredentials pc = PaymentCredentials.fromCreditCardData(info.cardHolder,
+        final PaymentCredentials pc = PaymentCredentials.fromCreditCardData(info.getCardHolder(),
                 ccBrand,
                 projectId,
-                info.obfuscatedCardNumber,
-                info.expirationYear,
-                info.expirationMonth,
-                info.hostedDataId,
-                info.schemeTransactionId,
-                lastHashResponse.storeId);
+                info.getObfuscatedCardNumber(),
+                info.getExpirationMonth(),
+                info.getExpirationYear(),
+                info.getHostedDataId(),
+                info.getSchemeTransactionId(),
+                info.getStoreId());
 
         if (pc == null) {
             Toast.makeText(getContext(), "Could not verify payment credentials", Toast.LENGTH_LONG)
@@ -335,39 +256,6 @@ public class CreditCardInputView extends RelativeLayout {
         }
     }
 
-    private void cancelPreAuth(CreditCardInfo creditCardInfo) {
-        String url = cancelPreAuthUrl;
-        if (url == null) {
-            Logger.e("Could not abort pre authorization, no url provided");
-            return;
-        }
-
-        if (lastProject == null) {
-            Logger.e("Could not abort pre authorization, no project provided");
-            return;
-        }
-
-        url = url.replace("{orderID}", creditCardInfo.transactionId);
-
-        Request request = new Request.Builder()
-                .url(Snabble.getInstance().absoluteUrl(url))
-                .delete()
-                .build();
-
-        // fire and forget
-        lastProject.getOkHttpClient().newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                // ignore
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) {
-                // ignore
-            }
-        });
-    }
-
     private void finish() {
         SnabbleUI.executeAction(getContext(), SnabbleUI.Event.GO_BACK);
     }
@@ -379,8 +267,8 @@ public class CreditCardInputView extends RelativeLayout {
         }
 
         Toast.makeText(getContext(),
-                errorMessage,
-                Toast.LENGTH_SHORT)
+                        errorMessage,
+                        Toast.LENGTH_SHORT)
                 .show();
 
         finish();
@@ -434,66 +322,38 @@ public class CreditCardInputView extends RelativeLayout {
                 }
             };
 
-    private static class CreditCardInfo {
-        String cardHolder;
-        String obfuscatedCardNumber;
-        String brand;
-        String expirationYear;
-        String expirationMonth;
-        String hostedDataId;
-        String schemeTransactionId;
-        String transactionId;
-
-        public CreditCardInfo(String cardHolder,
-                              String obfuscatedCardNumber,
-                              String brand,
-                              String expirationYear,
-                              String expirationMonth,
-                              String hostedDataId,
-                              String schemeTransactionId,
-                              String transactionId) {
-            this.cardHolder = cardHolder;
-            this.obfuscatedCardNumber = obfuscatedCardNumber;
-            this.brand = brand;
-            this.expirationYear = expirationYear;
-            this.expirationMonth = expirationMonth;
-            this.hostedDataId = hostedDataId;
-            this.schemeTransactionId = schemeTransactionId;
-            this.transactionId = transactionId;
-        }
-    }
-
-    @Keep
-    private static class HashResponse {
-        String hash;
-        String storeId;
-        String orderId;
-        String date;
-        String chargeTotal;
-        String url;
-        String currency;
-    }
-
     @Keep
     private class JsInterface {
         @JavascriptInterface
-        public void saveCard(final String cardHolder,
-                             final String obfuscatedCardNumber,
-                             final String brand,
-                             final String expirationYear,
-                             final String expirationMonth,
-                             final String hostedDataId,
-                             final String schemeTransactionId,
-                             final String transactionId) {
-            CreditCardInfo creditCardInfo = new CreditCardInfo(cardHolder, obfuscatedCardNumber,
-                    brand, expirationYear,
-                    expirationMonth, hostedDataId, schemeTransactionId, transactionId);
+        public void save(final String card) {
+            CreditCardInfo creditCardInfo = CreditCardInfo.toCreditCardInfo(card);
 
             if (isActivityResumed) {
                 Dispatch.mainThread(() -> authenticateAndSave(creditCardInfo));
             } else {
                 pendingCreditCardInfo = creditCardInfo;
             }
+        }
+
+        @JavascriptInterface
+        public void preAuthInfo(final String totalCharge, final String currency) {
+            Dispatch.mainThread(() -> {
+                isLoaded = true;
+                Project project = getProject();
+                String companyName = project.getName();
+                if (project.getCompany() != null && project.getCompany().name != null) {
+                    companyName = project.getCompany().name;
+                }
+                NumberFormat numberFormat = NumberFormat.getCurrencyInstance();
+                numberFormat.setCurrency(Currency.getInstance(currency));
+                BigDecimal chargeTotal = new BigDecimal(totalCharge);
+                threeDHint.setVisibility(View.VISIBLE);
+                threeDHint.setText(
+                        resources.getString(R.string.Snabble_CC_3dsecureHint_retailerWithPrice,
+                                numberFormat.format(chargeTotal),
+                                companyName)
+                );
+            });
         }
 
         @JavascriptInterface

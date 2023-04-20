@@ -4,10 +4,16 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 ### Added
 ### Changed
-* ui: Add the ability to show a header for the CheckoutActivity
-
 ### Removed
 ### Fixed
+
+## [0.70.0]
+### Changed
+* ui: Fiserv is now displayed via hosted form
+
+## [0.69.9]
+### Changed
+* ui: Add the ability to show a header for the CheckoutActivity
 
 ## [0.68.8]
 ### Changed
