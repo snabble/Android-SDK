@@ -15,8 +15,10 @@ class CreditCardUrlBuilder {
             else -> "visa"
         }
         val appUserId = Snabble.userPreferences.appUser?.id
+        val authority = Snabble.endpointBaseUrl.substringAfter("https://")
+
         return builder.scheme("https")
-            .authority("api.snabble-testing.io")
+            .authority(authority)
             .appendPath(projectId)
             .appendPath("telecash")
             .appendPath("form")

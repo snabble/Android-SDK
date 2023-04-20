@@ -18,16 +18,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Keep;
-import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.util.Currency;
 
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.Project;
@@ -43,12 +42,6 @@ import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
-import io.snabble.sdk.utils.SimpleJsonCallback;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class CreditCardInputView extends RelativeLayout {
     public static final String ARG_PROJECT_ID = "projectId";
@@ -57,14 +50,12 @@ public class CreditCardInputView extends RelativeLayout {
     private boolean acceptedKeyguard;
     private WebView webView;
     private Resources resources;
-    private String cancelPreAuthUrl;
     private ProgressBar progressBar;
     private boolean isActivityResumed;
     private CreditCardInfo pendingCreditCardInfo;
 
     private PaymentMethod paymentType;
     private String projectId;
-    private Project lastProject;
     private TextView threeDHint;
     private boolean isLoaded;
 
@@ -118,6 +109,12 @@ public class CreditCardInputView extends RelativeLayout {
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setDomStorageEnabled(true);
         webView.addJavascriptInterface(new JsInterface(), "snabble");
+        webView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            if (left != oldLeft || right != oldRight || top != oldTop || bottom != oldBottom) {
+                webView.scrollTo(0, 0);
+            }
+        });
+
 
         // this disables credit card storage prompt for google pay
         ViewCompat.setImportantForAutofill(webView, View.IMPORTANT_FOR_AUTOFILL_NO);
@@ -129,7 +126,8 @@ public class CreditCardInputView extends RelativeLayout {
         threeDHint.setVisibility(View.GONE);
 
         watchForBigSizeChanges();
-        requestHash();
+        setProject();
+        loadUrl();
     }
 
     public void watchForBigSizeChanges() {
@@ -158,46 +156,17 @@ public class CreditCardInputView extends RelativeLayout {
         });
     }
 
+    private void setProject() {
+        if (getProject() == null) {
+            finishWithError("No project");
+        }
+    }
+
     public void load(String projectId, PaymentMethod paymentType) {
         this.projectId = projectId;
         this.paymentType = paymentType;
 
         inflateView();
-    }
-
-    private void requestHash() {
-        Project project = getProject();
-
-        if (project == null) {
-            finishWithError("No project");
-            return;
-        }
-
-        String url = project.getTelecashVaultItemsUrl();
-        if (url == null) {
-            finishWithError("No vault items url provided");
-            return;
-        }
-
-        Request request = new Request.Builder()
-                .url(url)
-                .post(RequestBody.create("", null))
-                .build();
-
-        lastProject = project;
-
-        project.getOkHttpClient().newCall(request).enqueue(new SimpleJsonCallback<HashResponse>(HashResponse.class) {
-            @Override
-            public void success(final HashResponse hashResponse) {
-                cancelPreAuthUrl = headers().get("Location");
-                Dispatch.mainThread(() -> loadUrl(hashResponse));
-            }
-
-            @Override
-            public void error(Throwable t) {
-                Dispatch.mainThread(() -> finishWithError(null));
-            }
-        });
     }
 
     private void checkActivityResumed() {
@@ -220,30 +189,13 @@ public class CreditCardInputView extends RelativeLayout {
         return project;
     }
 
-    private void loadUrl(HashResponse hashResponse) {
+    private void loadUrl() {
         CreditCardUrlBuilder builder = new CreditCardUrlBuilder();
         String url = builder.createUrlFor(projectId, paymentType);
         webView.loadUrl(url);
-
-        Project project = getProject();
-        String companyName = project.getName();
-        if (project.getCompany() != null && project.getCompany().name != null) {
-            companyName = project.getCompany().name;
-        }
-        NumberFormat numberFormat = NumberFormat.getCurrencyInstance(project.getCurrencyLocale());
-        BigDecimal chargeTotal = new BigDecimal(hashResponse.chargeTotal);
-        threeDHint.setVisibility(View.VISIBLE);
-        threeDHint.setText(
-                resources.getString(R.string.Snabble_CC_3dsecureHint_retailerWithPrice,
-                        numberFormat.format(chargeTotal),
-                        companyName)
-        );
-        isLoaded = true;
     }
 
     private void authenticateAndSave(final CreditCardInfo creditCardInfo) {
-        cancelPreAuth(creditCardInfo);
-
         Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
             @Override
             public void success() {
@@ -302,39 +254,6 @@ public class CreditCardInputView extends RelativeLayout {
         } else {
             acceptedKeyguard = true;
         }
-    }
-
-    private void cancelPreAuth(CreditCardInfo creditCardInfo) {
-        String url = cancelPreAuthUrl;
-        if (url == null) {
-            Logger.e("Could not abort pre authorization, no url provided");
-            return;
-        }
-
-        if (lastProject == null) {
-            Logger.e("Could not abort pre authorization, no project provided");
-            return;
-        }
-
-        url = url.replace("{orderID}", creditCardInfo.getTransactionId());
-
-        Request request = new Request.Builder()
-                .url(Snabble.getInstance().absoluteUrl(url))
-                .delete()
-                .build();
-
-        // fire and forget
-        lastProject.getOkHttpClient().newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                // ignore
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) {
-                // ignore
-            }
-        });
     }
 
     private void finish() {
@@ -404,17 +323,6 @@ public class CreditCardInputView extends RelativeLayout {
             };
 
     @Keep
-    private static class HashResponse {
-        String hash;
-        String storeId;
-        String orderId;
-        String date;
-        String chargeTotal;
-        String url;
-        String currency;
-    }
-
-    @Keep
     private class JsInterface {
         @JavascriptInterface
         public void save(final String card) {
@@ -425,6 +333,27 @@ public class CreditCardInputView extends RelativeLayout {
             } else {
                 pendingCreditCardInfo = creditCardInfo;
             }
+        }
+
+        @JavascriptInterface
+        public void preAuthInfo(final String totalCharge, final String currency) {
+            Dispatch.mainThread(() -> {
+                isLoaded = true;
+                Project project = getProject();
+                String companyName = project.getName();
+                if (project.getCompany() != null && project.getCompany().name != null) {
+                    companyName = project.getCompany().name;
+                }
+                NumberFormat numberFormat = NumberFormat.getCurrencyInstance();
+                numberFormat.setCurrency(Currency.getInstance(currency));
+                BigDecimal chargeTotal = new BigDecimal(totalCharge);
+                threeDHint.setVisibility(View.VISIBLE);
+                threeDHint.setText(
+                        resources.getString(R.string.Snabble_CC_3dsecureHint_retailerWithPrice,
+                                numberFormat.format(chargeTotal),
+                                companyName)
+                );
+            });
         }
 
         @JavascriptInterface
