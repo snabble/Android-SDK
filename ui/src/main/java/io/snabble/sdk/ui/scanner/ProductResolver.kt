@@ -4,13 +4,17 @@ import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.view.KeyEvent
-import io.snabble.sdk.*
+import io.snabble.sdk.BarcodeFormat
+import io.snabble.sdk.OnProductAvailableListener
+import io.snabble.sdk.Product
+import io.snabble.sdk.Project
+import io.snabble.sdk.Snabble
 import io.snabble.sdk.Unit
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.codes.gs1.GS1Code
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.scanner.ProductResolver.*
+import io.snabble.sdk.ui.scanner.ProductResolver.OnProductNotFoundListener
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.DelayedProgressDialog
 import io.snabble.sdk.ui.utils.UIUtils
@@ -18,11 +22,6 @@ import io.snabble.sdk.utils.Age
 import io.snabble.sdk.utils.Dispatch
 import java.math.BigDecimal
 import java.util.concurrent.CountDownLatch
-import kotlin.Boolean
-import kotlin.Deprecated
-import kotlin.Int
-import kotlin.ReplaceWith
-import kotlin.apply
 
 /**
  * The product resolver parses Barcodes e.g. GTINs and provides all meta data about the scanned
@@ -42,6 +41,7 @@ import kotlin.apply
  * You can find an advanced sample in the SelfScanningView.lookupAndShowProduct(...)
  */
 class ProductResolver private constructor(private val context: Context, private val project: Project) {
+
     private var resolveBundles = true
     private var productConfirmationDialog: ProductConfirmationDialog? = null
     private var productDialogViewModel: ProductConfirmationDialog.ViewModel? = null
@@ -76,7 +76,6 @@ class ProductResolver private constructor(private val context: Context, private 
             }
             if (!isOldEnough) {
                 onAgeNotReachedListener?.onAgeNotReached()
-
             }
         }
     }
@@ -171,27 +170,34 @@ class ProductResolver private constructor(private val context: Context, private 
                     if (gs1GtinScannedCodes.isNotEmpty() && gs1Code == null) {
                         lookupProductData(gs1GtinScannedCodes, newGs1Code)
                     } else {
-                        project.productDatabase.findBySkuOnline(scannedCodes[0].lookupCode, object : OnProductAvailableListener {
-                            override fun onProductAvailable(product: Product, wasOnline: Boolean) {
-                                handleProductAvailable(product, wasOnline, scannedCodes[0], null)
-                            }
+                        project.productDatabase.findBySkuOnline(
+                            scannedCodes[0].lookupCode,
+                            object : OnProductAvailableListener {
+                                override fun onProductAvailable(product: Product, wasOnline: Boolean) {
+                                    handleProductAvailable(product, wasOnline, scannedCodes[0], null)
+                                }
 
-                            override fun onProductNotFound() {
-                                project.events.productNotFound(scannedCodes)
-                                handleProductNotFound(scannedCodes[0])
-                            }
+                                override fun onProductNotFound() {
+                                    project.events.productNotFound(scannedCodes)
+                                    handleProductNotFound(scannedCodes[0])
+                                }
 
-                            override fun onError() {
-                                handleProductError()
-                            }
-                        })
+                                override fun onError() {
+                                    handleProductError()
+                                }
+                            })
                     }
                 }
             }
         }
     }
 
-    private fun handleProductAvailable(product: Product, wasOnlineProduct: Boolean, scannedCode: ScannedCode, gs1Code: GS1Code?) {
+    private fun handleProductAvailable(
+        product: Product,
+        wasOnlineProduct: Boolean,
+        scannedCode: ScannedCode,
+        gs1Code: GS1Code?
+    ) {
         progressDialog.dismiss()
         val unit = product.getEncodingUnit(scannedCode.templateName, scannedCode.lookupCode)
         var gs1EmbeddedData: BigDecimal? = null
@@ -224,6 +230,7 @@ class ProductResolver private constructor(private val context: Context, private 
             resolveBundles && !product.bundleProducts.isNullOrEmpty() && !scannedCode.hasEmbeddedData() -> {
                 showBundleDialog(product, scannedCode)
             }
+
             else -> {
                 showProduct(product, scannedCode)
                 val event = if (wasOnlineProduct) {
@@ -285,41 +292,54 @@ class ProductResolver private constructor(private val context: Context, private 
             if (handleProductFlags(product, scannedCode)) {
                 val model = ProductConfirmationDialog.ViewModel(context, SnabbleUI.project, product, scannedCode)
                 productDialogViewModel = model
-                productConfirmationDialog?.show(UIUtils.getHostFragmentActivity(context), model)
+                if (!isDemoProject()) {
+                    productConfirmationDialog?.show(UIUtils.getHostFragmentActivity(context), model)
+                }
             }
         }
     }
 
-    private fun handleProductFlags(product: Product, scannedCode: ScannedCode) : Boolean {
+    private fun isDemoProject(): Boolean {
+        val pref = context.getSharedPreferences("demo", Context.MODE_PRIVATE)
+        return pref.getBoolean("isDemoProject", false)
+    }
+
+    private fun handleProductFlags(product: Product, scannedCode: ScannedCode): Boolean {
         when {
             product.saleStop -> {
                 onSaleStopListener?.onSaleStop()
                 progressDialog.dismiss()
                 onDismissListener?.onDismiss()
             }
+
             product.notForSale -> {
                 onNotForSaleListener?.onNotForSale(product)
                 progressDialog.dismiss()
                 onDismissListener?.onDismiss()
             }
+
             product.availability == Product.Availability.NOT_AVAILABLE -> {
                 handleProductNotFound(scannedCode)
             }
+
             product.type == Product.Type.PreWeighed
                     && (!scannedCode.hasEmbeddedData() || scannedCode.embeddedData == 0) -> {
                 onShelfCodeScannedListener?.onShelfCodeScanned()
                 progressDialog.dismiss()
                 onDismissListener?.onDismiss()
             }
+
             product.type == Product.Type.DepositReturnVoucher
                     && project.shoppingCart.containsScannedCode(scannedCode) -> {
                 onAlreadyScannedListener?.onAlreadyScanned()
                 progressDialog.dismiss()
                 onDismissListener?.onDismiss()
             }
+
             onProductFoundListener != null -> {
                 onProductFoundListener?.onProductFound(product, scannedCode)
             }
+
             else -> return true
         }
 
@@ -357,6 +377,7 @@ class ProductResolver private constructor(private val context: Context, private 
      * We use this internal to stop the camera preview.
      */
     fun interface OnShowListener {
+
         /**
          * Dialog is shown.
          */
@@ -368,6 +389,7 @@ class ProductResolver private constructor(private val context: Context, private 
      * We use this internal to continue the camera preview.
      */
     fun interface OnDismissListener {
+
         /**
          * Dialog was dismissed.
          */
@@ -378,6 +400,7 @@ class ProductResolver private constructor(private val context: Context, private 
      * Sale stop listener.
      */
     fun interface OnSaleStopListener {
+
         /**
          * Will be invoked when the product has the sale stop flag set.
          */
@@ -388,6 +411,7 @@ class ProductResolver private constructor(private val context: Context, private 
      * Not for sale listener.
      */
     fun interface OnNotForSaleListener {
+
         /**
          * Will be invoked when the product has the not for sale flag set.
          */
@@ -398,6 +422,7 @@ class ProductResolver private constructor(private val context: Context, private 
      * The shelf code scanned listener.
      */
     fun interface OnShelfCodeScannedListener {
+
         /**
          * TODO
          */
@@ -408,6 +433,7 @@ class ProductResolver private constructor(private val context: Context, private 
      * The product not found listener.
      */
     fun interface OnProductNotFoundListener {
+
         /**
          * Will be invoked when the product was not found.
          */
@@ -418,6 +444,7 @@ class ProductResolver private constructor(private val context: Context, private 
      * The product found listener.
      */
     fun interface OnProductFoundListener {
+
         /**
          * Provides the found product with its resolved scanned code.
          */
@@ -428,6 +455,7 @@ class ProductResolver private constructor(private val context: Context, private 
      * The network error listener.
      */
     fun interface OnNetworkErrorListener {
+
         /**
          * Will be invoked when a network error accrued.
          */
@@ -438,6 +466,7 @@ class ProductResolver private constructor(private val context: Context, private 
      * The age not reached listener.
      */
     fun interface OnAgeNotReachedListener {
+
         /**
          * TODO
          */
@@ -448,6 +477,7 @@ class ProductResolver private constructor(private val context: Context, private 
      * The already scanned listener.
      */
     fun interface OnAlreadyScannedListener {
+
         /**
          * Will be invoked when the product was already scanned.
          */
@@ -463,6 +493,7 @@ class ProductResolver private constructor(private val context: Context, private 
         context: Context,
         private val project: Project = requireNotNull(Snabble.checkedInProject.value)
     ) {
+
         private val productResolver = ProductResolver(context, project)
         private var factory = ProductConfirmationDialog.Factory {
             DefaultProductConfirmationDialog()
