@@ -41,7 +41,7 @@ object Datatrans {
 
     @JvmStatic
     fun registerCard(activity: FragmentActivity, project: Project, paymentMethod: PaymentMethod) {
-        val descriptor = project.paymentMethodDescriptors.find { it.paymentMethod == paymentMethod }
+        val descriptor = project.paymentMethodDescriptors.find { it.paymentMethods.contains(paymentMethod) }
         if (descriptor == null) {
             project.events.logError("Datatrans Error: No payment descriptor")
             Logger.e("Datatrans error: No payment method descriptor for $paymentMethod")
@@ -65,12 +65,15 @@ object Datatrans {
 
         val request: Request = Request.Builder()
             .url(Snabble.absoluteUrl(url.href))
-            .post(GsonHolder.get().toJson(
-                DatatransTokenizationRequest(paymentMethod)
-            ).toRequestBody("application/json".toMediaType()))
+            .post(
+                GsonHolder.get().toJson(
+                    DatatransTokenizationRequest(paymentMethod)
+                ).toRequestBody("application/json".toMediaType())
+            )
             .build()
 
-        project.okHttpClient.newCall(request).enqueue(object : SimpleJsonCallback<DatatransTokenizationResponse>(DatatransTokenizationResponse::class.java), Callback {
+        project.okHttpClient.newCall(request).enqueue(object :
+            SimpleJsonCallback<DatatransTokenizationResponse>(DatatransTokenizationResponse::class.java), Callback {
             override fun success(response: DatatransTokenizationResponse) {
                 startDatatransTransaction(activity, response, paymentMethod, project)
             }
@@ -92,9 +95,11 @@ object Datatrans {
                 PaymentMethod.TWINT -> {
                     R.string.Snabble_Payment_Twint_error
                 }
+
                 PaymentMethod.POST_FINANCE_CARD -> {
                     R.string.Snabble_Payment_PostFinanceCard_error
                 }
+
                 else -> {
                     R.string.Snabble_Payment_CreditCard_error
                 }
@@ -104,10 +109,12 @@ object Datatrans {
         }
     }
 
-    private fun startDatatransTransaction(activity: FragmentActivity,
-                                          tokenizationResponse: DatatransTokenizationResponse,
-                                          paymentMethod: PaymentMethod,
-                                          project: Project) {
+    private fun startDatatransTransaction(
+        activity: FragmentActivity,
+        tokenizationResponse: DatatransTokenizationResponse,
+        paymentMethod: PaymentMethod,
+        project: Project
+    ) {
         val transaction = Transaction(tokenizationResponse.mobileToken)
         transaction.listener = object : TransactionListener {
             override fun onTransactionSuccess(result: TransactionSuccess) {
@@ -123,6 +130,7 @@ object Datatrans {
                                 year = it.formattedYear
                             }
                         }
+
                         is SavedCard -> {
                             token.cardExpiryDate?.let {
                                 month = it.formattedMonth
@@ -147,7 +155,8 @@ object Datatrans {
                             }
 
                             override fun error() {
-                                Toast.makeText(activity, R.string.Snabble_SEPA_encryptionError, Toast.LENGTH_LONG).show()
+                                Toast.makeText(activity, R.string.Snabble_SEPA_encryptionError, Toast.LENGTH_LONG)
+                                    .show()
                             }
                         })
                     } else {

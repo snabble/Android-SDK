@@ -166,6 +166,24 @@ enum class PaymentMethod(
         isRequiringCredentials = true,
         isShowOnlyIfCredentialsArePresent = false,
         needsAbortConfirmation = true
+    ),
+
+    @SerializedName("externalBilling")
+    EXTERNAL_BILLING(
+        id = "externalBilling",
+        isOfflineMethod = false,
+        isRequiringCredentials = true,
+        isShowOnlyIfCredentialsArePresent = false,
+        needsAbortConfirmation = true
+    ),
+
+    @SerializedName("gatekeeperExternalBilling")
+    GATEKEEPER_EXTERNAL_BILLING(
+        id = "gatekeeperExternalBilling",
+        isOfflineMethod = false,
+        isRequiringCredentials = true,
+        isShowOnlyIfCredentialsArePresent = false,
+        needsAbortConfirmation = true
     );
 
     companion object {
@@ -189,25 +207,31 @@ enum class PaymentMethod(
          * Converts a payment method from its string representation and a list of origins.
          */
         @JvmStatic
-        @Nullable
-        fun fromIdAndOrigin(id: String, origin: List<String>): PaymentMethod? {
+        fun fromIdAndOrigin(id: String, origin: List<String>): List<PaymentMethod> {
+            val methods = arrayListOf<PaymentMethod>()
             values().forEach { pm ->
                 if (pm.id == id && pm.id == TEGUT_EMPLOYEE_CARD.id) {
-                    when (origin[0]) {
-                        "tegutEmployeeID" -> return TEGUT_EMPLOYEE_CARD
-                        "leinweberCustomerID" -> return LEINWEBER_CUSTOMER_ID
+                    origin.forEach {
+                        when (it) {
+                            "tegutEmployeeID" -> methods.add(TEGUT_EMPLOYEE_CARD)
+                            "leinweberCustomerID" -> methods.add(LEINWEBER_CUSTOMER_ID)
+                            "contactPersonCredentials" -> methods.add(EXTERNAL_BILLING)
+                        }
                     }
+                    return methods
                 } else if (pm.id == id && pm.id == PAYONE_SEPA.id) {
                     //needed for deserialization
-                    return when (origin[0]) {
-                        "payoneSepaData" -> PAYONE_SEPA
-                        else -> DE_DIRECT_DEBIT
+                    when (origin[0]) {
+                        "payoneSepaData" -> methods.add(PAYONE_SEPA)
+                        else -> methods.add(DE_DIRECT_DEBIT)
                     }
+                    return methods
                 } else if (pm.id == id) {
-                    return pm
+                   methods.add(pm)
+                    return methods
                 }
             }
-            return null
+            return methods
         }
     }
 }

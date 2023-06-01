@@ -63,6 +63,8 @@ public class PaymentCredentials {
         DATATRANS_CREDITCARD("datatransCreditCardAlias", true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
         PAYONE_CREDITCARD(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
         PAYONE_SEPA("payoneSepaData", true, Collections.singletonList(PaymentMethod.PAYONE_SEPA)),
+        EXTERNAL_BILLING("contactPersonCredentials", true, Collections.singletonList(PaymentMethod.EXTERNAL_BILLING)),
+        GATEKEEPER_EXTERNAL_BILLING("contactPersonCredentials", true, Collections.singletonList(PaymentMethod.GATEKEEPER_EXTERNAL_BILLING)),
         ;
 
         private final String originType;
@@ -869,6 +871,10 @@ public class PaymentCredentials {
             return PaymentMethod.LEINWEBER_CUSTOMER_ID;
         } else if (type == Type.PAYDIREKT) {
             return PaymentMethod.PAYDIREKT;
+        } else if (type == Type.EXTERNAL_BILLING) {
+            return PaymentMethod.EXTERNAL_BILLING;
+        }  else if (type == Type.GATEKEEPER_EXTERNAL_BILLING) {
+            return PaymentMethod.GATEKEEPER_EXTERNAL_BILLING;
         } else if (type == Type.CREDIT_CARD_PSD2
                 || type == Type.DATATRANS
                 || type == Type.DATATRANS_CREDITCARD) {

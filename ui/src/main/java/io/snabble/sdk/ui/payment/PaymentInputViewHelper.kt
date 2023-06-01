@@ -21,7 +21,7 @@ object PaymentInputViewHelper {
         if (KeyguardUtils.isDeviceSecure()) {
             val project = Snabble.getProjectById(projectId)
             val acceptedOriginTypes = project?.paymentMethodDescriptors
-                ?.firstOrNull { it.paymentMethod == paymentMethod }?.acceptedOriginTypes.orEmpty()
+                ?.firstOrNull { it.paymentMethods.contains(paymentMethod) }?.acceptedOriginTypes.orEmpty()
             val useDatatrans = acceptedOriginTypes.any { it == "datatransAlias" || it == "datatransCreditCardAlias" }
             val usePayone = acceptedOriginTypes.any { it == "payonePseudoCardPAN" }
 
@@ -40,25 +40,39 @@ object PaymentInputViewHelper {
                             args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.VISA)
                             SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT, args)
                         }
+
                         PaymentMethod.AMEX -> {
                             args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
                             args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.AMEX)
                             SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT, args)
                         }
+
                         PaymentMethod.MASTERCARD -> {
                             args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
                             args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.MASTERCARD)
                             SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT, args)
                         }
+
                         PaymentMethod.PAYDIREKT -> {
                             SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_PAYDIREKT_INPUT)
                         }
+
                         PaymentMethod.DE_DIRECT_DEBIT -> {
                             SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_SEPA_CARD_INPUT)
                         }
+
                         PaymentMethod.PAYONE_SEPA -> {
                             SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_PAYONE_SEPA)
                         }
+
+                        PaymentMethod.EXTERNAL_BILLING -> {
+                            SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_EXTERNAL_BILLING)
+                        }
+
+                        PaymentMethod.GATEKEEPER_EXTERNAL_BILLING -> {
+                            SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_GATEKEEPER_EXTERNAL_BILLING)
+                        }
+
                         else -> {
                             Logger.e("Payment method requires no credentials or is unsupported")
                         }
@@ -77,8 +91,10 @@ object PaymentInputViewHelper {
     @JvmStatic
     fun showPaymentList(context: Context, project: Project) {
         val args = Bundle()
-        args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE,
-            ArrayList(PaymentCredentials.Type.values().toList()))
+        args.putSerializable(
+            PaymentCredentialsListView.ARG_PAYMENT_TYPE,
+            ArrayList(PaymentCredentials.Type.values().toList())
+        )
         args.putSerializable(PaymentCredentialsListView.ARG_PROJECT_ID, project.id)
         SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_PAYMENT_CREDENTIALS_LIST, args)
     }

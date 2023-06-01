@@ -89,6 +89,8 @@ public class PaymentSelectionHelper {
         icons.put(PaymentMethod.TWINT, R.drawable.snabble_ic_payment_select_twint);
         icons.put(PaymentMethod.GOOGLE_PAY, R.drawable.snabble_ic_payment_select_gpay);
         icons.put(PaymentMethod.PAYONE_SEPA, R.drawable.snabble_ic_payment_select_sepa);
+        icons.put(PaymentMethod.EXTERNAL_BILLING, R.drawable.snabble_ic_invoice);
+        icons.put(PaymentMethod.GATEKEEPER_EXTERNAL_BILLING, R.drawable.snabble_ic_invoice);
 
         names.put(PaymentMethod.DE_DIRECT_DEBIT, "SEPA-Lastschrift");
         names.put(PaymentMethod.VISA, "VISA");
@@ -105,6 +107,8 @@ public class PaymentSelectionHelper {
         names.put(PaymentMethod.TWINT, "Twint");
         names.put(PaymentMethod.GOOGLE_PAY, "Google Pay");
         names.put(PaymentMethod.PAYONE_SEPA, "SEPA-Lastschrift");
+        names.put(PaymentMethod.EXTERNAL_BILLING, "Kauf auf Rechnung");
+        names.put(PaymentMethod.GATEKEEPER_EXTERNAL_BILLING, "Kauf auf Rechnung Terminal");
 
         paymentMethodsSortPriority.add(PaymentMethod.GOOGLE_PAY);
         paymentMethodsSortPriority.add(PaymentMethod.DE_DIRECT_DEBIT);
@@ -116,6 +120,8 @@ public class PaymentSelectionHelper {
         paymentMethodsSortPriority.add(PaymentMethod.PAYDIREKT);
         paymentMethodsSortPriority.add(PaymentMethod.PAYONE_SEPA);
         paymentMethodsSortPriority.add(PaymentMethod.GATEKEEPER_TERMINAL);
+        paymentMethodsSortPriority.add(PaymentMethod.EXTERNAL_BILLING);
+        paymentMethodsSortPriority.add(PaymentMethod.GATEKEEPER_EXTERNAL_BILLING);
         paymentMethodsSortPriority.add(PaymentMethod.TEGUT_EMPLOYEE_CARD);
         paymentMethodsSortPriority.add(PaymentMethod.LEINWEBER_CUSTOMER_ID);
         paymentMethodsSortPriority.add(PaymentMethod.CUSTOMERCARD_POS);
@@ -305,12 +311,13 @@ public class PaymentSelectionHelper {
         List<PaymentMethod> availablePaymentMethodsList = new ArrayList<>();
         for (final PaymentMethodInfo paymentMethodInfo : availablePaymentMethods) {
             List<String> origins = paymentMethodInfo.getAcceptedOriginTypes();
-            PaymentMethod paymentMethod = PaymentMethod.fromIdAndOrigin(paymentMethodInfo.getId(), origins);
-            if (paymentMethod == PaymentMethod.GOOGLE_PAY && googlePayIsReady) {
-                availablePaymentMethodsList.add(paymentMethod);
-            } else if (paymentMethod != PaymentMethod.GOOGLE_PAY) {
-                availablePaymentMethodsList.add(paymentMethod);
+            List<PaymentMethod> paymentMethods = PaymentMethod.fromIdAndOrigin(paymentMethodInfo.getId(), origins);
+            if (paymentMethods.contains(PaymentMethod.GOOGLE_PAY) && googlePayIsReady) {
+                availablePaymentMethodsList.addAll(paymentMethods);
+            } else if (!paymentMethods.contains(PaymentMethod.GOOGLE_PAY)) {
+                availablePaymentMethodsList.addAll(paymentMethods);
             }
+
         }
 
         Set<PaymentMethod> addedCredentialPaymentMethods = new HashSet<>();

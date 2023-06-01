@@ -40,6 +40,8 @@ object SnabbleUI {
         SHOW_CREDIT_CARD_INPUT,
         SHOW_PAYONE_INPUT,
         SHOW_PAYDIREKT_INPUT,
+        SHOW_EXTERNAL_BILLING,
+        SHOW_GATEKEEPER_EXTERNAL_BILLING,
         SHOW_SHOPPING_CART,
         SHOW_PAYMENT_CREDENTIALS_LIST,
         SHOW_PAYMENT_OPTIONS,
@@ -134,6 +136,10 @@ object SnabbleUI {
                     startActivity(context, SEPACardInputActivity::class.java, args, canGoBack = false)
 
                 SHOW_PAYONE_SEPA -> startActivity(context, PayoneSepaActivity::class.java, args, canGoBack = false)
+
+                SHOW_EXTERNAL_BILLING -> {} //TODO: Not implemented yet
+
+                SHOW_GATEKEEPER_EXTERNAL_BILLING -> {} //TODO: Not implemented yet
 
                 SHOW_CREDIT_CARD_INPUT ->
                     startActivity(context, CreditCardInputActivity::class.java, args, canGoBack = false)
