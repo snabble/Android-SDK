@@ -97,7 +97,8 @@ koltin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref =
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinx-serializationJson = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1"
 mock = "io.mockk:mockk:1.13.5"
-mockito-kotlin = "org.mockito.kotlin:mockito-kotlin:5.0.0"
+# @pin requires higher target
+mockito-kotlin = "org.mockito.kotlin:mockito-kotlin:4.1.0"
 roboletric = "org.robolectric:robolectric:4.9.2"
 roboletric-androidAll = "org.robolectric:android-all:13-robolectric-9030017"
 # @pin
