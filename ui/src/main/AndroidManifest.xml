@@ -31,6 +31,9 @@
             android:name=".payment.PayoneInputActivity"
             android:exported="false" />
         <activity
+            android:name=".payment.externalbilling.ExternalBillingActivity"
+            android:exported="false" />
+        <activity
             android:name=".payment.PaydirektInputActivity"
             android:exported="false" />
         <activity
