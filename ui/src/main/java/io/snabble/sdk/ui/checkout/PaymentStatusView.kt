@@ -175,8 +175,7 @@ class PaymentStatusView @JvmOverloads constructor(
     }
 
     private fun createAddIbanIntent() =
-        if (project.paymentMethodDescriptors.any { descriptor ->
-                descriptor.paymentMethods.any { it == PaymentMethod.PAYONE_SEPA } }) {
+        if (project.paymentMethodDescriptors.any { it.paymentMethod == PaymentMethod.PAYONE_SEPA }) {
             PayoneSepaActivity.newIntent(context, paymentOriginCandidate)
         } else {
             SEPACardInputActivity.newIntent(context, paymentOriginCandidate)

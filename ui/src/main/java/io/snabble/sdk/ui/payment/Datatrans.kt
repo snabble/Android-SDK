@@ -41,7 +41,7 @@ object Datatrans {
 
     @JvmStatic
     fun registerCard(activity: FragmentActivity, project: Project, paymentMethod: PaymentMethod) {
-        val descriptor = project.paymentMethodDescriptors.find { it.paymentMethods.contains(paymentMethod) }
+        val descriptor = project.paymentMethodDescriptors.find { it.paymentMethod == paymentMethod }
         if (descriptor == null) {
             project.events.logError("Datatrans Error: No payment descriptor")
             Logger.e("Datatrans error: No payment method descriptor for $paymentMethod")

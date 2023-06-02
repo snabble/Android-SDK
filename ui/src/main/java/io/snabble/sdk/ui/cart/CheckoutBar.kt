@@ -257,9 +257,7 @@ open class CheckoutBar @JvmOverloads constructor(
             } else {
                 val hasPaymentMethodThatRequiresCredentials =
                     project.paymentMethodDescriptors.any { descriptor ->
-                        descriptor.paymentMethods.any{
-                            it.isRequiringCredentials
-                        }
+                        descriptor.paymentMethod.isRequiringCredentials
                     }
                 if (hasPaymentMethodThatRequiresCredentials) {
                     val activity = UIUtils.getHostActivity(context)

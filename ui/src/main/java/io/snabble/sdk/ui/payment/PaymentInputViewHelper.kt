@@ -21,7 +21,7 @@ object PaymentInputViewHelper {
         if (KeyguardUtils.isDeviceSecure()) {
             val project = Snabble.getProjectById(projectId)
             val acceptedOriginTypes = project?.paymentMethodDescriptors
-                ?.firstOrNull { it.paymentMethods.contains(paymentMethod) }?.acceptedOriginTypes.orEmpty()
+                ?.firstOrNull { it.paymentMethod == paymentMethod }?.acceptedOriginTypes.orEmpty()
             val useDatatrans = acceptedOriginTypes.any { it == "datatransAlias" || it == "datatransCreditCardAlias" }
             val usePayone = acceptedOriginTypes.any { it == "payonePseudoCardPAN" }
 

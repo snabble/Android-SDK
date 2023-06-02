@@ -220,7 +220,7 @@ class Checkout @JvmOverloads constructor(
 
     private val fallbackPaymentMethod: PaymentMethod?
         get() = project.paymentMethodDescriptors
-            .flatMap { it.paymentMethods }
+            .map { it.paymentMethod }
             .firstOrNull { it.isOfflineMethod }
 
     /**

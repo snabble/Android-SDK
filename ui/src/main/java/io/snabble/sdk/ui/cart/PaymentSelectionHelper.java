@@ -308,11 +308,11 @@ public class PaymentSelectionHelper {
         List<PaymentMethod> availablePaymentMethodsList = new ArrayList<>();
         for (final PaymentMethodInfo paymentMethodInfo : availablePaymentMethods) {
             List<String> origins = paymentMethodInfo.getAcceptedOriginTypes();
-            List<PaymentMethod> paymentMethods = PaymentMethod.fromIdAndOrigin(paymentMethodInfo.getId(), origins);
-            if (paymentMethods.contains(PaymentMethod.GOOGLE_PAY) && googlePayIsReady) {
-                availablePaymentMethodsList.addAll(paymentMethods);
-            } else if (!paymentMethods.contains(PaymentMethod.GOOGLE_PAY)) {
-                availablePaymentMethodsList.addAll(paymentMethods);
+            PaymentMethod paymentMethod = PaymentMethod.fromIdAndOrigin(paymentMethodInfo.getId(), origins);
+            if (paymentMethod == PaymentMethod.GOOGLE_PAY && googlePayIsReady) {
+                availablePaymentMethodsList.add(paymentMethod);
+            } else if (paymentMethod != PaymentMethod.GOOGLE_PAY) {
+                availablePaymentMethodsList.add(paymentMethod);
             }
 
         }

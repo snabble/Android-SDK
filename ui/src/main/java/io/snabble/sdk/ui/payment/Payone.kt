@@ -61,7 +61,7 @@ object Payone {
         project: Project,
         paymentMethod: PaymentMethod
     ) {
-        val descriptor = project.paymentMethodDescriptors.find { it.paymentMethods.contains(paymentMethod) }
+        val descriptor = project.paymentMethodDescriptors.find { it.paymentMethod == paymentMethod }
         if (descriptor == null) {
             project.events.logError("Payone error: No payment descriptor")
             Logger.e("Payone error: No payment method descriptor for $paymentMethod")

@@ -198,31 +198,26 @@ enum class PaymentMethod(
          * Converts a payment method from its string representation and a list of origins.
          */
         @JvmStatic
-        fun fromIdAndOrigin(id: String, origin: List<String>): List<PaymentMethod> {
-            val methods = arrayListOf<PaymentMethod>()
+        @Nullable
+        fun fromIdAndOrigin(id: String, origin: List<String>): PaymentMethod? {
             values().forEach { pm ->
                 if (pm.id == id && pm.id == TEGUT_EMPLOYEE_CARD.id) {
-                    origin.forEach {
-                        when (it) {
-                            "tegutEmployeeID" -> methods.add(TEGUT_EMPLOYEE_CARD)
-                            "leinweberCustomerID" -> methods.add(LEINWEBER_CUSTOMER_ID)
-                            "contactPersonCredentials" -> methods.add(EXTERNAL_BILLING)
-                        }
+                    when (origin[0]) {
+                        "tegutEmployeeID" -> return TEGUT_EMPLOYEE_CARD
+                        "leinweberCustomerID" -> return LEINWEBER_CUSTOMER_ID
+                        "contactPersonCredentials" -> return EXTERNAL_BILLING
                     }
-                    return methods
                 } else if (pm.id == id && pm.id == PAYONE_SEPA.id) {
                     //needed for deserialization
-                    when (origin[0]) {
-                        "payoneSepaData" -> methods.add(PAYONE_SEPA)
-                        else -> methods.add(DE_DIRECT_DEBIT)
+                    return when (origin[0]) {
+                        "payoneSepaData" -> PAYONE_SEPA
+                        else -> DE_DIRECT_DEBIT
                     }
-                    return methods
                 } else if (pm.id == id) {
-                   methods.add(pm)
-                    return methods
+                    return pm
                 }
             }
-            return methods
+            return null
         }
     }
 }
