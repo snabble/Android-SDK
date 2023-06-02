@@ -67,6 +67,7 @@ compose-uiTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "
 compose-uiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "androidx-compose-ui" }
 compose-uiUtil = { module = "androidx.compose.ui:ui-util", version.ref = "androidx-compose-ui" }
 compose-uiViewBinding = { module = "androidx.compose.ui:ui-viewbinding", version.ref = "androidx-compose-ui" }
+compose-iconsExtended = "androidx.compose.material:material-icons-extended:1.4.3"
 commonsIo = "commons-io:commons-io:2.5"
 datatrans-androidSdk = "ch.datatrans:android-sdk:2.6.1"
 # @pin until a newer version been tested successfully: https://developer.android.com/studio/write/java8-support#library-desugaring-versions
