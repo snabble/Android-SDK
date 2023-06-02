@@ -69,10 +69,6 @@ object PaymentInputViewHelper {
                             SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_EXTERNAL_BILLING)
                         }
 
-                        PaymentMethod.GATEKEEPER_EXTERNAL_BILLING -> {
-                            SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_GATEKEEPER_EXTERNAL_BILLING)
-                        }
-
                         else -> {
                             Logger.e("Payment method requires no credentials or is unsupported")
                         }

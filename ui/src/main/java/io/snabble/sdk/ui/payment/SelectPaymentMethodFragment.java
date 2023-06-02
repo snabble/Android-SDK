@@ -104,21 +104,6 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
                         }
                     }
             ));
-        }   if (availablePaymentMethods.contains(PaymentMethod.GATEKEEPER_EXTERNAL_BILLING)) {
-            entries.add(new SelectPaymentMethodFragment.Entry(
-                    R.drawable.snabble_ic_invoice,
-                    "Kauf auf Rechnung Terminal",
-                    getUsableAtText(PaymentMethod.GATEKEEPER_EXTERNAL_BILLING),
-                    new OneShotClickListener() {
-
-                        @Override
-                        public void click() {
-                            PaymentInputViewHelper
-                                    .openPaymentInputView(requireContext(), PaymentMethod.GATEKEEPER_EXTERNAL_BILLING, projectId);
-                            dismissAllowingStateLoss();
-                        }
-                    }
-            ));
         }
 
         if (availablePaymentMethods.contains(PaymentMethod.VISA)) {

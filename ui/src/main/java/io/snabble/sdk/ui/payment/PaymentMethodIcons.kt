@@ -19,7 +19,6 @@ val PaymentMethodDescriptor.icon: Int
         PaymentMethod.PAYDIREKT.id -> R.drawable.snabble_ic_payment_select_paydirekt
         PaymentMethod.PAYONE_SEPA.id -> R.drawable.snabble_ic_payment_select_sepa
         PaymentMethod.GOOGLE_PAY.id -> R.drawable.snabble_ic_payment_select_gpay
-        PaymentMethod.GATEKEEPER_EXTERNAL_BILLING.id -> R.drawable.snabble_ic_invoice
         "externalBilling" -> when (acceptedOriginTypes?.first()) {
             "tegutEmployeeID" -> R.drawable.snabble_ic_payment_select_tegut
             "leinweberCustomerID" -> R.drawable.snabble_ic_payment_select_leinweber

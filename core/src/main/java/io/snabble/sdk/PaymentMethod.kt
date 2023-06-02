@@ -175,15 +175,6 @@ enum class PaymentMethod(
         isRequiringCredentials = true,
         isShowOnlyIfCredentialsArePresent = false,
         needsAbortConfirmation = true
-    ),
-
-    @SerializedName("gatekeeperExternalBilling")
-    GATEKEEPER_EXTERNAL_BILLING(
-        id = "gatekeeperExternalBilling",
-        isOfflineMethod = false,
-        isRequiringCredentials = true,
-        isShowOnlyIfCredentialsArePresent = false,
-        needsAbortConfirmation = true
     );
 
     companion object {
