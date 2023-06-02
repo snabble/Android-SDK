@@ -5,7 +5,9 @@ import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.payment.externalbilling.data.BillingCredentials
 import io.snabble.sdk.ui.payment.externalbilling.data.BillingCredentialsResponse
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.Call
@@ -30,16 +32,18 @@ class ExternalBillingRepositoryImpl(
     private val json: Json
 ) : ExternalBillingRepository {
 
-    override suspend fun login(username: String, password: String): Result<BillingCredentialsResponse> {
-        val response = loginService(username, password)
-        Log.d("xx", "login: $response")
-        return if (response != null && response.isSuccessful) {
-            val responseCredentials = json.decodeFromString<BillingCredentialsResponse>(response.body.toString())
-            Result.success(responseCredentials)
-        }else{
-            Result.failure(Exception(response?.message))
+    override suspend fun login(username: String, password: String): Result<BillingCredentialsResponse> =
+        withContext(Dispatchers.IO) request@{
+            val response = loginService(username, password)
+            val body = response?.body
+            return@request if (response != null && response.isSuccessful && body != null) {
+                val jsonData = body.string()
+                val responseCredentials = json.decodeFromString<BillingCredentialsResponse>(jsonData)
+                Result.success(responseCredentials)
+            } else {
+                Result.failure(Exception(response?.message))
+            }
         }
-    }
 
     private suspend fun loginService(
         username: String,
@@ -47,8 +51,6 @@ class ExternalBillingRepositoryImpl(
     ): Response? {
         val okHttpClient = project.okHttpClient
         val json = Json { ignoreUnknownKeys = true }
-        val url = "${Snabble.endpointBaseUrl}/leinweber-baucentrum-5cvbt954/external-billing/credentials/auth"
-        Log.d("xx", "loginService: $url")
         return try {
             okHttpClient
                 .newCall(

@@ -12,5 +12,6 @@ data class BillingCredentials(
 @Serializable
 data class BillingCredentialsResponse(
     @SerialName("username") val username: String,
-    @SerialName("contactPersonID") val password: String,
+    @SerialName("contactPersonID") val contactPersonID: String,
 )
+
