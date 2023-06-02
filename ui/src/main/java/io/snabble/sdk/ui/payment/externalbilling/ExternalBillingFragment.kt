@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.fragment.app.viewModels
 import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.utils.ThemeWrapper
@@ -13,15 +14,25 @@ class ExternalBillingFragment : BaseFragment(
     waitForProject = false,
 ) {
 
+    private val viewModel: ExternalBillingViewModel by viewModels()
+
     override fun onActualViewCreated(view: View, savedInstanceState: Bundle?) {
         view.findViewById<ComposeView>(R.id.external_billing_compose_view).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
                 ThemeWrapper {
-                    ExternalBillingLoginScreen(onSaveClick = { _, _ -> }, isInputValid = false)
+                    ExternalBillingLoginScreen(onSaveClick = { username, password ->
+                        viewModel.login(username, password)
+                    }, isInputValid = false)
                 }
             }
         }
+    }
+
+    companion object {
+
+        fun createFragment(): ExternalBillingFragment =
+            ExternalBillingFragment()
     }
 }
