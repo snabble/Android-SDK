@@ -10,6 +10,7 @@ import java.io.File
 import java.lang.Exception
 
 data class PersistentState (
+    @Transient
     var file: File,
     var checkoutProcess: CheckoutProcessResponse? = null,
     var selectedPaymentMethod: PaymentMethod? = null,
