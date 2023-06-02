@@ -2,7 +2,7 @@
 compileSdk = "33"
 targetSdk = "32"
 minSdk = "21"
-gradlePlugin = "7.4.2"
+gradlePlugin = "8.0.2"
 desugarVersion = "1.1.5"
 okhttpVersion = "4.10.0"
 # @pin always, manually updated to ensure overall dependency support
@@ -13,15 +13,15 @@ navigation = "2.5.3"
 # @pin
 compose_version = "1.2.1"
 snabbleSdk = "0.69.6"
-androidx-camera = "1.2.1"
-androidx-compose-ui = "1.3.3"
-com-squareup-okhttp3 = "4.10.0"
-io-kotest = "5.5.5"
+androidx-camera = "1.2.3"
+androidx-compose-ui = "1.4.3"
+com-squareup-okhttp3 = "4.11.0"
+io-kotest = "5.6.2"
 org-jetbrains-dokka = "1.8.10"
 
 [libraries]
 airbnb-lottie = "com.airbnb.android:lottie:6.0.0"
-androidx-activityCompose = "androidx.activity:activity-compose:1.6.1"
+androidx-activityCompose = "androidx.activity:activity-compose:1.7.2"
 androidx-appcompat = "androidx.appcompat:appcompat:1.6.1"
 androidx-biometric = "androidx.biometric:biometric:1.2.0-alpha05"
 androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "androidx-camera" }
@@ -37,14 +37,14 @@ androidx-constraintlayoutCompose = "androidx.constraintlayout:constraintlayout-c
 androidx-customview = "androidx.customview:customview:1.1.0"
 androidx-customview-poolingcontainer = "androidx.customview:customview-poolingcontainer:1.0.0"
 androidx-gridlayout = "androidx.gridlayout:gridlayout:1.0.0"
-androidx-lifecycle-common = "androidx.lifecycle:lifecycle-common:2.6.0"
+androidx-lifecycle-common = "androidx.lifecycle:lifecycle-common:2.6.1"
 androidx-lifecycleExtension = "androidx.lifecycle:lifecycle-extensions:2.2.0"
-androidx-lifecycleLiveData = "androidx.lifecycle:lifecycle-livedata-ktx:2.6.0"
-androidx-lifecycle-process = "androidx.lifecycle:lifecycle-process:2.6.0"
-androidx-lifecycleRuntimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:2.6.0"
-androidx-lifecycleRuntimeCompose = "androidx.lifecycle:lifecycle-runtime-compose:2.6.0"
-androidx-lifecycleViewmodelCompose = "androidx.lifecycle:lifecycle-viewmodel-compose:2.6.0"
-android-material = "com.google.android.material:material:1.8.0"
+androidx-lifecycleLiveData = "androidx.lifecycle:lifecycle-livedata-ktx:2.6.1"
+androidx-lifecycle-process = "androidx.lifecycle:lifecycle-process:2.6.1"
+androidx-lifecycleRuntimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:2.6.1"
+androidx-lifecycleRuntimeCompose = "androidx.lifecycle:lifecycle-runtime-compose:2.6.1"
+androidx-lifecycleViewmodelCompose = "androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1"
+android-material = "com.google.android.material:material:1.9.0"
 androidx-navigation-fragmentKtx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigation" }
 androidx-navigation-runtimeKtx = { module = "androidx.navigation:navigation-runtime-ktx", version.ref = "navigation" }
 androidx-navigation-uiKtx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigation" }
@@ -53,31 +53,31 @@ androidx-recyclerview = "androidx.recyclerview:recyclerview:1.3.0"
 androidx-startupRuntime = "androidx.startup:startup-runtime:1.1.1"
 androidx-swiperefreshlayout = "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 androidx-viewpager2 = "androidx.viewpager2:viewpager2:1.0.0"
-androidx-webkit = "androidx.webkit:webkit:1.6.0"
+androidx-webkit = "androidx.webkit:webkit:1.7.0"
 apache-commonsLang3 = "org.apache.commons:commons-lang3:3.12.0"
 caverock-androidsvgAar = "com.caverock:androidsvg-aar:1.4"
 compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
-compose-material = "androidx.compose.material:material:1.3.1"
+compose-material = "androidx.compose.material:material:1.4.3"
 compose-material3 = "androidx.compose.material3:material3:1.1.0-alpha08"
-compose-material3Themeadapter = "com.google.accompanist:accompanist-themeadapter-material3:0.28.0"
+compose-material3Themeadapter = "com.google.accompanist:accompanist-themeadapter-material3:0.30.1"
 compose-ui = { module = "androidx.compose.ui:ui", version.ref = "androidx-compose-ui" }
 compose-uiTestManifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidx-compose-ui" }
-compose-uiTestJunit = "androidx.compose.ui:ui-test-junit4:1.3.3"
+compose-uiTestJunit = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "androidx-compose-ui" }
 compose-uiTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "androidx-compose-ui" }
 compose-uiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "androidx-compose-ui" }
 compose-uiUtil = { module = "androidx.compose.ui:ui-util", version.ref = "androidx-compose-ui" }
 compose-uiViewBinding = { module = "androidx.compose.ui:ui-viewbinding", version.ref = "androidx-compose-ui" }
 compose-iconsExtended = "androidx.compose.material:material-icons-extended:1.4.3"
 commonsIo = "commons-io:commons-io:2.5"
-datatrans-androidSdk = "ch.datatrans:android-sdk:2.6.1"
+datatrans-androidSdk = "ch.datatrans:android-sdk:3.0.2"
 # @pin until a newer version been tested successfully: https://developer.android.com/studio/write/java8-support#library-desugaring-versions
 desugarJdkLibs = "com.android.tools:desugar_jdk_libs:1.1.5"
 googlePlayServices-maps = "com.google.android.gms:play-services-maps:18.1.0"
 googlePlayServices-wallet = "com.google.android.gms:play-services-wallet:19.1.0"
-google-mlkit-barcodeScanning = "com.google.mlkit:barcode-scanning:17.0.3"
+google-mlkit-barcodeScanning = "com.google.mlkit:barcode-scanning:17.1.0"
 google-zxing-core = "com.google.zxing:core:3.5.1"
 gson = "com.google.code.gson:gson:2.9.1"
-iban4j = "org.iban4j:iban4j:3.2.4-RELEASE"
+iban4j = "org.iban4j:iban4j:3.2.5-RELEASE"
 jakewhartonProcessPhoenix = "com.jakewharton:process-phoenix:2.1.2"
 picasso = "com.squareup.picasso:picasso:2.8"
 rekisoftLazyWorker = "eu.rekisoft.android.util:LazyWorker:2.1.0"
@@ -88,19 +88,21 @@ squareup-okhttp3-tls = { module = "com.squareup.okhttp3:okhttp-tls", version.ref
 # Testing
 androidx-coreTesting = "androidx.arch.core:core-testing:2.2.0"
 junit = "junit:junit:4.13.2"
-koin-android = "io.insert-koin:koin-android:3.3.3"
-koin-androidCompat = "io.insert-koin:koin-android-compat:3.3.3"
-koin-androidxCompose = "io.insert-koin:koin-androidx-compose:3.4.2"
-koin-core = "io.insert-koin:koin-core:3.3.3"
+koin-android = "io.insert-koin:koin-android:3.4.1"
+koin-androidCompat = "io.insert-koin:koin-android-compat:3.4.1"
+koin-androidxCompose = "io.insert-koin:koin-androidx-compose:3.4.5"
+koin-core = "io.insert-koin:koin-core:3.4.1"
 kotest-runnerJunit = { module = "io.kotest:kotest-runner-junit5", version.ref = "io-kotest" }
 kotest-assertionsCore = { module = "io.kotest:kotest-assertions-core", version.ref = "io-kotest" }
 koltin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
-kotlinx-serializationJson = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0"
-mock = "io.mockk:mockk:1.13.4"
+kotlinx-serializationJson = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1"
+mock = "io.mockk:mockk:1.13.5"
+# @pin requires higher target
 mockito-kotlin = "org.mockito.kotlin:mockito-kotlin:4.1.0"
 roboletric = "org.robolectric:robolectric:4.9.2"
 roboletric-androidAll = "org.robolectric:android-all:13-robolectric-9030017"
+# @pin
 sebaslogen-resaca = "com.github.sebaslogen.resaca:resaca:2.3.3"
 squareup-okhttp3-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "com-squareup-okhttp3" }
 test-espressoCore = "androidx.test.espresso:espresso-core:3.5.1"
@@ -160,4 +162,4 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 snabbleSetup = "io.snabble.setup:1.0.1"
 unmock = "de.mobilej.unmock:0.7.9"
 benManesVersions = "com.github.ben-manes.versions:0.46.0"
-versionCatalogUpdate = "nl.littlerobots.version-catalog-update:0.7.0"
+versionCatalogUpdate = "nl.littlerobots.version-catalog-update:0.8.0"
