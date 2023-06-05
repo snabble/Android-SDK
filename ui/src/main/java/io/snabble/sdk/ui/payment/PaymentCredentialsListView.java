@@ -203,6 +203,9 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                     case TEGUT_EMPLOYEE_CARD:
                         entries.add(new Entry(pm, R.drawable.snabble_ic_payment_select_tegut, pm.getObfuscatedId()));
                         break;
+                    case EXTERNAL_BILLING:
+                        entries.add(new Entry(pm,R.drawable.snabble_ic_invoice,pm.getObfuscatedId()));
+                        break;
                 }
             }
         }
