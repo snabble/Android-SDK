@@ -3,8 +3,10 @@ package io.snabble.sdk.ui.payment.externalbilling.domain
 import android.util.Log
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.ui.payment.externalbilling.data.BillingCredentials
 import io.snabble.sdk.ui.payment.externalbilling.data.BillingCredentialsResponse
+import io.snabble.sdk.ui.telemetry.Telemetry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -24,7 +26,7 @@ interface ExternalBillingRepository {
 
     suspend fun login(username: String, password: String): Result<BillingCredentialsResponse>
 
-    suspend fun addPaymentCredentials()
+    suspend fun addPaymentCredentials(paymentCredentials: PaymentCredentials?): Boolean
 }
 
 class ExternalBillingRepositoryImpl(
@@ -72,8 +74,15 @@ class ExternalBillingRepositoryImpl(
         }
     }
 
-    override suspend fun addPaymentCredentials() {
-        TODO("Not yet implemented")
+    override suspend fun addPaymentCredentials(paymentCredentials: PaymentCredentials?): Boolean {
+        paymentCredentials ?: return false
+        Snabble.paymentCredentialsStore.add(paymentCredentials)
+        trackCredentialType(paymentCredentials.type.name)
+        return true
+    }
+
+    private fun trackCredentialType(type: String) {
+        Telemetry.event(Telemetry.Event.PaymentMethodAdded, type)
     }
 }
 

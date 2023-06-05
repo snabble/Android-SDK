@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    style="@style/Snabble.ShapeAppearanceOverlay.RoundedCorners"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
+
+    <ImageView
+        android:id="@+id/subject_abort"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:src="@drawable/snabble_ic_close" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Hier kannst du einen \n Betreff eingeben"
+        android:textAppearance="?attr/textAppearanceBodyLarge" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="16dp" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_subject"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Betreff"
+        android:textAppearance="?attr/textAppearanceBodyLarge">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="8dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/subject_add"
+        style="@style/Snabble.ShapeAppearanceOverlay.RoundedCorners.Big"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hinzufügen" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/subject_skip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Überspringen"
+        app:shapeAppearanceOverlay="@style/Snabble.ShapeAppearanceOverlay.RoundedCorners.Big" />
+
+</LinearLayout>
