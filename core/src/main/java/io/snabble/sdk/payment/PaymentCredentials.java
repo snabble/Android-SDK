@@ -38,6 +38,7 @@ import io.snabble.sdk.Environment;
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.R;
 import io.snabble.sdk.Snabble;
+import io.snabble.sdk.payment.externalbilling.EncryptedBillingCredentials;
 import io.snabble.sdk.payment.payone.sepa.PayoneSepaData;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
@@ -219,6 +220,36 @@ public class PaymentCredentials {
         data.iban = iban;
         final String json = GsonHolder.get().toJson(data, SepaData.class);
         return createForSepa(Type.SEPA, iban, json);
+    }
+
+    /**
+     * Encrypts and stores ExternalBilling payment credentials.
+     */
+    public static PaymentCredentials fromExternalBilling(@NonNull final EncryptedBillingCredentials externalBilling, @NonNull final String projectId){
+        final String json = GsonHolder.get().toJson(externalBilling, EncryptedBillingCredentials.class);
+        final PaymentCredentials pc = new PaymentCredentials();
+        pc.generateId();
+        pc.type = Type.EXTERNAL_BILLING;
+        pc.obfuscatedId = pc.obfuscate(externalBilling.getUsername());
+
+        final List<X509Certificate> certificates = Snabble.getInstance().getPaymentCertificates();
+        if (certificates == null || certificates.size() == 0) {
+            return null;
+        }
+
+        final X509Certificate certificate = certificates.get(0);
+        pc.rsaEncryptedData = pc.rsaEncrypt(certificate, json.getBytes());
+        pc.signature = pc.sha256Signature(certificate);
+        pc.brand = Brand.UNKNOWN;
+        pc.appId = Snabble.getInstance().getConfig().appId;
+        pc.projectId = projectId;
+        pc.additionalData = new HashMap<>();
+
+        if (pc.rsaEncryptedData == null) {
+            return null;
+        }
+
+        return pc;
     }
 
     /**
