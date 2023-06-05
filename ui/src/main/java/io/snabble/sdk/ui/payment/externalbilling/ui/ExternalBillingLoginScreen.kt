@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment.externalbilling
+package io.snabble.sdk.ui.payment.externalbilling.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,7 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.payment.externalbilling.widgets.PasswordField
+import io.snabble.sdk.ui.payment.externalbilling.ui.widgets.PasswordField
 import io.snabble.sdk.ui.payment.payone.sepa.form.ui.widget.TextFieldWidget
 
 @Composable

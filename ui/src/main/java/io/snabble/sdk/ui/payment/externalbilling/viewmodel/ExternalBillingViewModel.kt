@@ -1,21 +1,21 @@
-package io.snabble.sdk.ui.payment.externalbilling
+package io.snabble.sdk.ui.payment.externalbilling.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.payment.PaymentCredentials
-import io.snabble.sdk.payment.externalbilling.EncryptedBillingCredentials
-import io.snabble.sdk.ui.payment.externalbilling.domain.ExternalBillingRepositoryImpl
+import io.snabble.sdk.payment.externalbilling.data.ExternalBillingPaymentCredentials
+import io.snabble.sdk.payment.externalbilling.ExternalBillingRepositoryImpl
+import io.snabble.sdk.ui.telemetry.Telemetry
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
 class ExternalBillingViewModel : ViewModel() {
 
     fun login(username: String, password: String): Boolean {
-       viewModelScope.launch {
+        viewModelScope.launch {
             val project = Snabble.checkedInProject.value
-            project?.let{
+            project?.let {
                 val repo = ExternalBillingRepositoryImpl(
                     it,
                     Json { ignoreUnknownKeys = true }
@@ -25,18 +25,25 @@ class ExternalBillingViewModel : ViewModel() {
                     val billingCredentials = result.getOrNull()
                     billingCredentials?.let { bc ->
                         val paymentCredentials: PaymentCredentials? = PaymentCredentials.fromExternalBilling(
-                            EncryptedBillingCredentials(
+                            ExternalBillingPaymentCredentials(
                                 username = username,
                                 contactPersonID = bc.contactPersonID,
                                 password = password
                             ),
                             it.id
                         )
-                        repo.addPaymentCredentials(paymentCredentials)
+                        val success = repo.addPaymentCredentials(paymentCredentials)
+                        if (success && paymentCredentials != null) {
+                            trackCredentialType(paymentCredentials.type.name)
+                        }
                     }
                 }
             }
         }
         return false
+    }
+
+    private fun trackCredentialType(type: String) {
+        Telemetry.event(Telemetry.Event.PaymentMethodAdded, type)
     }
 }

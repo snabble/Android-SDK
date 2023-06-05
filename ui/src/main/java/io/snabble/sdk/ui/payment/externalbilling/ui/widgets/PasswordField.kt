@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment.externalbilling.widgets
+package io.snabble.sdk.ui.payment.externalbilling.ui.widgets
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions

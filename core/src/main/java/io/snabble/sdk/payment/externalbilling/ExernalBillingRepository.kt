@@ -1,12 +1,11 @@
-package io.snabble.sdk.ui.payment.externalbilling.domain
+package io.snabble.sdk.payment.externalbilling
 
 import android.util.Log
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.payment.PaymentCredentials
-import io.snabble.sdk.ui.payment.externalbilling.data.BillingCredentials
-import io.snabble.sdk.ui.payment.externalbilling.data.BillingCredentialsResponse
-import io.snabble.sdk.ui.telemetry.Telemetry
+import io.snabble.sdk.payment.externalbilling.data.ExternalBillingLoginCredentials
+import io.snabble.sdk.payment.externalbilling.data.ExternalBillingLoginResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -24,7 +23,7 @@ import kotlin.coroutines.resumeWithException
 
 interface ExternalBillingRepository {
 
-    suspend fun login(username: String, password: String): Result<BillingCredentialsResponse>
+    suspend fun login(username: String, password: String): Result<ExternalBillingLoginResponse>
 
     suspend fun addPaymentCredentials(paymentCredentials: PaymentCredentials?): Boolean
 }
@@ -34,13 +33,13 @@ class ExternalBillingRepositoryImpl(
     private val json: Json
 ) : ExternalBillingRepository {
 
-    override suspend fun login(username: String, password: String): Result<BillingCredentialsResponse> =
+    override suspend fun login(username: String, password: String): Result<ExternalBillingLoginResponse> =
         withContext(Dispatchers.IO) request@{
             val response = loginService(username, password)
             val body = response?.body
             return@request if (response != null && response.isSuccessful && body != null) {
                 val jsonData = body.string()
-                val responseCredentials = json.decodeFromString<BillingCredentialsResponse>(jsonData)
+                val responseCredentials = json.decodeFromString<ExternalBillingLoginResponse>(jsonData)
                 Result.success(responseCredentials)
             } else {
                 Result.failure(Exception(response?.message))
@@ -61,7 +60,7 @@ class ExternalBillingRepositoryImpl(
                         .post(
                             json
                                 .encodeToString(
-                                    BillingCredentials(username, password)
+                                    ExternalBillingLoginCredentials(username, password)
                                 )
                                 .toRequestBody("application/json".toMediaType())
                         )
@@ -77,12 +76,7 @@ class ExternalBillingRepositoryImpl(
     override suspend fun addPaymentCredentials(paymentCredentials: PaymentCredentials?): Boolean {
         paymentCredentials ?: return false
         Snabble.paymentCredentialsStore.add(paymentCredentials)
-        trackCredentialType(paymentCredentials.type.name)
         return true
-    }
-
-    private fun trackCredentialType(type: String) {
-        Telemetry.event(Telemetry.Event.PaymentMethodAdded, type)
     }
 }
 

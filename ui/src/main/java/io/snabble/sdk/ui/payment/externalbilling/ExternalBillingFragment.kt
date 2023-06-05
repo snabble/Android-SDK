@@ -7,6 +7,8 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.payment.externalbilling.ui.ExternalBillingLoginScreen
+import io.snabble.sdk.ui.payment.externalbilling.viewmodel.ExternalBillingViewModel
 import io.snabble.sdk.ui.utils.ThemeWrapper
 
 class ExternalBillingFragment : BaseFragment(

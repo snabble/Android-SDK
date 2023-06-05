@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment.externalbilling.widgets
+package io.snabble.sdk.ui.payment.externalbilling.ui.widgets
 
 import android.app.Dialog
 import android.content.Context
