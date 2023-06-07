@@ -106,7 +106,7 @@ public class PaymentSelectionHelper {
         names.put(PaymentMethod.TWINT, "Twint");
         names.put(PaymentMethod.GOOGLE_PAY, "Google Pay");
         names.put(PaymentMethod.PAYONE_SEPA, "SEPA-Lastschrift");
-        names.put(PaymentMethod.EXTERNAL_BILLING, "Kauf auf Rechnung");
+        names.put(PaymentMethod.EXTERNAL_BILLING, application.getString(R.string.Snabble_Payment_ExternalBilling_title));
 
         paymentMethodsSortPriority.add(PaymentMethod.GOOGLE_PAY);
         paymentMethodsSortPriority.add(PaymentMethod.DE_DIRECT_DEBIT);

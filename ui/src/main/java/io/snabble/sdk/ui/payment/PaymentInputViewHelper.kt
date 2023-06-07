@@ -10,6 +10,7 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.ui.payment.externalbilling.ExternalBillingFragment.Companion.ARG_PROJECT_ID
 import io.snabble.sdk.ui.utils.KeyguardUtils
 import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.utils.Logger
@@ -66,7 +67,8 @@ object PaymentInputViewHelper {
                         }
 
                         PaymentMethod.EXTERNAL_BILLING -> {
-                            SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_EXTERNAL_BILLING)
+                            args.putString(ARG_PROJECT_ID, projectId)
+                            SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_EXTERNAL_BILLING, args)
                         }
 
                         else -> {

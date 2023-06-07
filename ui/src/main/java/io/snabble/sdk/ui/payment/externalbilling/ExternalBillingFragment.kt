@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.snabble.sdk.ui.BaseFragment
@@ -31,6 +32,8 @@ open class ExternalBillingFragment : BaseFragment(
 
         view.findViewById<ComposeView>(R.id.external_billing_compose_view).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+
+            val projectId: String? = arguments?.getString(ARG_PROJECT_ID)
 
             setContent {
                 val state = viewModel.uiState.collectAsStateWithLifecycle()
@@ -63,7 +66,9 @@ open class ExternalBillingFragment : BaseFragment(
                 ThemeWrapper {
                     ExternalBillingLoginScreen(
                         onSaveClick = { username, password ->
-                            viewModel.login(title, username, password)
+                            projectId?.let {
+                                viewModel.login(title, username, password, it)
+                            }
                         },
                         isInputValid = false,
                         errorMessage = errorMessage.value,
@@ -78,7 +83,11 @@ open class ExternalBillingFragment : BaseFragment(
 
     companion object {
 
-        fun createFragment(): ExternalBillingFragment =
-            ExternalBillingFragment()
+        const val ARG_PROJECT_ID = "projectId"
+
+        fun createFragment(projectId: String?): ExternalBillingFragment =
+            ExternalBillingFragment().apply {
+                arguments = projectId?.let { bundleOf(ARG_PROJECT_ID to it) }
+            }
     }
 }
