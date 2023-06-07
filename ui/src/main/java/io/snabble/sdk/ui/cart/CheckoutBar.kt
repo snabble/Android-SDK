@@ -36,9 +36,7 @@ import io.snabble.sdk.ui.checkout.CheckoutActivity
 import io.snabble.sdk.ui.payment.PaymentInputViewHelper
 import io.snabble.sdk.ui.payment.SEPALegalInfoHelper
 import io.snabble.sdk.ui.payment.SelectPaymentMethodFragment
-import io.snabble.sdk.ui.payment.externalbilling.ui.widgets.SubjectClickListener
 import io.snabble.sdk.ui.payment.externalbilling.ui.widgets.SubjectAlertDialog
-import io.snabble.sdk.ui.payment.externalbilling.ui.widgets.SubjectMessageClickListener
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.DelayedProgressDialog
 import io.snabble.sdk.ui.utils.I18nUtils
@@ -325,22 +323,19 @@ open class CheckoutBar @JvmOverloads constructor(
                         project.checkout.pay(entry.paymentMethod, entry.paymentCredentials)
                     } else if (entry.paymentMethod == PaymentMethod.EXTERNAL_BILLING) {
                         SubjectAlertDialog(context)
-                            .addClickListener(object : SubjectMessageClickListener {
-                                override fun onClick(message: String) {
-                                    entry.paymentCredentials.additionalData["subject"] = message
-                                    project.checkout.pay(entry.paymentMethod, entry.paymentCredentials)
-                                }
-                            })
-                            .skipClickListener(object : SubjectClickListener {
-                                override fun onClick() {
-                                    project.checkout.pay(entry.paymentMethod, entry.paymentCredentials)
-                                }
-                            })
-                            .abortClickListener(object : SubjectClickListener {
-                                override fun onClick() {
-                                    project.checkout.abort()
-                                }
-                            })
+                            .addMessageClickListener { message ->
+                                entry.paymentCredentials.additionalData["subject"] = message
+                                project.checkout.pay(entry.paymentMethod, entry.paymentCredentials)
+                            }
+                            .addSkipClickListener {
+                                project.checkout.pay(
+                                    entry.paymentMethod,
+                                    entry.paymentCredentials
+                                )
+                            }
+                            .setOnCanceledListener {
+                                project.checkout.abort()
+                            }
                             .show()
                     } else {
                         Keyguard.unlock(UIUtils.getHostFragmentActivity(context), object : Keyguard.Callback {
