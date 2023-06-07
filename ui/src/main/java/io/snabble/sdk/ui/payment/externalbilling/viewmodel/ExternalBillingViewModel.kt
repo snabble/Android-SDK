@@ -4,15 +4,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.payment.PaymentCredentials
-import io.snabble.sdk.payment.externalbilling.data.ExternalBillingPaymentCredentials
 import io.snabble.sdk.payment.externalbilling.ExternalBillingRepositoryImpl
+import io.snabble.sdk.payment.externalbilling.data.ExternalBillingPaymentCredentials
 import io.snabble.sdk.ui.telemetry.Telemetry
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
 class ExternalBillingViewModel : ViewModel() {
 
-    fun login(username: String, password: String): Boolean {
+    private var _uiState = MutableStateFlow<UiState>(Processing)
+    internal val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+
+    fun login(paymentMethod: String,username: String, password: String): Boolean {
         viewModelScope.launch {
             val project = Snabble.checkedInProject.value
             project?.let {
@@ -30,20 +36,39 @@ class ExternalBillingViewModel : ViewModel() {
                                 contactPersonID = bc.contactPersonID,
                                 password = password
                             ),
-                            it.id
+                            it.id,
+                            paymentMethod
                         )
                         val success = repo.addPaymentCredentials(paymentCredentials)
                         if (success && paymentCredentials != null) {
                             trackCredentialType(paymentCredentials.type.name)
                         }
                     }
+                    _uiState.tryEmit(Success)
+                } else {
+                    val error = result.exceptionOrNull()
+                    _uiState.tryEmit(Error(error?.localizedMessage.toString()))
                 }
             }
         }
         return false
     }
 
+    fun typing() {
+        _uiState.tryEmit(Processing)
+    }
+
     private fun trackCredentialType(type: String) {
         Telemetry.event(Telemetry.Event.PaymentMethodAdded, type)
     }
 }
+
+sealed interface UiState
+
+object Processing : UiState
+
+object Success : UiState
+
+data class Error(
+    val message: String
+) : UiState

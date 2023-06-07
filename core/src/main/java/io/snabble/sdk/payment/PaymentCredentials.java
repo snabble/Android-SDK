@@ -225,12 +225,12 @@ public class PaymentCredentials {
     /**
      * Encrypts and stores ExternalBilling payment credentials.
      */
-    public static PaymentCredentials fromExternalBilling(@NonNull final ExternalBillingPaymentCredentials credentials, @NonNull final String projectId){
+    public static PaymentCredentials fromExternalBilling(@NonNull final ExternalBillingPaymentCredentials credentials, @NonNull final String projectId, @NonNull final String obfuscatedId) {
         final String json = GsonHolder.get().toJson(credentials, ExternalBillingPaymentCredentials.class);
         final PaymentCredentials pc = new PaymentCredentials();
         pc.generateId();
         pc.type = Type.EXTERNAL_BILLING;
-        pc.obfuscatedId = pc.obfuscate(credentials.getUsername());
+        pc.obfuscatedId = obfuscatedId;
 
         final List<X509Certificate> certificates = Snabble.getInstance().getPaymentCertificates();
         if (certificates == null || certificates.size() == 0) {

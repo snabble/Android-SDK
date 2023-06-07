@@ -30,7 +30,9 @@ import io.snabble.sdk.ui.payment.payone.sepa.form.ui.widget.TextFieldWidget
 @Composable
 fun ExternalBillingLoginScreen(
     onSaveClick: (username: String, password: String) -> Unit,
+    onFocusChanged: () -> Unit,
     isInputValid: Boolean,
+    errorMessage: String = stringResource(id = R.string.Snabble_Payment_ExternalBilling_Error_wrongCredentials)
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -49,23 +51,29 @@ fun ExternalBillingLoginScreen(
     ) {
         Text(
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            text = stringResource(id = R.string.Snabble_Payment_ExternalBilling_hint),
+            text = stringResource(id = R.string.Snabble_Payment_ExternalBilling_message),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         TextFieldWidget(
             value = username.value,
             label = stringResource(id = R.string.Snabble_Payment_ExternalBilling_username),
-            onValueChange = { username.value = it },
+            onValueChange = {
+                username.value = it
+                onFocusChanged()
+            },
             readOnly = false,
             focusManager = focusManager
         )
         Spacer(modifier = Modifier.height(8.dp))
         PasswordField(
             value = password.value,
-            onValueChanged = { password.value = it },
+            onValueChanged = {
+                password.value = it
+                onFocusChanged()
+            },
             label = stringResource(id = R.string.Snabble_Payment_ExternalBilling_password),
             passwordVisible = passwordVisible.value,
             focusManager = focusManager,
@@ -74,8 +82,7 @@ fun ExternalBillingLoginScreen(
         if (!isInputValid) {
             Spacer(modifier = Modifier.heightIn(8.dp))
             Text(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                text = stringResource(id = R.string.Snabble_Payment_ExternalBilling_errorMessage),
+                text = errorMessage,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.error
             )
@@ -104,5 +111,6 @@ private fun ExternalBillingLoginScreenPreview() {
     ExternalBillingLoginScreen(
         onSaveClick = { _, _ -> },
         isInputValid = true,
+        onFocusChanged = {}
     )
 }

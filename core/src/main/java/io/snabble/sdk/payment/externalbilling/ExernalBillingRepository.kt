@@ -42,7 +42,7 @@ class ExternalBillingRepositoryImpl(
                 val responseCredentials = json.decodeFromString<ExternalBillingLoginResponse>(jsonData)
                 Result.success(responseCredentials)
             } else {
-                Result.failure(Exception(response?.message))
+                Result.failure(Exception(response?.code.toString()))
             }
         }
 

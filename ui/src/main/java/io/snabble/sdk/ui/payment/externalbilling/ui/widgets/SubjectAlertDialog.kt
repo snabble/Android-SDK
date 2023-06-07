@@ -18,7 +18,7 @@ class SubjectAlertDialog(context: Context) : Dialog(context) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setContentView(R.layout.snabble_subject_alert_dialog)
-        window?.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        window?.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         val input = findViewById<TextInputLayout>(R.id.text_input_subject)
