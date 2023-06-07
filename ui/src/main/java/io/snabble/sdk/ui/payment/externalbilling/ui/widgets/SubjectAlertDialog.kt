@@ -2,9 +2,10 @@ package io.snabble.sdk.ui.payment.externalbilling.ui.widgets
 
 import android.app.Dialog
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.ViewGroup.LayoutParams
-import android.widget.ImageView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputLayout
 import io.snabble.sdk.ui.R
@@ -13,16 +14,16 @@ class SubjectAlertDialog(context: Context) : Dialog(context) {
 
     private var subjectMessageClickListener: SubjectMessageClickListener? = null
     private var skipClick: SubjectClickListener? = null
-    private var abortClick: SubjectClickListener? = null
+    private var onCancelClick: SubjectClickListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setContentView(R.layout.snabble_subject_alert_dialog)
         window?.setLayout(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         val input = findViewById<TextInputLayout>(R.id.text_input_subject)
         val add = findViewById<MaterialButton>(R.id.subject_add)
         val skip = findViewById<MaterialButton>(R.id.subject_skip)
-        val abort = findViewById<ImageView>(R.id.subject_abort)
 
         add.setOnClickListener {
             subjectMessageClickListener?.onClick(input.editText?.text.toString())
@@ -32,34 +33,33 @@ class SubjectAlertDialog(context: Context) : Dialog(context) {
             skipClick?.onClick()
             dismiss()
         }
-        abort.setOnClickListener {
-            abortClick?.onClick()
-            dismiss()
-        }
     }
 
-    fun addClickListener(onClick: SubjectMessageClickListener): SubjectAlertDialog {
-        this.subjectMessageClickListener = onClick
-        return this
+    override fun dismiss() {
+        super.dismiss()
+        onCancelClick?.onClick()
     }
 
-    fun skipClickListener(click: SubjectClickListener): SubjectAlertDialog {
+    fun setOnCanceledListener(onClick: SubjectClickListener) = apply {
+        onCancelClick = onClick
+    }
+
+    fun addMessageClickListener(onClick: SubjectMessageClickListener): SubjectAlertDialog = apply {
+        subjectMessageClickListener = onClick
+
+    }
+
+    fun addSkipClickListener(click: SubjectClickListener): SubjectAlertDialog = apply {
         skipClick = click
-        return this
-    }
-
-    fun abortClickListener(click: SubjectClickListener): SubjectAlertDialog {
-        abortClick = click
-        return this
     }
 }
 
-interface SubjectMessageClickListener {
+fun interface SubjectMessageClickListener {
 
     fun onClick(message: String)
 }
 
-interface SubjectClickListener {
+fun interface SubjectClickListener {
 
     fun onClick()
 }
