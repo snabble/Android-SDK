@@ -141,7 +141,8 @@
     <string name="Snabble.Payment.ExternalBilling.AlertDialog.skip">Skip</string>
     <string name="Snabble.Payment.ExternalBilling.Error.badRequest">Oops, something went wrong! Please try again!</string>
     <string name="Snabble.Payment.ExternalBilling.Error.wrongCredentials">The given information is wrong. Please check them and try again!</string>
-    <string name="Snabble.Payment.ExternalBilling.message">Enter your details. You will then receive your invoice at home. After receiving the invoice, you have 14 days to transfer the purchase amount.</string>
+    <string name="Snabble.Payment.ExternalBilling.hint">Please note the term of payment on your invoice!</string>
+    <string name="Snabble.Payment.ExternalBilling.message">Enter your details. Please note the term of payment on your invoice, which will be sent to your stored address after your purchase.</string>
     <string name="Snabble.Payment.ExternalBilling.password">Password</string>
     <string name="Snabble.Payment.ExternalBilling.title">Purchase on invoice</string>
     <string name="Snabble.Payment.ExternalBilling.username">Username</string>

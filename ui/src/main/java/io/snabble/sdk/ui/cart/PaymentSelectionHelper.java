@@ -338,8 +338,13 @@ public class PaymentSelectionHelper {
             e.paymentCredentials = pc;
 
             if (availablePaymentMethodsList.contains(e.paymentMethod)) {
-                e.isAvailable = true;
-                e.hint = pc.getObfuscatedId();
+                if (e.paymentMethod == PaymentMethod.EXTERNAL_BILLING) {
+                    e.isAvailable = true;
+                    e.hint = application.getString(R.string.Snabble_Payment_ExternalBilling_hint);
+                } else {
+                    e.isAvailable = true;
+                    e.hint = pc.getObfuscatedId();
+                }
             } else if (projectPaymentMethods.contains(e.paymentMethod)) {
                 e.hint = application.getString(R.string.Snabble_Shoppingcart_notForThisPurchase);
                 e.isAvailable = false;
