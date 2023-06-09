@@ -32,6 +32,8 @@
         android:textAppearance="?attr/textAppearanceBodyLarge">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/text_edit_subject"
+            android:inputType="textCapSentences"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </com.google.android.material.textfield.TextInputLayout>

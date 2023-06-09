@@ -126,7 +126,6 @@
     <string name="Snabble.Payment.EmptyState.add">Bezahlverfahren hinzufügen</string>
     <string name="Snabble.Payment.EmptyState.message">Noch kein Bezahlverfahren hinterlegt.</string>
     <string name="Snabble.Payment.errorStarting">Fehler beim Anlegen des Bezahlprozesses</string>
-    <string name="Snabble.Payment.ExternalBilling.add">Hinzufügen</string>
     <string name="Snabble.Payment.ExternalBilling.AlertDialog.add">Hinzufügen</string>
     <string name="Snabble.Payment.ExternalBilling.AlertDialog.hint">Betreff</string>
     <string name="Snabble.Payment.ExternalBilling.AlertDialog.message">Hier kannst du einen \nBetreff eingeben</string>
@@ -134,9 +133,7 @@
     <string name="Snabble.Payment.ExternalBilling.Error.badRequest">Ups, es ist etwas schief gelaufen! Bitte versuch es erneut!</string>
     <string name="Snabble.Payment.ExternalBilling.Error.wrongCredentials">Die eingegebenen Daten sind falsch. Bitte überprüfe diese und versuch es erneut!</string>
     <string name="Snabble.Payment.ExternalBilling.message">Gib deine Daten ein. Anschließend bekommst du deine Rechnung zu dir nach Hause geschickt. Nach Erhalt der Rechnung hast du 14 Tage Zeit den Kaufbetrag zu überweisen.</string>
-    <string name="Snabble.Payment.ExternalBilling.password">Passwort</string>
     <string name="Snabble.Payment.ExternalBilling.title">Kauf auf Rechnung</string>
-    <string name="Snabble.Payment.ExternalBilling.username">Benutzername</string>
     <string name="Snabble.Payment.noMethodAvailable">Leider kann dieser Einkauf nicht mit der App durchgeführt werden.</string>
     <string name="Snabble.Payment.offlineHint">Du bist derzeit offline und einige Zahlungsmethoden sind möglicherweise nicht verfügbar</string>
     <string name="Snabble.Payment.Online.message">Dein Einkauf muss von einem Mitarbeiter bestätigt werden.</string>
