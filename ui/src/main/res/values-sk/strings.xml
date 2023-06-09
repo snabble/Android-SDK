@@ -474,6 +474,8 @@
     <string name="Snabble.Taxation.Consume.takeaway">zobrať so sebou</string>
     <string name="Snabble.Taxation.consumeWhere">Chceš svoj nákup</string>
     <string name="Snabble.Taxation.pleaseChoose">Vyber niektorú možnosť</string>
+    <string name="Snabble.Textfield.HidePassword.Accessibility">Hide password</string>
+    <string name="Snabble.Textfield.ShowPassword.Accessibility">Show password</string>
     <string name="Snabble.TWINT.payNow">Zaplatiť cez TWINT teraz</string>
     <string name="Snabble.undo">Vrátiť späť</string>
     <string name="Snabble.Violations.couponAlreadyVoided">Jeden kupón už bol uplatnený a bude odstránený z nákupného koša</string>

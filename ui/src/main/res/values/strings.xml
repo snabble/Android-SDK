@@ -467,6 +467,8 @@
     <string name="Snabble.Taxation.Consume.takeaway">Take with me</string>
     <string name="Snabble.Taxation.consumeWhere">Will you be eating here or is this to go?</string>
     <string name="Snabble.Taxation.pleaseChoose">Please choose</string>
+    <string name="Snabble.Textfield.HidePassword.Accessibility">Hide password</string>
+    <string name="Snabble.Textfield.ShowPassword.Accessibility">Show password</string>
     <string name="Snabble.TWINT.payNow">Pay now using TWINT</string>
     <string name="Snabble.undo">Undo</string>
     <string name="Snabble.Violations.couponAlreadyVoided">A coupon is already redeemed and will be removed from cart</string>

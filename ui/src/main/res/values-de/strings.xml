@@ -467,6 +467,8 @@
     <string name="Snabble.Taxation.Consume.takeaway">mitnehmen</string>
     <string name="Snabble.Taxation.consumeWhere">Möchtest du deinen Einkauf</string>
     <string name="Snabble.Taxation.pleaseChoose">Bitte wählen</string>
+    <string name="Snabble.Textfield.HidePassword.Accessibility">Passwort verbergen</string>
+    <string name="Snabble.Textfield.ShowPassword.Accessibility">Passwort anzeigen</string>
     <string name="Snabble.TWINT.payNow">Jetzt mit TWINT bezahlen</string>
     <string name="Snabble.undo">Rückgängig</string>
     <string name="Snabble.Violations.couponAlreadyVoided">Ein Coupon wurde bereits eingelöst und wird aus dem Warenkorb entfernt</string>

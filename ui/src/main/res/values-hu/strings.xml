@@ -462,6 +462,8 @@
     <string name="Snabble.Taxation.Consume.takeaway">magaddal vinni</string>
     <string name="Snabble.Taxation.consumeWhere">Szeretnéd a bevásárlásodat</string>
     <string name="Snabble.Taxation.pleaseChoose">Kérlek, válassz</string>
+    <string name="Snabble.Textfield.HidePassword.Accessibility">Hide password</string>
+    <string name="Snabble.Textfield.ShowPassword.Accessibility">Show password</string>
     <string name="Snabble.TWINT.payNow">Fizetés TWINT segítségével</string>
     <string name="Snabble.undo">Visszavonás</string>
     <string name="Snabble.Violations.couponAlreadyVoided">Egy kupon már beváltásra került, és eltávolítottuk a kosárból</string>

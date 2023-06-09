@@ -6,6 +6,7 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.payment.externalbilling.data.ExternalBillingLoginCredentials
 import io.snabble.sdk.payment.externalbilling.data.ExternalBillingLoginResponse
+import io.snabble.sdk.utils.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -68,7 +69,7 @@ class ExternalBillingRepositoryImpl(
                 )
                 .await()
         } catch (e: IOException) {
-            Log.e("xx", "login for external billing failed: ${e.message} ")
+            Logger.e( "login for external billing failed: ${e.message} ")
             null
         }
     }

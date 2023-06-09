@@ -8,5 +8,3 @@ data class ExternalBillingLoginCredentials(
     @SerialName("username") val username: String,
     @SerialName("password") val password: String,
 )
-
-

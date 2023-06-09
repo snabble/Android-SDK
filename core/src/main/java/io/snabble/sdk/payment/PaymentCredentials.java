@@ -225,7 +225,11 @@ public class PaymentCredentials {
     /**
      * Encrypts and stores ExternalBilling payment credentials.
      */
-    public static PaymentCredentials fromExternalBilling(@NonNull final ExternalBillingPaymentCredentials credentials, @NonNull final String projectId, @NonNull final String obfuscatedId) {
+    public static PaymentCredentials fromExternalBilling(
+            @NonNull final ExternalBillingPaymentCredentials credentials,
+            @NonNull final String projectId,
+            @NonNull final String obfuscatedId
+    ) {
         final String json = GsonHolder.get().toJson(credentials, ExternalBillingPaymentCredentials.class);
         final PaymentCredentials pc = new PaymentCredentials();
         pc.generateId();

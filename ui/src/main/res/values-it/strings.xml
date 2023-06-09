@@ -468,6 +468,8 @@
     <string name="Snabble.Taxation.Consume.takeaway">Asporto</string>
     <string name="Snabble.Taxation.consumeWhere">Da mangiare qui o da asporto?</string>
     <string name="Snabble.Taxation.pleaseChoose">Seleziona</string>
+    <string name="Snabble.Textfield.HidePassword.Accessibility">Hide password</string>
+    <string name="Snabble.Textfield.ShowPassword.Accessibility">Show password</string>
     <string name="Snabble.TWINT.payNow">Paga ora con TWINT</string>
     <string name="Snabble.undo">Annulla</string>
     <string name="Snabble.Violations.couponAlreadyVoided">A coupon is already redeemed and will be removed from cart</string>
