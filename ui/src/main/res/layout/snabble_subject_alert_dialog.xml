@@ -5,20 +5,20 @@
     style="@style/Snabble.ShapeAppearanceOverlay.RoundedCorners"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="16dp"
     android:background="@drawable/snabble_altert_dialog_bg"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:padding="16dp"
-    android:layout_margin="16dp"
     tools:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textStyle="bold"
         android:text="@string/Snabble.Payment.ExternalBilling.AlertDialog.message"
-        android:textAppearance="?attr/textAppearanceBodyLarge" />
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        android:textStyle="bold" />
 
     <Space
         android:layout_width="match_parent"
@@ -33,9 +33,10 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/text_edit_subject"
-            android:inputType="textCapSentences"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:inputType="textCapSentences" />
+
     </com.google.android.material.textfield.TextInputLayout>
 
     <Space
@@ -55,10 +56,10 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/subject_skip"
+        style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/Snabble.Payment.ExternalBilling.AlertDialog.skip"
-        style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
         app:shapeAppearanceOverlay="@style/Snabble.ShapeAppearanceOverlay.RoundedCorners.Big" />
 
 </LinearLayout>
