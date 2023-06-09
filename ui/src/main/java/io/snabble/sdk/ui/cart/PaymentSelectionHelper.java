@@ -89,7 +89,7 @@ public class PaymentSelectionHelper {
         icons.put(PaymentMethod.TWINT, R.drawable.snabble_ic_payment_select_twint);
         icons.put(PaymentMethod.GOOGLE_PAY, R.drawable.snabble_ic_payment_select_gpay);
         icons.put(PaymentMethod.PAYONE_SEPA, R.drawable.snabble_ic_payment_select_sepa);
-        icons.put(PaymentMethod.EXTERNAL_BILLING, R.drawable.snabble_ic_invoice);
+        icons.put(PaymentMethod.EXTERNAL_BILLING, R.drawable.ic_snabble_external_billing);
 
         names.put(PaymentMethod.DE_DIRECT_DEBIT, "SEPA-Lastschrift");
         names.put(PaymentMethod.VISA, "VISA");
