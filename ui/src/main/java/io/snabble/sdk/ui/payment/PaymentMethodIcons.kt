@@ -22,7 +22,7 @@ val PaymentMethodDescriptor.icon: Int
         "externalBilling" -> when (acceptedOriginTypes?.first()) {
             "tegutEmployeeID" -> R.drawable.snabble_ic_payment_select_tegut
             "leinweberCustomerID" -> R.drawable.snabble_ic_payment_select_leinweber
-            "contactPersonCredentials" -> R.drawable.snabble_ic_invoice
+            "contactPersonCredentials" -> R.drawable.ic_snabble_external_billing
             else -> 0
         }
 

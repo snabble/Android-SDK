@@ -91,8 +91,8 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
 
         if (availablePaymentMethods.contains(PaymentMethod.EXTERNAL_BILLING)) {
             entries.add(new SelectPaymentMethodFragment.Entry(
-                    R.drawable.snabble_ic_invoice,
-                    "Kauf auf Rechnung",
+                    R.drawable.ic_snabble_external_billing,
+                    requireContext().getString(R.string.Snabble_Payment_ExternalBilling_title),
                     getUsableAtText(PaymentMethod.EXTERNAL_BILLING),
                     new OneShotClickListener() {
 

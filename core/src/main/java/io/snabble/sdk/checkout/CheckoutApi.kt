@@ -263,6 +263,7 @@ data class PaymentInformation(
     val deviceFingerprint: String? = null,
     val deviceIPAddress: String? = null,
     val handoverInformation: String? = null,
+    val subject: String? = null
 )
 
 data class CheckoutProcessRequest(
