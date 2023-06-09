@@ -105,6 +105,7 @@ dependencies {
     implementation(libs.bundles.navigation)
 
     implementation(libs.bundles.compose)
+    implementation(libs.compose.iconsExtended)
     debugImplementation(libs.bundles.compose.debug)
 
     testImplementation(libs.kotest.assertionsCore)

@@ -135,6 +135,11 @@
     <string name="Snabble.Payment.presentCode">Show this code at a Snabble monitor or to a cashier to confirm your purchase.</string>
     <string name="Snabble.Payment.rejected">Purchase denied</string>
     <string name="Snabble.Payment.rejectedHint">Your purchase was denied. Please check your cart and start the checkout again.</string>
+    <string name="Snabble.Payment.ExternalBilling.hint">Enter your details. You will then receive your invoice at home. After receiving the invoice, you have 14 days to transfer the purchase amount.</string>
+    <string name="Snabble.Payment.ExternalBilling.username">Username</string>
+    <string name="Snabble.Payment.ExternalBilling.password">Password</string>
+    <string name="Snabble.Payment.ExternalBilling.errorMessage">The given information is wrong. Please check them and try again!</string>
+    <string name="Snabble.Payment.ExternalBilling.add">Add</string>
     <string name="Snabble.Payment.SEPA.city">City</string>
     <string name="Snabble.Payment.SEPA.countryCode">Country</string>
     <string name="Snabble.Payment.SEPA.hint">Note: In order to protect you and our merchants against misuse, the merchant will have your bank card shown on your first payment by SEPA direct debit.</string>

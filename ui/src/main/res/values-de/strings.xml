@@ -135,6 +135,11 @@
     <string name="Snabble.Payment.presentCode">Halte diesen Code an einem Snabble-Monitor vor oder zeige ihn einem Mitarbeiter, um deinen Einkauf zu bestätigen.</string>
     <string name="Snabble.Payment.rejected">Einkauf abgelehnt</string>
     <string name="Snabble.Payment.rejectedHint">Dein Einkauf wurde abgelehnt. Bitte überprüfe deinen Warenkorb und starte den Bezahlvorgang erneut.</string>
+    <string name="Snabble.Payment.ExternalBilling.hint">Gib deine Daten ein. Anschließend bekommst du deine Rechnung zu dir nach Hause geschickt. Nach Erhalt der Rechnung hast du 14 Tage Zeit den Kaufbetrag zu überweisen.</string>
+    <string name="Snabble.Payment.ExternalBilling.username">Benutzername</string>
+    <string name="Snabble.Payment.ExternalBilling.password">Passwort</string>
+    <string name="Snabble.Payment.ExternalBilling.errorMessage">Die eingegebenen Daten sind falsch. Bitte überprüfe diese und versuch es erneut!</string>
+    <string name="Snabble.Payment.ExternalBilling.add">Hinzufügen</string>
     <string name="Snabble.Payment.SEPA.city">Stadt</string>
     <string name="Snabble.Payment.SEPA.countryCode">Land</string>
     <string name="Snabble.Payment.SEPA.hint">Hinweis: Um dich und unsere Händler vor Missbrauch zu schützen, wird sich der Händler bei deiner ersten Zahlung per SEPA-Lastschrift deine Bankkarte zeigen lassen.</string>
