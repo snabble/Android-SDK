@@ -34,6 +34,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/text_edit_subject"
             android:layout_width="match_parent"
+            android:maxLength="169"
             android:layout_height="wrap_content"
             android:inputType="textCapSentences" />
 
