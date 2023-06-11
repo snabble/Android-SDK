@@ -496,9 +496,11 @@ class Checkout @JvmOverloads constructor(
                     RoutingTarget.SUPERVISOR -> {
                         notifyStateChanged(CheckoutState.WAIT_FOR_SUPERVISOR)
                     }
+
                     RoutingTarget.GATEKEEPER -> {
                         notifyStateChanged(CheckoutState.WAIT_FOR_GATEKEEPER)
                     }
+
                     else -> {
                         notifyStateChanged(CheckoutState.WAIT_FOR_APPROVAL)
                     }
@@ -548,9 +550,11 @@ class Checkout @JvmOverloads constructor(
                         notifyStateChanged(CheckoutState.DENIED_BY_SUPERVISOR)
                     }
                 }
+
                 CheckState.PROCESSING -> {
                     notifyStateChanged(CheckoutState.PAYMENT_PROCESSING)
                 }
+
                 CheckState.SUCCESSFUL -> {
                     val exitToken = checkoutProcess.exitToken
                     return if (exitToken != null && (exitToken.format.isNullOrEmpty() || exitToken.value.isNullOrEmpty())) {
@@ -561,6 +565,7 @@ class Checkout @JvmOverloads constructor(
                         areAllFulfillmentsClosed()
                     }
                 }
+
                 CheckState.FAILED -> {
                     if (checkoutProcess.paymentResult?.failureCause != null
                         && checkoutProcess.paymentResult.failureCause == "terminalAbort"
@@ -574,6 +579,7 @@ class Checkout @JvmOverloads constructor(
                     shoppingCart.generateNewUUID()
                     return true
                 }
+
                 else -> {
                     return false
                 }

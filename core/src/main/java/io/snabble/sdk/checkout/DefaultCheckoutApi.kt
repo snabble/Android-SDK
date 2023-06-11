@@ -213,6 +213,13 @@ class DefaultCheckoutApi(private val project: Project,
             processedOffline = processedOffline,
             finalizedAt = finalizedAt?.let { DateUtils.toRFC3339(it) },
             paymentInformation = when (paymentCredentials?.type) {
+                PaymentCredentials.Type.EXTERNAL_BILLING -> {
+                    PaymentInformation(
+                        originType = paymentCredentials.type.originType,
+                        encryptedOrigin = paymentCredentials.encryptedData,
+                        subject = paymentCredentials.additionalData["subject"]
+                    )
+                }
                 PaymentCredentials.Type.CREDIT_CARD_PSD2 -> {
                     PaymentInformation(
                         originType = paymentCredentials.type.originType,

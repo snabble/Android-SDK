@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Snabble.ShapeAppearanceOverlay.RoundedCorners"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="16dp"
+    android:background="@drawable/snabble_altert_dialog_bg"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/Snabble.Payment.ExternalBilling.AlertDialog.message"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        android:textStyle="bold" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="24dp" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_subject"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/Snabble.Payment.ExternalBilling.AlertDialog.hint"
+        android:textAppearance="?attr/textAppearanceBodyLarge">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/text_edit_subject"
+            android:layout_width="match_parent"
+            android:maxLength="150"
+            android:layout_height="wrap_content"
+            android:inputType="textCapSentences" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="24dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/subject_add"
+        style="@style/Snabble.ShapeAppearanceOverlay.RoundedCorners.Big"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/Snabble.Payment.ExternalBilling.AlertDialog.add" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="4dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/subject_skip"
+        style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/Snabble.Payment.ExternalBilling.AlertDialog.skip"
+        app:shapeAppearanceOverlay="@style/Snabble.ShapeAppearanceOverlay.RoundedCorners.Big" />
+
+</LinearLayout>

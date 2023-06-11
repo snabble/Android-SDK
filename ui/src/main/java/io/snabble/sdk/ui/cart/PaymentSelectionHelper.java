@@ -89,6 +89,7 @@ public class PaymentSelectionHelper {
         icons.put(PaymentMethod.TWINT, R.drawable.snabble_ic_payment_select_twint);
         icons.put(PaymentMethod.GOOGLE_PAY, R.drawable.snabble_ic_payment_select_gpay);
         icons.put(PaymentMethod.PAYONE_SEPA, R.drawable.snabble_ic_payment_select_sepa);
+        icons.put(PaymentMethod.EXTERNAL_BILLING, R.drawable.ic_snabble_external_billing);
 
         names.put(PaymentMethod.DE_DIRECT_DEBIT, "SEPA-Lastschrift");
         names.put(PaymentMethod.VISA, "VISA");
@@ -105,6 +106,7 @@ public class PaymentSelectionHelper {
         names.put(PaymentMethod.TWINT, "Twint");
         names.put(PaymentMethod.GOOGLE_PAY, "Google Pay");
         names.put(PaymentMethod.PAYONE_SEPA, "SEPA-Lastschrift");
+        names.put(PaymentMethod.EXTERNAL_BILLING, application.getString(R.string.Snabble_Payment_ExternalBilling_title));
 
         paymentMethodsSortPriority.add(PaymentMethod.GOOGLE_PAY);
         paymentMethodsSortPriority.add(PaymentMethod.DE_DIRECT_DEBIT);
@@ -116,6 +118,7 @@ public class PaymentSelectionHelper {
         paymentMethodsSortPriority.add(PaymentMethod.PAYDIREKT);
         paymentMethodsSortPriority.add(PaymentMethod.PAYONE_SEPA);
         paymentMethodsSortPriority.add(PaymentMethod.GATEKEEPER_TERMINAL);
+        paymentMethodsSortPriority.add(PaymentMethod.EXTERNAL_BILLING);
         paymentMethodsSortPriority.add(PaymentMethod.TEGUT_EMPLOYEE_CARD);
         paymentMethodsSortPriority.add(PaymentMethod.LEINWEBER_CUSTOMER_ID);
         paymentMethodsSortPriority.add(PaymentMethod.CUSTOMERCARD_POS);
@@ -311,6 +314,7 @@ public class PaymentSelectionHelper {
             } else if (paymentMethod != PaymentMethod.GOOGLE_PAY) {
                 availablePaymentMethodsList.add(paymentMethod);
             }
+
         }
 
         Set<PaymentMethod> addedCredentialPaymentMethods = new HashSet<>();
@@ -334,8 +338,13 @@ public class PaymentSelectionHelper {
             e.paymentCredentials = pc;
 
             if (availablePaymentMethodsList.contains(e.paymentMethod)) {
-                e.isAvailable = true;
-                e.hint = pc.getObfuscatedId();
+                if (e.paymentMethod == PaymentMethod.EXTERNAL_BILLING) {
+                    e.isAvailable = true;
+                    e.hint = application.getString(R.string.Snabble_Payment_ExternalBilling_hint);
+                } else {
+                    e.isAvailable = true;
+                    e.hint = pc.getObfuscatedId();
+                }
             } else if (projectPaymentMethods.contains(e.paymentMethod)) {
                 e.hint = application.getString(R.string.Snabble_Shoppingcart_notForThisPurchase);
                 e.isAvailable = false;

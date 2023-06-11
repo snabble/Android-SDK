@@ -3,25 +3,30 @@ package io.snabble.sdk
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
-
-import io.snabble.sdk.googlepay.GooglePayHelper
-import io.snabble.sdk.encodedcodes.EncodedCodesOptions
-import io.snabble.sdk.codes.templates.CodeTemplate
-import io.snabble.sdk.codes.templates.PriceOverrideTemplate
 import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor
 import io.snabble.sdk.checkout.Checkout
+import io.snabble.sdk.codes.templates.CodeTemplate
+import io.snabble.sdk.codes.templates.PriceOverrideTemplate
 import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.coupons.CouponSource
 import io.snabble.sdk.coupons.Coupons
-import io.snabble.sdk.utils.*
+import io.snabble.sdk.encodedcodes.EncodedCodesOptions
+import io.snabble.sdk.googlepay.GooglePayHelper
+import io.snabble.sdk.utils.GsonHolder
+import io.snabble.sdk.utils.Logger
+import io.snabble.sdk.utils.SimpleJsonCallback
+import io.snabble.sdk.utils.getBooleanOpt
+import io.snabble.sdk.utils.getIntOpt
+import io.snabble.sdk.utils.getString
+import io.snabble.sdk.utils.getStringListOpt
+import io.snabble.sdk.utils.getStringOpt
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.apache.commons.lang3.LocaleUtils
 import java.io.File
-import java.lang.Exception
-import java.lang.IllegalArgumentException
 import java.math.RoundingMode
-import java.util.*
+import java.util.Currency
+import java.util.Locale
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -29,6 +34,7 @@ import java.util.concurrent.CopyOnWriteArrayList
  * retailer.
  */
 class Project internal constructor(jsonObject: JsonObject) {
+
     /**
      * The unique identifier of the Project
      */
@@ -84,6 +90,7 @@ class Project internal constructor(jsonObject: JsonObject) {
             } else {
                 field
             }
+
     /**
      * Indicator if checkout should be available when using this Project
      */
@@ -559,9 +566,9 @@ class Project internal constructor(jsonObject: JsonObject) {
 
     private fun parseRoundingMode(jsonElement: JsonElement?) =
         when (jsonElement?.asString) {
-            "up"    -> RoundingMode.UP
-            "down"  -> RoundingMode.DOWN
-            else    -> RoundingMode.HALF_UP
+            "up" -> RoundingMode.UP
+            "down" -> RoundingMode.DOWN
+            else -> RoundingMode.HALF_UP
         }
 
     /**
@@ -634,6 +641,7 @@ class Project internal constructor(jsonObject: JsonObject) {
     }
 
     fun interface OnProjectUpdatedListener {
+
         fun onProjectUpdated(project: Project?)
     }
 }
