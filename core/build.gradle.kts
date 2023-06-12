@@ -5,7 +5,6 @@
     id(libs.plugins.kotlin.android.get().pluginId)
     id(libs.plugins.dokka.get().pluginId)
     id(libs.plugins.kotlin.parcelize.get().pluginId)
-    alias(libs.plugins.kotlin.serialization)
 }
 
 apply {
@@ -78,7 +77,6 @@ dependencies {
     implementation(libs.iban4j)
     implementation(libs.googlePlayServices.wallet)
     api(libs.gson)
-    implementation(libs.kotlinx.serializationJson)
     implementation(libs.rekisoftLazyWorker)
 
     api(libs.squareup.okhttp3.okhttp)

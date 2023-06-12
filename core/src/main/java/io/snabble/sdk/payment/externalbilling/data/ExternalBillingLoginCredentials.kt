@@ -1,10 +1,8 @@
 package io.snabble.sdk.payment.externalbilling.data
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.google.gson.annotations.SerializedName
 
-@Serializable
 data class ExternalBillingLoginCredentials(
-    @SerialName("username") val username: String,
-    @SerialName("password") val password: String,
+    @SerializedName("username") val username: String,
+    @SerializedName("password") val password: String,
 )

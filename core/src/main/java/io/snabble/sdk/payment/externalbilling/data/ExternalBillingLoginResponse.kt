@@ -1,10 +1,8 @@
 package io.snabble.sdk.payment.externalbilling.data
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.google.gson.annotations.SerializedName
 
-@Serializable
 data class ExternalBillingLoginResponse(
-    @SerialName("username") val username: String,
-    @SerialName("contactPersonID") val contactPersonID: String,
+    @SerializedName("username") val username: String,
+    @SerializedName("contactPersonID") val contactPersonID: String,
 )

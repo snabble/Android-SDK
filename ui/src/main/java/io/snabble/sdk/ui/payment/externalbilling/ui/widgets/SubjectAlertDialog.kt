@@ -10,6 +10,7 @@ import android.view.ViewGroup.LayoutParams
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.core.widget.addTextChangedListener
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputLayout
 import io.snabble.sdk.ui.R
@@ -34,6 +35,10 @@ class SubjectAlertDialog(context: Context) : Dialog(context) {
             val inputMethodManager: InputMethodManager =
                 context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(input.windowToken, 0)
+        }
+
+        editTextField.addTextChangedListener {
+            add.isEnabled = it?.isNotEmpty() == true
         }
 
         add.setOnClickListener {
@@ -82,7 +87,7 @@ class SubjectAlertDialog(context: Context) : Dialog(context) {
         skipClick = click
     }
 
-    companion object{
+    companion object {
 
         const val EDIT_TEXT_MAX_LINES = 5
     }
