@@ -153,7 +153,7 @@ open class ShopDetailsFragment : Fragment() {
         mapViewPermission = findViewById(R.id.map_view_permission)
         bottomSheet = findViewById(R.id.bottom_sheet)
 
-        setUpMapViewPermissionLayout(savedInstanceState, view)
+        setUpMapViewPermissionLayout(view)
 
         mapPinHome = findViewById(R.id.map_pin_home)
         mapPinHome.setOneShotClickListener {
@@ -203,9 +203,9 @@ open class ShopDetailsFragment : Fragment() {
 
     // Returns a textview message to activate google maps if it is not enabled otherwise it sets up the mapview.
     // The activation is only possible if the project contains a google maps api key
-    private fun setUpMapViewPermissionLayout(savedInstanceState: Bundle?, view: View) {
+    private fun setUpMapViewPermissionLayout(view: View) {
         if (preferences?.isMapsEnabled == true && preferences?.hasGoogleMapsKey == true) {
-            setupMapView(view, savedInstanceState)
+            setupMapView(view)
         } else {
             val activateMapButton = view.findViewById<View>(R.id.activate_map)
             val activateMessage = view.findViewById<TextView>(R.id.maps_notice)
@@ -213,7 +213,7 @@ open class ShopDetailsFragment : Fragment() {
             activateMapButton.setOnClickListener {
                 if (preferences?.hasGoogleMapsKey == true) {
                     preferences?.isMapsEnabled = true
-                    setupMapView(view, savedInstanceState)
+                    setupMapView(view)
                     mapView?.onStart()
                     val lp = mapViewPermission.layoutParams as MarginLayoutParams
                     setMapPadding(lp.leftMargin, lp.topMargin, lp.rightMargin, lp.bottomMargin)
@@ -232,20 +232,15 @@ open class ShopDetailsFragment : Fragment() {
     }
 
     @SuppressLint("MissingPermission")
-    private fun setupMapView(v: View, savedInstanceState: Bundle?) {
+    private fun setupMapView(v: View) {
         mapViewPermission.isVisible = false
-
-        var mapViewBundle: Bundle? = null
-        if (savedInstanceState != null) {
-            mapViewBundle = savedInstanceState.getBundle(BUNDLE_KEY_MAPVIEW)
-        }
 
         val mapControls = v.findViewById<View>(R.id.map_controls)
         mapControls.isVisible = true
 
         mapView = v.findViewById(R.id.map_view)
         mapView?.isVisible = true
-        mapView?.onCreate(mapViewBundle)
+        mapView?.onCreate(null)
         mapView?.viewTreeObserver?.addOnGlobalLayoutListener(
             object : OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
@@ -535,7 +530,7 @@ open class ShopDetailsFragment : Fragment() {
         }
     }
 
-    fun zoomToHome() {
+    private fun zoomToHome() {
         locationManager.location.observe(viewLifecycleOwner) { currentLocation ->
             currentLocation?.let {
                 if (storePinned) {
@@ -584,9 +579,9 @@ open class ShopDetailsFragment : Fragment() {
     }
 
     override fun onPause() {
-        super.onPause()
-
         mapView?.onPause()
+
+        super.onPause()
     }
 
     override fun onStop() {
@@ -607,22 +602,9 @@ open class ShopDetailsFragment : Fragment() {
         super.onLowMemory()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        if (mapView != null) {
-            var mapViewBundle = outState.getBundle(BUNDLE_KEY_MAPVIEW)
-            if (mapViewBundle == null) {
-                mapViewBundle = Bundle()
-                outState.putBundle(BUNDLE_KEY_MAPVIEW, mapViewBundle)
-            }
-            mapView?.onSaveInstanceState(mapViewBundle)
-        }
-    }
-
     companion object {
 
         const val BUNDLE_KEY_SHOP = "shop"
-        private const val BUNDLE_KEY_MAPVIEW = "mapView"
 
         @SuppressLint("QueryPermissionsNeeded")
         fun isIntentAvailable(context: Context, intent: Intent): Boolean {
