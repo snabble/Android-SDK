@@ -34,9 +34,9 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/text_edit_subject"
             android:layout_width="match_parent"
-            android:maxLength="150"
             android:layout_height="wrap_content"
-            android:inputType="textCapSentences" />
+            android:inputType="textCapSentences"
+            android:maxLength="150" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -49,6 +49,7 @@
         style="@style/Snabble.ShapeAppearanceOverlay.RoundedCorners.Big"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:enabled="false"
         android:text="@string/Snabble.Payment.ExternalBilling.AlertDialog.add" />
 
     <Space
