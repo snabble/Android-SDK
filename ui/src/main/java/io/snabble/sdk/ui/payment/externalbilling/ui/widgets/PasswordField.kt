@@ -16,10 +16,12 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import io.snabble.sdk.ui.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,8 +54,11 @@ fun PasswordField(
         trailingIcon = {
             val image = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
 
-            // Please provide localized description for accessibility services
-            val description = if (passwordVisible) "Hide password" else "Show password"
+            val description = if (passwordVisible) {
+                stringResource(id = R.string.Snabble_Textfield_HidePassword_Accessibility)
+            } else {
+                stringResource(id = R.string.Snabble_Textfield_ShowPassword_Accessibility)
+            }
 
             IconButton(onClick = { onVisibilityClick() }) {
                 Icon(imageVector = image, description)
