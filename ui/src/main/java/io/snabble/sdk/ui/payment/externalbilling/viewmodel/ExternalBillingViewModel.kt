@@ -7,24 +7,24 @@ import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.payment.externalbilling.ExternalBillingRepositoryImpl
 import io.snabble.sdk.payment.externalbilling.data.ExternalBillingPaymentCredentials
 import io.snabble.sdk.ui.telemetry.Telemetry
+import io.snabble.sdk.utils.GsonHolder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 
 class ExternalBillingViewModel : ViewModel() {
 
     private var _uiState = MutableStateFlow<UiState>(Processing)
     internal val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    fun login(paymentMethod: String,username: String, password: String, projectId: String): Boolean {
+    fun login(paymentMethod: String, username: String, password: String, projectId: String): Boolean {
         viewModelScope.launch {
             val project = Snabble.projects.find { it.id == projectId }
             project?.let {
                 val repo = ExternalBillingRepositoryImpl(
                     it,
-                    Json { ignoreUnknownKeys = true }
+                    GsonHolder.get()
                 )
                 val result = repo.login(username, password)
                 if (result.isSuccess) {
