@@ -30,6 +30,8 @@ import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.coupons.Coupon;
 import io.snabble.sdk.coupons.CouponType;
 import io.snabble.sdk.customization.IsMergeable;
+import io.snabble.sdk.events.data.EventType;
+import io.snabble.sdk.events.data.payload.Payload;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
 
@@ -1229,7 +1231,7 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    public static class BackendCart implements Events.Payload {
+    public static class BackendCart implements Payload {
         public String session;
         @SerializedName("shopID")
         public String shopId;
@@ -1242,8 +1244,8 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         public List<BackendCartRequiredInformation> requiredInformation;
 
         @Override
-        public Events.EventType getEventType() {
-            return Events.EventType.CART;
+        public EventType getEventType() {
+            return EventType.CART;
         }
     }
 

@@ -11,6 +11,7 @@ import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.coupons.CouponSource
 import io.snabble.sdk.coupons.Coupons
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions
+import io.snabble.sdk.events.Events
 import io.snabble.sdk.googlepay.GooglePayHelper
 import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
