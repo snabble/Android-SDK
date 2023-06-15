@@ -189,8 +189,8 @@ open class ShopDetailsFragment : Fragment() {
             companyNotice.setTextOrHide(text)
         }
 
-        Snabble.currentCheckedInShop.observe(viewLifecycleOwner){
-            if (Snabble.checkInManager.shop != null){
+        Snabble.currentCheckedInShop.observe(viewLifecycleOwner) { shop ->
+            if (shop != null) {
                 updateShopDetails(view)
             }
         }
