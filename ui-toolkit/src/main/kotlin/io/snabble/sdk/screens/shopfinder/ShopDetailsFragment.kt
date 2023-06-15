@@ -189,6 +189,12 @@ open class ShopDetailsFragment : Fragment() {
             companyNotice.setTextOrHide(text)
         }
 
+        Snabble.currentCheckedInShop.observe(viewLifecycleOwner) { shop ->
+            if (shop != null) {
+                updateShopDetails(view)
+            }
+        }
+
         applyBottomSheetPeekHeight(view)
         updateShopDetails(view)
     }

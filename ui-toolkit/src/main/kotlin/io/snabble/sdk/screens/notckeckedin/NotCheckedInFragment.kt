@@ -63,6 +63,7 @@ fun NotCheckedInScreen() {
         Text(
             modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
             text = stringResource(id = R.string.Snabble_Scanner_notCheckedIn),
+            color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center)
         Box(
             modifier = Modifier
