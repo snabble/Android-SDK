@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.location.Location
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -22,6 +23,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -109,6 +111,20 @@ open class ShopDetailsFragment : Fragment() {
                 && Snabble.checkedInProject.value != null
                 && Snabble.currentCheckedInShop.value?.id == shop.id
 
+    private val locationObserver = Observer<Location?> { value ->
+        val currentLocation = value ?: return@Observer
+
+        distance.isVisible = true
+        val distanceString = currentLocation.toLatLng()
+            .distanceTo(LatLng(shop.latitude, shop.longitude))
+            .formatDistance()
+        if (distance.text != distanceString) {
+            distance.text = distanceString
+            distance.contentDescription =
+                getString(R.string.Snabble_Shop_Distance_accessibility, distanceString)
+        }
+    }
+
     init {
         val usWeekdays = DateFormatSymbols.getInstance(Locale.US).weekdays.drop(1)
         val localWeekdays = DateFormatSymbols.getInstance().weekdays.drop(1)
@@ -187,6 +203,10 @@ open class ShopDetailsFragment : Fragment() {
         project?.let { project ->
             val text = project.getText("companyNotice")
             companyNotice.setTextOrHide(text)
+        }
+
+        Snabble.currentCheckedInShop.observe(viewLifecycleOwner) {
+            updateShopDetails(view)
         }
 
         applyBottomSheetPeekHeight(view)
@@ -344,19 +364,10 @@ open class ShopDetailsFragment : Fragment() {
             if (locationManager.location.value == null) {
                 distance.isVisible = false
             }
-            locationManager.location.observe(viewLifecycleOwner) { location ->
-                location?.let { currentLocation ->
-                    distance.isVisible = true
-                    val distanceString = currentLocation.toLatLng()
-                        .distanceTo(LatLng(shop.latitude, shop.longitude))
-                        .formatDistance()
-                    if (distance.text.toString() != distanceString) {
-                        distance.text = distanceString
-                        distance.contentDescription =
-                            getString(R.string.Snabble_Shop_Distance_accessibility, distanceString)
-                    }
-                }
-            }
+            locationManager.location.observe(viewLifecycleOwner, locationObserver)
+        } else {
+            locationManager.location.removeObserver(locationObserver)
+            distance.isVisible = false
         }
 
         setUpTimeTable()
