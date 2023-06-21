@@ -186,4 +186,29 @@ public class TokenRegistry {
 
         return token;
     }
+
+    /**
+     * Returns the locally stored token or null if invalid
+     */
+    public Token getLocalToken(Project project){
+        if (project == null) {
+            return null;
+        }
+        Token token = tokens.get(project.getId());
+
+        if (isValid(token)) {
+            return token;
+        }else {
+            return null;
+        }
+    }
+
+    private Boolean isValid(Token token){
+        if (token == null) return false;
+        long tokenInterval = (token.expiresAt - token.issuedAt);
+        long invalidAt = token.issuedAt + tokenInterval / 2;
+
+        long seconds = getOffsetTime();
+        return  seconds >= invalidAt;
+    }
 }
