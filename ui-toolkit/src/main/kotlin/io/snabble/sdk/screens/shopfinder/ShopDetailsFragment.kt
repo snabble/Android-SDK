@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.location.Location
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -22,6 +23,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -109,6 +111,20 @@ open class ShopDetailsFragment : Fragment() {
                 && Snabble.checkedInProject.value != null
                 && Snabble.currentCheckedInShop.value?.id == shop.id
 
+    private val locationObserver = Observer<Location?> { value ->
+        val currentLocation = value ?: return@Observer
+
+        distance.isVisible = true
+        val distanceString = currentLocation.toLatLng()
+            .distanceTo(LatLng(shop.latitude, shop.longitude))
+            .formatDistance()
+        if (distance.text != distanceString) {
+            distance.text = distanceString
+            distance.contentDescription =
+                getString(R.string.Snabble_Shop_Distance_accessibility, distanceString)
+        }
+    }
+
     init {
         val usWeekdays = DateFormatSymbols.getInstance(Locale.US).weekdays.drop(1)
         val localWeekdays = DateFormatSymbols.getInstance().weekdays.drop(1)
@@ -189,10 +205,8 @@ open class ShopDetailsFragment : Fragment() {
             companyNotice.setTextOrHide(text)
         }
 
-        Snabble.currentCheckedInShop.observe(viewLifecycleOwner) { shop ->
-            if (shop != null) {
-                updateShopDetails(view)
-            }
+        Snabble.currentCheckedInShop.observe(viewLifecycleOwner) {
+            updateShopDetails(view)
         }
 
         applyBottomSheetPeekHeight(view)
@@ -344,48 +358,7 @@ open class ShopDetailsFragment : Fragment() {
 
         if (isMultiProject) {
             project?.assets?.get("logo") { bm -> image.setImageBitmap(bm) }
-        }
 
-        if (!isCheckedInToShop) {
-            if (locationManager.location.value == null) {
-                distance.isVisible = false
-            }
-            locationManager.location.observe(viewLifecycleOwner) { location ->
-                location?.let { currentLocation ->
-                    distance.isVisible = true
-                    val distanceString = currentLocation.toLatLng()
-                        .distanceTo(LatLng(shop.latitude, shop.longitude))
-                        .formatDistance()
-                    if (distance.text.toString() != distanceString) {
-                        distance.text = distanceString
-                        distance.contentDescription =
-                            getString(R.string.Snabble_Shop_Distance_accessibility, distanceString)
-                    }
-                }
-            }
-        }
-
-        setUpTimeTable()
-        setupDebugCheckIn(view)
-
-        val startScanner = view.findViewById<Button>(R.id.start_scanner)
-        val startScannerTitle = resources.getText(R.string.Snabble_Scanner_start)
-
-        if (isCheckedInToShop) {
-            startScanner.setTextOrHide(startScannerTitle)
-            distance.isVisible = false
-        } else {
-            startScanner.isVisible = false
-        }
-
-        startScanner.setOneShotClickListener {
-            SnabbleUiToolkit.executeAction(
-                requireContext(),
-                SnabbleUiToolkit.Event.DETAILS_SHOP_BUTTON_ACTION
-            )
-        }
-
-        if (isMultiProject) {
             val company = project?.company
             companyCountry.setTextOrHide(project?.company?.country?.let(::getDisplayNameByIso3Code))
             companyName.setTextOrHide(project?.company?.name)
@@ -398,6 +371,33 @@ open class ShopDetailsFragment : Fragment() {
             }
         } else {
             companyHeader.isVisible = false
+        }
+
+        val startScanner = view.findViewById<Button>(R.id.start_scanner)
+        val startScannerTitle = resources.getText(R.string.Snabble_Scanner_start)
+
+        locationManager.location.removeObserver(locationObserver)
+
+        if (!isCheckedInToShop) {
+            startScanner.isVisible = false
+
+            if (locationManager.location.value == null) {
+                distance.isVisible = false
+            }
+            locationManager.location.observe(viewLifecycleOwner, locationObserver)
+        } else {
+            startScanner.setTextOrHide(startScannerTitle)
+            distance.isVisible = false
+        }
+
+        setUpTimeTable()
+        setupDebugCheckIn(view)
+
+        startScanner.setOneShotClickListener {
+            SnabbleUiToolkit.executeAction(
+                requireContext(),
+                SnabbleUiToolkit.Event.DETAILS_SHOP_BUTTON_ACTION
+            )
         }
     }
 
