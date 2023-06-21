@@ -358,39 +358,7 @@ open class ShopDetailsFragment : Fragment() {
 
         if (isMultiProject) {
             project?.assets?.get("logo") { bm -> image.setImageBitmap(bm) }
-        }
 
-        if (!isCheckedInToShop) {
-            if (locationManager.location.value == null) {
-                distance.isVisible = false
-            }
-            locationManager.location.observe(viewLifecycleOwner, locationObserver)
-        } else {
-            locationManager.location.removeObserver(locationObserver)
-            distance.isVisible = false
-        }
-
-        setUpTimeTable()
-        setupDebugCheckIn(view)
-
-        val startScanner = view.findViewById<Button>(R.id.start_scanner)
-        val startScannerTitle = resources.getText(R.string.Snabble_Scanner_start)
-
-        if (isCheckedInToShop) {
-            startScanner.setTextOrHide(startScannerTitle)
-            distance.isVisible = false
-        } else {
-            startScanner.isVisible = false
-        }
-
-        startScanner.setOneShotClickListener {
-            SnabbleUiToolkit.executeAction(
-                requireContext(),
-                SnabbleUiToolkit.Event.DETAILS_SHOP_BUTTON_ACTION
-            )
-        }
-
-        if (isMultiProject) {
             val company = project?.company
             companyCountry.setTextOrHide(project?.company?.country?.let(::getDisplayNameByIso3Code))
             companyName.setTextOrHide(project?.company?.name)
@@ -403,6 +371,33 @@ open class ShopDetailsFragment : Fragment() {
             }
         } else {
             companyHeader.isVisible = false
+        }
+
+        val startScanner = view.findViewById<Button>(R.id.start_scanner)
+        val startScannerTitle = resources.getText(R.string.Snabble_Scanner_start)
+
+        locationManager.location.removeObserver(locationObserver)
+
+        if (!isCheckedInToShop) {
+            startScanner.isVisible = false
+
+            if (locationManager.location.value == null) {
+                distance.isVisible = false
+            }
+            locationManager.location.observe(viewLifecycleOwner, locationObserver)
+        } else {
+            startScanner.setTextOrHide(startScannerTitle)
+            distance.isVisible = false
+        }
+
+        setUpTimeTable()
+        setupDebugCheckIn(view)
+
+        startScanner.setOneShotClickListener {
+            SnabbleUiToolkit.executeAction(
+                requireContext(),
+                SnabbleUiToolkit.Event.DETAILS_SHOP_BUTTON_ACTION
+            )
         }
     }
 
