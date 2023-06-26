@@ -111,10 +111,7 @@ class Events @SuppressLint("SimpleDateFormat") internal constructor(
             return  // do not log errors in debug builds
         }
 
-        val error = PayloadError(
-            message = getMessage(format, args),
-            session = cartId
-        )
+        val error = PayloadError(message = getMessage(format, args), session = cartId)
         post(error, false)
     }
 
@@ -132,10 +129,7 @@ class Events @SuppressLint("SimpleDateFormat") internal constructor(
      * Pack a log message into a event and dispatch it to the backend
      */
     fun log(format: String?, vararg args: Any?) {
-        val log = PayloadLog(
-            message = getMessage(format, args),
-            session = cartId
-        )
+        val log = PayloadLog(message = getMessage(format, args), session = cartId)
         post(log, false)
     }
 
@@ -143,12 +137,7 @@ class Events @SuppressLint("SimpleDateFormat") internal constructor(
      * Pack a analytics event and dispatch it to the backend
      */
     fun analytics(key: String?, value: String?, comment: String?) {
-        val analytics = PayloadAnalytics(
-            key = key,
-            value = value,
-            comment = comment,
-            session = cartId
-        )
+        val analytics = PayloadAnalytics(key = key, value = value, comment = comment, session = cartId)
         post(analytics, false)
     }
 
@@ -159,10 +148,7 @@ class Events @SuppressLint("SimpleDateFormat") internal constructor(
 
         try {
             if (!scannedCodes.isNullOrEmpty()) {
-                val payload = PayloadProductNotFound(
-                    scannedCode = scannedCodes[0].code,
-                    matched = HashMap()
-                )
+                val payload = PayloadProductNotFound(scannedCode = scannedCodes[0].code, matched = HashMap())
                 for (scannedCode in scannedCodes) {
                     payload.matched?.set(scannedCode.templateName, scannedCode.lookupCode)
                 }
@@ -256,12 +242,10 @@ class Events @SuppressLint("SimpleDateFormat") internal constructor(
          */
         fun logErrorEvent(projectId: String?, format: String?, vararg args: Any?) {
             val project = getUsableProject(projectId)
-            if (project != null) {
-                if (format == null) {
-                    project.logErrorEvent("Broken log message")
-                } else {
-                    project.logErrorEvent(format, *args)
-                }
+            if (format == null) {
+                project?.logErrorEvent("Broken log message")
+            } else {
+                project?.logErrorEvent(format, *args)
             }
         }
     }
