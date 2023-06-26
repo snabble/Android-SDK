@@ -377,10 +377,14 @@ open class CheckoutBar @JvmOverloads constructor(
             CheckoutState.DENIED_BY_PAYMENT_PROVIDER,
             CheckoutState.DENIED_BY_SUPERVISOR,
             CheckoutState.PAYMENT_PROCESSING -> {
-                executeUiAction(SnabbleUI.Event.SHOW_CHECKOUT, Bundle().apply {
-                    putString(CheckoutActivity.ARG_PROJECT_ID, project.id)
-                })
-                progressDialog.dismiss()
+                if (Snabble.checkedInShop?.id != project.checkout.shopId) {
+                    project.checkout.reset()
+                } else {
+                    executeUiAction(SnabbleUI.Event.SHOW_CHECKOUT, Bundle().apply {
+                        putString(CheckoutActivity.ARG_PROJECT_ID, project.id)
+                    })
+                    progressDialog.dismiss()
+                }
             }
 
             CheckoutState.INVALID_PRODUCTS -> {
