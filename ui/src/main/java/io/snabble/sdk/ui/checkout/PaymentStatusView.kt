@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
@@ -78,8 +80,7 @@ class PaymentStatusView @JvmOverloads constructor(
     private lateinit var checkout: Checkout
 
     private val backPressedCallback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-        }
+        override fun handleOnBackPressed() {}
     }
 
     private var ratingMessage: String? = null
@@ -102,6 +103,16 @@ class PaymentStatusView @JvmOverloads constructor(
                 checkout = project.checkout
             }
 
+            Snabble.currentCheckedInShop.observeView(this) {
+                if (it == null) {
+                    if (checkout.state.value == CheckoutState.PAYMENT_APPROVED) {
+                        checkout.reset()
+                    } else {
+                        checkout.abort()
+                    }
+                }
+            }
+
             update()
         }
     }
@@ -112,21 +123,14 @@ class PaymentStatusView @JvmOverloads constructor(
 
         back.text = resources.getString(R.string.Snabble_cancel)
         back.setOnClickListener {
-            val state = lastState
-
-            if (state == CheckoutState.PAYMENT_APPROVED) {
+            if (lastState == CheckoutState.PAYMENT_APPROVED) {
                 ignoreStateChanges = true
                 checkout.reset()
-                requireFragmentActivity().finish()
-
-                if (state == CheckoutState.PAYMENT_APPROVED) {
-                    executeUiAction(SnabbleUI.Event.SHOW_CHECKOUT_DONE)
-                }
-
-                project.coupons.update()
+                executeUiAction(SnabbleUI.Event.SHOW_CHECKOUT_DONE)
             } else {
                 checkout.abort()
             }
+            project.coupons.update()
         }
 
         checkout.state.observeView(this) {
@@ -473,6 +477,32 @@ class PaymentStatusView @JvmOverloads constructor(
         if (paymentOriginCandidate != null) {
             addIbanLayout.isVisible = true
             this.paymentOriginCandidate = paymentOriginCandidate
+        }
+    }
+
+    private class SavedState : BaseSavedState {
+
+        var id: String? = null
+
+        internal constructor(superState: Parcelable?) : super(superState) {}
+        private constructor(`in`: Parcel) : super(`in`) {
+            id = `in`.readString()
+        }
+
+        override fun writeToParcel(out: Parcel, flags: Int) {
+            super.writeToParcel(out, flags)
+            out.writeString(id)
+        }
+
+        companion object CREATOR : Parcelable.Creator<SavedState?> {
+
+            override fun createFromParcel(`in`: Parcel): SavedState {
+                return SavedState(`in`)
+            }
+
+            override fun newArray(size: Int): Array<SavedState?> {
+                return arrayOfNulls(size)
+            }
         }
     }
 }
