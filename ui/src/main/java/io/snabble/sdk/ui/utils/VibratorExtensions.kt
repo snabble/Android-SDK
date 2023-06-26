@@ -8,5 +8,6 @@ fun Vibrator.vibrateCompat(timeInMillis: Long) =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         vibrate(VibrationEffect.createOneShot(timeInMillis, VibrationEffect.DEFAULT_AMPLITUDE))
     } else {
-        @Suppress("DEPRECATION") vibrate(timeInMillis)
+        @Suppress("DEPRECATION")
+        vibrate(timeInMillis)
     }

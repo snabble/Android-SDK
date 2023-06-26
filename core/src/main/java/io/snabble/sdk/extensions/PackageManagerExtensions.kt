@@ -14,7 +14,8 @@ fun PackageManager.getPackageInfoCompat(
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(flags.toLong()))
     } else {
-        @Suppress("DEPRECATION") getPackageInfo(packageName, flags)
+        @Suppress("DEPRECATION")
+        getPackageInfo(packageName, flags)
     }
 
 @Throws(NameNotFoundException::class)
@@ -25,5 +26,6 @@ fun PackageManager.getApplicationInfoCompat(
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         getApplicationInfo(packageName, PackageManager.ApplicationInfoFlags.of(flags.toLong()))
     } else {
-        @Suppress("DEPRECATION") getApplicationInfo(packageName, flags)
+        @Suppress("DEPRECATION")
+        getApplicationInfo(packageName, flags)
     }

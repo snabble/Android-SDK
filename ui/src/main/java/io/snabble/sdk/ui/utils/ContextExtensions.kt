@@ -9,5 +9,6 @@ val Context.vibrator: Vibrator
     get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         (getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
     } else {
-        @Suppress("DEPRECATION") getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        @Suppress("DEPRECATION")
+        getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
     }
