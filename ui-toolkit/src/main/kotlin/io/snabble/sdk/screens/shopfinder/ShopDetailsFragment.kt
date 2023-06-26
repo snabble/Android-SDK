@@ -3,7 +3,6 @@ package io.snabble.sdk.screens.shopfinder
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
@@ -36,6 +35,7 @@ import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.checkin.CheckInLocationManager
+import io.snabble.sdk.extensions.getQueryIntentActivitiesCompat
 import io.snabble.sdk.screens.shopfinder.utils.ISO3Utils.getDisplayNameByIso3Code
 import io.snabble.sdk.screens.shopfinder.utils.ShopFinderPreferences
 import io.snabble.sdk.screens.shopfinder.utils.distanceTo
@@ -615,24 +615,12 @@ open class ShopDetailsFragment : Fragment() {
         }
     }
 
-    companion object {
+    private companion object {
 
         const val BUNDLE_KEY_SHOP = "shop"
         private const val BUNDLE_KEY_MAPVIEW = "mapView"
 
-        @SuppressLint("QueryPermissionsNeeded")
-        fun isIntentAvailable(context: Context, intent: Intent): Boolean {
-            val packageManager = context.packageManager
-            val list = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                packageManager.queryIntentActivities(
-                    intent,
-                    PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY.toLong())
-                )
-            } else {
-                @Suppress("DEPRECATION")
-                packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-            }
-            return list.isNotEmpty()
-        }
+        fun isIntentAvailable(context: Context, intent: Intent): Boolean =
+            context.packageManager.getQueryIntentActivitiesCompat(intent).isNotEmpty()
     }
 }
