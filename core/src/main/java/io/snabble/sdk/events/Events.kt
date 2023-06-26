@@ -142,14 +142,14 @@ class Events @SuppressLint("SimpleDateFormat") internal constructor(
     /**
      * Pack a analytics event and dispatch it to the backend
      */
-    fun analytics(key: String?, value: String?, comment: String?, shopId: String? = null) {
+    fun analytics(key: String?, value: String?, comment: String?) {
         val analytics = PayloadAnalytics(
             key = key,
             value = value,
             comment = comment,
             session = cartId
         )
-        post(analytics, false, shopId)
+        post(analytics, false)
     }
 
     /**
@@ -176,14 +176,14 @@ class Events @SuppressLint("SimpleDateFormat") internal constructor(
         }
     }
 
-    private fun <T : Payload?> post(payload: T, debounce: Boolean, shopId: String? = null) {
+    private fun <T : Payload?> post(payload: T, debounce: Boolean) {
         val url = project.eventsUrl
         if (url == null) {
             Logger.e("Could not post event: no events url")
             return
         }
 
-        val event = createEvent(payload, shopId)
+        val event = createEvent(payload)
 
         val requestBody = GsonHolder.get().toJson(event).toRequestBody("application/json".toMediaType())
         val request: Request = Request.Builder()
@@ -206,13 +206,13 @@ class Events @SuppressLint("SimpleDateFormat") internal constructor(
         }
     }
 
-    private fun <T : Payload?> createEvent(payload: T, shopId: String?) = Event(
+    private fun <T : Payload?> createEvent(payload: T) = Event(
         type = payload!!.eventType,
         appId = Snabble.clientId,
         project = project.id,
         timestamp = DateUtils.toRFC3339(Date()),
         payload = GsonHolder.get().toJsonTree(payload),
-        shopId = shop?.id ?: shopId?.let { shopId }
+        shopId = shop?.id
     )
 
     private fun <T : Payload?> send(request: Request, payload: T) {
