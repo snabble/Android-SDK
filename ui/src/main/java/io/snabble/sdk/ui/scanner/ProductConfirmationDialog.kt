@@ -229,29 +229,27 @@ interface ProductConfirmationDialog {
         @MainThread
         fun onSaveInstanceState(outState: Bundle) {
             // Note: Those fields with a bang operator are initialized with a value and never can be null
-            outState.putParcelable(
-                "model", Restorer(
-                    projectId = project.id,
-                    product = product,
-                    scannedCode = scannedCode,
-                    quantity = quantity.value,
-                    quantityContentDescription = quantityContentDescription.value,
-                    quantityCanBeChanged = quantityCanBeChanged.value!!,
-                    addToCartButtonText = addToCartButtonText.value,
-                    price = price.value,
-                    priceContentDescription = priceContentDescription.value,
-                    originalPrice = originalPrice.value,
-                    depositPrice = depositPrice.value,
-                    enterReducedPriceButtonText = enterReducedPriceButtonText.value,
-                    appliedCoupon = appliedCoupon.value,
-                    quantityCanBeIncreased = quantityCanBeIncreased.value!!,
-                    quantityCanBeDecreased = quantityCanBeDecreased.value!!,
-                    quantityVisible = quantityVisible.value!!,
-                    quantityButtonsVisible = quantityButtonsVisible.value!!,
-                    wasAddedToCart = wasAddedToCart,
-                    isDismissed = isDismissed
-                )
-            )
+            outState.putParcelable("model", Restorer(
+                projectId = project.id,
+                product = product,
+                scannedCode = scannedCode,
+                quantity = quantity.value,
+                quantityContentDescription = quantityContentDescription.value,
+                quantityCanBeChanged = quantityCanBeChanged.value!!,
+                addToCartButtonText = addToCartButtonText.value,
+                price = price.value,
+                priceContentDescription = priceContentDescription.value,
+                originalPrice = originalPrice.value,
+                depositPrice = depositPrice.value,
+                enterReducedPriceButtonText = enterReducedPriceButtonText.value,
+                appliedCoupon = appliedCoupon.value,
+                quantityCanBeIncreased = quantityCanBeIncreased.value!!,
+                quantityCanBeDecreased = quantityCanBeDecreased.value!!,
+                quantityVisible = quantityVisible.value!!,
+                quantityButtonsVisible = quantityButtonsVisible.value!!,
+                wasAddedToCart = wasAddedToCart,
+                isDismissed = isDismissed
+            ))
         }
 
         private fun LiveData<String>.postString(@StringRes string: Int, vararg args: Any?) {
