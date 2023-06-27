@@ -166,6 +166,15 @@ enum class PaymentMethod(
         isRequiringCredentials = true,
         isShowOnlyIfCredentialsArePresent = false,
         needsAbortConfirmation = true
+    ),
+
+    @SerializedName("externalBilling")
+    EXTERNAL_BILLING(
+        id = "externalBilling",
+        isOfflineMethod = false,
+        isRequiringCredentials = true,
+        isShowOnlyIfCredentialsArePresent = false,
+        needsAbortConfirmation = true
     );
 
     companion object {
@@ -196,6 +205,7 @@ enum class PaymentMethod(
                     when (origin[0]) {
                         "tegutEmployeeID" -> return TEGUT_EMPLOYEE_CARD
                         "leinweberCustomerID" -> return LEINWEBER_CUSTOMER_ID
+                        "contactPersonCredentials" -> return EXTERNAL_BILLING
                     }
                 } else if (pm.id == id && pm.id == PAYONE_SEPA.id) {
                     //needed for deserialization

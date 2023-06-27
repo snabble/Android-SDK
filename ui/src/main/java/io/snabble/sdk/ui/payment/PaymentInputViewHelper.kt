@@ -10,6 +10,7 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.ui.payment.externalbilling.ExternalBillingFragment.Companion.ARG_PROJECT_ID
 import io.snabble.sdk.ui.utils.KeyguardUtils
 import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.utils.Logger
@@ -40,25 +41,36 @@ object PaymentInputViewHelper {
                             args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.VISA)
                             SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT, args)
                         }
+
                         PaymentMethod.AMEX -> {
                             args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
                             args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.AMEX)
                             SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT, args)
                         }
+
                         PaymentMethod.MASTERCARD -> {
                             args.putString(CreditCardInputView.ARG_PROJECT_ID, projectId)
                             args.putSerializable(CreditCardInputView.ARG_PAYMENT_TYPE, PaymentMethod.MASTERCARD)
                             SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT, args)
                         }
+
                         PaymentMethod.PAYDIREKT -> {
                             SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_PAYDIREKT_INPUT)
                         }
+
                         PaymentMethod.DE_DIRECT_DEBIT -> {
                             SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_SEPA_CARD_INPUT)
                         }
+
                         PaymentMethod.PAYONE_SEPA -> {
                             SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_PAYONE_SEPA)
                         }
+
+                        PaymentMethod.EXTERNAL_BILLING -> {
+                            args.putString(ARG_PROJECT_ID, projectId)
+                            SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_EXTERNAL_BILLING, args)
+                        }
+
                         else -> {
                             Logger.e("Payment method requires no credentials or is unsupported")
                         }
@@ -77,8 +89,10 @@ object PaymentInputViewHelper {
     @JvmStatic
     fun showPaymentList(context: Context, project: Project) {
         val args = Bundle()
-        args.putSerializable(PaymentCredentialsListView.ARG_PAYMENT_TYPE,
-            ArrayList(PaymentCredentials.Type.values().toList()))
+        args.putSerializable(
+            PaymentCredentialsListView.ARG_PAYMENT_TYPE,
+            ArrayList(PaymentCredentials.Type.values().toList())
+        )
         args.putSerializable(PaymentCredentialsListView.ARG_PROJECT_ID, project.id)
         SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_PAYMENT_CREDENTIALS_LIST, args)
     }

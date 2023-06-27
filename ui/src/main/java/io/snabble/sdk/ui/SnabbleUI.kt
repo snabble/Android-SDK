@@ -13,6 +13,7 @@ import io.snabble.sdk.ui.cart.ShoppingCartActivity
 import io.snabble.sdk.ui.checkout.CheckoutActivity
 import io.snabble.sdk.ui.coupon.CouponDetailActivity
 import io.snabble.sdk.ui.payment.*
+import io.snabble.sdk.ui.payment.externalbilling.ExternalBillingActivity
 import io.snabble.sdk.ui.payment.payone.sepa.form.PayoneSepaActivity
 import io.snabble.sdk.ui.scanner.SelfScanningActivity
 import io.snabble.sdk.ui.search.ProductSearchActivity
@@ -40,6 +41,7 @@ object SnabbleUI {
         SHOW_CREDIT_CARD_INPUT,
         SHOW_PAYONE_INPUT,
         SHOW_PAYDIREKT_INPUT,
+        SHOW_EXTERNAL_BILLING,
         SHOW_SHOPPING_CART,
         SHOW_PAYMENT_CREDENTIALS_LIST,
         SHOW_PAYMENT_OPTIONS,
@@ -134,6 +136,13 @@ object SnabbleUI {
                     startActivity(context, SEPACardInputActivity::class.java, args, canGoBack = false)
 
                 SHOW_PAYONE_SEPA -> startActivity(context, PayoneSepaActivity::class.java, args, canGoBack = false)
+
+                SHOW_EXTERNAL_BILLING -> startActivity(
+                    context,
+                    ExternalBillingActivity::class.java,
+                    args,
+                    canGoBack = true
+                )
 
                 SHOW_CREDIT_CARD_INPUT ->
                     startActivity(context, CreditCardInputActivity::class.java, args, canGoBack = false)

@@ -32,6 +32,7 @@ public class SnabbleAuthorizationInterceptor implements Interceptor {
 
             if (token != null) {
                 request = request.newBuilder()
+                        .addHeader("Authorization", "Bearer " + token.token)
                         .addHeader("Client-Token", token.token)
                         .addHeader("Client-ID", Snabble.getInstance().getClientId())
                         .build();

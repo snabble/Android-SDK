@@ -9,6 +9,7 @@ import io.snabble.sdk.utils.Logger
 import java.io.File
 
 data class PersistentState(
+    @Transient
     var file: File,
     var checkoutProcess: CheckoutProcessResponse? = null,
     var selectedPaymentMethod: PaymentMethod? = null,

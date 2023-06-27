@@ -37,6 +37,7 @@ import io.snabble.sdk.ui.checkout.CheckoutActivity
 import io.snabble.sdk.ui.payment.PaymentInputViewHelper
 import io.snabble.sdk.ui.payment.SEPALegalInfoHelper
 import io.snabble.sdk.ui.payment.SelectPaymentMethodFragment
+import io.snabble.sdk.ui.payment.externalbilling.ui.widgets.SubjectAlertDialog
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.DelayedProgressDialog
 import io.snabble.sdk.ui.utils.I18nUtils
@@ -282,7 +283,7 @@ open class CheckoutBar @JvmOverloads constructor(
             } else {
                 val hasPaymentMethodThatRequiresCredentials =
                     project.paymentMethodDescriptors.any { descriptor ->
-                        descriptor.paymentMethod.isRequiringCredentials
+                        descriptor.paymentMethod?.isRequiringCredentials == true
                     }
                 if (hasPaymentMethodThatRequiresCredentials) {
                     val activity = UIUtils.getHostActivity(context)
@@ -308,6 +309,7 @@ open class CheckoutBar @JvmOverloads constructor(
             CheckoutState.HANDSHAKING -> {
                 progressDialog.showAfterDelay(300)
             }
+
             CheckoutState.REQUEST_PAYMENT_METHOD -> {
                 val entry = paymentSelectionHelper.selectedEntry.value
                 if (entry == null) {
@@ -319,6 +321,22 @@ open class CheckoutBar @JvmOverloads constructor(
                     progressDialog.dismiss()
                     if (entry.paymentMethod == PaymentMethod.TEGUT_EMPLOYEE_CARD) {
                         project.checkout.pay(entry.paymentMethod, entry.paymentCredentials)
+                    } else if (entry.paymentMethod == PaymentMethod.EXTERNAL_BILLING) {
+                        SubjectAlertDialog(context)
+                            .addMessageClickListener { message ->
+                                entry.paymentCredentials.additionalData["subject"] = message
+                                project.checkout.pay(entry.paymentMethod, entry.paymentCredentials)
+                            }
+                            .addSkipClickListener {
+                                project.checkout.pay(
+                                    entry.paymentMethod,
+                                    entry.paymentCredentials
+                                )
+                            }
+                            .setOnCanceledListener {
+                                project.checkout.abort()
+                            }
+                            .show()
                     } else {
                         Keyguard.unlock(UIUtils.getHostFragmentActivity(context), object : Keyguard.Callback {
                             override fun success() {
@@ -337,6 +355,7 @@ open class CheckoutBar @JvmOverloads constructor(
                     project.checkout.pay(entry.paymentMethod, null)
                 }
             }
+
             CheckoutState.REQUEST_PAYMENT_AUTHORIZATION_TOKEN -> {
                 val price = project.checkout.verifiedOnlinePrice
                 if (price != Checkout.INVALID_PRICE) {
@@ -350,6 +369,7 @@ open class CheckoutBar @JvmOverloads constructor(
                     project.checkout.abort()
                 }
             }
+
             CheckoutState.WAIT_FOR_GATEKEEPER,
             CheckoutState.WAIT_FOR_SUPERVISOR,
             CheckoutState.WAIT_FOR_APPROVAL,
@@ -362,6 +382,7 @@ open class CheckoutBar @JvmOverloads constructor(
                 })
                 progressDialog.dismiss()
             }
+
             CheckoutState.INVALID_PRODUCTS -> {
                 val invalidProducts = project.checkout.invalidProducts
                 if (invalidProducts != null && invalidProducts.size > 0) {
@@ -393,6 +414,7 @@ open class CheckoutBar @JvmOverloads constructor(
                 }
                 progressDialog.dismiss()
             }
+
             CheckoutState.CONNECTION_ERROR,
             CheckoutState.NO_SHOP,
             CheckoutState.PAYMENT_PROCESSING_ERROR -> {
@@ -402,13 +424,16 @@ open class CheckoutBar @JvmOverloads constructor(
                     progressDialog.dismiss()
                 }
             }
+
             CheckoutState.PAYMENT_ABORTED -> {
                 progressDialog.dismiss()
             }
+
             CheckoutState.REQUEST_VERIFY_AGE -> {
                 SnabbleUI.executeAction(requireFragmentActivity(), SnabbleUI.Event.SHOW_AGE_VERIFICATION)
                 progressDialog.dismiss()
             }
+
             CheckoutState.REQUEST_TAXATION -> {
                 progressDialog.dismiss()
                 AlertDialog.Builder(context)
@@ -432,6 +457,7 @@ open class CheckoutBar @JvmOverloads constructor(
                     .create()
                     .show()
             }
+
             CheckoutState.NO_PAYMENT_METHOD_AVAILABLE -> {
                 AlertDialog.Builder(context)
                     .setCancelable(false)
@@ -441,6 +467,7 @@ open class CheckoutBar @JvmOverloads constructor(
                     .show()
                 progressDialog.dismiss()
             }
+
             else -> {
                 Logger.d("Unhandled event in CheckoutBar: $state")
             }

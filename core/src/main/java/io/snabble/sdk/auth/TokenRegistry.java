@@ -2,6 +2,9 @@ package io.snabble.sdk.auth;
 
 import android.util.Base64;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
@@ -185,5 +188,30 @@ public class TokenRegistry {
         }
 
         return token;
+    }
+
+    /**
+     * Returns the locally stored token or null if invalid
+     */
+    @Nullable
+    public Token getLocalToken(@NonNull final Project project) {
+        final Token token = tokens.get(project.getId());
+
+        if (isValid(token)) {
+            return token;
+        } else {
+            return null;
+        }
+    }
+
+    @NonNull
+    private Boolean isValid(@Nullable final Token token) {
+        if (token == null) return false;
+
+        final long tokenIntervalInSeconds = (token.expiresAt - token.issuedAt);
+        final long invalidAtInSeconds = token.issuedAt + tokenIntervalInSeconds / 2;
+
+        final long offsetTimeInSeconds = getOffsetTime();
+        return offsetTimeInSeconds >= invalidAtInSeconds;
     }
 }
