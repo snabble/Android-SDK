@@ -26,10 +26,10 @@ internal class UserAgentInterceptor(context: Context) : Interceptor {
     init {
         val appName = (context.packageManager.getApplicationLabel(context.applicationInfo)).toString()
         val appVersion = try {
-            context.packageManager.getPackageInfoCompat(context.packageName).versionName
+            context.packageManager.getPackageInfoCompat(context.packageName)?.versionName
         } catch (ignored: NameNotFoundException) {
-            "Unknown"
-        }
+            null
+        } ?: "Unknown"
         userAgent = "$appName/$appVersion snabble/${Snabble.version} " +
                 "(Android ${Build.VERSION.RELEASE}; ${Build.BRAND}; " +
                 "${Build.MODEL}) okhttp/${OkHttp.VERSION}"

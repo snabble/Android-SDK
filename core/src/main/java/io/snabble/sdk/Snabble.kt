@@ -371,12 +371,12 @@ object Snabble {
 
         val version = try {
             application.packageManager.getPackageInfoCompat(application.packageName)
-                .versionName
-                .lowercase(Locale.ROOT)
-                .replace(" ", "")
+                ?.versionName
+                ?.lowercase(Locale.ROOT)
+                ?.replace(" ", "")
         } catch (ignored: NameNotFoundException) {
-            "1.0"
-        }
+            null
+        } ?: "1.0"
 
         internalStorageDirectory = File(application.filesDir, "snabble/${this.config.appId}/")
         internalStorageDirectory.mkdirs()

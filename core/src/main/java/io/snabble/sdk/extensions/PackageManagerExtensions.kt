@@ -12,7 +12,7 @@ import android.os.Build
 fun PackageManager.getPackageInfoCompat(
     packageName: String,
     flags: Int = 0
-): PackageInfo =
+): PackageInfo? =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(flags.toLong()))
     } else {
