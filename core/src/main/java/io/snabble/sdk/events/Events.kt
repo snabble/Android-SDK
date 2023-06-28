@@ -1,6 +1,5 @@
 package io.snabble.sdk.events
 
-import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
@@ -38,7 +37,7 @@ import kotlin.time.Duration.Companion.milliseconds
 /**
  * Class for dispatching events to the snabble Backend
  */
-class Events @SuppressLint("SimpleDateFormat") internal constructor(
+class Events internal constructor(
     private val project: Project,
     private val shoppingCart: ShoppingCart
 ) {
@@ -50,6 +49,7 @@ class Events @SuppressLint("SimpleDateFormat") internal constructor(
 
     init {
         project.shoppingCart.addListener(object : SimpleShoppingCartListener() {
+
             override fun onChanged(cart: ShoppingCart) {
                 updateShop(Snabble.checkedInShop)
                 shop?.let {
@@ -115,7 +115,7 @@ class Events @SuppressLint("SimpleDateFormat") internal constructor(
         post(error, false)
     }
 
-    private fun getMessage(format: String?, args: Array<out Any?>) =
+    private fun getMessage(format: String?, args: Array<out Any?>): String? =
         format?.let {
             try {
                 String.format(it, args)
@@ -202,6 +202,7 @@ class Events @SuppressLint("SimpleDateFormat") internal constructor(
     private fun <T : Payload?> send(request: Request, payload: T) {
         val okHttpClient = project.okHttpClient
         okHttpClient.newCall(request).enqueue(object : Callback {
+
             override fun onResponse(call: Call, response: Response) {
                 if (response.isSuccessful) {
                     Logger.d("Successfully posted event: " + payload!!.eventType)
