@@ -1,14 +1,15 @@
 package io.snabble.sdk.checkout
 
+import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Product
-import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
 import java.io.File
+import java.lang.Exception
 
-data class PersistentState(
+data class PersistentState (
     @Transient
     var file: File,
     var checkoutProcess: CheckoutProcessResponse? = null,
@@ -21,7 +22,6 @@ data class PersistentState(
     var fulfillmentState: List<Fulfillment>? = null,
     var signedCheckoutInfo: SignedCheckoutInfo? = null
 ) {
-
     fun save() {
         val json = GsonHolder.get().toJson(this)
 
