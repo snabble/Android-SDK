@@ -3,8 +3,6 @@ package io.snabble.sdk.ui.payment
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.ApplicationInfo
-import android.content.res.Configuration
-import android.os.Build
 import android.util.AttributeSet
 import android.webkit.*
 import android.widget.FrameLayout
@@ -17,8 +15,6 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.webkit.WebSettingsCompat
-import androidx.webkit.WebViewFeature
 import eu.rekisoft.android.util.LazyWorker
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
@@ -30,6 +26,7 @@ import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.payment.Payone.PayoneTokenizationData
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.UIUtils
+import io.snabble.sdk.ui.utils.enableDarkModeCompat
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
@@ -165,18 +162,8 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         threeDHint.visibility = GONE
         loadForm()
 
-        val nightModeFlags = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES && WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
-            // Force dark mode when in dark mode
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
-                    WebSettingsCompat.setAlgorithmicDarkeningAllowed(webView.settings, true)
-                }
-            } else {
-                @Suppress("DEPRECATION")
-                WebSettingsCompat.setForceDark(webView.settings, WebSettingsCompat.FORCE_DARK_ON)
-            }
-        }
+        webView.settings.enableDarkModeCompat(context)
+
         if (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {
             WebView.setWebContentsDebuggingEnabled(true)
         }
@@ -193,9 +180,6 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         inflateView()
     }
 
-    private fun <T> T.anyOfTheseOfFirst(fallback: T, vararg options: T) =
-        if (options.contains(this)) this else fallback
-
     private fun loadForm() {
         try {
             val ccType = when (paymentType) {
@@ -205,12 +189,15 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
                 else -> "V"
             }
 
-            val language = Locale.getDefault().language.anyOfTheseOfFirst("en", "de", "fr", "it", "es", "pt", "nl")
+            val language = Locale.getDefault().language
+                .anyOfTheseOfFirst(fallback = "en", "de", "fr", "it", "es", "pt", "nl")
 
-            val htmlForm = IOUtils.toString(
-                resources.openRawResource(R.raw.snabble_payoneform),
-                Charset.forName("UTF-8")
-            ).replace("{{hash}}", tokenizationData.hash)
+            val htmlForm = IOUtils
+                .toString(
+                    resources.openRawResource(R.raw.snabble_payoneform),
+                    Charset.forName("UTF-8")
+                )
+                .replace("{{hash}}", tokenizationData.hash)
                 .replace("{{merchantID}}", tokenizationData.merchantID)
                 .replace("{{portalID}}", tokenizationData.portalID)
                 .replace("{{accountID}}", tokenizationData.accountID)
@@ -236,8 +223,8 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             val numberFormat = NumberFormat.getCurrencyInstance(
                 project.currencyLocale
             )
-            val chargeTotal =
-                BigDecimal(tokenizationData.preAuthInfo.amount ?: 0).divide(BigDecimal(100)) // TODO check currency
+            val chargeTotal = BigDecimal(tokenizationData.preAuthInfo.amount ?: 0)
+                .divide(BigDecimal(100)) // TODO check currency
             threeDHint.visibility = VISIBLE
             threeDHint.text = resources.getString(
                 R.string.Snabble_CC_3dsecureHint_retailerWithPrice,
@@ -426,3 +413,6 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         }
     }
 }
+
+private fun <T> T.anyOfTheseOfFirst(fallback: T, vararg options: T): T =
+    options.firstOrNull { this == it } ?: fallback
