@@ -479,30 +479,26 @@ class PaymentStatusView @JvmOverloads constructor(
             this.paymentOriginCandidate = paymentOriginCandidate
         }
     }
+}
 
-    private class SavedState : BaseSavedState {
+private class SavedState private constructor(parcel: Parcel) : View.BaseSavedState(parcel) {
 
-        var id: String? = null
+    var id: String? = null
 
-        internal constructor(superState: Parcelable?) : super(superState) {}
-        private constructor(`in`: Parcel) : super(`in`) {
-            id = `in`.readString()
-        }
+    init {
+        id = parcel.readString()
+    }
 
-        override fun writeToParcel(out: Parcel, flags: Int) {
-            super.writeToParcel(out, flags)
-            out.writeString(id)
-        }
+    override fun writeToParcel(out: Parcel, flags: Int) {
+        super.writeToParcel(out, flags)
 
-        companion object CREATOR : Parcelable.Creator<SavedState?> {
+        out.writeString(id)
+    }
 
-            override fun createFromParcel(`in`: Parcel): SavedState {
-                return SavedState(`in`)
-            }
+    companion object CREATOR : Parcelable.Creator<SavedState?> {
 
-            override fun newArray(size: Int): Array<SavedState?> {
-                return arrayOfNulls(size)
-            }
-        }
+        override fun createFromParcel(parcel: Parcel): SavedState = SavedState(parcel)
+
+        override fun newArray(size: Int): Array<SavedState?> = arrayOfNulls(size)
     }
 }
