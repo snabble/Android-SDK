@@ -145,14 +145,12 @@ class Events @SuppressLint("SimpleDateFormat") internal constructor(
      * Dispatch a product not found event
      */
     fun productNotFound(scannedCodes: List<ScannedCode>?) {
-
         try {
             if (!scannedCodes.isNullOrEmpty()) {
-                val payload = PayloadProductNotFound(scannedCode = scannedCodes[0].code, matched = HashMap())
-                for (scannedCode in scannedCodes) {
-                    payload.matched?.set(scannedCode.templateName, scannedCode.lookupCode)
-                }
-
+                val payload = PayloadProductNotFound(
+                    scannedCode = scannedCodes[0].code,
+                    matched = scannedCodes.associate { it.templateName to it.lookupCode }
+                )
                 post(payload, false)
             } else {
                 post(PayloadProductNotFound(), false)
