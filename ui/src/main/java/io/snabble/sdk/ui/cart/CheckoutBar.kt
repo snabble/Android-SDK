@@ -18,6 +18,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.view.marginTop
 import androidx.fragment.app.FragmentActivity
@@ -377,13 +378,15 @@ open class CheckoutBar @JvmOverloads constructor(
             CheckoutState.DENIED_BY_PAYMENT_PROVIDER,
             CheckoutState.DENIED_BY_SUPERVISOR,
             CheckoutState.PAYMENT_PROCESSING -> {
-                if (Snabble.checkedInShop?.id != project.checkout.shopId) {
-                    project.checkout.reset()
-                } else {
-                    executeUiAction(SnabbleUI.Event.SHOW_CHECKOUT, Bundle().apply {
-                        putString(CheckoutActivity.ARG_PROJECT_ID, project.id)
-                    })
+                val hasCheckedInShopChanged: Boolean = Snabble.checkedInShop?.id == project.checkout.shopId
+                if (!hasCheckedInShopChanged) {
+                    executeUiAction(
+                        SnabbleUI.Event.SHOW_CHECKOUT,
+                        bundleOf(CheckoutActivity.ARG_PROJECT_ID to project.id)
+                    )
                     progressDialog.dismiss()
+                } else {
+                    project.checkout.reset()
                 }
             }
 
