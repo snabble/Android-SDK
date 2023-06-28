@@ -67,7 +67,8 @@ class MainActivity : AppCompatActivity() {
 
                 Scaffold(
                     topBar = {
-                        TopAppBar(title = { Text(currentDestination?.label?.toString().orEmpty()) },
+                        TopAppBar(
+                            title = { Text(currentDestination?.label?.toString().orEmpty()) },
                             actions = {
                                 IconButton(
                                     content = { Icon(Icons.Filled.Search, "Search") },
@@ -75,7 +76,8 @@ class MainActivity : AppCompatActivity() {
                                         navController.navigate("barcodeSearch")
                                     }
                                 )
-                            })
+                            }
+                        )
                     },
                     bottomBar = {
                         BottomBar(
