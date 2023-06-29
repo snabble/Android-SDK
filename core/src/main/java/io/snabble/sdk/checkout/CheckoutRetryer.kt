@@ -1,18 +1,18 @@
 package io.snabble.sdk.checkout
 
 import android.content.Context
-import io.snabble.sdk.Snabble.instance
-import io.snabble.sdk.Project
-import io.snabble.sdk.ShoppingCart.BackendCart
 import android.content.SharedPreferences
-import io.snabble.sdk.utils.Dispatch
-import io.snabble.sdk.utils.GsonHolder
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import com.google.gson.reflect.TypeToken
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Product
+import io.snabble.sdk.Project
+import io.snabble.sdk.ShoppingCart.BackendCart
+import io.snabble.sdk.Snabble.instance
+import io.snabble.sdk.utils.Dispatch
+import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
@@ -23,6 +23,7 @@ internal class CheckoutRetryer(project: Project, fallbackPaymentMethod: PaymentM
         var backendCart: BackendCart,
         var finalizedAt: Date
     ) {
+
         var failureCount = 0
     }
 
@@ -69,18 +70,17 @@ internal class CheckoutRetryer(project: Project, fallbackPaymentMethod: PaymentM
         }
     }
 
-    private fun ConnectivityManager.isNetworkConnected(): Boolean{
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-           val activeNetworks = activeNetwork ?: return false
+    private fun ConnectivityManager.isNetworkConnected(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val activeNetworks = activeNetwork ?: return false
             val networkCap = getNetworkCapabilities(activeNetworks) ?: return false
-            return when {
-                networkCap.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-                networkCap.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
-                networkCap.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
-                networkCap.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH) -> true
-                else -> false
-            }
-        }else{
+            return listOf(
+                NetworkCapabilities.TRANSPORT_WIFI,
+                NetworkCapabilities.TRANSPORT_CELLULAR,
+                NetworkCapabilities.TRANSPORT_ETHERNET,
+                NetworkCapabilities.TRANSPORT_BLUETOOTH
+            ).any(networkCap::hasTransport)
+        } else {
             @Suppress("DEPRECATION")
             return this.activeNetworkInfo?.isConnected ?: false
         }
