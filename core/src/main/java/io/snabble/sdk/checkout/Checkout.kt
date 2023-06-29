@@ -37,6 +37,11 @@ class Checkout @JvmOverloads constructor(
         }
 
     /**
+     * ShopId associated with this Checkout
+     */
+    var shopId: String? = null
+
+    /**
      * Gets the currently selected payment method, or null if currently none is selected
      */
     var selectedPaymentMethod
@@ -247,8 +252,8 @@ class Checkout @JvmOverloads constructor(
 
         notifyStateChanged(CheckoutState.HANDSHAKING)
 
-        val shop = instance.checkedInShop
-        if (shop == null) {
+        shopId = instance.checkedInShop?.id
+        if (shopId == null) {
             notifyStateChanged(CheckoutState.NO_SHOP)
             return
         }

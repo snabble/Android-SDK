@@ -18,6 +18,7 @@ import io.snabble.sdk.auth.TokenRegistry
 import io.snabble.sdk.checkin.CheckInLocationManager
 import io.snabble.sdk.checkin.CheckInManager
 import io.snabble.sdk.customization.IsMergeable
+import io.snabble.sdk.events.Events
 import io.snabble.sdk.extensions.getPackageInfoCompat
 import io.snabble.sdk.payment.PaymentCredentialsStore
 import io.snabble.sdk.utils.*
