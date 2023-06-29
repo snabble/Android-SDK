@@ -96,17 +96,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         progressBar.visibility = VISIBLE
         progressBar.isIndeterminate = true
         webView = findViewById(R.id.web_view)
-        webView.webViewClient = object : WebViewClient() {
-            @Deprecated("Deprecated in Java")
-            override fun onReceivedError(
-                view: WebView,
-                errorCode: Int,
-                description: String,
-                failingUrl: String
-            ) {
-                Dispatch.mainThread { finishWithError(null) }
-            }
-        }
+
         webView.webChromeClient = object : WebChromeClient() {
             override fun onProgressChanged(view: WebView, newProgress: Int) {
                 Dispatch.mainThread {
