@@ -509,7 +509,7 @@ class Project internal constructor(jsonObject: JsonObject) {
         assets = Assets(this)
 
         googlePayHelper = paymentMethodDescriptors
-            .map { it.paymentMethod }
+            .mapNotNull { it.paymentMethod }
             .firstOrNull { it == PaymentMethod.GOOGLE_PAY }
             ?.let {
                 GooglePayHelper(this, Snabble.application)
@@ -525,7 +525,7 @@ class Project internal constructor(jsonObject: JsonObject) {
     }
 
     var googlePayHelper = paymentMethodDescriptors
-        .map { it.paymentMethod }
+        .mapNotNull { it.paymentMethod }
         .firstOrNull { it == PaymentMethod.GOOGLE_PAY }
         ?.let {
             GooglePayHelper(this, Snabble.application)
@@ -576,7 +576,7 @@ class Project internal constructor(jsonObject: JsonObject) {
      * List of payment methods that should be available to the user
      */
     val availablePaymentMethods
-        get() = paymentMethodDescriptors.map { it.paymentMethod }
+        get() = paymentMethodDescriptors.mapNotNull { it.paymentMethod }
 
     /**
      * The code template that should be used, when no code template is specified by a scannable code
