@@ -6,6 +6,7 @@ import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.utils.parcelableExtra
+import io.snabble.sdk.ui.utils.serializableExtra
 
 open class PayoneInputFragment : BaseFragment(
     layoutResId = R.layout.snabble_fragment_cardinput_payone,
@@ -25,7 +26,7 @@ open class PayoneInputFragment : BaseFragment(
         super.onCreate(savedInstanceState)
 
         projectId = requireNotNull(arguments?.getString(ARG_PROJECT_ID, null))
-        paymentMethod = requireNotNull(arguments?.parcelableExtra(ARG_PAYMENT_TYPE) as? PaymentMethod)
+        paymentMethod = requireNotNull(arguments?.serializableExtra(ARG_PAYMENT_TYPE) as? PaymentMethod)
         tokenizationData = requireNotNull(arguments?.parcelableExtra(ARG_TOKEN_DATA))
     }
 
