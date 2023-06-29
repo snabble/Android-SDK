@@ -71,18 +71,17 @@ internal class CheckoutRetryer(project: Project, fallbackPaymentMethod: PaymentM
     }
 
     private fun ConnectivityManager.isNetworkConnected(): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val activeNetworks = activeNetwork ?: return false
-            val networkCap = getNetworkCapabilities(activeNetworks) ?: return false
-            return listOf(
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val networkCap = getNetworkCapabilities(activeNetwork) ?: return false
+            listOf(
                 NetworkCapabilities.TRANSPORT_WIFI,
                 NetworkCapabilities.TRANSPORT_CELLULAR,
                 NetworkCapabilities.TRANSPORT_ETHERNET,
                 NetworkCapabilities.TRANSPORT_BLUETOOTH
             ).any(networkCap::hasTransport)
         } else {
-            @Suppress("DEPRECATION")
-            return this.activeNetworkInfo?.isConnected ?: false
+            (@Suppress("DEPRECATION")
+            activeNetworkInfo?.isConnected ?: false)
         }
     }
 
