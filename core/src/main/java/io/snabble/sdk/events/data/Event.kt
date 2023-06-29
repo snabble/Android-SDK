@@ -11,3 +11,12 @@ internal data class Event(
     val timestamp: String? = null,
     val payload: JsonElement? = null
 )
+
+/**
+ * Checks if the Event is an analytics event for rating with a shopId.
+ * If the shopId is missing false is returned, true otherwise.
+ */
+internal fun Event.isRatingAndValid(): Boolean =
+    type == EventType.ANALYTICS &&
+            payload?.asJsonObject?.get("key")?.asString == "rating" &&
+            shopId != null

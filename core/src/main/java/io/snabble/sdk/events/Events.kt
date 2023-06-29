@@ -12,6 +12,7 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.events.data.Event
 import io.snabble.sdk.events.data.EventType
+import io.snabble.sdk.events.data.isRatingAndValid
 import io.snabble.sdk.events.data.payload.Payload
 import io.snabble.sdk.events.data.payload.PayloadAnalytics
 import io.snabble.sdk.events.data.payload.PayloadError
@@ -168,6 +169,8 @@ class Events internal constructor(
         }
 
         val event = createEvent(payload)
+
+        if (!event.isRatingAndValid()) return
 
         val requestBody = GsonHolder.get().toJson(event).toRequestBody("application/json".toMediaType())
         val request: Request = Request.Builder()
