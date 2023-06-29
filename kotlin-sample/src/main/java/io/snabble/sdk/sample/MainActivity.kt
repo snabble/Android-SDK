@@ -228,7 +228,7 @@ class MainActivity : AppCompatActivity() {
         navBarView: NavigationBarView,
     ) {
         setSupportActionBar(toolbar)
-        toolbar.setNavigationOnClickListener { onBackPressed() }
+        toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
 
         navBarView.setOnItemReselectedListener {
             // No action needed on re-selecting

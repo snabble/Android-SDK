@@ -2,13 +2,13 @@ package io.snabble.sdk
 
 import android.app.Application
 import android.content.Context
-import android.content.pm.PackageManager
+import android.content.pm.ApplicationInfo
 import android.content.res.Resources
 import androidx.startup.Initializer
+import io.snabble.sdk.extensions.getApplicationInfoCompat
 import io.snabble.sdk.utils.Logger
 import okhttp3.Interceptor
-import java.lang.IllegalStateException
-import java.util.*
+import java.util.Properties
 
 /**
  * Initializer for the snabble SDK using androidx.startup
@@ -63,7 +63,8 @@ class SnabbleInitializer : Initializer<Snabble> {
             }
         }
 
-        val applicationInfo = app.packageManager.getApplicationInfo(app.packageName, PackageManager.GET_META_DATA)
+        val applicationInfo: ApplicationInfo = app.packageManager.getApplicationInfoCompat(app.packageName)
+
         with(applicationInfo.metaData) {
             if (getBoolean("snabble_auto_initialization_disabled")) {
                 return Snabble

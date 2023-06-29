@@ -1,16 +1,18 @@
 package io.snabble.sdk.checkout
 
 import android.content.Context
-import io.snabble.sdk.Snabble.instance
-import io.snabble.sdk.Project
-import io.snabble.sdk.ShoppingCart.BackendCart
 import android.content.SharedPreferences
-import io.snabble.sdk.utils.Dispatch
-import io.snabble.sdk.utils.GsonHolder
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import com.google.gson.reflect.TypeToken
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Product
+import io.snabble.sdk.Project
+import io.snabble.sdk.ShoppingCart.BackendCart
+import io.snabble.sdk.Snabble.instance
+import io.snabble.sdk.utils.Dispatch
+import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
@@ -21,6 +23,7 @@ internal class CheckoutRetryer(project: Project, fallbackPaymentMethod: PaymentM
         var backendCart: BackendCart,
         var finalizedAt: Date
     ) {
+
         var failureCount = 0
     }
 
@@ -67,13 +70,25 @@ internal class CheckoutRetryer(project: Project, fallbackPaymentMethod: PaymentM
         }
     }
 
+    private fun ConnectivityManager.isNetworkConnected(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val networkCap = getNetworkCapabilities(activeNetwork) ?: return false
+            listOf(
+                NetworkCapabilities.TRANSPORT_WIFI,
+                NetworkCapabilities.TRANSPORT_CELLULAR,
+                NetworkCapabilities.TRANSPORT_ETHERNET,
+                NetworkCapabilities.TRANSPORT_BLUETOOTH
+            ).any(networkCap::hasTransport)
+        } else {
+            (@Suppress("DEPRECATION")
+            activeNetworkInfo?.isConnected ?: false)
+        }
+    }
+
     fun processPendingCheckouts() {
         val context: Context = instance.application
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo = cm.activeNetworkInfo
-        if (networkInfo?.isConnected == false) {
-            return
-        }
+        if (cm.isNetworkConnected()) return
 
         Dispatch.mainThread {
             if ((countDownLatch?.count ?: 0) > 0) {

@@ -23,8 +23,8 @@ inline fun <reified T> LiveData<T>.getOrAwaitValue(): T? {
     val data = arrayOfNulls<Any>(1)
     val latch = CountDownLatch(1)
     val observer: Observer<T> = object : Observer<T> {
-        override fun onChanged(@Nullable o: T) {
-            data[0] = o
+        override fun onChanged(@Nullable value: T) {
+            data[0] = value
             latch.countDown()
             removeObserver(this)
         }

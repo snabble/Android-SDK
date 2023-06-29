@@ -6,7 +6,6 @@ import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Parcelable
-import android.os.Vibrator
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.StrikethroughSpan
@@ -19,13 +18,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.squareup.picasso.Picasso
-import io.snabble.sdk.*
+import io.snabble.sdk.Product
+import io.snabble.sdk.Project
+import io.snabble.sdk.Snabble
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.coupons.CouponType
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.isNotNullOrBlank
+import io.snabble.sdk.ui.utils.parcelableExtra
+import io.snabble.sdk.ui.utils.vibrateCompat
+import io.snabble.sdk.ui.utils.vibrator
 import io.snabble.sdk.utils.GsonHolder
 import kotlinx.parcelize.Parcelize
 import kotlin.math.max
@@ -34,10 +38,12 @@ import kotlin.math.max
  * The product confirmation dialog with the option to enter discounts and change the quantity.
  */
 interface ProductConfirmationDialog {
+
     /**
      * Simple abstract factory to inject a custom ProductConfirmationDialog implementation
      */
     fun interface Factory {
+
         /** Create a new ProductConfirmationDialog instance */
         fun create(): ProductConfirmationDialog
     }
@@ -53,44 +59,65 @@ interface ProductConfirmationDialog {
         val product: Product,
         private val scannedCode: ScannedCode,
     ) {
+
         private val priceFormatter = project.priceFormatter
+
         /** The related shopping cart */
         val shoppingCart = project.shoppingCart
+
         /** The quantity of the product, can be null e.g. in case of user weighted products */
         val quantity = MutableLiveData<Int?>(null)
+
         /** The content description of the quantity, can be null */
         val quantityContentDescription = MutableLiveData<String?>()
+
         /** True when the quantity can be changed */
-        val quantityCanBeChanged: LiveData<Boolean> = MutableLiveData(!(scannedCode.hasEmbeddedData() && scannedCode.embeddedData > 0))
+        val quantityCanBeChanged: LiveData<Boolean> =
+            MutableLiveData(!(scannedCode.hasEmbeddedData() && scannedCode.embeddedData > 0))
+
         /** The raw cart item */
         val cartItem = shoppingCart.newItem(product, scannedCode)
+
         /** The add to cart button text (varies if the user updates the quantity) */
         val addToCartButtonText: LiveData<String> = MutableLiveData()
+
         /** The price to display */
         val price: LiveData<String?> = MutableLiveData()
+
         /** The content description of the price */
         val priceContentDescription: LiveData<String> = MutableLiveData()
+
         /** The original price of the product, can be null */
         val originalPrice: LiveData<CharSequence?> = MutableLiveData()
+
         /** The deposit price of the product, can be null */
         val depositPrice: LiveData<String?> = MutableLiveData()
+
         /** The button text do enter manual discounts, can be null when no coupons are available */
         val enterReducedPriceButtonText: LiveData<String?> = MutableLiveData()
+
         /** A applied coupon like a manual discount, can be null */
         val appliedCoupon = MutableLiveData<Coupon?>(null)
+
         /** True when the quantity can be increased. Can be false when there is no quantity or the limit is reached */
         val quantityCanBeIncreased: LiveData<Boolean> = MutableLiveData(true)
+
         /** True when the quantity can be decreased. Can be false when there is no quantity or the quantity is 1 */
         val quantityCanBeDecreased: LiveData<Boolean> = MutableLiveData(false)
+
         /** True when the quantity can be changed */
         val quantityVisible: LiveData<Boolean> = MutableLiveData(true)
+
         /** True when the plus and minus buttons should be shown */
         val quantityButtonsVisible: LiveData<Boolean> = MutableLiveData(true)
+
         /** True when the item was added to the cart */
         var wasAddedToCart: Boolean = false
             private set
+
         // Might be not really useful, written with compatibility in mind
         private var isDismissed = false
+
         // syncs the quantity property with the cart item and updates the addToCartButtonText
         private val quantityObserver = Observer<Int?> {
             it?.let {
@@ -137,13 +164,13 @@ interface ProductConfirmationDialog {
          * Restore the ViewModel from a context and the savedInstanceState.
          * Can throw IllegalArgumentException when the project cannot be found or onSaveInstanceState was not called.
          */
-        constructor(context: Context, savedInstanceState: Bundle): this(
+        constructor(context: Context, savedInstanceState: Bundle) : this(
             context,
-            requireNotNull(savedInstanceState.getParcelable<Restorer>("model")) { "Cannot restore state" }
+            requireNotNull(savedInstanceState.parcelableExtra<Restorer>("model")) { "Cannot restore state" }
         )
 
         // Helper constructor to take the data from a restorer.
-        private constructor(context: Context, restorer: Restorer):
+        private constructor(context: Context, restorer: Restorer) :
                 this(context, restorer.project, restorer.product, restorer.scannedCode) {
             quantity.postValue(restorer.quantity)
             quantityContentDescription.postValue(restorer.quantityContentDescription)
@@ -185,9 +212,10 @@ interface ProductConfirmationDialog {
             val wasAddedToCart: Boolean,
             val isDismissed: Boolean
         ) : Parcelable {
+
             val project: Project
                 get() = Snabble.getProjectById(projectId) ?: throw IllegalStateException("Project not found")
-       }
+        }
 
         /**
          * Called to ask the view model to save its current dynamic state, so it
@@ -334,9 +362,7 @@ interface ProductConfirmationDialog {
                 ActivityCompat.checkSelfPermission(context, Manifest.permission.VIBRATE)
                 == PackageManager.PERMISSION_GRANTED
             ) {
-                val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-                // noinspection MissingPermission, check is above
-                vibrator.vibrate(200L)
+                context.vibrator.vibrateCompat(timeInMillis = 200)
             }
         }
     }
@@ -374,6 +400,7 @@ interface ProductConfirmationDialog {
      * dialog is dismissed.
      */
     fun interface OnDismissListener {
+
         /**
          * This method will be invoked when the dialog is dismissed.
          */
@@ -385,6 +412,7 @@ interface ProductConfirmationDialog {
      * dialog is shown.
      */
     fun interface OnShowListener {
+
         /**
          * This method will be invoked when the dialog is shown.
          */
@@ -398,6 +426,7 @@ interface ProductConfirmationDialog {
      * method has no obligation to trigger this listener.
      */
     fun interface OnKeyListener {
+
         /**
          * Called when a hardware key is dispatched to a view. This allows listeners to
          * get a chance to respond before the target view.

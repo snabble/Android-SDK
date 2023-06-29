@@ -4,7 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Context
-import android.content.pm.PackageManager
+import android.content.pm.PackageManager.NameNotFoundException
 import android.net.ConnectivityManager
 import android.net.ConnectivityManager.NetworkCallback
 import android.net.Network
@@ -18,6 +18,7 @@ import io.snabble.sdk.auth.TokenRegistry
 import io.snabble.sdk.checkin.CheckInLocationManager
 import io.snabble.sdk.checkin.CheckInManager
 import io.snabble.sdk.customization.IsMergeable
+import io.snabble.sdk.extensions.getPackageInfoCompat
 import io.snabble.sdk.payment.PaymentCredentialsStore
 import io.snabble.sdk.utils.*
 import okhttp3.OkHttpClient
@@ -369,11 +370,13 @@ object Snabble {
         }
 
         val version = try {
-            val pInfo = application.packageManager.getPackageInfo(application.packageName, 0)
-            pInfo?.versionName?.lowercase(Locale.ROOT)?.replace(" ", "") ?: "1.0"
-        } catch (e: PackageManager.NameNotFoundException) {
-            "1.0"
-        }
+            application.packageManager.getPackageInfoCompat(application.packageName)
+                ?.versionName
+                ?.lowercase(Locale.ROOT)
+                ?.replace(" ", "")
+        } catch (ignored: NameNotFoundException) {
+            null
+        } ?: "1.0"
 
         internalStorageDirectory = File(application.filesDir, "snabble/${this.config.appId}/")
         internalStorageDirectory.mkdirs()
@@ -468,8 +471,8 @@ object Snabble {
         val snabbleError = arrayOfNulls<Error>(1)
         setup(app, config)
         val observer = object : Observer<InitializationState> {
-            override fun onChanged(t: InitializationState) {
-                if (t == InitializationState.INITIALIZED || t == InitializationState.ERROR) {
+            override fun onChanged(value: InitializationState) {
+                if (value == InitializationState.INITIALIZED || value == InitializationState.ERROR) {
                     countDownLatch.countDown()
                     initializationState.removeObserver(this)
                 }

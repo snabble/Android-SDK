@@ -29,6 +29,7 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.Snabble.instance
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.checkout.CheckoutState
+import io.snabble.sdk.extensions.getApplicationInfoCompat
 import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
@@ -123,11 +124,10 @@ open class CheckoutBar @JvmOverloads constructor(
 
         googlePayButtonLayout.setOneShotClickListener {
             val packageName = "com.google.android.apps.walletnfcrel"
-            val pm = context.packageManager
             try {
-                pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
+                context.packageManager.getApplicationInfoCompat(packageName, PackageManager.GET_ACTIVITIES)
                 handleButtonClick()
-            } catch (e: PackageManager.NameNotFoundException) {
+            } catch (ignored: PackageManager.NameNotFoundException) {
                 try {
                     context.startActivity(
                         Intent(
@@ -135,7 +135,7 @@ open class CheckoutBar @JvmOverloads constructor(
                             Uri.parse("market://details?id=$packageName")
                         )
                     )
-                } catch (e: ActivityNotFoundException) {
+                } catch (ignored: ActivityNotFoundException) {
                     context.startActivity(
                         Intent(
                             Intent.ACTION_VIEW,

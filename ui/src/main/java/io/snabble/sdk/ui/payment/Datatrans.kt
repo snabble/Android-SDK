@@ -2,9 +2,9 @@ package io.snabble.sdk.ui.payment
 
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.LifecycleOwner
 import ch.datatrans.payment.api.Transaction
 import ch.datatrans.payment.api.TransactionListener
 import ch.datatrans.payment.api.TransactionRegistry
@@ -186,9 +186,8 @@ fun FragmentActivity.runOnUiThreadWhenResumed(task: () -> Unit) {
                 task()
             }
         } else {
-            lifecycle.addObserver(object : LifecycleObserver {
-                @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-                fun onResume() {
+            lifecycle.addObserver(object : DefaultLifecycleObserver {
+                override fun onResume(owner: LifecycleOwner) {
                     Dispatch.mainThread {
                         task()
                     }

@@ -77,7 +77,7 @@ fun setUpUiEvents(activity: AppCompatActivity, navController: NavController, bot
     SnabbleUiToolkit.setUiAction(
         activity,
         SnabbleUiToolkit.Event.SHOW_SHOP_LIST
-    ) { _, args ->
+    ) { _, _ ->
         bottomNavigationView.selectedItemId = R.id.navigation_shop
     }
 

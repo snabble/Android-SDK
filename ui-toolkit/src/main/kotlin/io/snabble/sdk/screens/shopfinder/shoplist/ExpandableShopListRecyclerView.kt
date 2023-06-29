@@ -19,6 +19,7 @@ import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.screens.shopfinder.utils.ConfigurableDivider
 import io.snabble.sdk.ui.utils.UIUtils.getHostActivity
+import io.snabble.sdk.ui.utils.readParcelableCompat
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks
 
 /**
@@ -178,7 +179,9 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
         }
 
         @SuppressLint("RestrictedApi")
-        private constructor(source: Parcel) : this(requireNotNull(source.readParcelable(RecyclerView.SavedState::class.java.classLoader))) {
+        private constructor(source: Parcel) : this(
+            requireNotNull(source.readParcelableCompat<RecyclerView.SavedState>())
+        ) {
             expanded = source.createStringArray() ?: emptyArray()
         }
 
