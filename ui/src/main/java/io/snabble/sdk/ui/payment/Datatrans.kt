@@ -95,9 +95,11 @@ object Datatrans {
                 PaymentMethod.TWINT -> {
                     R.string.Snabble_Payment_Twint_error
                 }
+
                 PaymentMethod.POST_FINANCE_CARD -> {
                     R.string.Snabble_Payment_PostFinanceCard_error
                 }
+
                 else -> {
                     R.string.Snabble_Payment_CreditCard_error
                 }
@@ -128,6 +130,7 @@ object Datatrans {
                                 year = it.formattedYear
                             }
                         }
+
                         is SavedCard -> {
                             token.cardExpiryDate?.let {
                                 month = it.formattedMonth

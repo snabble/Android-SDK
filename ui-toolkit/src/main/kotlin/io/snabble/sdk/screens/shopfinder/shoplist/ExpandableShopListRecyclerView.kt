@@ -6,7 +6,6 @@ import android.app.Application
 import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Context
 import android.location.Location
-import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
@@ -20,6 +19,7 @@ import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.screens.shopfinder.utils.ConfigurableDivider
 import io.snabble.sdk.ui.utils.UIUtils.getHostActivity
+import io.snabble.sdk.ui.utils.readParcelableCompat
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks
 
 /**
@@ -180,17 +180,7 @@ class ExpandableShopListRecyclerView @JvmOverloads constructor(
 
         @SuppressLint("RestrictedApi")
         private constructor(source: Parcel) : this(
-            requireNotNull(
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    source.readParcelable(
-                        ClassLoader.getSystemClassLoader(),
-                        RecyclerView.SavedState::class.java
-                    )
-                } else {
-                    @Suppress("DEPRECATION")
-                    source.readParcelable(RecyclerView.SavedState::class.java.classLoader)
-                }
-            )
+            requireNotNull(source.readParcelableCompat<RecyclerView.SavedState>())
         ) {
             expanded = source.createStringArray() ?: emptyArray()
         }

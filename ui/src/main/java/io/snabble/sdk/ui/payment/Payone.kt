@@ -87,26 +87,27 @@ object Payone {
             .url(Snabble.absoluteUrl(url.href))
             .build()
 
-        project.okHttpClient.newCall(request).enqueue(object : SimpleJsonCallback<PayoneTokenizationData>(PayoneTokenizationData::class.java), Callback {
-            override fun success(response: PayoneTokenizationData) {
-                val args = Bundle()
-                args.putString(PayoneInputView.ARG_PROJECT_ID, project.id)
-                args.putSerializable(PayoneInputView.ARG_PAYMENT_TYPE, paymentMethod)
-                args.putParcelable(PayoneInputView.ARG_TOKEN_DATA, response)
-                Dispatch.mainThread {
-                    SnabbleUI.executeAction(activity, SnabbleUI.Event.SHOW_PAYONE_INPUT, args)
-                }
-            }
-
-            override fun error(t: Throwable?) {
-                Dispatch.mainThread {
-                    showError(activity, paymentMethod)
+        project.okHttpClient.newCall(request)
+            .enqueue(object : SimpleJsonCallback<PayoneTokenizationData>(PayoneTokenizationData::class.java), Callback {
+                override fun success(response: PayoneTokenizationData) {
+                    val args = Bundle()
+                    args.putString(PayoneInputView.ARG_PROJECT_ID, project.id)
+                    args.putSerializable(PayoneInputView.ARG_PAYMENT_TYPE, paymentMethod)
+                    args.putParcelable(PayoneInputView.ARG_TOKEN_DATA, response)
+                    Dispatch.mainThread {
+                        SnabbleUI.executeAction(activity, SnabbleUI.Event.SHOW_PAYONE_INPUT, args)
+                    }
                 }
 
-                project.events.logError("Payone Tokenization Error: " + t?.message)
-                Logger.e("Payone Tokenization Error: ${t?.message}")
-            }
-        })
+                override fun error(t: Throwable?) {
+                    Dispatch.mainThread {
+                        showError(activity, paymentMethod)
+                    }
+
+                    project.events.logError("Payone Tokenization Error: " + t?.message)
+                    Logger.e("Payone Tokenization Error: ${t?.message}")
+                }
+            })
     }
 
     private fun showError(activity: FragmentActivity, paymentMethod: PaymentMethod) {
@@ -115,9 +116,11 @@ object Payone {
                 PaymentMethod.TWINT -> {
                     R.string.Snabble_Payment_Twint_error
                 }
+
                 PaymentMethod.POST_FINANCE_CARD -> {
                     R.string.Snabble_Payment_PostFinanceCard_error
                 }
+
                 else -> {
                     R.string.Snabble_Payment_CreditCard_error
                 }

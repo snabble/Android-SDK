@@ -4,7 +4,8 @@ import android.Manifest
 import android.content.Context
 import android.content.DialogInterface
 import android.content.pm.PackageManager
-import android.os.*
+import android.os.Bundle
+import android.os.Parcelable
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.StrikethroughSpan
@@ -27,6 +28,8 @@ import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.isNotNullOrBlank
 import io.snabble.sdk.ui.utils.parcelableExtra
+import io.snabble.sdk.ui.utils.vibrateCompat
+import io.snabble.sdk.ui.utils.vibrator
 import io.snabble.sdk.utils.GsonHolder
 import kotlinx.parcelize.Parcelize
 import kotlin.math.max
@@ -229,29 +232,27 @@ interface ProductConfirmationDialog {
         @MainThread
         fun onSaveInstanceState(outState: Bundle) {
             // Note: Those fields with a bang operator are initialized with a value and never can be null
-            outState.putParcelable(
-                "model", Restorer(
-                    projectId = project.id,
-                    product = product,
-                    scannedCode = scannedCode,
-                    quantity = quantity.value,
-                    quantityContentDescription = quantityContentDescription.value,
-                    quantityCanBeChanged = quantityCanBeChanged.value!!,
-                    addToCartButtonText = addToCartButtonText.value,
-                    price = price.value,
-                    priceContentDescription = priceContentDescription.value,
-                    originalPrice = originalPrice.value,
-                    depositPrice = depositPrice.value,
-                    enterReducedPriceButtonText = enterReducedPriceButtonText.value,
-                    appliedCoupon = appliedCoupon.value,
-                    quantityCanBeIncreased = quantityCanBeIncreased.value!!,
-                    quantityCanBeDecreased = quantityCanBeDecreased.value!!,
-                    quantityVisible = quantityVisible.value!!,
-                    quantityButtonsVisible = quantityButtonsVisible.value!!,
-                    wasAddedToCart = wasAddedToCart,
-                    isDismissed = isDismissed
-                )
-            )
+            outState.putParcelable("model", Restorer(
+                projectId = project.id,
+                product = product,
+                scannedCode = scannedCode,
+                quantity = quantity.value,
+                quantityContentDescription = quantityContentDescription.value,
+                quantityCanBeChanged = quantityCanBeChanged.value!!,
+                addToCartButtonText = addToCartButtonText.value,
+                price = price.value,
+                priceContentDescription = priceContentDescription.value,
+                originalPrice = originalPrice.value,
+                depositPrice = depositPrice.value,
+                enterReducedPriceButtonText = enterReducedPriceButtonText.value,
+                appliedCoupon = appliedCoupon.value,
+                quantityCanBeIncreased = quantityCanBeIncreased.value!!,
+                quantityCanBeDecreased = quantityCanBeDecreased.value!!,
+                quantityVisible = quantityVisible.value!!,
+                quantityButtonsVisible = quantityButtonsVisible.value!!,
+                wasAddedToCart = wasAddedToCart,
+                isDismissed = isDismissed
+            ))
         }
 
         private fun LiveData<String>.postString(@StringRes string: Int, vararg args: Any?) {
@@ -361,20 +362,7 @@ interface ProductConfirmationDialog {
                 ActivityCompat.checkSelfPermission(context, Manifest.permission.VIBRATE)
                 == PackageManager.PERMISSION_GRANTED
             ) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    val vib = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-                    vib.defaultVibrator.vibrate(VibrationEffect.createOneShot(200L, VibrationEffect.DEFAULT_AMPLITUDE))
-                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    @Suppress("DEPRECATION") val vibrator =
-                        context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-                    // noinspection MissingPermission, check is above
-                    vibrator.vibrate(VibrationEffect.createOneShot(200L, VibrationEffect.DEFAULT_AMPLITUDE))
-                } else {
-                    @Suppress("DEPRECATION") val vibrator =
-                        context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-                    @Suppress("DEPRECATION")
-                    vibrator.vibrate(200L)
-                }
+                context.vibrator.vibrateCompat(timeInMillis = 200)
             }
         }
     }

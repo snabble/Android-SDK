@@ -4,13 +4,12 @@ import android.app.Activity
 import android.app.Application
 import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Context
-import android.content.pm.PackageManager
+import android.content.pm.PackageManager.NameNotFoundException
 import android.net.ConnectivityManager
 import android.net.ConnectivityManager.NetworkCallback
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import android.os.Build
 import android.util.Base64
 import androidx.lifecycle.*
 import androidx.lifecycle.Observer
@@ -19,6 +18,7 @@ import io.snabble.sdk.auth.TokenRegistry
 import io.snabble.sdk.checkin.CheckInLocationManager
 import io.snabble.sdk.checkin.CheckInManager
 import io.snabble.sdk.customization.IsMergeable
+import io.snabble.sdk.extensions.getPackageInfoCompat
 import io.snabble.sdk.payment.PaymentCredentialsStore
 import io.snabble.sdk.utils.*
 import okhttp3.OkHttpClient
@@ -370,19 +370,13 @@ object Snabble {
         }
 
         val version = try {
-            val pInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                application.packageManager.getPackageInfo(
-                    application.packageName,
-                    PackageManager.PackageInfoFlags.of(0)
-                )
-            } else {
-                @Suppress("DEPRECATION")
-                application.packageManager.getPackageInfo(application.packageName, 0)
-            }
-            pInfo?.versionName?.lowercase(Locale.ROOT)?.replace(" ", "") ?: "1.0"
-        } catch (e: PackageManager.NameNotFoundException) {
-            "1.0"
-        }
+            application.packageManager.getPackageInfoCompat(application.packageName)
+                ?.versionName
+                ?.lowercase(Locale.ROOT)
+                ?.replace(" ", "")
+        } catch (ignored: NameNotFoundException) {
+            null
+        } ?: "1.0"
 
         internalStorageDirectory = File(application.filesDir, "snabble/${this.config.appId}/")
         internalStorageDirectory.mkdirs()

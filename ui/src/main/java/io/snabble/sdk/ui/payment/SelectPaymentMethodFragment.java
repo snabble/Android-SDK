@@ -89,6 +89,23 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
             ));
         }
 
+        if (availablePaymentMethods.contains(PaymentMethod.EXTERNAL_BILLING)) {
+            entries.add(new SelectPaymentMethodFragment.Entry(
+                    R.drawable.ic_snabble_external_billing,
+                    requireContext().getString(R.string.Snabble_Payment_ExternalBilling_title),
+                    getUsableAtText(PaymentMethod.EXTERNAL_BILLING),
+                    new OneShotClickListener() {
+
+                        @Override
+                        public void click() {
+                            PaymentInputViewHelper
+                                    .openPaymentInputView(requireContext(), PaymentMethod.EXTERNAL_BILLING, projectId);
+                            dismissAllowingStateLoss();
+                        }
+                    }
+            ));
+        }
+
         if (availablePaymentMethods.contains(PaymentMethod.VISA)) {
             entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_payment_select_visa,
                     "VISA",

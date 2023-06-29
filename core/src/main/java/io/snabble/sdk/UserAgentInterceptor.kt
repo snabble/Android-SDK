@@ -1,8 +1,9 @@
 package io.snabble.sdk
 
 import android.content.Context
-import android.content.pm.PackageManager
+import android.content.pm.PackageManager.NameNotFoundException
 import android.os.Build
+import io.snabble.sdk.extensions.getPackageInfoCompat
 import okhttp3.Interceptor
 import okhttp3.OkHttp
 import okhttp3.Request
@@ -25,18 +26,10 @@ internal class UserAgentInterceptor(context: Context) : Interceptor {
     init {
         val appName = (context.packageManager.getApplicationLabel(context.applicationInfo)).toString()
         val appVersion = try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                context.packageManager.getPackageInfo(
-                    context.packageName,
-                    PackageManager.PackageInfoFlags.of(0)
-                ).versionName
-            } else {
-                @Suppress("DEPRECATION")
-                context.packageManager.getPackageInfo(context.packageName, 0).versionName
-            }
-        } catch (e: Exception) {
-            "Unknown"
-        }
+            context.packageManager.getPackageInfoCompat(context.packageName)?.versionName
+        } catch (ignored: NameNotFoundException) {
+            null
+        } ?: "Unknown"
         userAgent = "$appName/$appVersion snabble/${Snabble.version} " +
                 "(Android ${Build.VERSION.RELEASE}; ${Build.BRAND}; " +
                 "${Build.MODEL}) okhttp/${OkHttp.VERSION}"

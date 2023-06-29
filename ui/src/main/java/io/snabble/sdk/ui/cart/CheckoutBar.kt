@@ -7,12 +7,16 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.View
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.core.view.marginTop
@@ -25,6 +29,7 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.Snabble.instance
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.checkout.CheckoutState
+import io.snabble.sdk.extensions.getApplicationInfoCompat
 import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
@@ -32,8 +37,17 @@ import io.snabble.sdk.ui.checkout.CheckoutActivity
 import io.snabble.sdk.ui.payment.PaymentInputViewHelper
 import io.snabble.sdk.ui.payment.SEPALegalInfoHelper
 import io.snabble.sdk.ui.payment.SelectPaymentMethodFragment
+import io.snabble.sdk.ui.payment.externalbilling.ui.widgets.SubjectAlertDialog
 import io.snabble.sdk.ui.telemetry.Telemetry
-import io.snabble.sdk.ui.utils.*
+import io.snabble.sdk.ui.utils.DelayedProgressDialog
+import io.snabble.sdk.ui.utils.I18nUtils
+import io.snabble.sdk.ui.utils.OneShotClickListener
+import io.snabble.sdk.ui.utils.SnackbarUtils
+import io.snabble.sdk.ui.utils.UIUtils
+import io.snabble.sdk.ui.utils.executeUiAction
+import io.snabble.sdk.ui.utils.observeView
+import io.snabble.sdk.ui.utils.requireFragmentActivity
+import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.utils.Logger
 
 open class CheckoutBar @JvmOverloads constructor(
@@ -110,19 +124,10 @@ open class CheckoutBar @JvmOverloads constructor(
 
         googlePayButtonLayout.setOneShotClickListener {
             val packageName = "com.google.android.apps.walletnfcrel"
-            val pm = context.packageManager
             try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    pm.getPackageInfo(
-                        packageName,
-                        PackageManager.PackageInfoFlags.of(PackageManager.GET_ACTIVITIES.toLong())
-                    )
-                } else {
-                    @Suppress("DEPRECATION")
-                    pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
-                }
+                context.packageManager.getApplicationInfoCompat(packageName, PackageManager.GET_ACTIVITIES)
                 handleButtonClick()
-            } catch (e: PackageManager.NameNotFoundException) {
+            } catch (ignored: PackageManager.NameNotFoundException) {
                 try {
                     context.startActivity(
                         Intent(
@@ -130,7 +135,7 @@ open class CheckoutBar @JvmOverloads constructor(
                             Uri.parse("market://details?id=$packageName")
                         )
                     )
-                } catch (e: ActivityNotFoundException) {
+                } catch (ignored: ActivityNotFoundException) {
                     context.startActivity(
                         Intent(
                             Intent.ACTION_VIEW,
@@ -278,7 +283,7 @@ open class CheckoutBar @JvmOverloads constructor(
             } else {
                 val hasPaymentMethodThatRequiresCredentials =
                     project.paymentMethodDescriptors.any { descriptor ->
-                        descriptor.paymentMethod.isRequiringCredentials
+                        descriptor.paymentMethod?.isRequiringCredentials == true
                     }
                 if (hasPaymentMethodThatRequiresCredentials) {
                     val activity = UIUtils.getHostActivity(context)
@@ -304,6 +309,7 @@ open class CheckoutBar @JvmOverloads constructor(
             CheckoutState.HANDSHAKING -> {
                 progressDialog.showAfterDelay(300)
             }
+
             CheckoutState.REQUEST_PAYMENT_METHOD -> {
                 val entry = paymentSelectionHelper.selectedEntry.value
                 if (entry == null) {
@@ -315,6 +321,22 @@ open class CheckoutBar @JvmOverloads constructor(
                     progressDialog.dismiss()
                     if (entry.paymentMethod == PaymentMethod.TEGUT_EMPLOYEE_CARD) {
                         project.checkout.pay(entry.paymentMethod, entry.paymentCredentials)
+                    } else if (entry.paymentMethod == PaymentMethod.EXTERNAL_BILLING) {
+                        SubjectAlertDialog(context)
+                            .addMessageClickListener { message ->
+                                entry.paymentCredentials.additionalData["subject"] = message
+                                project.checkout.pay(entry.paymentMethod, entry.paymentCredentials)
+                            }
+                            .addSkipClickListener {
+                                project.checkout.pay(
+                                    entry.paymentMethod,
+                                    entry.paymentCredentials
+                                )
+                            }
+                            .setOnCanceledListener {
+                                project.checkout.abort()
+                            }
+                            .show()
                     } else {
                         Keyguard.unlock(UIUtils.getHostFragmentActivity(context), object : Keyguard.Callback {
                             override fun success() {
@@ -333,6 +355,7 @@ open class CheckoutBar @JvmOverloads constructor(
                     project.checkout.pay(entry.paymentMethod, null)
                 }
             }
+
             CheckoutState.REQUEST_PAYMENT_AUTHORIZATION_TOKEN -> {
                 val price = project.checkout.verifiedOnlinePrice
                 if (price != Checkout.INVALID_PRICE) {
@@ -346,6 +369,7 @@ open class CheckoutBar @JvmOverloads constructor(
                     project.checkout.abort()
                 }
             }
+
             CheckoutState.WAIT_FOR_GATEKEEPER,
             CheckoutState.WAIT_FOR_SUPERVISOR,
             CheckoutState.WAIT_FOR_APPROVAL,
@@ -358,6 +382,7 @@ open class CheckoutBar @JvmOverloads constructor(
                 })
                 progressDialog.dismiss()
             }
+
             CheckoutState.INVALID_PRODUCTS -> {
                 val invalidProducts = project.checkout.invalidProducts
                 if (invalidProducts != null && invalidProducts.size > 0) {
@@ -389,6 +414,7 @@ open class CheckoutBar @JvmOverloads constructor(
                 }
                 progressDialog.dismiss()
             }
+
             CheckoutState.CONNECTION_ERROR,
             CheckoutState.NO_SHOP,
             CheckoutState.PAYMENT_PROCESSING_ERROR -> {
@@ -398,13 +424,16 @@ open class CheckoutBar @JvmOverloads constructor(
                     progressDialog.dismiss()
                 }
             }
+
             CheckoutState.PAYMENT_ABORTED -> {
                 progressDialog.dismiss()
             }
+
             CheckoutState.REQUEST_VERIFY_AGE -> {
                 SnabbleUI.executeAction(requireFragmentActivity(), SnabbleUI.Event.SHOW_AGE_VERIFICATION)
                 progressDialog.dismiss()
             }
+
             CheckoutState.REQUEST_TAXATION -> {
                 progressDialog.dismiss()
                 AlertDialog.Builder(context)
@@ -428,6 +457,7 @@ open class CheckoutBar @JvmOverloads constructor(
                     .create()
                     .show()
             }
+
             CheckoutState.NO_PAYMENT_METHOD_AVAILABLE -> {
                 AlertDialog.Builder(context)
                     .setCancelable(false)
@@ -437,6 +467,7 @@ open class CheckoutBar @JvmOverloads constructor(
                     .show()
                 progressDialog.dismiss()
             }
+
             else -> {
                 Logger.d("Unhandled event in CheckoutBar: $state")
             }
