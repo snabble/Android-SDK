@@ -123,7 +123,7 @@ class CheckoutActivity : FragmentActivity() {
     private fun setUpToolBarAndStatusBar() {
         val showToolBar = resources.getBoolean(R.bool.showToolbarInCheckout)
         findViewById<View>(R.id.checkout_toolbar_spacer)?.isVisible = showToolBar
-        navController.addOnDestinationChangedListener { _, destination, arguments ->
+        navController.addOnDestinationChangedListener { _, _, arguments ->
             findViewById<View>(R.id.checkout_toolbar)?.isVisible = arguments?.getBoolean("showToolbar", false) == true
         }
         if (showToolBar) {

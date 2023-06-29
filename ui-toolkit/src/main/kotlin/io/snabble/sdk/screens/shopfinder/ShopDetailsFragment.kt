@@ -3,7 +3,6 @@ package io.snabble.sdk.screens.shopfinder
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.location.Location
 import android.net.Uri
@@ -29,11 +28,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener
 import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import io.snabble.accessibility.isTalkBackActive
 import io.snabble.accessibility.setClickDescription
@@ -42,6 +37,7 @@ import io.snabble.sdk.Shop
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.checkin.CheckInLocationManager
+import io.snabble.sdk.extensions.getQueryIntentActivitiesCompat
 import io.snabble.sdk.screens.shopfinder.utils.ISO3Utils.getDisplayNameByIso3Code
 import io.snabble.sdk.screens.shopfinder.utils.ShopFinderPreferences
 import io.snabble.sdk.screens.shopfinder.utils.distanceTo
@@ -608,16 +604,11 @@ open class ShopDetailsFragment : Fragment() {
         super.onLowMemory()
     }
 
-    companion object {
+    private companion object {
 
         const val BUNDLE_KEY_SHOP = "shop"
 
-        @SuppressLint("QueryPermissionsNeeded")
-        fun isIntentAvailable(context: Context, intent: Intent): Boolean {
-            val packageManager = context.packageManager
-            val list =
-                packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-            return list.isNotEmpty()
-        }
+        fun isIntentAvailable(context: Context, intent: Intent): Boolean =
+            context.packageManager.getQueryIntentActivitiesCompat(intent).isNotEmpty()
     }
 }

@@ -3,20 +3,17 @@ package io.snabble.sdk.screens.shopfinder.utils
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import androidx.preference.PreferenceManager
+import io.snabble.sdk.extensions.getApplicationInfoCompat
 import io.snabble.sdk.utils.BuildConfig
 import io.snabble.sdk.widgets.snabble.devsettings.login.usecase.HasEnabledDevSettingsUseCaseImpl
 
 internal class ShopFinderPreferences internal constructor(private val context: Context) {
 
     val hasGoogleMapsKey: Boolean by lazy {
-        context
-            .packageManager
-            .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
-            .metaData
-            .containsKey("com.google.android.geo.API_KEY")
+        context.packageManager.getApplicationInfoCompat(context.packageName)
+            .metaData.containsKey(MAPS_API_KEY_NAME)
     }
 
     val isInDarkMode: Boolean
@@ -73,6 +70,8 @@ internal class ShopFinderPreferences internal constructor(private val context: C
         private const val KEY_HIDDEN_MENU_AVAILABLE = "hiddenMenuAvailable"
         private const val KEY_DEBUGGING_AVAILABLE = "debuggingAvailable"
         private const val KEY_PROJECT_CODE = "projectCode"
+
+        private const val MAPS_API_KEY_NAME = "com.google.android.geo.API_KEY"
 
         @SuppressLint("StaticFieldLeak")
         private var instance: ShopFinderPreferences? = null

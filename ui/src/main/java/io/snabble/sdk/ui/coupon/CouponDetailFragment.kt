@@ -11,8 +11,10 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import io.snabble.sdk.coupons.CouponType
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.utils.loadImage
+import io.snabble.sdk.ui.utils.parcelableExtra
 import io.snabble.sdk.ui.utils.setTextOrHide
 
 open class CouponDetailFragment : Fragment() {
@@ -27,7 +29,7 @@ open class CouponDetailFragment : Fragment() {
     }
 
     protected val item by lazy {
-        requireNotNull(arguments?.getParcelable(ARG_COUPON) as? CouponItem) {
+        requireNotNull(arguments?.parcelableExtra<CouponItem>(ARG_COUPON)) {
             "The argument ARG_COUPON is missing or not from type ${CouponItem::javaClass.name}"
         }
     }

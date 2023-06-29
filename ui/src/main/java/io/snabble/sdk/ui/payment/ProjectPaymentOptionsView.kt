@@ -9,8 +9,8 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -25,7 +25,9 @@ import io.snabble.sdk.ui.utils.loadAsset
 open class ProjectPaymentOptionsView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
+
     companion object {
+
         const val ARG_BRAND = "brandId"
     }
 
@@ -52,27 +54,29 @@ open class ProjectPaymentOptionsView @JvmOverloads constructor(
 
         Snabble.paymentCredentialsStore.addCallback(listener)
 
-        getFragmentActivity()?.lifecycle?.addObserver(object : LifecycleObserver {
-            @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-            fun onResume() {
-                adapter.notifyDataSetChanged()
-            }
-
-            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-            fun onDestroy() {
-                getFragmentActivity()?.lifecycle?.removeObserver(this)
-                Snabble.paymentCredentialsStore.removeCallback(listener)
+        getFragmentActivity()?.lifecycle?.addObserver(object : LifecycleEventObserver {
+            override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+                when (event) {
+                    Lifecycle.Event.ON_RESUME -> adapter.notifyDataSetChanged()
+                    Lifecycle.Event.ON_DESTROY -> {
+                        getFragmentActivity()?.lifecycle?.removeObserver(this)
+                        Snabble.paymentCredentialsStore.removeCallback(listener)
+                    }
+                    else -> Unit
+                }
             }
         })
     }
 
     class EntryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
         val text: TextView = itemView.findViewById(R.id.text)
         val count: TextView = itemView.findViewById(R.id.count)
         val image: ImageView = itemView.findViewById(R.id.helper_image)
     }
 
     inner class EntryAdapter : ListAdapter<Project, EntryViewHolder>(EntryItemDiffer()) {
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EntryViewHolder {
             val inflater = LayoutInflater.from(parent.context)
             return EntryViewHolder(inflater.inflate(R.layout.snabble_item_select_payment_project, parent, false))
@@ -104,6 +108,7 @@ open class ProjectPaymentOptionsView @JvmOverloads constructor(
     }
 
     class EntryItemDiffer : DiffUtil.ItemCallback<Project>() {
+
         override fun areItemsTheSame(oldItem: Project, newItem: Project): Boolean {
             return oldItem === newItem
         }

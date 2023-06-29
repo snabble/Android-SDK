@@ -5,6 +5,7 @@ import android.view.View
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.utils.serializableExtra
 
 open class CreditCardInputFragment : BaseFragment(
     layoutResId = R.layout.snabble_fragment_cardinput_creditcard,
@@ -22,7 +23,7 @@ open class CreditCardInputFragment : BaseFragment(
         super.onCreate(savedInstanceState)
 
         projectId = arguments?.getString(ARG_PROJECT_ID, null)
-        paymentMethod = arguments?.getSerializable(ARG_PAYMENT_TYPE) as PaymentMethod?
+        paymentMethod = arguments?.serializableExtra(ARG_PAYMENT_TYPE)
     }
 
     override fun onActualViewCreated(view: View, savedInstanceState: Bundle?) {
