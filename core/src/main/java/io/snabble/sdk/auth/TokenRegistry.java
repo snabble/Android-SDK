@@ -172,11 +172,7 @@ public class TokenRegistry {
         Token token = tokens.get(project.getId());
 
         if (token != null) {
-            long tokenInterval = (token.expiresAt - token.issuedAt);
-            long invalidAt = token.issuedAt + tokenInterval / 2;
-
-            long seconds = getOffsetTime();
-            if (seconds >= invalidAt) {
+            if (isValid(token)) {
                 Logger.d("Token timed out, requesting new token");
                 Token newToken = refreshToken(project, false);
                 if (newToken != null) {
@@ -190,20 +186,6 @@ public class TokenRegistry {
         }
 
         return token;
-    }
-
-    /**
-     * Returns the locally stored token or null if invalid
-     */
-    @Nullable
-    public Token getLocalToken(@NonNull final Project project) {
-        final Token token = tokens.get(project.getId());
-
-        if (isValid(token)) {
-            return token;
-        } else {
-            return null;
-        }
     }
 
     @NonNull
