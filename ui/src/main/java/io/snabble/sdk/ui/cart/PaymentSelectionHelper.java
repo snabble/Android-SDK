@@ -147,15 +147,19 @@ public class PaymentSelectionHelper {
         if (project != null) {
             PaymentSelectionHelper.this.project = project;
 
-            if (cart != null) {
-                cart.removeListener(shoppingCartListener);
-            }
-
-            cart = project.getShoppingCart();
-            cart.addListener(shoppingCartListener);
-
+            updateShoppingCart();
             update();
         }
+    }
+
+    public void updateShoppingCart() {
+        if (cart != null) {
+            cart.removeListener(shoppingCartListener);
+        }
+
+        cart = project.getShoppingCart();
+        cart.addListener(shoppingCartListener);
+        update();
     }
 
     private void update() {
