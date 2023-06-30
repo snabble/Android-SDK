@@ -51,6 +51,7 @@ public class TokenRegistry {
         tokens.clear();
     }
 
+    @Nullable
     private synchronized Token refreshToken(Project project, boolean isRetry) {
         if (totp == null) {
             return null;
@@ -162,7 +163,8 @@ public class TokenRegistry {
      * <p>
      * Returns null if not valid token could be generated. (invalid secret, timeouts, no connection)
      */
-    public synchronized Token getToken(Project project) {
+    @Nullable
+    public synchronized Token getToken(@Nullable Project project) {
         if (project == null) {
             return null;
         }
