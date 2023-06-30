@@ -15,6 +15,10 @@ io.snabble.sdk.codes.templates.groups
 io.snabble.sdk.coupons
 io.snabble.sdk.customization
 io.snabble.sdk.encodedcodes
+io.snabble.sdk.events
+io.snabble.sdk.events.data
+io.snabble.sdk.events.data.payload
+io.snabble.sdk.extensions
 io.snabble.sdk.googlepay
 io.snabble.sdk.payment
 io.snabble.sdk.payment.externalbilling
