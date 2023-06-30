@@ -21,6 +21,9 @@ import io.snabble.sdk.utils.getIntOpt
 import io.snabble.sdk.utils.getString
 import io.snabble.sdk.utils.getStringListOpt
 import io.snabble.sdk.utils.getStringOpt
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.apache.commons.lang3.LocaleUtils
@@ -290,11 +293,18 @@ class Project internal constructor(jsonObject: JsonObject) {
     private lateinit var shoppingCartStorage: ShoppingCartStorage
         private set
 
+    private val _shoppingCart = MutableStateFlow(ShoppingCart())
+
+    /**
+     * Flow to observe the current users shopping cart
+     */
+    val shoppingCartFlow: StateFlow<ShoppingCart> = _shoppingCart.asStateFlow()
+
     /**
      * The users shopping cart
      */
-    lateinit var shoppingCart: ShoppingCart
-        private set
+    val shoppingCart: ShoppingCart
+        get() = shoppingCartFlow.value
 
     /**
      * Provides a list of active coupons
@@ -496,15 +506,15 @@ class Project internal constructor(jsonObject: JsonObject) {
             .addInterceptor(AcceptedLanguageInterceptor())
             .build()
 
-        shoppingCart = ShoppingCart(this)
+        _shoppingCart.tryEmit(ShoppingCart(this))
 
         shoppingCartStorage = ShoppingCartStorage(this)
 
-        checkout = Checkout(this, shoppingCart)
+        checkout = Checkout(this, shoppingCartFlow.value)
 
-        productDatabase = ProductDatabase(this, shoppingCart, "$id.sqlite3", Snabble.config.generateSearchIndex)
+        productDatabase = ProductDatabase(this, shoppingCartFlow.value, "$id.sqlite3", Snabble.config.generateSearchIndex)
 
-        events = Events(this, shoppingCart)
+        events = Events(this, shoppingCartFlow.value)
 
         assets = Assets(this)
 
