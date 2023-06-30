@@ -7,6 +7,19 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.70.4]
+### Added
+* Add method to filter ratings events  #135
+* Add missing annotation #136
+* Add property shoppingCartFlow to project #137
+### Changed
+* Convert events.kt to kotlin #135
+### Fixed
+* payment method related crash #133
+* everal deprecations #123
+
+
+
 ## [0.70.3]
 ### Added
 * core: method to provide only the local token
