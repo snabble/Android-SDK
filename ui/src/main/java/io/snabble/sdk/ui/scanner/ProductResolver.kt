@@ -615,7 +615,6 @@ class ProductResolver private constructor(private val context: Context, private 
 
     init {
         progressDialog = DelayedProgressDialog(context)
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER)
         progressDialog.setMessage(context.getString(R.string.Snabble_loadingProductInformation))
         progressDialog.setCanceledOnTouchOutside(false)
         progressDialog.setCancelable(false)

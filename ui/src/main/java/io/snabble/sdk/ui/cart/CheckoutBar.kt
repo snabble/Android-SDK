@@ -1,6 +1,5 @@
 package io.snabble.sdk.ui.cart
 
-import android.app.ProgressDialog
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
@@ -150,7 +149,6 @@ open class CheckoutBar @JvmOverloads constructor(
         update()
 
         progressDialog = DelayedProgressDialog(context)
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER)
         progressDialog.setMessage(context.getString(R.string.Snabble_pleaseWait))
         progressDialog.setCanceledOnTouchOutside(false)
         progressDialog.setCancelable(false)
