@@ -54,7 +54,6 @@ public class AgeVerificationInputView extends FrameLayout {
         setFocusableInTouchMode(true);
 
         DelayedProgressDialog progressDialog = new DelayedProgressDialog(getContext());
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage(getContext().getString(R.string.Snabble_pleaseWait));
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.setCancelable(false);

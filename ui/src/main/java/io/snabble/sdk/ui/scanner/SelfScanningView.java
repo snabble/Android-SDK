@@ -5,7 +5,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -30,9 +29,6 @@ import androidx.core.util.Pair;
 import java.util.List;
 
 import io.snabble.sdk.BarcodeFormat;
-import io.snabble.sdk.coupons.Coupon;
-import io.snabble.sdk.coupons.CouponCode;
-import io.snabble.sdk.coupons.CouponType;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
@@ -42,6 +38,9 @@ import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ViolationNotification;
 import io.snabble.sdk.codes.ScannedCode;
+import io.snabble.sdk.coupons.Coupon;
+import io.snabble.sdk.coupons.CouponCode;
+import io.snabble.sdk.coupons.CouponType;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.checkout.ViolationNotificationUtils;
@@ -140,7 +139,6 @@ public class SelfScanningView extends FrameLayout {
         }
 
         progressDialog = new DelayedProgressDialog(getContext());
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage(getContext().getString(R.string.Snabble_loadingProductInformation));
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.setCancelable(false);
