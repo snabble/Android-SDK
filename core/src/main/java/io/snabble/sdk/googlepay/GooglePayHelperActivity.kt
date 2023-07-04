@@ -2,7 +2,6 @@ package io.snabble.sdk.googlepay
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.wallet.AutoResolveHelper
 import io.snabble.sdk.Snabble
@@ -29,6 +28,10 @@ class GooglePayHelperActivity : AppCompatActivity() {
         }
     }
 
+    // Deprecation is ignored until an updated integration guide of Google Pay has been published,
+    // or another solution can be found:
+    // https://developers.google.com/pay/api/android/guides/tutorial#paymentdata
+    @Suppress("OVERRIDE_DEPRECATION")
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
