@@ -43,8 +43,8 @@ class ShoppingCartItemViewHolder internal constructor(
     var minus: MaterialButton = itemView.findViewById(R.id.minus)
     var quantityEdit: EditText = itemView.findViewById(R.id.quantity_edit)
     var controlsUserWeighed: View = itemView.findViewById(R.id.controls_user_weighed)
+    var controlsUserWeighedDelete: View = itemView.findViewById(R.id.delete_weighed)
     var controlsDefault: View = itemView.findViewById(R.id.controls_default)
-    var controlsDelete: View = itemView.findViewById(R.id.controls_delete)
     var quantityEditApply: View = itemView.findViewById(R.id.quantity_edit_apply)
     var quantityEditApplyLayout: View = itemView.findViewById(R.id.quantity_edit_apply_layout)
     var quantityAnnotation: TextView = itemView.findViewById(R.id.quantity_annotation)
@@ -111,9 +111,10 @@ class ShoppingCartItemViewHolder internal constructor(
         }
         quantityAnnotation.text = encodingDisplayValue
         controlsDefault.isVisible = row.editable && row.item.product?.type != Product.Type.UserWeighed
-        val isNotAnArticle = row.item.product?.type != Product.Type.Article
-        if (isNotAnArticle) controlsDelete.isVisible = true
         controlsUserWeighed.isVisible = row.editable && row.item.product?.type == Product.Type.UserWeighed
+        controlsUserWeighedDelete.setOnClickListener {
+            undoHelper.removeAndShowUndoSnackbar(bindingAdapterPosition, row.item)
+        }
         plus.setOnClickListener {
             row.item.quantity++
 
@@ -121,11 +122,13 @@ class ShoppingCartItemViewHolder internal constructor(
 
             Telemetry.event(Telemetry.Event.CartAmountChanged, row.item.product)
         }
+
         updateMinusButtonIcon(row.item.quantity)
+
         minus.setOnClickListener {
             val p = bindingAdapterPosition
             val newQuantity = row.item.quantity - 1
-            if (newQuantity <= 0 || isNotAnArticle) {
+            if (newQuantity <= 0) {
                 undoHelper.removeAndShowUndoSnackbar(p, row.item)
             } else {
                 row.item.quantity = newQuantity
@@ -134,6 +137,7 @@ class ShoppingCartItemViewHolder internal constructor(
 
             updateMinusButtonIcon(newQuantity)
         }
+
         quantityEditApply.setOneShotClickListener {
             row.item.quantity = quantityEditValue
             hideInput()

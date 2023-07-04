@@ -159,6 +159,18 @@
             android:orientation="horizontal"
             tools:visibility="gone">
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/delete_weighed"
+                style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginRight="4dp"
+                android:contentDescription="@string/Snabble.Shoppingcart.Accessibility.decreaseQuantity"
+                app:icon="@drawable/snabble_ic_delete"
+                app:iconGravity="textStart"
+                app:iconTint="?attr/colorOnSurface"
+                app:strokeColor="@drawable/snabble_stroke" />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/quantity_text_input"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
