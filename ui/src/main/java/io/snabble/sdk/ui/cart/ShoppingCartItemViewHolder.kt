@@ -42,7 +42,7 @@ class ShoppingCartItemViewHolder internal constructor(
     var plus: View = itemView.findViewById(R.id.plus)
     var minus: MaterialButton = itemView.findViewById(R.id.minus)
     var quantityEdit: EditText = itemView.findViewById(R.id.quantity_edit)
-    var controlsUserWeighed: View = itemView.findViewById(R.id.controls_user_weighed)
+    private var controlsUserWeighed: View = itemView.findViewById(R.id.controls_user_weighed)
     var controlsUserWeighedDelete: View = itemView.findViewById(R.id.delete_weighed)
     var controlsDefault: View = itemView.findViewById(R.id.controls_default)
     var quantityEditApply: View = itemView.findViewById(R.id.quantity_edit_apply)
