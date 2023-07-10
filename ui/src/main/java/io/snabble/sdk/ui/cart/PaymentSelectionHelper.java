@@ -344,7 +344,7 @@ public class PaymentSelectionHelper {
             if (availablePaymentMethodsList.contains(e.paymentMethod)) {
                 if (e.paymentMethod == PaymentMethod.EXTERNAL_BILLING) {
                     e.isAvailable = true;
-                    e.hint = application.getString(R.string.Snabble_Payment_ExternalBilling_hint);
+                    e.hint = pc.getObfuscatedId();
                 } else {
                     e.isAvailable = true;
                     e.hint = pc.getObfuscatedId();
