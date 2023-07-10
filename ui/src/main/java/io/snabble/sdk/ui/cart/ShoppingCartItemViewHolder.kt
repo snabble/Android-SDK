@@ -1,6 +1,5 @@
 package io.snabble.sdk.ui.cart
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -11,6 +10,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.ColorInt
+import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
@@ -26,38 +27,75 @@ import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.ShoppingCartView.ProductRow
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.InputFilterMinMax
+import io.snabble.sdk.ui.utils.inputMethodManager
 import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.ui.utils.setTextOrHide
+import io.snabble.sdk.Unit as ProductUnit
 
 class ShoppingCartItemViewHolder internal constructor(
     itemView: View,
     private val undoHelper: UndoHelper
 ) : RecyclerView.ViewHolder(itemView) {
 
-    var image: ImageView = itemView.findViewById(R.id.helper_image)
-    var name: TextView = itemView.findViewById(R.id.name)
-    var subtitle: TextView? = itemView.findViewById(R.id.subtitle)
-    var quantityTextView: TextView = itemView.findViewById(R.id.quantity)
-    var priceTextView: TextView = itemView.findViewById(R.id.price)
-    var plus: View = itemView.findViewById(R.id.plus)
-    var minus: MaterialButton = itemView.findViewById(R.id.minus)
-    var quantityEdit: EditText = itemView.findViewById(R.id.quantity_edit)
-    private var controlsUserWeighed: View = itemView.findViewById(R.id.controls_user_weighed)
-    var controlsUserWeighedDelete: View = itemView.findViewById(R.id.delete_weighed)
-    var controlsDefault: View = itemView.findViewById(R.id.controls_default)
-    var quantityEditApply: View = itemView.findViewById(R.id.quantity_edit_apply)
-    var quantityEditApplyLayout: View = itemView.findViewById(R.id.quantity_edit_apply_layout)
-    var quantityAnnotation: TextView = itemView.findViewById(R.id.quantity_annotation)
-    var redLabel: TextView = itemView.findViewById(R.id.red_label)
-    private val picasso = Picasso.get()
+    val image: ImageView = itemView.findViewById(R.id.helper_image)
+    val name: TextView = itemView.findViewById(R.id.name)
+    val minus: MaterialButton = itemView.findViewById(R.id.minus)
+    val plus: View = itemView.findViewById(R.id.plus)
+    private val controlsDefault: View = itemView.findViewById(R.id.controls_default)
+    private val controlsUserWeighed: View = itemView.findViewById(R.id.controls_user_weighed)
+    private val controlsUserWeighedDelete: View = itemView.findViewById(R.id.delete_weighed)
+    private val priceTextView: TextView = itemView.findViewById(R.id.price)
+    private val quantityAnnotation: TextView = itemView.findViewById(R.id.quantity_annotation)
+    private val quantityEdit: EditText = itemView.findViewById(R.id.quantity_edit)
+    private val quantityEditApply: View = itemView.findViewById(R.id.quantity_edit_apply)
+    private val quantityEditApplyLayout: View = itemView.findViewById(R.id.quantity_edit_apply_layout)
+    private val quantityTextView: TextView = itemView.findViewById(R.id.quantity)
+    private val redLabel: TextView = itemView.findViewById(R.id.red_label)
+    private val subtitle: TextView? = itemView.findViewById(R.id.subtitle)
+
+    private val picasso: Picasso = Picasso.get()
+
+    private val context: Context get() = itemView.context
 
     init {
         orderViewsForAccessibility(quantityTextView, quantityEdit, subtitle, name, redLabel, priceTextView, minus, plus)
     }
 
-    @SuppressLint("SetTextI18n")
-    fun bindTo(row: ProductRow, hasAnyImages: Boolean) {
-        val res = itemView.resources
+    fun bindTo(product: ProductRow, hasAnyImages: Boolean) {
+        setupAccessibility()
+
+        name.setTextOrHide(product.name)
+
+        priceTextView.setTextOrHide(product.priceText)
+        priceTextView.contentDescription(
+            predicate = { product.priceText != null },
+            stringRes = R.string.Snabble_Shoppingcart_Accessibility_descriptionForPrice,
+            product.priceText
+        )
+
+        product.encodingUnit
+
+        quantityTextView.setTextOrHide(product.quantityText)
+        quantityTextView.contentDescription(
+            predicate = { product.quantityText != null },
+            stringRes = R.string.Snabble_Shoppingcart_Accessibility_descriptionQuantity,
+            product.quantityText
+        )
+
+        image.setImage(product.imageUrl, hasAnyImages)
+
+        setupReducedPriceLabel(product)
+
+        quantityAnnotation.text = getQuantityUnit(product.encodingUnit)
+
+        setupUserWeighedQuantityControls(product)
+
+        setupQuantityButtons(product)
+
+        setupQuantityEditView(product)
+    }
+
+    private fun setupAccessibility() {
         itemView.accessibility {
             if (isTalkBackActive) {
                 setLongClickAction(R.string.Snabble_Shoppingcart_Accessibility_actionDelete) {
@@ -65,103 +103,116 @@ class ShoppingCartItemViewHolder internal constructor(
                 }
             }
             onInitializeAccessibilityNodeInfo { info ->
-                info.text = res.getString(R.string.Snabble_Shoppingcart_Accessibility_contextInCart)
+                info.text = context.getString(R.string.Snabble_Shoppingcart_Accessibility_contextInCart)
             }
         }
-        name.setTextOrHide(row.name)
-        priceTextView.setTextOrHide(row.priceText)
-        quantityTextView.setTextOrHide(row.quantityText)
-        row.quantityText?.let {
-            quantityTextView.contentDescription = res.getString(R.string.Snabble_Shoppingcart_Accessibility_descriptionQuantity, it)
-        }
-        row.priceText?.let {
-            priceTextView.contentDescription = res.getString(R.string.Snabble_Shoppingcart_Accessibility_descriptionForPrice, it)
-        }
-        if (row.imageUrl != null) {
-            image.visibility = View.VISIBLE
-            picasso.load(row.imageUrl).into(image)
+    }
+
+    private fun ImageView.setImage(imageUrl: String?, hasAnyImages: Boolean) {
+        if (imageUrl != null) {
+            visibility = View.VISIBLE
+            picasso.load(imageUrl).into(this)
         } else {
-            image.isVisible = hasAnyImages
-            image.setImageBitmap(null)
+            isVisible = hasAnyImages
+            setImageBitmap(null)
         }
-        val hasCoupon = row.item.coupon != null
-        val isAgeRestricted = row.item.product?.saleRestriction?.isAgeRestriction ?: false
-        redLabel.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#ff0000"))
-        redLabel.isVisible = hasCoupon || isAgeRestricted
-        if (hasCoupon) {
-            if (!row.manualDiscountApplied) {
-                redLabel.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#999999"))
-                redLabel.contentDescription = res.getString(R.string.Snabble_Shoppingcart_Accessibility_descriptionWithoutDiscount)
-            } else {
-                redLabel.contentDescription = res.getString(R.string.Snabble_Shoppingcart_Accessibility_descriptionWithDiscount)
-            }
-            redLabel.text = "%"
+    }
+
+    private fun setupReducedPriceLabel(product: ProductRow) = redLabel.apply {
+        val hasCoupon = product.item.coupon != null
+
+        val labelStringRes: String? = getReducedPriceLabelText(hasCoupon, getAgeRestrictionValue(product))
+        setTextOrHide(labelStringRes)
+
+        val backgroundTintColor: Int = getReducePriceLabelBackgroundColor(hasCoupon, product.manualDiscountApplied)
+        backgroundTintList = ColorStateList.valueOf(backgroundTintColor)
+
+        val contentDescriptionResId: Int? =
+            getReducedPriceLabelContentDescription(hasCoupon, product.manualDiscountApplied)
+        contentDescription = contentDescriptionResId?.let(context::getString)
+    }
+
+    private fun getReducedPriceLabelText(hasCoupon: Boolean, ageRestrictionValue: String?): String? =
+        if (hasCoupon) DISCOUNT_SYMBOL else ageRestrictionValue
+
+    private fun getAgeRestrictionValue(product: ProductRow): String? = product.item.product
+        ?.saleRestriction
+        ?.value
+        ?.takeIf { it > 0 }
+        ?.toString()
+
+    @ColorInt
+    private fun getReducePriceLabelBackgroundColor(
+        hasCoupon: Boolean,
+        isManualDiscountApplied: Boolean,
+    ): Int =
+        if (hasCoupon && !isManualDiscountApplied) {
+            DISCOUNT_BACKGROUND_COLOR
         } else {
-            val age = row.item.product?.saleRestriction?.value ?: 0
-            if (age > 0) {
-                redLabel.text = age.toString()
-            } else {
-                redLabel.visibility = View.GONE
-            }
+            MANUAL_DISCOUNT_BACKGROUND_COLOR
         }
-        var encodingDisplayValue = "g"
-        val encodingUnit = row.encodingUnit
-        if (encodingUnit != null) {
-            encodingDisplayValue = encodingUnit.displayValue
-        }
-        quantityAnnotation.text = encodingDisplayValue
-        controlsDefault.isVisible = row.editable && row.item.product?.type != Product.Type.UserWeighed
-        controlsUserWeighed.isVisible = row.editable && row.item.product?.type == Product.Type.UserWeighed
+            .let(Color::parseColor)
+
+    private fun getQuantityUnit(unit: ProductUnit?): String = unit?.displayValue ?: UNIT_SYMBOL
+
+    private fun setupUserWeighedQuantityControls(product: ProductRow) {
+        val isUserWeighed = product.editable && product.item.product?.type == Product.Type.UserWeighed
+
+        controlsDefault.isVisible = !isUserWeighed
+        controlsUserWeighed.isVisible = isUserWeighed
+
         controlsUserWeighedDelete.setOnClickListener {
-            undoHelper.removeAndShowUndoSnackbar(bindingAdapterPosition, row.item)
+            undoHelper.removeAndShowUndoSnackbar(bindingAdapterPosition, product.item)
         }
-        plus.setOnClickListener {
-            row.item.quantity++
+    }
 
-            updateMinusButtonIcon(row.item.quantity)
-
-            Telemetry.event(Telemetry.Event.CartAmountChanged, row.item.product)
-        }
-
-        updateMinusButtonIcon(row.item.quantity)
-
+    private fun setupQuantityButtons(product: ProductRow) {
+        updateMinusButtonIcon(product.item.quantity)
         minus.setOnClickListener {
-            val p = bindingAdapterPosition
-            val newQuantity = row.item.quantity - 1
+            val newQuantity = product.item.quantity - 1
             if (newQuantity <= 0) {
-                undoHelper.removeAndShowUndoSnackbar(p, row.item)
+                undoHelper.removeAndShowUndoSnackbar(bindingAdapterPosition, product.item)
             } else {
-                row.item.quantity = newQuantity
-                Telemetry.event(Telemetry.Event.CartAmountChanged, row.item.product)
+                product.item.quantity = newQuantity
+                Telemetry.event(Telemetry.Event.CartAmountChanged, product.item.product)
             }
 
             updateMinusButtonIcon(newQuantity)
         }
 
+        plus.setOnClickListener {
+            product.item.quantity++
+
+            updateMinusButtonIcon(product.item.quantity)
+
+            Telemetry.event(Telemetry.Event.CartAmountChanged, product.item.product)
+        }
+    }
+
+    private fun setupQuantityEditView(product: ProductRow) {
         quantityEditApply.setOneShotClickListener {
-            row.item.quantity = quantityEditValue
+            product.item.quantity = quantityEdit.getTextAsNumericValue() ?: 0
             hideInput()
-            Telemetry.event(Telemetry.Event.CartAmountChanged, row.item.product)
+            quantityEdit.clearFocus()
+            Telemetry.event(Telemetry.Event.CartAmountChanged, product.item.product)
         }
-        quantityEdit.setText(row.quantity.toString())
-        itemView.isFocusable = true
-        itemView.isFocusableInTouchMode = true
-        if (bindingAdapterPosition == 0) {
-            itemView.requestFocus()
-        }
-        updateQuantityEditApplyVisibility(row.quantity)
+
+        quantityEdit.setText(product.quantity.toString())
+        updateQuantityEditApplyVisibility(product.quantity)
         quantityEdit.addTextChangedListener(onTextChanged = { _, _, _, _ ->
-            updateQuantityEditApplyVisibility(row.quantity)
+            updateQuantityEditApplyVisibility(product.quantity)
         })
         quantityEdit.setOnEditorActionListener { _, actionId, event ->
+            // TODO: Why different actions? Our keyboard mode?
             if (actionId == EditorInfo.IME_ACTION_DONE
                 || (event.action == KeyEvent.ACTION_DOWN
-                        && event.keyCode == KeyEvent.KEYCODE_ENTER)
+                    && event.keyCode == KeyEvent.KEYCODE_ENTER)
             ) {
                 quantityEditApply.callOnClick()
-                return@setOnEditorActionListener true
+                true
+            } else {
+                false
             }
-            false
         }
         quantityEdit.filters = arrayOf(InputFilterMinMax(0, ShoppingCart.MAX_QUANTITY))
     }
@@ -172,30 +223,56 @@ class ShoppingCartItemViewHolder internal constructor(
     }
 
     fun hideInput() {
-        val imm = quantityEdit.context
-            .getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(
+        context.inputMethodManager.hideSoftInputFromWindow(
             quantityEdit.windowToken,
             InputMethodManager.HIDE_NOT_ALWAYS
         )
-        quantityEdit.clearFocus()
     }
 
     private fun updateQuantityEditApplyVisibility(quantity: Int) {
-        val value = quantityEditValue
-        if (value > 0 && value != quantity) {
-            quantityEditApply.visibility = View.VISIBLE
-            quantityEditApplyLayout.visibility = View.VISIBLE
-        } else {
-            quantityEditApply.visibility = View.GONE
-            quantityEditApplyLayout.visibility = View.GONE
-        }
+        val newQuantity = quantityEdit.getTextAsNumericValue() ?: 0
+        val isNewQuantityValid = newQuantity > 0 && newQuantity != quantity
+        quantityEditApply.isVisible = isNewQuantityValid
+        quantityEditApplyLayout.isVisible = isNewQuantityValid
     }
 
-    val quantityEditValue: Int
-        get() = try {
-            quantityEdit.text.toString().toInt()
-        } catch (e: NumberFormatException) {
-            0
-        }
+    private companion object {
+
+        const val UNIT_SYMBOL = "g"
+
+        const val DISCOUNT_SYMBOL = "%"
+
+        const val DISCOUNT_BACKGROUND_COLOR = "#999999"
+        const val MANUAL_DISCOUNT_BACKGROUND_COLOR = "#ff0000"
+    }
 }
+
+@StringRes
+private fun getReducedPriceLabelContentDescription(
+    hasCoupon: Boolean,
+    isManualDiscountApplied: Boolean
+): Int? =
+    if (hasCoupon) {
+        if (isManualDiscountApplied) {
+            R.string.Snabble_Shoppingcart_Accessibility_descriptionWithDiscount
+        } else {
+            R.string.Snabble_Shoppingcart_Accessibility_descriptionWithoutDiscount
+        }
+    } else {
+        null
+    }
+
+private fun View.contentDescription(
+    predicate: () -> Boolean,
+    @StringRes stringRes: Int,
+    vararg args: String,
+) {
+    contentDescription = if (predicate()) context.getString(stringRes, *args) else null
+}
+
+private fun TextView.getTextAsNumericValue(): Int? =
+    try {
+        text.toString().toInt()
+    } catch (e: NumberFormatException) {
+        null
+    }
