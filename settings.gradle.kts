@@ -12,13 +12,10 @@ pluginManagement {
 
 include(
     ":core",
-    ":java-sample",
     "kotlin-sample",
-    "kotlin-customization-sample",
     ":ui",
     ":ui-toolkit",
     ":accessibility-toolbox",
     ":utils",
-    ":mlkit-scanner-engine",
-    ":kotlin-compose-sample"
+    ":mlkit-scanner-engine"
 )
