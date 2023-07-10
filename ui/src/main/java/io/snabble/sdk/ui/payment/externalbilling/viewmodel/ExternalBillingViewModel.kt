@@ -18,7 +18,7 @@ class ExternalBillingViewModel : ViewModel() {
     private var _uiState = MutableStateFlow<UiState>(Processing)
     internal val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    fun login(paymentMethod: String, username: String, password: String, projectId: String): Boolean {
+    fun login(idDescriptor: String, username: String, password: String, projectId: String): Boolean {
         viewModelScope.launch {
             val project = Snabble.projects.find { it.id == projectId }
             project?.let {
@@ -37,7 +37,7 @@ class ExternalBillingViewModel : ViewModel() {
                                 password = password
                             ),
                             projectId,
-                            paymentMethod,
+                            "$idDescriptor: $username",
                         )
                         val success = repo.addPaymentCredentials(paymentCredentials)
                         if (success && paymentCredentials != null) {
