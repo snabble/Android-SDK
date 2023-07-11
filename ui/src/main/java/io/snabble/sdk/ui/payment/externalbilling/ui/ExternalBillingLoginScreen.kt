@@ -17,8 +17,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,6 +29,7 @@ import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.payment.externalbilling.ui.widgets.PasswordField
 import io.snabble.sdk.ui.payment.payone.sepa.form.ui.widget.TextFieldWidget
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ExternalBillingLoginScreen(
     onSaveClick: (username: String, password: String) -> Unit,
@@ -43,6 +46,8 @@ fun ExternalBillingLoginScreen(
         mutableStateOf("")
     }
     val passwordVisible = rememberSaveable { mutableStateOf(false) }
+
+    val keyboardController = LocalSoftwareKeyboardController.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -98,7 +103,10 @@ fun ExternalBillingLoginScreen(
             ),
             enabled = password.value.isNotEmpty() && username.value.isNotEmpty(),
             shape = MaterialTheme.shapes.extraLarge,
-            onClick = { onSaveClick(username.value, password.value) },
+            onClick = {
+                onSaveClick(username.value, password.value)
+                keyboardController?.hide()
+            },
         ) {
             Text(text = stringResource(id = R.string.Snabble_Payment_ExternalBilling_add))
         }
