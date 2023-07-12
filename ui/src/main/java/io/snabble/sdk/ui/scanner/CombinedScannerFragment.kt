@@ -21,6 +21,7 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.GestureHandler
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.ShoppingCartView
+import io.snabble.sdk.ui.cart.adapter.ShoppingCartAdapter
 import io.snabble.sdk.ui.utils.SnackbarUtils
 import io.snabble.sdk.ui.utils.behavior
 import io.snabble.sdk.utils.Utils
@@ -89,7 +90,7 @@ class CombinedScannerFragment : SelfScanningFragment() {
             project?.let {
                 scannerBottomSheetView.cart = it.shoppingCart
 
-                val cartAdapter = ShoppingCartView.ShoppingCartAdapter(scannerBottomSheetView, it.shoppingCart)
+                val cartAdapter = ShoppingCartAdapter(scannerBottomSheetView, it.shoppingCart)
                 scannerBottomSheetView.shoppingCartAdapter = cartAdapter
             }
         }

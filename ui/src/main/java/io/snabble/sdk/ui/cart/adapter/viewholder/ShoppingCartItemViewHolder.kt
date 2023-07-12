@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.cart
+package io.snabble.sdk.ui.cart.adapter.viewholder
 
 import android.content.Context
 import android.content.res.ColorStateList
@@ -23,14 +23,15 @@ import io.snabble.accessibility.orderViewsForAccessibility
 import io.snabble.sdk.Product
 import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.Unit
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.cart.ShoppingCartView.ProductRow
+import io.snabble.sdk.ui.cart.UndoHelper
+import io.snabble.sdk.ui.cart.adapter.ProductRow
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.InputFilterMinMax
 import io.snabble.sdk.ui.utils.inputMethodManager
 import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.ui.utils.setTextOrHide
-import io.snabble.sdk.Unit as ProductUnit
 
 class ShoppingCartItemViewHolder internal constructor(
     itemView: View,
@@ -119,7 +120,7 @@ class ShoppingCartItemViewHolder internal constructor(
     }
 
     private fun setupReducedPriceLabel(product: ProductRow) = redLabel.apply {
-        val hasCoupon = product.item.coupon != null
+        val hasCoupon = product.item?.coupon != null
 
         val labelStringRes: String? = getReducedPriceLabelText(hasCoupon, getAgeRestrictionValue(product))
         setTextOrHide(labelStringRes)
@@ -135,7 +136,7 @@ class ShoppingCartItemViewHolder internal constructor(
     private fun getReducedPriceLabelText(hasCoupon: Boolean, ageRestrictionValue: String?): String? =
         if (hasCoupon) DISCOUNT_SYMBOL else ageRestrictionValue
 
-    private fun getAgeRestrictionValue(product: ProductRow): String? = product.item.product
+    private fun getAgeRestrictionValue(product: ProductRow): String? = product.item?.product
         ?.saleRestriction
         ?.value
         ?.takeIf { it > 0 }
@@ -153,10 +154,10 @@ class ShoppingCartItemViewHolder internal constructor(
         }
             .let(Color::parseColor)
 
-    private fun getQuantityUnit(unit: ProductUnit?): String = unit?.displayValue ?: UNIT_SYMBOL
+    private fun getQuantityUnit(unit: Unit?): String = unit?.displayValue ?: UNIT_SYMBOL
 
     private fun setupUserWeighedQuantityControls(product: ProductRow) {
-        val isUserWeighed = product.editable && product.item.product?.type == Product.Type.UserWeighed
+        val isUserWeighed = product.editable && product.item?.product?.type == Product.Type.UserWeighed
 
         controlsDefault.isVisible = !isUserWeighed
         controlsUserWeighed.isVisible = isUserWeighed
@@ -167,34 +168,34 @@ class ShoppingCartItemViewHolder internal constructor(
     }
 
     private fun setupQuantityButtons(product: ProductRow) {
-        updateMinusButtonIcon(product.item.quantity)
+        updateMinusButtonIcon(product.item?.quantity ?: 1) // TODO: Refactor
         minus.setOnClickListener {
-            val newQuantity = product.item.quantity - 1
+            val newQuantity = product.item?.quantity?.minus(1) ?: 0 // TODO: Refactor
             if (newQuantity <= 0) {
                 undoHelper.removeAndShowUndoSnackbar(bindingAdapterPosition, product.item)
             } else {
-                product.item.quantity = newQuantity
-                Telemetry.event(Telemetry.Event.CartAmountChanged, product.item.product)
+                product.item?.quantity = newQuantity
+                Telemetry.event(Telemetry.Event.CartAmountChanged, product.item?.product)
             }
 
             updateMinusButtonIcon(newQuantity)
         }
 
         plus.setOnClickListener {
-            product.item.quantity++
+            product.item?.quantity = product.item?.quantity?.plus(1) ?: 1 // TODO: Refactor
 
-            updateMinusButtonIcon(product.item.quantity)
+            updateMinusButtonIcon(product.item?.quantity ?: 1) // TODO: Refactor
 
-            Telemetry.event(Telemetry.Event.CartAmountChanged, product.item.product)
+            Telemetry.event(Telemetry.Event.CartAmountChanged, product.item?.product)
         }
     }
 
     private fun setupQuantityEditView(product: ProductRow) {
         quantityEditApply.setOneShotClickListener {
-            product.item.quantity = quantityEdit.getTextAsNumericValue() ?: 0
+            product.item?.quantity = quantityEdit.getTextAsNumericValue() ?: 0
             hideInput()
             quantityEdit.clearFocus()
-            Telemetry.event(Telemetry.Event.CartAmountChanged, product.item.product)
+            Telemetry.event(Telemetry.Event.CartAmountChanged, product.item?.product)
         }
 
         quantityEdit.setText(product.quantity.toString())

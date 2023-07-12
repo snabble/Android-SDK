@@ -5,6 +5,7 @@ package io.snabble.sdk.utils
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
+import android.util.Log
 import android.util.TypedValue
 import android.widget.TextView
 import androidx.annotation.AttrRes
@@ -129,4 +130,9 @@ fun TextView.resolveTextOrHide(string: String?) {
     } else {
         false
     }
+}
+
+@Deprecated("For development purposes only!", ReplaceWith("this"))
+fun <T> T.xx(message: String? = null, tag: String = "xx", throwable: Throwable? = null): T = apply {
+    Log.d(tag, message?.let { "$message $this" } ?: "$this", throwable)
 }
