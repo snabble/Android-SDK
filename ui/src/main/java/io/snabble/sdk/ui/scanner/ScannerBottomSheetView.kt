@@ -19,8 +19,10 @@ import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.ViolationNotification
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.CheckoutBar
+import io.snabble.sdk.ui.cart.ShoppingCartView
 import io.snabble.sdk.ui.cart.adapter.ShoppingCartAdapter
 import io.snabble.sdk.ui.utils.behavior
+
 
 class ScannerBottomSheetView @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
