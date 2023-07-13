@@ -39,6 +39,7 @@ import io.snabble.sdk.ViolationNotification;
 import io.snabble.sdk.ui.GestureHandler;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.cart.adapter.viewholder.ShoppingCartItemViewHolder;
 import io.snabble.sdk.ui.checkout.ViolationNotificationUtils;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.I18nUtils;
@@ -48,6 +49,12 @@ import io.snabble.sdk.ui.utils.ViewUtils;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
 
+/**
+ * This class is DEPRECATED and shall be removed in future versions.
+ * Use the io.snabble.sdk.ui.scanner.ScannerBottomSheetView or the richer
+ * io.snabble.sdk.ui.scanner.CombinedScannerFragment instead.
+ */
+@Deprecated
 public class ShoppingCartView extends FrameLayout {
     private View rootView;
     private RecyclerView recyclerView;

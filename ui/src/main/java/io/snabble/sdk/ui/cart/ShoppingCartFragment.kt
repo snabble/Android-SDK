@@ -18,6 +18,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
+@Deprecated(
+    message = "The solo shopping cart view is end-of-life.",
+    ReplaceWith(
+        "Use the CombinedScannerFragment instead.",
+        "io.snabble.sdk.ui.scanner.CombinedScannerFragment"
+    )
+)
 open class ShoppingCartFragment : BaseFragment(R.layout.snabble_fragment_shoppingcart), MenuProvider {
 
     var shoppingCartView: ShoppingCartView? = null
