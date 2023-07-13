@@ -4,7 +4,9 @@ import io.snabble.sdk.ShoppingCart
 
 abstract class Row {
 
+    @JvmField
     var item: ShoppingCart.Item? = null
+    @JvmField
     var isDismissible = false
 
     override fun equals(other: Any?): Boolean {

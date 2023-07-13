@@ -8,10 +8,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
@@ -34,12 +32,15 @@ import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Snabble;
-import io.snabble.sdk.Unit;
 import io.snabble.sdk.ViolationNotification;
 import io.snabble.sdk.ui.GestureHandler;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.cart.adapter.ProductRow;
+import io.snabble.sdk.ui.cart.adapter.Row;
 import io.snabble.sdk.ui.cart.adapter.viewholder.ShoppingCartItemViewHolder;
+import io.snabble.sdk.ui.cart.adapter.viewholder.SimpleRow;
+import io.snabble.sdk.ui.cart.adapter.viewholder.SimpleViewHolder;
 import io.snabble.sdk.ui.checkout.ViolationNotificationUtils;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.I18nUtils;
@@ -464,134 +465,6 @@ public class ShoppingCartView extends FrameLayout {
     private void submitList() {
         if (recyclerViewAdapter != null) {
             recyclerViewAdapter.submitList(buildRows(getResources(), cart), hasAnyImages);
-        }
-    }
-
-    private static abstract class Row {
-        ShoppingCart.Item item;
-        boolean isDismissible;
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Row row = (Row) o;
-
-            if (isDismissible != row.isDismissible) return false;
-            return item != null ? item.equals(row.item) : row.item == null;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = item != null ? item.hashCode() : 0;
-            result = 31 * result + (isDismissible ? 1 : 0);
-            return result;
-        }
-    }
-
-    public static class ProductRow extends Row {
-        String name;
-        String subtitle;
-        String imageUrl;
-        Unit encodingUnit;
-        String priceText;
-        String quantityText;
-        int quantity;
-        boolean editable;
-        boolean manualDiscountApplied;
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            if (!super.equals(o)) return false;
-
-            ProductRow that = (ProductRow) o;
-
-            if (quantity != that.quantity) return false;
-            if (editable != that.editable) return false;
-            if (manualDiscountApplied != that.manualDiscountApplied) return false;
-            if (name != null ? !name.equals(that.name) : that.name != null) return false;
-            if (subtitle != null ? !subtitle.equals(that.subtitle) : that.subtitle != null)
-                return false;
-            if (imageUrl != null ? !imageUrl.equals(that.imageUrl) : that.imageUrl != null)
-                return false;
-            if (encodingUnit != that.encodingUnit) return false;
-            if (priceText != null ? !priceText.equals(that.priceText) : that.priceText != null)
-                return false;
-            return quantityText != null ? quantityText.equals(that.quantityText) : that.quantityText == null;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = super.hashCode();
-            result = 31 * result + (name != null ? name.hashCode() : 0);
-            result = 31 * result + (subtitle != null ? subtitle.hashCode() : 0);
-            result = 31 * result + (imageUrl != null ? imageUrl.hashCode() : 0);
-            result = 31 * result + (encodingUnit != null ? encodingUnit.hashCode() : 0);
-            result = 31 * result + (priceText != null ? priceText.hashCode() : 0);
-            result = 31 * result + (quantityText != null ? quantityText.hashCode() : 0);
-            result = 31 * result + quantity;
-            result = 31 * result + (editable ? 1 : 0);
-            result = 31 * result + (manualDiscountApplied ? 1 : 0);
-            return result;
-        }
-    }
-
-    private static class SimpleRow extends Row {
-        String text;
-        String title;
-        @DrawableRes int imageResId;
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            if (!super.equals(o)) return false;
-
-            SimpleRow simpleRow = (SimpleRow) o;
-
-            if (imageResId != simpleRow.imageResId) return false;
-            if (item != null ? !item.equals(simpleRow.item) : simpleRow.item != null) return false;
-            if (text != null ? !text.equals(simpleRow.text) : simpleRow.text != null) return false;
-            return title != null ? title.equals(simpleRow.title) : simpleRow.title == null;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = super.hashCode();
-            result = 31 * result + (item != null ? item.hashCode() : 0);
-            result = 31 * result + (text != null ? text.hashCode() : 0);
-            result = 31 * result + (title != null ? title.hashCode() : 0);
-            result = 31 * result + imageResId;
-            return result;
-        }
-    }
-
-    public static class SimpleViewHolder extends RecyclerView.ViewHolder {
-        TextView title;
-        TextView text;
-        ImageView image;
-
-        SimpleViewHolder(View itemView) {
-            super(itemView);
-
-            title = itemView.findViewById(R.id.title);
-            text = itemView.findViewById(R.id.text);
-            image = itemView.findViewById(R.id.helper_image);
-        }
-
-        public void update(SimpleRow row, boolean hasAnyImages) {
-            title.setText(row.title);
-            text.setText(row.text);
-            image.setImageResource(row.imageResId);
-
-            if (hasAnyImages) {
-                image.setVisibility(View.VISIBLE);
-            } else {
-                image.setVisibility(View.GONE);
-            }
         }
     }
 

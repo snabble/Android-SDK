@@ -5,9 +5,13 @@ import io.snabble.sdk.ui.cart.adapter.Row
 
 class SimpleRow : Row() {
 
+    @JvmField
     var text: String? = null
+
+    @JvmField
     var title: String? = null
 
+    @JvmField
     @DrawableRes
     var imageResId = 0
 
