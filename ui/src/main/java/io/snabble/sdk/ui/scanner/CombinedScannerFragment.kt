@@ -20,7 +20,6 @@ import io.snabble.sdk.ShoppingCart.SimpleShoppingCartListener
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.GestureHandler
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.cart.ShoppingCartView
 import io.snabble.sdk.ui.cart.adapter.ShoppingCartAdapter
 import io.snabble.sdk.ui.utils.SnackbarUtils
 import io.snabble.sdk.ui.utils.behavior

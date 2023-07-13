@@ -9,7 +9,6 @@ import androidx.lifecycle.*
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.SnabbleUI.Event.*
-import io.snabble.sdk.ui.cart.ShoppingCartActivity
 import io.snabble.sdk.ui.checkout.CheckoutActivity
 import io.snabble.sdk.ui.coupon.CouponDetailActivity
 import io.snabble.sdk.ui.payment.*
@@ -152,7 +151,7 @@ object SnabbleUI {
                 SHOW_PAYDIREKT_INPUT ->
                     startActivity(context, PaydirektInputActivity::class.java, args, canGoBack = false)
 
-                SHOW_SHOPPING_CART -> startActivity(context, ShoppingCartActivity::class.java, args)
+                SHOW_SHOPPING_CART -> TODO("BUHUHUUUU Not ShoppingCartActivity anymoar!")
 
                 SHOW_PAYMENT_CREDENTIALS_LIST ->
                     startActivity(context, PaymentCredentialsListActivity::class.java, args)
