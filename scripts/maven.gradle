@@ -1,6 +1,5 @@
 task androidSourcesJar(type: Jar) {
-    archiveClassifier.set('sources')
-    from android.sourceSets.main.java.srcDirs
+   duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 }
 
 version = project.sdkVersion
@@ -20,7 +19,6 @@ afterEvaluate {
             }
             "$libName"(MavenPublication) {
                 from project.components.release
-                artifact androidSourcesJar
 
                 groupId = 'io.snabble.sdk'
                 artifactId = project.name

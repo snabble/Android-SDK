@@ -61,13 +61,13 @@ open class ExternalBillingFragment : BaseFragment(
                     }
                 }
 
-                val title = stringResource(id = R.string.Snabble_Payment_ExternalBilling_title)
+                val idDescriptor = stringResource(id = R.string.Snabble_Payment_ExternalBilling_username)
 
                 ThemeWrapper {
                     ExternalBillingLoginScreen(
                         onSaveClick = { username, password ->
                             projectId?.let {
-                                viewModel.login(title, username, password, it)
+                                viewModel.login(idDescriptor, username, password, it)
                             }
                         },
                         isInputValid = false,
