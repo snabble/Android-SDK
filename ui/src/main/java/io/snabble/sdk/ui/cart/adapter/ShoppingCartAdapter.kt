@@ -1,13 +1,13 @@
 package io.snabble.sdk.ui.cart.adapter
 
 import android.content.Context
-import android.content.res.Resources
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import io.snabble.sdk.ShoppingCart
-import io.snabble.sdk.Snabble.instance
+import io.snabble.sdk.ShoppingCart.Item
+import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.GestureHandler.DismissibleAdapter
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.UndoHelper
@@ -50,7 +50,7 @@ class ShoppingCartAdapter(private val parentView: View?, private val cart: Shopp
             .map { it.product }
             .map { it!!.imageUrl }
             .any { !it.isNullOrEmpty() }
-        submitList(buildRows(context.resources, cart), hasAnyImages)
+        submitList(buildRows(context, cart), hasAnyImages)
     }
 
     fun submitList(newList: List<Row>, hasAnyImages: Boolean) {
@@ -143,68 +143,83 @@ class ShoppingCartAdapter(private val parentView: View?, private val cart: Shopp
         private const val TYPE_PRODUCT = 0
         private const val TYPE_SIMPLE = 1
 
-        private fun sanitize(input: String?): String? {
-            return if (input != null && input == "") null else input
-        }
-
-        fun buildRows(resources: Resources, cart: ShoppingCart?): List<Row> {
-            val rows: MutableList<Row> = ArrayList(
-                cart!!.size() + 1
-            )
-            cart.forEach { item ->
-                if (item.type == ShoppingCart.ItemType.LINE_ITEM) {
-                    if (item.isDiscount) {
-                        val row = SimpleRow()
-                        row.item = item
-                        row.title = resources.getString(R.string.Snabble_Shoppingcart_discounts)
-                        row.imageResId = R.drawable.snabble_ic_percent
-                        row.text = sanitize(item.priceText)
-                        rows.add(row)
-                    } else if (item.isGiveaway) {
-                        val row = SimpleRow()
-                        row.item = item
-                        row.title = item.displayName
-                        row.imageResId = R.drawable.snabble_ic_gift
-                        row.text = resources.getString(R.string.Snabble_Shoppingcart_giveaway)
-                        rows.add(row)
-                    }
-                } else if (item.type == ShoppingCart.ItemType.COUPON) {
-                    val row = SimpleRow()
-                    row.item = item
-                    row.title = resources.getString(R.string.Snabble_Shoppingcart_coupon)
-                    row.text = item.displayName
-                    row.isDismissible = true
-                    rows.add(row)
-                } else if (item.type == ShoppingCart.ItemType.PRODUCT) {
-                    val row = ProductRow()
-                    val product = item.product
-                    val quantity = item.quantity
-                    if (product != null) {
-                        row.subtitle = sanitize(product.subtitle)
-                        row.imageUrl = sanitize(product.imageUrl)
-                    }
-                    row.name = sanitize(item.displayName)
-                    row.encodingUnit = item.unit
-                    row.priceText = item?.totalPriceText?.let(::sanitize) ?: ""
-                    row.quantity = quantity
-                    row.quantityText = item?.quantityText?.let(::sanitize) ?: ""
-                    row.editable = item.isEditable
-                    row.isDismissible = true
-                    row.manualDiscountApplied = item.isManualCouponApplied
-                    row.item = item
-                    rows.add(row)
+        fun buildRows(context: Context, cart: ShoppingCart?): List<Row> = cart
+            ?.mapNotNull { item -> item.asRow(context) }
+            ?.let { rows ->
+                if (cart.totalDepositPrice > 0) {
+                    val priceFormatter = Snabble.instance.checkedInProject.getValue()?.priceFormatter
+                    rows.toMutableList()
+                        .apply {
+                            add(
+                                SimpleRow(
+                                    text = priceFormatter?.format(cart.totalDepositPrice),
+                                    title = context.getString(R.string.Snabble_Shoppingcart_deposit),
+                                    imageResId = R.drawable.snabble_ic_deposit
+                                )
+                            )
+                        }
+                } else {
+                    rows
                 }
             }
-            val cartTotal = cart.totalDepositPrice
-            if (cartTotal > 0) {
-                val row = SimpleRow()
-                val priceFormatter = instance.checkedInProject.getValue()!!.priceFormatter
-                row.title = resources.getString(R.string.Snabble_Shoppingcart_deposit)
-                row.imageResId = R.drawable.snabble_ic_deposit
-                row.text = priceFormatter.format(cartTotal)
-                rows.add(row)
-            }
-            return rows
-        }
+            ?: emptyList()
     }
 }
+
+private fun Item.asRow(context: Context): Row? = when (type) {
+    ShoppingCart.ItemType.LINE_ITEM -> {
+        SimpleRow(
+            item = this,
+            text = if (isDiscount) {
+                priceText.sanitize()
+            } else if (isGiveaway) {
+                context.getString(R.string.Snabble_Shoppingcart_giveaway)
+            } else {
+                null
+            },
+            title = if (isDiscount) {
+                context.getString(R.string.Snabble_Shoppingcart_discounts)
+            } else if (isGiveaway) {
+                displayName
+            } else {
+                null
+            },
+            imageResId = if (isDiscount) {
+                R.drawable.snabble_ic_percent
+            } else if (isGiveaway) {
+                R.drawable.snabble_ic_gift
+            } else {
+                null
+            }
+        )
+    }
+
+    ShoppingCart.ItemType.COUPON -> {
+        SimpleRow(
+            item = this,
+            text = displayName,
+            title = context.getString(R.string.Snabble_Shoppingcart_coupon),
+            isDismissible = true
+        )
+    }
+
+    ShoppingCart.ItemType.PRODUCT -> {
+        ProductRow(
+            item = this,
+            isDismissible = true,
+            name = displayName.sanitize(),
+            subtitle = product?.subtitle?.sanitize(),
+            imageUrl = product?.imageUrl?.sanitize(),
+            encodingUnit = unit,
+            priceText = totalPriceText?.sanitize() ?: "",
+            quantityText = quantityText?.sanitize() ?: "",
+            quantity = quantity,
+            editable = isEditable,
+            manualDiscountApplied = isManualCouponApplied
+        )
+    }
+
+    else -> null
+}
+
+private fun String.sanitize(): String? = ifEmpty { null }

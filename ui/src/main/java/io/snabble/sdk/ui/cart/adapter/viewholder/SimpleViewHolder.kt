@@ -16,7 +16,7 @@ class SimpleViewHolder internal constructor(itemView: View) : RecyclerView.ViewH
     fun update(row: SimpleRow, hasAnyImages: Boolean) {
         title.text = row.title
         text.text = row.text
-        image.setImageResource(row.imageResId)
+        image.setImageResource(row.imageResId ?: 0)
         image.isVisible = hasAnyImages
     }
 }

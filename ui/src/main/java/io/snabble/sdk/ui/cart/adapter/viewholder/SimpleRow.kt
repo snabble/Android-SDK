@@ -1,37 +1,13 @@
 package io.snabble.sdk.ui.cart.adapter.viewholder
 
 import androidx.annotation.DrawableRes
+import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.ui.cart.adapter.Row
 
-class SimpleRow : Row() {
-
-    @JvmField
-    var text: String? = null
-
-    @JvmField
-    var title: String? = null
-
-    @JvmField
-    @DrawableRes
-    var imageResId = 0
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        if (!super.equals(other)) return false
-        val simpleRow = other as SimpleRow
-        if (imageResId != simpleRow.imageResId) return false
-        if (if (item != null) item != simpleRow.item else simpleRow.item != null) return false
-        if (if (text != null) text != simpleRow.text else simpleRow.text != null) return false
-        return if (title != null) title == simpleRow.title else simpleRow.title == null
-    }
-
-    override fun hashCode(): Int {
-        var result = super.hashCode()
-        result = 31 * result + if (item != null) item.hashCode() else 0
-        result = 31 * result + if (text != null) text.hashCode() else 0
-        result = 31 * result + if (title != null) title.hashCode() else 0
-        result = 31 * result + imageResId
-        return result
-    }
-}
+data class SimpleRow(
+    override val item: ShoppingCart.Item? = null,
+    override val isDismissible: Boolean = false,
+    @JvmField val text: String? = null,
+    @JvmField val title: String? = null,
+    @JvmField @DrawableRes val imageResId: Int? = null
+) : Row

@@ -11,6 +11,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -392,7 +393,8 @@ public class ShoppingCartView extends FrameLayout {
                 }
             };
 
-    private static String sanitize(String input) {
+    @Nullable
+    private static String sanitize(@Nullable String input) {
         if (input != null && input.equals("")) return null;
         return input;
     }
@@ -405,57 +407,63 @@ public class ShoppingCartView extends FrameLayout {
 
             if (item.getType() == ShoppingCart.ItemType.LINE_ITEM) {
                 if (item.isDiscount()) {
-                    SimpleRow row = new SimpleRow();
-                    row.item = item;
-                    row.title = resources.getString(R.string.Snabble_Shoppingcart_discounts);
-                    row.imageResId = R.drawable.snabble_ic_percent;
-                    row.text = sanitize(item.getPriceText());
+                    final SimpleRow row = new SimpleRow(
+                            item,
+                            false,
+                            sanitize(item.getPriceText()),
+                            resources.getString(R.string.Snabble_Shoppingcart_discounts),
+                            R.drawable.snabble_ic_percent
+                    );
                     rows.add(row);
                 } else if (item.isGiveaway()) {
-                    SimpleRow row = new SimpleRow();
-                    row.item = item;
-                    row.title = item.getDisplayName();
-                    row.imageResId = R.drawable.snabble_ic_gift;
-                    row.text = resources.getString(R.string.Snabble_Shoppingcart_giveaway);
+                    final SimpleRow row = new SimpleRow(
+                            item,
+                            false,
+                            resources.getString(R.string.Snabble_Shoppingcart_giveaway),
+                            item.getDisplayName(),
+                            R.drawable.snabble_ic_gift
+                    );
                     rows.add(row);
                 }
             } else if (item.getType() == ShoppingCart.ItemType.COUPON) {
-                SimpleRow row = new SimpleRow();
-                row.item = item;
-                row.title = resources.getString(R.string.Snabble_Shoppingcart_coupon);
-                row.text = item.getDisplayName();
-                row.isDismissible = true;
+                final SimpleRow row = new SimpleRow(
+                        item,
+                        true,
+                        item.getDisplayName(),
+                        resources.getString(R.string.Snabble_Shoppingcart_coupon),
+                        null
+                );
                 rows.add(row);
             } else if (item.getType() == ShoppingCart.ItemType.PRODUCT) {
-                final ProductRow row = new ProductRow();
                 final Product product = item.getProduct();
-                final int quantity = item.getQuantity();
 
-                if (product != null) {
-                    row.subtitle = sanitize(product.getSubtitle());
-                    row.imageUrl = sanitize(product.getImageUrl());
-                }
-
-                row.name = sanitize(item.getDisplayName());
-                row.encodingUnit = item.getUnit();
-                row.priceText = sanitize(item.getTotalPriceText());
-                row.quantity = quantity;
-                row.quantityText = sanitize(item.getQuantityText());
-                row.editable = item.isEditable();
-                row.isDismissible = true;
-                row.manualDiscountApplied = item.isManualCouponApplied();
-                row.item = item;
+                final ProductRow row = new ProductRow(
+                        item,
+                        true,
+                        sanitize(item.getDisplayName()),
+                        product != null ? sanitize(product.getSubtitle()) : null,
+                        product != null ? sanitize(product.getImageUrl()) : null,
+                        item.getUnit(),
+                        sanitize(item.getTotalPriceText()),
+                        sanitize(item.getQuantityText()),
+                        item.getQuantity(),
+                        item.isEditable(),
+                        item.isManualCouponApplied()
+                );
                 rows.add(row);
             }
         }
 
         int cartTotal = cart.getTotalDepositPrice();
         if (cartTotal > 0) {
-            SimpleRow row = new SimpleRow();
             PriceFormatter priceFormatter = Snabble.getInstance().getCheckedInProject().getValue().getPriceFormatter();
-            row.title = resources.getString(R.string.Snabble_Shoppingcart_deposit);
-            row.imageResId = R.drawable.snabble_ic_deposit;
-            row.text = priceFormatter.format(cartTotal);
+            final SimpleRow row = new SimpleRow(
+                    null,
+                    false,
+                    priceFormatter.format(cartTotal),
+                    resources.getString(R.string.Snabble_Shoppingcart_deposit),
+                    R.drawable.snabble_ic_deposit
+            );
             rows.add(row);
         }
 
@@ -496,7 +504,7 @@ public class ShoppingCartView extends FrameLayout {
 
         @Override
         public boolean isDismissible(int position) {
-            return getItem(position).isDismissible;
+            return getItem(position).isDismissible();
         }
 
         @Override
@@ -541,11 +549,11 @@ public class ShoppingCartView extends FrameLayout {
                     Row oldRow = list.get(oldItemPosition);
                     Row newRow = newList.get(newItemPosition);
 
-                    if (oldRow.item == null || newRow.item == null) {
+                    if (oldRow.getItem() == null || newRow.getItem() == null) {
                         return false;
                     }
 
-                    return oldRow.item == newRow.item;
+                    return oldRow.getItem() == newRow.getItem();
                 }
 
                 @Override
