@@ -3,6 +3,7 @@ package io.snabble.sdk.ui.scanner
 import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.accessibility.AccessibilityEvent
@@ -17,15 +18,18 @@ import io.snabble.accessibility.accessibility
 import io.snabble.accessibility.isTalkBackActive
 import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.ViolationNotification
+import io.snabble.sdk.shoppingcart.ItemType
+import io.snabble.sdk.shoppingcart.ShoppingCartListener
+import io.snabble.sdk.shoppingcart.Taxation
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.CheckoutBar
 import io.snabble.sdk.ui.cart.ShoppingCartView
 import io.snabble.sdk.ui.utils.behavior
 
-
 class ScannerBottomSheetView @JvmOverloads constructor(
-        context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : LinearLayout(context, attrs, defStyleAttr), ShoppingCart.ShoppingCartListener {
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+) : LinearLayout(context, attrs, defStyleAttr), ShoppingCartListener {
+
     val checkout: CheckoutBar
     val recyclerView: RecyclerView
     val onItemsChangedListener: MutableList<(cart: ShoppingCart) -> Unit> = mutableListOf()
@@ -41,10 +45,10 @@ class ScannerBottomSheetView @JvmOverloads constructor(
 
     val peekHeight: Int
         get() = if (cart?.isRestorable == true || cart?.isEmpty == false) {
-                    checkout.height
-                } else {
-                    checkout.priceHeight
-                }
+            checkout.height
+        } else {
+            checkout.priceHeight
+        }
 
     init {
         LayoutInflater.from(context).inflate(R.layout.snabble_view_cart, this)
@@ -66,7 +70,8 @@ class ScannerBottomSheetView @JvmOverloads constructor(
             onInitializeAccessibilityNodeInfo { info ->
                 val rowsCount = recyclerView.adapter?.itemCount ?: 0
                 val selectionMode = AccessibilityNodeInfoCompat.CollectionInfoCompat.SELECTION_MODE_NONE
-                val collectionInfo = AccessibilityNodeInfoCompat.CollectionInfoCompat.obtain(rowsCount, 1, false, selectionMode)
+                val collectionInfo =
+                    AccessibilityNodeInfoCompat.CollectionInfoCompat.obtain(rowsCount, 1, false, selectionMode)
                 info.setCollectionInfo(collectionInfo)
             }
         }
@@ -96,7 +101,7 @@ class ScannerBottomSheetView @JvmOverloads constructor(
                                 // make sure that you can always see the element before and after the current one
                                 if (pos == layoutManager.findFirstCompletelyVisibleItemPosition() && pos > 0) {
                                     recyclerView.smoothScrollToPosition(pos - 1)
-                                } else if(pos == layoutManager.findLastCompletelyVisibleItemPosition() && pos < recyclerView.adapter!!.itemCount) {
+                                } else if (pos == layoutManager.findLastCompletelyVisibleItemPosition() && pos < recyclerView.adapter!!.itemCount) {
                                     recyclerView.smoothScrollToPosition(pos + 1)
                                 }
                             }
@@ -133,7 +138,7 @@ class ScannerBottomSheetView @JvmOverloads constructor(
     override fun onItemAdded(list: ShoppingCart?, item: ShoppingCart.Item?) {
         update()
 
-        if (item?.type == ShoppingCart.ItemType.PRODUCT) {
+        if (item?.type == ItemType.PRODUCT) {
             recyclerView.scrollToPosition(0)
         }
 
@@ -162,7 +167,7 @@ class ScannerBottomSheetView @JvmOverloads constructor(
     override fun onPricesUpdated(list: ShoppingCart?) = update()
     override fun onCheckoutLimitReached(list: ShoppingCart?) = update()
     override fun onOnlinePaymentLimitReached(list: ShoppingCart?) = update()
-    override fun onTaxationChanged(list: ShoppingCart?, taxation: ShoppingCart.Taxation?) {}
-    override fun onViolationDetected(violations: MutableList<ViolationNotification>) {}
+    override fun onTaxationChanged(list: ShoppingCart?, taxation: Taxation?) {}
+    override fun onViolationDetected(violations: List<ViolationNotification?>) {}
     override fun onCartDataChanged(list: ShoppingCart?) = update()
 }

@@ -167,13 +167,13 @@ class ShoppingCartItemViewHolder internal constructor(
     }
 
     private fun setupQuantityButtons(product: ProductRow) {
-        updateMinusButtonIcon(product.item.quantity)
+        updateMinusButtonIcon(product.item.getQuantity())
         minus.setOnClickListener {
-            val newQuantity = product.item.quantity - 1
+            val newQuantity = product.item.getQuantity() - 1
             if (newQuantity <= 0) {
                 undoHelper.removeAndShowUndoSnackbar(bindingAdapterPosition, product.item)
             } else {
-                product.item.quantity = newQuantity
+                product.item.setQuantity(newQuantity)
                 Telemetry.event(Telemetry.Event.CartAmountChanged, product.item.product)
             }
 
@@ -181,9 +181,9 @@ class ShoppingCartItemViewHolder internal constructor(
         }
 
         plus.setOnClickListener {
-            product.item.quantity++
+            product.item.setQuantity(product.item.getQuantity().inc())
 
-            updateMinusButtonIcon(product.item.quantity)
+            updateMinusButtonIcon(product.item.getQuantity())
 
             Telemetry.event(Telemetry.Event.CartAmountChanged, product.item.product)
         }
@@ -191,7 +191,7 @@ class ShoppingCartItemViewHolder internal constructor(
 
     private fun setupQuantityEditView(product: ProductRow) {
         quantityEditApply.setOneShotClickListener {
-            product.item.quantity = quantityEdit.getTextAsNumericValue() ?: 0
+            product.item.setQuantity(quantityEdit.getTextAsNumericValue() ?: 0)
             hideInput()
             quantityEdit.clearFocus()
             Telemetry.event(Telemetry.Event.CartAmountChanged, product.item.product)
@@ -206,7 +206,7 @@ class ShoppingCartItemViewHolder internal constructor(
             // TODO: Why different actions? Our keyboard mode?
             if (actionId == EditorInfo.IME_ACTION_DONE
                 || (event.action == KeyEvent.ACTION_DOWN
-                    && event.keyCode == KeyEvent.KEYCODE_ENTER)
+                        && event.keyCode == KeyEvent.KEYCODE_ENTER)
             ) {
                 quantityEditApply.callOnClick()
                 true

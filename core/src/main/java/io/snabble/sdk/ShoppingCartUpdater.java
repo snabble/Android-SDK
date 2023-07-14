@@ -24,6 +24,7 @@ import io.snabble.sdk.checkout.PaymentMethodInfo;
 import io.snabble.sdk.checkout.SignedCheckoutInfo;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.coupons.Coupon;
+import io.snabble.sdk.shoppingcart.ItemType;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
@@ -105,7 +106,7 @@ class ShoppingCartUpdater {
 
             @Override
             public void onNoAvailablePaymentMethodFound() {
-               error(true);
+                error(true);
             }
 
             @Override
@@ -150,9 +151,9 @@ class ShoppingCartUpdater {
             Set<String> referrerIds = new HashSet<>();
             Set<String> requiredIds = new HashSet<>();
 
-            for (int i=0; i<cart.size(); i++) {
+            for (int i = 0; i < cart.size(); i++) {
                 ShoppingCart.Item item = cart.get(i);
-                if (item.getType() != ShoppingCart.ItemType.COUPON) {
+                if (item.getType() != ItemType.COUPON) {
                     requiredIds.add(item.getId());
                     referrerIds.add(item.getId());
                 }

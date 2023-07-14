@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
@@ -28,6 +29,8 @@ import io.snabble.sdk.checkout.PaymentMethodInfo;
 import io.snabble.sdk.googlepay.GooglePayHelper;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
+import io.snabble.sdk.shoppingcart.ShoppingCartListener;
+import io.snabble.sdk.shoppingcart.SimpleShoppingCartListener;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.utils.GsonHolder;
 
@@ -63,8 +66,8 @@ public class PaymentSelectionHelper {
     private PaymentCredentials lastAddedPaymentCredentials;
     private boolean googlePayIsReady = false;
 
-    private final ShoppingCart.ShoppingCartListener shoppingCartListener =
-            new ShoppingCart.SimpleShoppingCartListener() {
+    private final ShoppingCartListener shoppingCartListener =
+            new SimpleShoppingCartListener() {
                 @Override
                 public void onChanged(ShoppingCart list) {
                     update();
@@ -166,7 +169,7 @@ public class PaymentSelectionHelper {
         updateGooglePayIsReadyToPay();
 
         updateEntries();
-
+        Log.d("xx", "update:  " + entries.size());
         if (entries.size() > 0 && cart.size() > 0) {
             if (lastAddedPaymentCredentials != null) {
                 for (Entry e : entries) {
@@ -280,6 +283,7 @@ public class PaymentSelectionHelper {
     private void updateEntries() {
         ArrayList<Entry> entries = new ArrayList<>();
 
+        Log.d("xx", "updateEntries: " + (cart != null));
         if (cart == null) {
             this.entries = entries;
             this.isOffline = false;
@@ -288,8 +292,11 @@ public class PaymentSelectionHelper {
 
         List<PaymentMethod> projectPaymentMethods = project.getAvailablePaymentMethods();
         List<PaymentMethodInfo> availablePaymentMethods = cart.getAvailablePaymentMethods();
+        Log.d("xx", "updateEntries: " + projectPaymentMethods.toString());
         if (availablePaymentMethods == null) {
             for (PaymentMethod paymentMethod : projectPaymentMethods) {
+                Log.d("xx", "method: " + paymentMethod);
+                Log.d("xx", "method: " + paymentMethod.isOfflineMethod());
                 if (paymentMethod.isOfflineMethod()) {
                     final Entry e = new Entry();
                     e.text = names.get(paymentMethod);
@@ -301,6 +308,7 @@ public class PaymentSelectionHelper {
                         e.iconResId = iconResId;
                         entries.add(e);
                     }
+                    Log.d("xx", "updateEntries: " + e);
                 }
             }
 
@@ -415,7 +423,6 @@ public class PaymentSelectionHelper {
                 }
             }
         }
-
         this.entries = entries;
         this.isOffline = false;
     }
@@ -464,7 +471,8 @@ public class PaymentSelectionHelper {
     }
 
     public boolean shouldShowPayButton() {
-        boolean onlinePaymentAvailable = cart.getAvailablePaymentMethods() != null && !cart.getAvailablePaymentMethods().isEmpty();
+        final List<PaymentMethodInfo> availablePaymentMethods = cart.getAvailablePaymentMethods();
+        boolean onlinePaymentAvailable = availablePaymentMethods != null && !availablePaymentMethods.isEmpty();
         return cart.getTotalPrice() >= 0 && (onlinePaymentAvailable || selectedEntry.getValue() != null);
     }
 

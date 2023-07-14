@@ -506,7 +506,7 @@ class Project internal constructor(jsonObject: JsonObject) {
             .addInterceptor(AcceptedLanguageInterceptor())
             .build()
 
-        _shoppingCart.tryEmit(ShoppingCart(this))
+        _shoppingCart.tryEmit(ShoppingCart(this, priceFormatter))
 
         shoppingCartStorage = ShoppingCartStorage(this)
 
