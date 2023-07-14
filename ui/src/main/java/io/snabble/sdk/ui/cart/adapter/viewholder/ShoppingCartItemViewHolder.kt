@@ -91,7 +91,7 @@ class ShoppingCartItemViewHolder internal constructor(
 
         setupUserWeighedQuantityControls(product)
 
-        setupQuantityButtons(product)
+        product.item?.let(::setupQuantityButtons)
 
         setupQuantityEditView(product)
     }
@@ -167,26 +167,26 @@ class ShoppingCartItemViewHolder internal constructor(
         }
     }
 
-    private fun setupQuantityButtons(product: ProductRow) {
-        updateMinusButtonIcon(product.item?.quantity ?: 1) // TODO: Refactor
+    private fun setupQuantityButtons(item: ShoppingCart.Item) {
+        updateMinusButtonIcon(item.quantity)
         minus.setOnClickListener {
-            val newQuantity = product.item?.quantity?.minus(1) ?: 0 // TODO: Refactor
+            val newQuantity = item.quantity - 1
             if (newQuantity <= 0) {
-                undoHelper.removeAndShowUndoSnackbar(bindingAdapterPosition, product.item)
+                undoHelper.removeAndShowUndoSnackbar(bindingAdapterPosition, item)
             } else {
-                product.item?.quantity = newQuantity
-                Telemetry.event(Telemetry.Event.CartAmountChanged, product.item?.product)
+                item.quantity = newQuantity
+                Telemetry.event(Telemetry.Event.CartAmountChanged, item.product)
             }
 
             updateMinusButtonIcon(newQuantity)
         }
 
         plus.setOnClickListener {
-            product.item?.quantity = product.item?.quantity?.plus(1) ?: 1 // TODO: Refactor
+            item.quantity = item.quantity + 1
 
-            updateMinusButtonIcon(product.item?.quantity ?: 1) // TODO: Refactor
+            updateMinusButtonIcon(item.quantity)
 
-            Telemetry.event(Telemetry.Event.CartAmountChanged, product.item?.product)
+            Telemetry.event(Telemetry.Event.CartAmountChanged, item.product)
         }
     }
 
@@ -204,11 +204,11 @@ class ShoppingCartItemViewHolder internal constructor(
             updateQuantityEditApplyVisibility(product.quantity)
         })
         quantityEdit.setOnEditorActionListener { _, actionId, event ->
-            // TODO: Why different actions? Our keyboard mode?
-            if (actionId == EditorInfo.IME_ACTION_DONE
-                || (event.action == KeyEvent.ACTION_DOWN
-                    && event.keyCode == KeyEvent.KEYCODE_ENTER)
-            ) {
+            val isActionKeyboardDone = actionId == EditorInfo.IME_ACTION_DONE
+            // e.g. when using a hardware keyboard:
+            val isActionPressedEnter = event.action == KeyEvent.ACTION_DOWN &&
+                event.keyCode == KeyEvent.KEYCODE_ENTER
+            if (isActionKeyboardDone || isActionPressedEnter) {
                 quantityEditApply.callOnClick()
                 true
             } else {
@@ -266,7 +266,7 @@ private fun getReducedPriceLabelContentDescription(
 private fun View.contentDescription(
     predicate: () -> Boolean,
     @StringRes stringRes: Int,
-    vararg args: String,
+    vararg args: String?,
 ) {
     contentDescription = if (predicate()) context.getString(stringRes, *args) else null
 }

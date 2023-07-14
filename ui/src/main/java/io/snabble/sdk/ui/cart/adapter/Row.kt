@@ -6,6 +6,7 @@ abstract class Row {
 
     @JvmField
     var item: ShoppingCart.Item? = null
+
     @JvmField
     var isDismissible = false
 

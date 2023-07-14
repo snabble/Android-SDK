@@ -6,18 +6,28 @@ class ProductRow : Row() {
 
     @JvmField
     var name: String? = null
+
     @JvmField
     var subtitle: String? = null
+
     @JvmField
     var imageUrl: String? = null
+
     @JvmField
     var encodingUnit: Unit? = null
-    lateinit var priceText: String
-    lateinit var quantityText: String
+
+    @JvmField
+    var priceText: String? = null
+
+    @JvmField
+    var quantityText: String? = null
+
     @JvmField
     var quantity = 0
+
     @JvmField
     var editable = false
+
     @JvmField
     var manualDiscountApplied = false
 
