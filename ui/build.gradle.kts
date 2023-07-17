@@ -114,4 +114,3 @@ dependencies {
     androidTestImplementation(libs.test.espressoCore)
     androidTestImplementation(libs.test.runner)
 }
-
