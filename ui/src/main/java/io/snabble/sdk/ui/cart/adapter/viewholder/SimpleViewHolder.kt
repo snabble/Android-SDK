@@ -13,7 +13,7 @@ class SimpleViewHolder internal constructor(itemView: View) : RecyclerView.ViewH
     val text: TextView = itemView.findViewById(R.id.text)
     val image: ImageView = itemView.findViewById(R.id.helper_image)
 
-    fun update(row: SnabbleSimpleRow, hasAnyImages: Boolean) {
+    fun update(row: SimpleRow, hasAnyImages: Boolean) {
         title.text = row.title
         text.text = row.text
         image.setImageResource(row.imageResId ?: 0)

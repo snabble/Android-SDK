@@ -8,7 +8,7 @@ import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.adapter.Row
 import io.snabble.sdk.ui.utils.emptyToNull
 
-data class SnabbleSimpleRow(
+data class SimpleRow(
     override val item: ShoppingCart.Item? = null,
     override val isDismissible: Boolean = false,
     @JvmField val text: String? = null,
@@ -16,23 +16,23 @@ data class SnabbleSimpleRow(
     @JvmField @DrawableRes val imageResId: Int? = null
 ) : Row
 
-internal fun ShoppingCart.Item.simpleRowFromCoupon(context: Context): SnabbleSimpleRow = SnabbleSimpleRow(
+internal fun ShoppingCart.Item.simpleRowFromCoupon(context: Context): SimpleRow = SimpleRow(
     item = this,
     text = displayName,
     title = context.getString(R.string.Snabble_Shoppingcart_coupon),
     isDismissible = true
 )
 
-internal fun ShoppingCart.Item.simpleRowFromLineItem(context: Context): SnabbleSimpleRow? =
+internal fun ShoppingCart.Item.simpleRowFromLineItem(context: Context): SimpleRow? =
     if (isDiscount) {
-        SnabbleSimpleRow(
+        SimpleRow(
             item = this,
             text = priceText.emptyToNull(),
             title = context.getString(R.string.Snabble_Shoppingcart_discounts),
             imageResId = R.drawable.snabble_ic_percent
         )
     } else if (isGiveaway) {
-        SnabbleSimpleRow(
+        SimpleRow(
             item = this,
             text = context.getString(R.string.Snabble_Shoppingcart_giveaway),
             title = displayName,
@@ -42,10 +42,10 @@ internal fun ShoppingCart.Item.simpleRowFromLineItem(context: Context): SnabbleS
         null
     }
 
-internal fun ShoppingCart.depositItem(context: Context): SnabbleSimpleRow? =
+internal fun ShoppingCart.depositItem(context: Context): SimpleRow? =
     if (totalDepositPrice > 0) {
         val priceFormatter = Snabble.instance.checkedInProject.getValue()?.priceFormatter
-        SnabbleSimpleRow(
+        SimpleRow(
             text = priceFormatter?.format(totalDepositPrice),
             title = context.getString(R.string.Snabble_Shoppingcart_deposit),
             imageResId = R.drawable.snabble_ic_deposit

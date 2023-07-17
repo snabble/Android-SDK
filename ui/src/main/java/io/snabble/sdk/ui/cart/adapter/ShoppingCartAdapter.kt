@@ -12,7 +12,7 @@ import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.UndoHelper
 import io.snabble.sdk.ui.cart.adapter.viewholder.ShoppingCartItemViewHolder
 import io.snabble.sdk.ui.cart.adapter.viewholder.SimpleViewHolder
-import io.snabble.sdk.ui.cart.adapter.viewholder.SnabbleSimpleRow
+import io.snabble.sdk.ui.cart.adapter.viewholder.SimpleRow
 import io.snabble.sdk.ui.cart.adapter.viewholder.depositItem
 import io.snabble.sdk.ui.cart.adapter.viewholder.simpleRowFromCoupon
 import io.snabble.sdk.ui.cart.adapter.viewholder.simpleRowFromLineItem
@@ -48,7 +48,7 @@ class ShoppingCartAdapter(
         when (getItemViewType(position)) {
             TYPE_SIMPLE -> {
                 val viewHolder = holder as SimpleViewHolder
-                viewHolder.update(getItem(position) as SnabbleSimpleRow, hasAnyImages)
+                viewHolder.update(getItem(position) as SimpleRow, hasAnyImages)
             }
 
             TYPE_PRODUCT -> {
@@ -59,7 +59,7 @@ class ShoppingCartAdapter(
     }
 
     override fun getItemViewType(position: Int): Int =
-        if (getItem(position) is SnabbleSimpleRow) {
+        if (getItem(position) is SimpleRow) {
             TYPE_SIMPLE
         } else {
             TYPE_PRODUCT
