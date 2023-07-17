@@ -70,7 +70,7 @@ compose-uiUtil = { module = "androidx.compose.ui:ui-util", version.ref = "androi
 compose-uiViewBinding = { module = "androidx.compose.ui:ui-viewbinding", version.ref = "androidx-compose-ui" }
 compose-iconsExtended = { module = "androidx.compose.material:material-icons-extended", version.ref = "androidx-compose-material" }
 commonsIo = "commons-io:commons-io:2.5"
-datatrans-androidSdk = "ch.datatrans:android-sdk:3.1.1"
+datatrans-androidSdk = "ch.datatrans:android-sdk:3.2.0"
 # @pin until a newer version been tested successfully: https://developer.android.com/studio/write/java8-support#library-desugaring-versions
 desugarJdkLibs = "com.android.tools:desugar_jdk_libs:1.1.5"
 googlePlayServices-maps = "com.google.android.gms:play-services-maps:18.1.0"

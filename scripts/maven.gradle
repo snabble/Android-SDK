@@ -1,7 +1,3 @@
-task androidSourcesJar(type: Jar) {
-   duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
-}
-
 version = project.sdkVersion
 group = 'io.snabble.sdk'
 
