@@ -42,5 +42,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?attr/textAppearanceBodySmall"
             tools:text="0,25 €" />
+
     </LinearLayout>
+
 </RelativeLayout>

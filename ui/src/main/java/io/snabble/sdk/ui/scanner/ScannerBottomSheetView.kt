@@ -19,10 +19,8 @@ import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.ViolationNotification
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.CheckoutBar
-import io.snabble.sdk.ui.cart.ShoppingCartView
 import io.snabble.sdk.ui.cart.adapter.ShoppingCartAdapter
 import io.snabble.sdk.ui.utils.behavior
-
 
 class ScannerBottomSheetView @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -32,12 +30,10 @@ class ScannerBottomSheetView @JvmOverloads constructor(
     val onItemsChangedListener: MutableList<(cart: ShoppingCart) -> Unit> = mutableListOf()
 
     var shoppingCartAdapter: ShoppingCartAdapter? = null
-        set(value) {
-            field = value
-            if (cart != null) {
-                value?.fetchFrom(cart)
-            }
-            recyclerView.adapter = value
+        set(adapter) {
+            field = adapter
+            cart?.let { adapter?.fetchFrom(it) }
+            recyclerView.adapter = adapter
         }
 
     val peekHeight: Int
@@ -119,16 +115,16 @@ class ScannerBottomSheetView @JvmOverloads constructor(
     }
 
     var cart: ShoppingCart? = null
-        set(value) {
-            field = value
-            if (value != null) {
+        set(cart) {
+            field = cart
+            if (cart != null) {
                 shoppingCartAdapter?.fetchFrom(cart)
             }
-            value?.addListener(this)
+            cart?.addListener(this)
         }
 
     private fun update() {
-        shoppingCartAdapter?.fetchFrom(cart)
+        cart?.let { shoppingCartAdapter?.fetchFrom(it) }
     }
 
     override fun onItemAdded(list: ShoppingCart?, item: ShoppingCart.Item?) {

@@ -40,7 +40,7 @@ import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.cart.adapter.ProductRow;
 import io.snabble.sdk.ui.cart.adapter.Row;
 import io.snabble.sdk.ui.cart.adapter.viewholder.ShoppingCartItemViewHolder;
-import io.snabble.sdk.ui.cart.adapter.viewholder.SimpleRow;
+import io.snabble.sdk.ui.cart.adapter.viewholder.SnabbleSimpleRow;
 import io.snabble.sdk.ui.cart.adapter.viewholder.SimpleViewHolder;
 import io.snabble.sdk.ui.checkout.ViolationNotificationUtils;
 import io.snabble.sdk.ui.telemetry.Telemetry;
@@ -407,7 +407,7 @@ public class ShoppingCartView extends FrameLayout {
 
             if (item.getType() == ShoppingCart.ItemType.LINE_ITEM) {
                 if (item.isDiscount()) {
-                    final SimpleRow row = new SimpleRow(
+                    final SnabbleSimpleRow row = new SnabbleSimpleRow(
                             item,
                             false,
                             sanitize(item.getPriceText()),
@@ -416,7 +416,7 @@ public class ShoppingCartView extends FrameLayout {
                     );
                     rows.add(row);
                 } else if (item.isGiveaway()) {
-                    final SimpleRow row = new SimpleRow(
+                    final SnabbleSimpleRow row = new SnabbleSimpleRow(
                             item,
                             false,
                             resources.getString(R.string.Snabble_Shoppingcart_giveaway),
@@ -426,7 +426,7 @@ public class ShoppingCartView extends FrameLayout {
                     rows.add(row);
                 }
             } else if (item.getType() == ShoppingCart.ItemType.COUPON) {
-                final SimpleRow row = new SimpleRow(
+                final SnabbleSimpleRow row = new SnabbleSimpleRow(
                         item,
                         true,
                         item.getDisplayName(),
@@ -457,7 +457,7 @@ public class ShoppingCartView extends FrameLayout {
         int cartTotal = cart.getTotalDepositPrice();
         if (cartTotal > 0) {
             PriceFormatter priceFormatter = Snabble.getInstance().getCheckedInProject().getValue().getPriceFormatter();
-            final SimpleRow row = new SimpleRow(
+            final SnabbleSimpleRow row = new SnabbleSimpleRow(
                     null,
                     false,
                     priceFormatter.format(cartTotal),
@@ -495,7 +495,7 @@ public class ShoppingCartView extends FrameLayout {
 
         @Override
         public int getItemViewType(int position) {
-            if (getItem(position) instanceof SimpleRow) {
+            if (getItem(position) instanceof SnabbleSimpleRow) {
                 return TYPE_SIMPLE;
             }
 
@@ -600,7 +600,7 @@ public class ShoppingCartView extends FrameLayout {
                 viewHolder.bindTo((ProductRow) getItem(position), hasAnyImages);
             } else {
                 SimpleViewHolder viewHolder = (SimpleViewHolder) holder;
-                viewHolder.update((SimpleRow) getItem(position), hasAnyImages);
+                viewHolder.update((SnabbleSimpleRow) getItem(position), hasAnyImages);
             }
         }
 

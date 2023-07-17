@@ -2,6 +2,7 @@ package io.snabble.sdk.ui.cart.adapter
 
 import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.Unit
+import io.snabble.sdk.ui.utils.emptyToNull
 
 data class ProductRow(
     override val item: ShoppingCart.Item? = null,
@@ -16,3 +17,17 @@ data class ProductRow(
     val editable: Boolean = false,
     val manualDiscountApplied: Boolean = false,
 ) : Row
+
+internal fun ShoppingCart.Item.productRowFromProduct(): ProductRow = ProductRow(
+    item = this,
+    isDismissible = true,
+    name = displayName.emptyToNull(),
+    subtitle = product?.subtitle?.emptyToNull(),
+    imageUrl = product?.imageUrl?.emptyToNull(),
+    encodingUnit = unit,
+    priceText = totalPriceText?.emptyToNull(),
+    quantityText = quantityText?.emptyToNull(),
+    quantity = quantity,
+    editable = isEditable,
+    manualDiscountApplied = isManualCouponApplied
+)
