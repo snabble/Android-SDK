@@ -7,6 +7,17 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.71.0]
+### Changed
+* Dependency updates and remove obsolete samples (#141)
+* core: Update onActivityResult deprecation info for Google Pay integration (#139)
+* ui: Change external billing payment method hint (#143)
+* ui: Update external billing description (#142)
+* ui: Solve ProgressDialog deprecation (#138)
+### Fixed
+* ui: Fix ui bug in external billing login (#144)
+* ui: Fix ui for user weighted items (#140)
+
 ## [0.70.4]
 ### Added
 * Add method to filter ratings events  #135
@@ -15,10 +26,8 @@ All notable changes to this project will be documented in this file.
 ### Changed
 * Convert events.kt to kotlin #135
 ### Fixed
-* payment method related crash #133
-* everal deprecations #123
-
-
+* Fix payment method related crash #133
+* Fix several deprecations #123
 
 ## [0.70.3]
 ### Added
