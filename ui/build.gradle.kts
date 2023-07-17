@@ -114,9 +114,3 @@ dependencies {
     androidTestImplementation(libs.test.espressoCore)
     androidTestImplementation(libs.test.runner)
 }
-
-tasks{
-    withType(Jar::class.java){
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    }
-}
