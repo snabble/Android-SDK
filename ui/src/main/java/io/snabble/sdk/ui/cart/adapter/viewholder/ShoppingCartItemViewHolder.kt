@@ -26,7 +26,7 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.Unit
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.UndoHelper
-import io.snabble.sdk.ui.cart.adapter.ProductRow
+import io.snabble.sdk.ui.cart.adapter.models.ProductRow
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.InputFilterMinMax
 import io.snabble.sdk.ui.utils.inputMethodManager

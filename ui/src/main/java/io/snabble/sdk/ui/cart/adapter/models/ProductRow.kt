@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.cart.adapter
+package io.snabble.sdk.ui.cart.adapter.models
 
 import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.Unit

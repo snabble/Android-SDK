@@ -6,6 +6,7 @@ import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.cart.adapter.models.SimpleRow
 
 class SimpleViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
 

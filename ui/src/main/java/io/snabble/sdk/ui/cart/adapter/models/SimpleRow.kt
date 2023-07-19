@@ -1,11 +1,10 @@
-package io.snabble.sdk.ui.cart.adapter.viewholder
+package io.snabble.sdk.ui.cart.adapter.models
 
 import android.content.Context
 import androidx.annotation.DrawableRes
 import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.cart.adapter.Row
 import io.snabble.sdk.ui.utils.emptyToNull
 
 data class SimpleRow(
