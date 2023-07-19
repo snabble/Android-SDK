@@ -10,13 +10,15 @@ import io.snabble.sdk.ShoppingCart.Item
 import io.snabble.sdk.ui.GestureHandler.DismissibleAdapter
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.UndoHelper
+import io.snabble.sdk.ui.cart.adapter.models.DiscountRow
 import io.snabble.sdk.ui.cart.adapter.models.ProductRow
 import io.snabble.sdk.ui.cart.adapter.models.Row
 import io.snabble.sdk.ui.cart.adapter.models.SimpleRow
+import io.snabble.sdk.ui.cart.adapter.models.couponRow
 import io.snabble.sdk.ui.cart.adapter.models.depositItem
 import io.snabble.sdk.ui.cart.adapter.models.productRowFromProduct
-import io.snabble.sdk.ui.cart.adapter.models.simpleRowFromCoupon
 import io.snabble.sdk.ui.cart.adapter.models.simpleRowFromLineItem
+import io.snabble.sdk.ui.cart.adapter.viewholder.DiscountViewHolder
 import io.snabble.sdk.ui.cart.adapter.viewholder.ShoppingCartItemViewHolder
 import io.snabble.sdk.ui.cart.adapter.viewholder.SimpleViewHolder
 import io.snabble.sdk.ui.telemetry.Telemetry
@@ -44,6 +46,8 @@ class ShoppingCartAdapter(
             undoHelper = this
         )
 
+        TYPE_DISCOUNT -> DiscountViewHolder(view = parent.inflate(R.layout.snabble_item_shoppingcart_discount))
+
         else -> throw IllegalArgumentException("Missing ViewHolder for viewType <$viewType>.")
     }
 
@@ -58,15 +62,21 @@ class ShoppingCartAdapter(
                 val viewHolder = holder as ShoppingCartItemViewHolder
                 viewHolder.bindTo((getItem(position) as ProductRow), hasAnyImages)
             }
+
+            TYPE_DISCOUNT -> {
+                val viewHolder = holder as DiscountViewHolder
+                viewHolder.update(getItem(position) as DiscountRow)
+            }
         }
     }
 
-    override fun getItemViewType(position: Int): Int =
-        if (getItem(position) is SimpleRow) {
-            TYPE_SIMPLE
-        } else {
-            TYPE_PRODUCT
-        }
+    override fun getItemViewType(position: Int): Int = when (getItem(position)) {
+        is SimpleRow -> TYPE_SIMPLE
+        is DiscountRow -> TYPE_DISCOUNT
+        is ProductRow -> TYPE_PRODUCT
+
+        else -> throw IllegalStateException("Unknown ViewTyp <$this>")
+    }
 
     override fun getItemCount(): Int = list.size
 
@@ -140,6 +150,7 @@ class ShoppingCartAdapter(
 
         private const val TYPE_PRODUCT = 0
         private const val TYPE_SIMPLE = 1
+        private const val TYPE_DISCOUNT = 2
 
         fun buildRows(context: Context, cart: ShoppingCart): List<Row> = cart
             .map { item: Item -> item.asRow(context) }
@@ -152,7 +163,7 @@ class ShoppingCartAdapter(
 private fun Item.asRow(context: Context): Row? = when (type) {
     ShoppingCart.ItemType.LINE_ITEM -> simpleRowFromLineItem(context)
 
-    ShoppingCart.ItemType.COUPON -> simpleRowFromCoupon(context)
+    ShoppingCart.ItemType.COUPON -> couponRow()
 
     ShoppingCart.ItemType.PRODUCT -> productRowFromProduct()
 

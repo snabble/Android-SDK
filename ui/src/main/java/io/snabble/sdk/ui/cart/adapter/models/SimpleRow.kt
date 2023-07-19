@@ -15,13 +15,6 @@ data class SimpleRow(
     @JvmField @DrawableRes val imageResId: Int? = null
 ) : Row
 
-internal fun ShoppingCart.Item.simpleRowFromCoupon(context: Context): SimpleRow = SimpleRow(
-    item = this,
-    text = displayName,
-    title = context.getString(R.string.Snabble_Shoppingcart_coupon),
-    isDismissible = true
-)
-
 internal fun ShoppingCart.Item.simpleRowFromLineItem(context: Context): SimpleRow? =
     if (isDiscount) {
         SimpleRow(
