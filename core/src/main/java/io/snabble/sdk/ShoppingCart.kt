@@ -52,10 +52,8 @@ class ShoppingCart internal constructor(
     init {
         updateTimestamp()
         project?.let {
-            Log.d("xx", ": ")
             updater = ShoppingCartUpdater(it, this)
         }
-        Log.d("xx", ":  $updater")
     }
 
     fun initWithData(data: ShoppingCartData) {
@@ -449,7 +447,7 @@ class ShoppingCart internal constructor(
     /**
      * Gets a list of invalid products that were rejected by the backend.
      */
-    var invalidProducts: List<Product>
+    var invalidProducts: List<Product>?
         get() = shoppingCartData.value.invalidProducts ?: emptyList()
         set(invalidProducts) {
             shoppingCartData.value.invalidProducts = invalidProducts
@@ -1134,21 +1132,27 @@ class ShoppingCart internal constructor(
                 val product = cartItem.product
                 val quantity = cartItem.getQuantity()
                 val scannedCode = cartItem.scannedCode
-                var encodingUnit = product?.getEncodingUnit(scannedCode?.templateName, scannedCode?.lookupCode)
-                if (scannedCode?.embeddedUnit != null) {
-                    encodingUnit = scannedCode.embeddedUnit
-                }
+                val encodingUnit = scannedCode?.embeddedUnit ?: product?.getEncodingUnit(
+                    scannedCode?.templateName,
+                    scannedCode?.lookupCode
+                )
+
                 val backendCartItem = BackendCartItem(
                     id = cartItem.id,
                     sku = product?.sku.toString(),
-                    scannedCode = getScannedCode(product, scannedCode, cartItem),
+                    scannedCode = getScannedCode(scannedCode, cartItem)
+                        ?: product?.primaryCode?.lookupCode
+                        ?: scannedCode?.code,
                     weightUnit = encodingUnit?.id,
-                    amount = if (product?.type != Product.Type.UserWeighed) quantity else 1,
+                    amount = if (product?.type != Product.Type.UserWeighed
+                        && cartItem.unit != Unit.PIECE
+                        && cartItem.unit != Unit.PRICE
+                        && cartItem.unit != null) quantity else 1,
                     units = if (cartItem.unit == Unit.PIECE) cartItem.getEffectiveQuantity(true) else null,
                     price = if (cartItem.unit == Unit.PRICE) cartItem.localTotalPrice
                     else if (scannedCode?.hasPrice() == true) scannedCode.price else null,
                     weight = if (product?.type == Product.Type.UserWeighed) quantity
-                    else if (cartItem.unit != Unit.PRICE || cartItem.unit != Unit.PIECE || cartItem.unit != null)
+                    else if (cartItem.unit != Unit.PRICE && cartItem.unit != Unit.PIECE && cartItem.unit != null)
                         cartItem.getEffectiveQuantity(true)
                     else null
                 )
@@ -1179,7 +1183,7 @@ class ShoppingCart internal constructor(
         return items
     }
 
-    private fun getScannedCode(product: Product?, scannedCode: ScannedCode?, cartItem: Item): String? {
+    private fun getScannedCode(scannedCode: ScannedCode?, cartItem: Item): String? {
         val templateName = scannedCode?.templateName
         return if (cartItem.unit != Unit.PIECE && scannedCode?.embeddedData != 0 || templateName == null) {
             null
@@ -1189,7 +1193,7 @@ class ShoppingCart internal constructor(
             val newCode: ScannedCode? = codeTemplate?.code(scannedCode.lookupCode)
                 ?.embed(cartItem.effectiveQuantity)
                 ?.buildCode()
-            newCode?.code ?: product?.primaryCode?.lookupCode ?: scannedCode.code
+            newCode?.code
         }
     }
 
