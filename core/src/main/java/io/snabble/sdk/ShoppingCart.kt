@@ -21,6 +21,7 @@ import java.util.Objects
 import java.util.UUID
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * Class representing the snabble shopping cart
@@ -157,10 +158,10 @@ class ShoppingCart(
      * Returns a cart item that contains the given product, if that cart item
      * can be merged.
      *
-     *
      * A cart item is not mergeable if it uses encoded data of a scanned code (e.g. a different price)
      */
     fun getExistingMergeableProduct(product: Product?): Item? {
+        product?: return null
         data.items.forEach { item ->
             if (product == item.product && item.isMergeable) {
                 return item
@@ -180,10 +181,8 @@ class ShoppingCart(
      * Find a cart item by it's id
      */
     fun getByItemId(itemId: String?): Item? {
-        if (itemId == null) {
-            return null
-        }
-        for (item in data.items) {
+        itemId ?: return null
+        data.items.forEach { item ->
             if (itemId == item.id) {
                 return item
             }
@@ -194,9 +193,7 @@ class ShoppingCart(
     /**
      * Gets the current index of a cart item
      */
-    fun indexOf(item: Item?): Int {
-        return data.items.indexOf(item)
-    }
+    fun indexOf(item: Item?): Int = data.items.indexOf(item)
 
     /**
      * Removed a cart item from the cart by its index
@@ -204,11 +201,11 @@ class ShoppingCart(
     fun remove(index: Int) {
         data.modCount++
         generateNewUUID()
-        val item = data.items.removeAt(index)
+        val removedItem = data.items.removeAt(index)
         checkLimits()
         updatePrices(size() != 0)
         invalidateOnlinePrices()
-        notifyItemRemoved(this, item, index)
+        notifyItemRemoved(this, removedItem, index)
     }
 
     /**
@@ -217,9 +214,7 @@ class ShoppingCart(
      *
      * This is not the sum of articles.
      */
-    fun size(): Int {
-        return data.items.size
-    }
+    fun size(): Int = data.items.size
 
     /**
      * Check if the cart is empty
@@ -244,7 +239,7 @@ class ShoppingCart(
      * Check if the cart is backed up by [.backup] and still in the 5 minute time window
      */
     val isRestorable: Boolean
-        get() = oldData != null && data.backupTimestamp > System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5)
+        get() = oldData != null && data.backupTimestamp > System.currentTimeMillis() - 5.minutes.inWholeMilliseconds
 
     /**
      * Clears the backup storage of the cart
@@ -281,7 +276,7 @@ class ShoppingCart(
      * Clears the cart of all items
      */
     fun clear() {
-        data.items = ArrayList()
+        data.items = mutableListOf()
         data.modCount = 0
         data.addCount = 0
         generateNewUUID()
@@ -289,18 +284,18 @@ class ShoppingCart(
         checkLimits()
         updatePrices(false)
         notifyCleared(this)
-    }// migration for old shopping carts
-    /**
-     * Sets the current taxation type of the cart
-     */
-    /**
-     * Gets the current [Taxation] type of the shopping cart
-     */
+    }
+
+
+
     var taxation: Taxation
-        get() =// migration for old shopping carts
-            if (data.taxation == null) {
-                Taxation.UNDECIDED
-            } else data.taxation
+        /**
+         * Gets the current [Taxation] type of the shopping cart
+         */
+        get() = data.taxation
+        /**
+         * Sets the current taxation type of the cart
+         */
         set(taxation) {
             data.taxation = taxation
             notifyTaxationChanged(this, taxation)
