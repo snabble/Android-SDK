@@ -498,16 +498,12 @@ class ShoppingCart(
     /**
      * Returns true if the shopping cart is over the current set limit
      */
-    fun hasReachedMaxCheckoutLimit(): Boolean {
-        return data.hasRaisedMaxCheckoutLimit
-    }
+    fun hasReachedMaxCheckoutLimit(): Boolean = data.hasRaisedMaxCheckoutLimit
 
     /**
      * Returns true if the shopping cart is over the current set limit for online checkouts
      */
-    fun hasReachedMaxOnlinePaymentLimit(): Boolean {
-        return data.hasRaisedMaxOnlinePaymentLimit
-    }
+    fun hasReachedMaxOnlinePaymentLimit(): Boolean = data.hasRaisedMaxOnlinePaymentLimit
 
     private fun updateTimestamp() {
         data.lastModificationTime = System.currentTimeMillis()
@@ -515,16 +511,24 @@ class ShoppingCart(
 
     fun checkLimits() {
         val totalPrice = totalPrice
-        if (totalPrice < project!!.maxCheckoutLimit) {
+        val maxCheckoutLimit = project?.maxCheckoutLimit ?: 0
+        val maxOnlinePaymentLimit = project?.maxOnlinePaymentLimit ?: 0
+        if (totalPrice < maxCheckoutLimit) {
             data.hasRaisedMaxCheckoutLimit = false
         }
-        if (totalPrice < project!!.maxOnlinePaymentLimit) {
+        if (totalPrice < maxOnlinePaymentLimit) {
             data.hasRaisedMaxOnlinePaymentLimit = false
         }
-        if (!data.hasRaisedMaxCheckoutLimit && project!!.maxCheckoutLimit > 0 && totalPrice >= project!!.maxCheckoutLimit) {
+        if (!data.hasRaisedMaxCheckoutLimit
+            && maxCheckoutLimit > 0
+            && totalPrice >= maxCheckoutLimit
+        ) {
             data.hasRaisedMaxCheckoutLimit = true
             notifyCheckoutLimitReached(this)
-        } else if (!data.hasRaisedMaxOnlinePaymentLimit && project!!.maxOnlinePaymentLimit > 0 && totalPrice >= project!!.maxOnlinePaymentLimit) {
+        } else if (!data.hasRaisedMaxOnlinePaymentLimit
+            && maxOnlinePaymentLimit > 0
+            && totalPrice >= maxOnlinePaymentLimit
+        ) {
             data.hasRaisedMaxOnlinePaymentLimit = true
             notifyOnlinePaymentLimitReached(this)
         }
