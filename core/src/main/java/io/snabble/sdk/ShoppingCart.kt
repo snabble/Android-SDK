@@ -2,6 +2,7 @@ package io.snabble.sdk
 
 import androidx.annotation.RestrictTo
 import com.google.gson.annotations.SerializedName
+import io.snabble.sdk.Product.Type
 import io.snabble.sdk.Snabble.instance
 import io.snabble.sdk.checkout.LineItem
 import io.snabble.sdk.checkout.LineItemType
@@ -20,7 +21,6 @@ import java.math.BigDecimal
 import java.util.Objects
 import java.util.UUID
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.minutes
 
 /**
@@ -161,7 +161,7 @@ class ShoppingCart(
      * A cart item is not mergeable if it uses encoded data of a scanned code (e.g. a different price)
      */
     fun getExistingMergeableProduct(product: Product?): Item? {
-        product?: return null
+        product ?: return null
         data.items.forEach { item ->
             if (product == item.product && item.isMergeable) {
                 return item
@@ -286,8 +286,6 @@ class ShoppingCart(
         notifyCleared(this)
     }
 
-
-
     var taxation: Taxation
         /**
          * Gets the current [Taxation] type of the shopping cart
@@ -317,7 +315,7 @@ class ShoppingCart(
         val productDatabase = project?.productDatabase
         if (productDatabase?.isUpToDate == true) {
             data.items.forEach { item ->
-                val product = productDatabase.findByCode(item.scannedCode)?: return@forEach
+                val product = productDatabase.findByCode(item.scannedCode) ?: return@forEach
                 item.product = product
 
             }
@@ -428,7 +426,7 @@ class ShoppingCart(
      * Gets a list of invalid products that were rejected by the backend.
      */
     var invalidProducts: List<Product>?
-        get() = data.invalidProducts?: emptyList()
+        get() = data.invalidProducts ?: emptyList()
         set(invalidProducts) {
             data.invalidProducts = invalidProducts
         }
@@ -442,8 +440,7 @@ class ShoppingCart(
      * a locally calculated price will be used
      */
     val totalPrice: Int
-        get() = data.onlineTotalPrice?: calculateTotalPrice()
-
+        get() = data.onlineTotalPrice ?: calculateTotalPrice()
 
     private fun calculateTotalPrice(): Int {
         var sum = 0
@@ -461,7 +458,7 @@ class ShoppingCart(
         get() {
             var sum = 0
             var vPOSsum = 0
-            data.items.forEach {item ->
+            data.items.forEach { item ->
                 if (item.type == ItemType.LINE_ITEM) {
                     vPOSsum += item.totalDepositPrice
                 } else {
@@ -478,21 +475,23 @@ class ShoppingCart(
     val totalQuantity: Int
         get() {
             var sum = 0
-            for (e in data.items) {
-                if (e.type == ItemType.LINE_ITEM) {
-                    if (e.lineItem!!.type === LineItemType.DEFAULT) {
-                        sum += e.lineItem!!.amount
+            data.items.forEach { item ->
+                if (item.type == ItemType.LINE_ITEM) {
+                    val lineItem = item.lineItem ?: return@forEach
+                    if (item.lineItem?.type == LineItemType.DEFAULT) {
+                        sum += lineItem.amount
                     }
-                    continue
-                } else if (e.type == ItemType.PRODUCT) {
-                    val product = e.product
-                    sum += if (product!!.type == Product.Type.UserWeighed || product.type == Product.Type.PreWeighed || product.referenceUnit == Unit.PIECE) {
+                } else if (item.type == ItemType.PRODUCT) {
+                    val product = item.product
+                    val weightedTypes = listOf(Type.UserWeighed, Type.PreWeighed)
+                    sum += if (weightedTypes.contains(product?.type) || product?.referenceUnit == Unit.PIECE) {
                         1
                     } else {
-                        e.quantity
+                        item.quantity
                     }
                 }
             }
+
             return sum
         }
 
