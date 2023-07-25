@@ -17,6 +17,8 @@ import io.snabble.accessibility.accessibility
 import io.snabble.accessibility.isTalkBackActive
 import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.ViolationNotification
+import io.snabble.sdk.shoppingcart.data.ItemType
+import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.CheckoutBar
 import io.snabble.sdk.ui.cart.ShoppingCartView
@@ -133,7 +135,7 @@ class ScannerBottomSheetView @JvmOverloads constructor(
     override fun onItemAdded(list: ShoppingCart?, item: ShoppingCart.Item?) {
         update()
 
-        if (item?.type == ShoppingCart.ItemType.PRODUCT) {
+        if (item?.type == ItemType.PRODUCT) {
             recyclerView.scrollToPosition(0)
         }
 
@@ -162,7 +164,7 @@ class ScannerBottomSheetView @JvmOverloads constructor(
     override fun onPricesUpdated(list: ShoppingCart?) = update()
     override fun onCheckoutLimitReached(list: ShoppingCart?) = update()
     override fun onOnlinePaymentLimitReached(list: ShoppingCart?) = update()
-    override fun onTaxationChanged(list: ShoppingCart?, taxation: ShoppingCart.Taxation?) {}
+    override fun onTaxationChanged(list: ShoppingCart?, taxation: Taxation?) {}
     override fun onViolationDetected(violations: List<ViolationNotification?>) {}
     override fun onCartDataChanged(list: ShoppingCart?) = update()
 }

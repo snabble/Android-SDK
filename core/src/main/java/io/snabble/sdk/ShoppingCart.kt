@@ -12,6 +12,8 @@ import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.coupons.CouponType
 import io.snabble.sdk.events.data.EventType
 import io.snabble.sdk.events.data.payload.Payload
+import io.snabble.sdk.shoppingcart.data.ItemType
+import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
 import java.math.BigDecimal
@@ -27,22 +29,6 @@ import java.util.concurrent.TimeUnit
 class ShoppingCart(
     private val project: Project? = null
 ) : Iterable<ShoppingCart.Item?> {
-
-    /**
-     * Enum describing the type of item
-     */
-    enum class ItemType {
-
-        PRODUCT, LINE_ITEM, COUPON
-    }
-
-    /**
-     * Enum describing the type of taxation
-     */
-    enum class Taxation(val value: String) {
-
-        UNDECIDED("undecided"), IN_HOUSE("inHouse"), TAKEAWAY("takeaway");
-    }
 
     var data: ShoppingCartData = ShoppingCartData()
     private var oldData: ShoppingCartData? = ShoppingCartData()

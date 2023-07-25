@@ -29,6 +29,7 @@ import io.snabble.sdk.Snabble.instance
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.extensions.getApplicationInfoCompat
+import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
@@ -117,7 +118,7 @@ open class CheckoutBar @JvmOverloads constructor(
         }
 
         payButton.setOneShotClickListener {
-            cart.taxation = ShoppingCart.Taxation.UNDECIDED
+            cart.taxation = Taxation.UNDECIDED
             handleButtonClick()
         }
 
@@ -445,9 +446,9 @@ open class CheckoutBar @JvmOverloads constructor(
                         )
                     ) { dialog, which ->
                         if (which == 0) {
-                            cart.taxation = ShoppingCart.Taxation.IN_HOUSE
+                            cart.taxation = Taxation.IN_HOUSE
                         } else {
-                            cart.taxation = ShoppingCart.Taxation.TAKEAWAY
+                            cart.taxation = Taxation.TAKEAWAY
                         }
                         dialog.dismiss()
                         project.checkout.checkout()

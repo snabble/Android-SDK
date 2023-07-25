@@ -13,6 +13,7 @@ import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.codes.templates.groups.EmbedGroup;
+import io.snabble.sdk.shoppingcart.data.ItemType;
 
 /**
  * Class for encoding scanned codes into one or multiple combined codes (e.g. a QR-Code)
@@ -74,7 +75,7 @@ public class EncodedCodesGenerator {
         for (int i = 0; i < shoppingCart.size(); i++) {
             ShoppingCart.Item item = shoppingCart.get(i);
 
-            if (item.getType() == ShoppingCart.ItemType.COUPON) {
+            if (item.getType() == ItemType.COUPON) {
                 ScannedCode scannedCode = item.getScannedCode();
                 if (scannedCode != null) {
                     coupons.add(scannedCode.getCode());

@@ -1,5 +1,6 @@
 package io.snabble.sdk
 
+import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.utils.GsonHolder
 import java.util.*
 
@@ -13,7 +14,7 @@ data class ShoppingCartData @JvmOverloads constructor(
     @JvmField var addCount: Int = 0,
     @JvmField var onlineTotalPrice: Int? = null,
     @JvmSuppressWildcards @JvmField var invalidProducts: List<Product>? = null,
-    @JvmField var taxation: ShoppingCart.Taxation = ShoppingCart.Taxation.UNDECIDED,
+    @JvmField var taxation: Taxation = Taxation.UNDECIDED,
     @JvmField var hasRaisedMaxCheckoutLimit: Boolean = false,
     @JvmField var hasRaisedMaxOnlinePaymentLimit: Boolean = false,
     @JvmField var invalidDepositReturnVoucher: Boolean = false,

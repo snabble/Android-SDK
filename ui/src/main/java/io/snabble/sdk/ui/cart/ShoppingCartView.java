@@ -36,6 +36,7 @@ import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.ViolationNotification;
+import io.snabble.sdk.shoppingcart.data.ItemType;
 import io.snabble.sdk.ui.GestureHandler;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -302,7 +303,7 @@ public class ShoppingCartView extends FrameLayout {
 
         for (int i = 0; i < cart.size(); i++) {
             ShoppingCart.Item item = cart.get(i);
-            if (item.getType() != ShoppingCart.ItemType.PRODUCT) continue;
+            if (item.getType() != ItemType.PRODUCT) continue;
 
             Product product = item.getProduct();
             String url = product.getImageUrl();
@@ -395,7 +396,7 @@ public class ShoppingCartView extends FrameLayout {
         for (int i = 0; i < cart.size(); i++) {
             ShoppingCart.Item item = cart.get(i);
 
-            if (item.getType() == ShoppingCart.ItemType.LINE_ITEM) {
+            if (item.getType() == ItemType.LINE_ITEM) {
                 if (item.isDiscount()) {
                     SimpleRow row = new SimpleRow();
                     row.item = item;
@@ -411,14 +412,14 @@ public class ShoppingCartView extends FrameLayout {
                     row.text = resources.getString(R.string.Snabble_Shoppingcart_giveaway);
                     rows.add(row);
                 }
-            } else if (item.getType() == ShoppingCart.ItemType.COUPON) {
+            } else if (item.getType() == ItemType.COUPON) {
                 SimpleRow row = new SimpleRow();
                 row.item = item;
                 row.title = resources.getString(R.string.Snabble_Shoppingcart_coupon);
                 row.text = item.getDisplayName();
                 row.isDismissible = true;
                 rows.add(row);
-            } else if (item.getType() == ShoppingCart.ItemType.PRODUCT) {
+            } else if (item.getType() == ItemType.PRODUCT) {
                 final ProductRow row = new ProductRow();
                 final Product product = item.getProduct();
                 final int quantity = item.getQuantityMethod();
@@ -630,7 +631,7 @@ public class ShoppingCartView extends FrameLayout {
 
             for (int i = 0; i < cart.size(); i++) {
                 ShoppingCart.Item item = cart.get(i);
-                if (item.getType() != ShoppingCart.ItemType.PRODUCT) continue;
+                if (item.getType() != ItemType.PRODUCT) continue;
 
                 Product product = item.getProduct();
                 String url = product.getImageUrl();
