@@ -314,13 +314,12 @@ class ShoppingCart(
      * Updates each items products in the shopping cart
      */
     fun updateProducts() {
-        val productDatabase = project!!.productDatabase
-        if (productDatabase.isUpToDate) {
-            for (e in data.items) {
-                val product = productDatabase.findByCode(e.scannedCode)
-                if (product != null) {
-                    e.product = product
-                }
+        val productDatabase = project?.productDatabase
+        if (productDatabase?.isUpToDate == true) {
+            data.items.forEach { item ->
+                val product = productDatabase.findByCode(item.scannedCode)?: return@forEach
+                item.product = product
+
             }
             notifyProductsUpdate(this)
         }
