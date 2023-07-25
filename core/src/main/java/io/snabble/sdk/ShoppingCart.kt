@@ -540,8 +540,8 @@ class ShoppingCart(
     val minimumAge: Int
         get() {
             var minimumAge = 0
-            for (item in data.items) {
-                minimumAge = Math.max(minimumAge, item.minimumAge)
+            data.items.forEach { item ->
+                minimumAge = minimumAge.coerceAtLeast(item.minimumAge)
             }
             return minimumAge
         }
@@ -550,10 +550,11 @@ class ShoppingCart(
      * Checks if the provided scanned code is contained inside the shopping cart
      */
     fun containsScannedCode(scannedCode: ScannedCode): Boolean {
-        for (item in data.items) {
-            if (item.scannedCode != null && item.scannedCode!!.code == scannedCode.code) {
+        data.items.forEach { item ->
+            if (item.scannedCode != null && item.scannedCode?.code == scannedCode.code) {
                 return true
             }
+
         }
         return false
     }
