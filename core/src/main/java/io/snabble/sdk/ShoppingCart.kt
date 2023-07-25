@@ -334,16 +334,15 @@ class ShoppingCart(
         data.invalidDepositReturnVoucher = false
         data.onlineTotalPrice = null
 
-        // reverse-order because we are removing items
-        for (i in data.items.indices.reversed()) {
-            val item = data.items[i]
+        data.items.forEach { item ->
             if (item.type == ItemType.LINE_ITEM) {
-                data.items.removeAt(i)
+                data.items.remove(item)
             } else {
                 item.lineItem = null
                 item.isManualCouponApplied = false
             }
         }
+
         checkLimits()
         notifyPriceUpdate(this)
     }
