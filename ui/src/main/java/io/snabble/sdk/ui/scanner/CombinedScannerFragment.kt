@@ -157,7 +157,7 @@ class CombinedScannerFragment : SelfScanningFragment() {
     }
 
     private val shoppingCartListener: ShoppingCartListener = object : SimpleShoppingCartListener() {
-        override fun onChanged(list: ShoppingCart) {
+        override fun onChanged(list: ShoppingCart?) {
             scanHint?.dismiss()
         }
     }

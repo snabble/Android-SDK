@@ -79,7 +79,7 @@ public class EncodedCodesGenerator {
                 if (scannedCode != null) {
                     coupons.add(scannedCode.getCode());
                 } else {
-                    Coupon coupon = item.getCoupon();
+                    Coupon coupon = item.getCoupon2();
                     if (coupon != null) {
                         List<CouponCode> codes = coupon.getCodes();
                         if (codes.size() > 0) {
@@ -94,9 +94,9 @@ public class EncodedCodesGenerator {
                 }
 
                 productInfos.add(new ProductInfo(product,
-                        item.getQuantity(),
+                        item.getQuantityMethod(),
                         item.getScannedCode(),
-                        item.isManualCouponApplied()));
+                        item.isManualCouponApplied2()));
             }
         }
 

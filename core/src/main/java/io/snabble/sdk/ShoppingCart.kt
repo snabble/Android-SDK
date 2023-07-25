@@ -1,829 +1,727 @@
-package io.snabble.sdk;
+package io.snabble.sdk
 
-import static io.snabble.sdk.Unit.PIECE;
-import static io.snabble.sdk.Unit.PRICE;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RestrictTo;
-
-import com.google.gson.annotations.SerializedName;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
-
-import io.snabble.sdk.auth.AppUser;
-import io.snabble.sdk.checkout.LineItem;
-import io.snabble.sdk.checkout.LineItemType;
-import io.snabble.sdk.checkout.PaymentMethodInfo;
-import io.snabble.sdk.checkout.PriceModifier;
-import io.snabble.sdk.checkout.Violation;
-import io.snabble.sdk.codes.ScannedCode;
-import io.snabble.sdk.codes.templates.CodeTemplate;
-import io.snabble.sdk.coupons.Coupon;
-import io.snabble.sdk.coupons.CouponType;
-import io.snabble.sdk.customization.IsMergeable;
-import io.snabble.sdk.events.data.EventType;
-import io.snabble.sdk.events.data.payload.Payload;
-import io.snabble.sdk.utils.Dispatch;
-import io.snabble.sdk.utils.GsonHolder;
+import androidx.annotation.RestrictTo
+import com.google.gson.annotations.SerializedName
+import io.snabble.sdk.Snabble.instance
+import io.snabble.sdk.checkout.LineItem
+import io.snabble.sdk.checkout.LineItemType
+import io.snabble.sdk.checkout.PaymentMethodInfo
+import io.snabble.sdk.checkout.Violation
+import io.snabble.sdk.codes.ScannedCode
+import io.snabble.sdk.coupons.Coupon
+import io.snabble.sdk.coupons.CouponType
+import io.snabble.sdk.events.data.EventType
+import io.snabble.sdk.events.data.payload.Payload
+import io.snabble.sdk.utils.Dispatch
+import io.snabble.sdk.utils.GsonHolder
+import java.math.BigDecimal
+import java.util.Collections
+import java.util.Objects
+import java.util.UUID
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.TimeUnit
 
 /**
  * Class representing the snabble shopping cart
  */
-public class ShoppingCart implements Iterable<ShoppingCart.Item> {
-    public static final int MAX_QUANTITY = 99999;
+class ShoppingCart : Iterable<ShoppingCart.Item?> {
 
     /**
      * Enum describing the type of item
      */
-    public enum ItemType {
-        PRODUCT,
-        LINE_ITEM,
-        COUPON
+    enum class ItemType {
+
+        PRODUCT, LINE_ITEM, COUPON
     }
 
     /**
      * Enum describing the type of taxation
      */
-    public enum Taxation {
-        UNDECIDED("undecided"),
-        IN_HOUSE("inHouse"),
-        TAKEAWAY("takeaway");
+    enum class Taxation(val value: String) {
 
-        private final String value;
+        UNDECIDED("undecided"), IN_HOUSE("inHouse"), TAKEAWAY("takeaway");
+    }
 
-        Taxation(String value) {
-            this.value = value;
+    var data: ShoppingCartData? = ShoppingCartData()
+    private var oldData: ShoppingCartData? = ShoppingCartData()
+
+    @Transient
+    private var listeners: MutableList<ShoppingCartListener>? = null
+
+    @Transient
+    private var project: Project? = null
+
+    @Transient
+    private var updater: ShoppingCartUpdater? = null
+
+    @Transient
+    private var priceFormatter: PriceFormatter? = null
+
+    internal constructor(project: Project? = null) {
+        data = ShoppingCartData()
+        updateTimestamp()
+        this.project = project
+        project?.let {
+            updater = ShoppingCartUpdater(project, this)
         }
-
-        public String getValue() {
-            return value;
-        }
+        priceFormatter = project?.priceFormatter
+        listeners = CopyOnWriteArrayList()
     }
 
-    ShoppingCartData data = new ShoppingCartData();
-    ShoppingCartData oldData = new ShoppingCartData();
-
-    private transient List<ShoppingCartListener> listeners;
-    private transient Project project;
-    private transient ShoppingCartUpdater updater;
-    private transient PriceFormatter priceFormatter;
-
-    protected ShoppingCart() {
-        // for gson
-    }
-
-    ShoppingCart(Project project) {
-        data = new ShoppingCartData();
-        updateTimestamp();
-
-        this.project = project;
-        this.updater = new ShoppingCartUpdater(project, this);
-        this.priceFormatter = project.getPriceFormatter();
-        this.listeners = new CopyOnWriteArrayList<>();
-    }
-
-    void initWithData(ShoppingCartData data) {
-        this.data = data;
-        this.oldData = null;
-
+    fun initWithData(data: ShoppingCartData) {
+        this.data = data
+        oldData = null
         if (data.uuid == null) {
-            generateNewUUID();
+            generateNewUUID()
         }
-
-        checkForTimeout();
-
-        data.applyShoppingCart(this);
-
-        if (oldData != null) {
-            oldData.applyShoppingCart(this);
-        }
-
-        updatePrices(false);
-        notifyCartDataChanged(this);
+        checkForTimeout()
+        data.applyShoppingCart(this)
+        oldData?.applyShoppingCart(this)
+        updatePrices(false)
+        notifyCartDataChanged(this)
     }
 
     /**
      * The id used to identify this cart session
      */
-    public String getId() {
-        return data.id;
-    }
+    val id: String
+        get() = data!!.id
 
     /**
      * Create a new cart item using a product and a scanned code
      */
-    public Item newItem(Product product, ScannedCode scannedCode) {
-        return new Item(this, product, scannedCode);
+    fun newItem(product: Product, scannedCode: ScannedCode): Item {
+        return Item(this, product, scannedCode)
     }
 
     /**
      * Create a new cart item using a coupon and a scanned code
      */
-    public Item newItem(Coupon coupon, ScannedCode scannedCode) {
-        return new Item(this, coupon, scannedCode);
+    fun newItem(coupon: Coupon, scannedCode: ScannedCode?): Item {
+        return Item(this, coupon, scannedCode)
     }
 
     /**
      * Create a new cart item using a line item of a checkout info
      */
-    public Item newItem(LineItem lineItem) {
-        return new Item(this, lineItem);
+    fun newItem(lineItem: LineItem): Item {
+        return Item(this, lineItem)
     }
 
     /**
      * Add a item to the cart
      */
-    public void add(Item item) {
-        insert(item, 0);
+    fun add(item: Item) {
+        insert(item, 0)
     }
 
     /**
      * Adds coupons without adding a scanned code to it, you can use this function to quickly
      * add DIGITAL coupons that do not have a barcode associated with them
      */
-    public void addCoupon(Coupon coupon) {
-        add(newItem(coupon, null));
+    fun addCoupon(coupon: Coupon) {
+        add(newItem(coupon, null))
     }
 
     /**
      * Adds coupons with a scanned code to it, you can use this function to quickly
      * add PRINTED coupons
      */
-    public void addCoupon(Coupon coupon, ScannedCode scannedCode) {
-        add(newItem(coupon, scannedCode));
+    fun addCoupon(coupon: Coupon, scannedCode: ScannedCode?) {
+        add(newItem(coupon, scannedCode))
     }
 
     /**
      * Insert a cart item into the shopping cart at a specific index
      */
-    public void insert(Item item, int index) {
-        insert(item, index, true);
+    fun insert(item: Item, index: Int) {
+        insert(item, index, true)
     }
 
-    void insert(Item item, int index, boolean update) {
-        if (item.isMergeable()) {
-            Item existing = getExistingMergeableProduct(item.getProduct());
+    fun insert(item: Item, index: Int, update: Boolean) {
+        if (item.isMergeable) {
+            val existing = getExistingMergeableProduct(item.product)
             if (existing != null) {
-                data.items.remove(existing);
-                data.items.add(index, item);
-                data.modCount++;
-                generateNewUUID();
-                checkLimits();
-
-                notifyQuantityChanged(this, item);
-
+                data!!.items.remove(existing)
+                data!!.items.add(index, item)
+                data!!.modCount++
+                generateNewUUID()
+                checkLimits()
+                notifyQuantityChanged(this, item)
                 if (update) {
-                    invalidateOnlinePrices();
-                    updatePrices(true);
+                    invalidateOnlinePrices()
+                    updatePrices(true)
                 }
-                return;
+                return
             }
         }
-
-        data.items.add(index, item);
-
-        clearBackup();
-        checkLimits();
-        notifyItemAdded(this, item);
+        data!!.items.add(index, item)
+        clearBackup()
+        checkLimits()
+        notifyItemAdded(this, item)
 
         // sort coupons to bottom
-        Collections.sort(data.items, (o1, o2) -> {
-            ItemType t1 = o1.getType();
-            ItemType t2 = o2.getType();
-
+        Collections.sort(data!!.items) { o1: Item, o2: Item ->
+            val t1 = o1.type
+            val t2 = o2.type
             if (t2 == ItemType.COUPON && t1 == ItemType.PRODUCT) {
-                return -1;
+                return@sort -1
             } else if (t1 == ItemType.COUPON && t2 == ItemType.PRODUCT) {
-                return 1;
+                return@sort 1
             } else {
-                return 0;
+                return@sort 0
             }
-        });
-
+        }
         if (update) {
-            data.addCount++;
-            data.modCount++;
-            generateNewUUID();
-            invalidateOnlinePrices();
-            updatePrices(true);
+            data!!.addCount++
+            data!!.modCount++
+            generateNewUUID()
+            invalidateOnlinePrices()
+            updatePrices(true)
         }
     }
 
     /**
      * Gets the cart item a specific index
      */
-    public Item get(int index) {
-        return data.items.get(index);
+    operator fun get(index: Int): Item {
+        return data!!.items[index]
     }
 
-    @NonNull
-    @Override
-    public Iterator<Item> iterator() {
-        return data.items.iterator();
+    override fun iterator(): MutableIterator<Item> {
+        return data!!.items.iterator()
     }
 
     /**
      * Returns a cart item that contains the given product, if that cart item
      * can be merged.
-     * <p>
+     *
+     *
      * A cart item is not mergeable if it uses encoded data of a scanned code (e.g. a different price)
      */
-    public Item getExistingMergeableProduct(Product product) {
+    fun getExistingMergeableProduct(product: Product?): Item? {
         if (product == null) {
-            return null;
+            return null
         }
-
-        for (Item item : data.items) {
-            if (product.equals(item.product) && item.isMergeable()) {
-                return item;
+        for (item in data!!.items) {
+            if (product == item.product && item.isMergeable) {
+                return item
             }
         }
-
-        return null;
+        return null
     }
 
     /**
      * Find a cart item by it's id
      */
-    public Item getByItemId(String itemId) {
+    fun getByItemId(itemId: String?): Item? {
         if (itemId == null) {
-            return null;
+            return null
         }
-
-        for (Item item : data.items) {
-            if (itemId.equals(item.id)) {
-                return item;
+        for (item in data!!.items) {
+            if (itemId == item.id) {
+                return item
             }
         }
-
-        return null;
+        return null
     }
 
     /**
      * Gets the current index of a cart item
      */
-    public int indexOf(Item item) {
-        return data.items.indexOf(item);
+    fun indexOf(item: Item?): Int {
+        return data!!.items.indexOf(item)
     }
 
     /**
      * Removed a cart item from the cart by its index
      */
-    public void remove(int index) {
-        data.modCount++;
-        generateNewUUID();
-        Item item = data.items.remove(index);
-        checkLimits();
-        updatePrices(size() != 0);
-        invalidateOnlinePrices();
-        notifyItemRemoved(this, item, index);
+    fun remove(index: Int) {
+        data!!.modCount++
+        generateNewUUID()
+        val item = data!!.items.removeAt(index)
+        checkLimits()
+        updatePrices(size() != 0)
+        invalidateOnlinePrices()
+        notifyItemRemoved(this, item, index)
     }
 
     /**
      * The number items in the cart.
-     * <p>
+     *
+     *
      * This is not the sum of articles.
      */
-    public int size() {
-        return data.items.size();
+    fun size(): Int {
+        return data!!.items.size
     }
 
     /**
      * Check if the cart is empty
      */
-    public boolean isEmpty() {
-        return data.items.isEmpty();
-    }
+    val isEmpty: Boolean
+        get() = data!!.items.isEmpty()
 
     /**
-     * Backups the cart, so it can be restured using {@link #restore()} later.
-     * <p>
+     * Backups the cart, so it can be restured using [.restore] later.
+     *
+     *
      * A cart is restorable for up to 5 minutes.
      */
-    public void backup() {
-        if (data.items.size() > 0) {
-            oldData = data.deepCopy();
-            data.backupTimestamp = System.currentTimeMillis();
+    fun backup() {
+        if (data!!.items.size > 0) {
+            oldData = data!!.deepCopy()
+            data!!.backupTimestamp = System.currentTimeMillis()
         }
     }
 
     /**
-     * Check if the cart is backed up by {@link #backup()} and still in the 5 minute time window
+     * Check if the cart is backed up by [.backup] and still in the 5 minute time window
      */
-    public boolean isRestorable() {
-        return oldData != null && data.backupTimestamp > System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5);
-    }
+    val isRestorable: Boolean
+        get() = oldData != null && data!!.backupTimestamp > System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5)
 
     /**
      * Clears the backup storage of the cart
      */
-    public void clearBackup() {
-        oldData = null;
-        data.backupTimestamp = 0;
+    fun clearBackup() {
+        oldData = null
+        data!!.backupTimestamp = 0
     }
 
     /**
-     * Restores the cart previously backed up by {@link #backup()}
+     * Restores the cart previously backed up by [.backup]
      */
-    public void restore() {
-        if (isRestorable()) {
-            data = oldData;
-            data.applyShoppingCart(this);
-
-            clearBackup();
-            checkLimits();
-            updatePrices(false);
-            notifyProductsUpdate(this);
+    fun restore() {
+        if (isRestorable) {
+            data = oldData
+            data!!.applyShoppingCart(this)
+            clearBackup()
+            checkLimits()
+            updatePrices(false)
+            notifyProductsUpdate(this)
         }
     }
 
     /**
-     * The last time the cart was backed up by using {@link #backup()}
+     * The last time the cart was backed up by using [.backup]
      *
      * @return
      */
-    public long getBackupTimestamp() {
-        return data.backupTimestamp;
-    }
+    val backupTimestamp: Long
+        get() = data!!.backupTimestamp
 
     /**
      * Clears the cart of all items
      */
-    public void clear() {
-        data.items = new ArrayList<>();
-        data.modCount = 0;
-        data.addCount = 0;
-        generateNewUUID();
-        data.onlineTotalPrice = null;
-
-        checkLimits();
-        updatePrices(false);
-        notifyCleared(this);
-    }
-
-    /**
-     * Gets the current {@link Taxation} type of the shopping cart
-     */
-    public Taxation getTaxation() {
-        // migration for old shopping carts
-        if (data.taxation == null) {
-            return Taxation.UNDECIDED;
-        }
-        return data.taxation;
-    }
-
+    fun clear() {
+        data!!.items = ArrayList()
+        data!!.modCount = 0
+        data!!.addCount = 0
+        generateNewUUID()
+        data!!.onlineTotalPrice = null
+        checkLimits()
+        updatePrices(false)
+        notifyCleared(this)
+    }// migration for old shopping carts
     /**
      * Sets the current taxation type of the cart
      */
-    public void setTaxation(Taxation taxation) {
-        this.data.taxation = taxation;
-        notifyTaxationChanged(this, taxation);
-    }
+    /**
+     * Gets the current [Taxation] type of the shopping cart
+     */
+    var taxation: Taxation
+        get() =// migration for old shopping carts
+            if (data!!.taxation == null) {
+                Taxation.UNDECIDED
+            } else data!!.taxation
+        set(taxation) {
+            data!!.taxation = taxation
+            notifyTaxationChanged(this, taxation)
+        }
 
     /**
      * Clears the cart and generated a cart new session.
      */
-    public void invalidate() {
-        data.id = UUID.randomUUID().toString();
-        generateNewUUID();
-        clear();
+    fun invalidate() {
+        data!!.id = UUID.randomUUID().toString()
+        generateNewUUID()
+        clear()
     }
 
     /**
      * Updates each items products in the shopping cart
      */
-    public void updateProducts() {
-        ProductDatabase productDatabase = project.getProductDatabase();
-
-        if (productDatabase.isUpToDate()) {
-            for (Item e : data.items) {
-                Product product = productDatabase.findByCode(e.scannedCode);
-
+    fun updateProducts() {
+        val productDatabase = project!!.productDatabase
+        if (productDatabase.isUpToDate) {
+            for (e in data!!.items) {
+                val product = productDatabase.findByCode(e.scannedCode)
                 if (product != null) {
-                    e.product = product;
+                    e.product = product
                 }
             }
-
-            notifyProductsUpdate(this);
+            notifyProductsUpdate(this)
         }
-
-        updatePrices(false);
+        updatePrices(false)
     }
 
     /**
      * Resets the cart to the state before it was updated by the backend
      */
-    public void invalidateOnlinePrices() {
-        data.invalidProducts = null;
-        data.invalidDepositReturnVoucher = false;
-        data.onlineTotalPrice = null;
+    fun invalidateOnlinePrices() {
+        data!!.invalidProducts = null
+        data!!.invalidDepositReturnVoucher = false
+        data!!.onlineTotalPrice = null
 
         // reverse-order because we are removing items
-        for (int i = data.items.size() - 1; i >= 0; i--) {
-            Item item = data.items.get(i);
-            if (item.getType() == ItemType.LINE_ITEM) {
-                data.items.remove(i);
+        for (i in data!!.items.indices.reversed()) {
+            val item = data!!.items[i]
+            if (item.type == ItemType.LINE_ITEM) {
+                data!!.items.removeAt(i)
             } else {
-                item.lineItem = null;
-                item.isManualCouponApplied = false;
+                item.lineItem = null
+                item.isManualCouponApplied = false
             }
         }
-
-        checkLimits();
-        notifyPriceUpdate(this);
+        checkLimits()
+        notifyPriceUpdate(this)
     }
 
     /**
      * Update all prices of the cart
      *
      * @param debounce if set to true delays the updating and batches
-     *                 multiple {@link #updatePrices(boolean)} calls together
+     * multiple [.updatePrices] calls together
      */
-    public void updatePrices(boolean debounce) {
+    fun updatePrices(debounce: Boolean) {
         if (debounce) {
-            updater.dispatchUpdate();
+            updater!!.dispatchUpdate()
         } else {
-            updater.update(true);
+            updater!!.update(true)
         }
     }
 
-    void checkForTimeout() {
-        long currentTime = System.currentTimeMillis();
-
-        long timeout = Snabble.getInstance().getConfig().maxShoppingCartAge;
-
-        if (data.lastModificationTime + timeout < currentTime) {
-            clearBackup();
-            invalidate();
+    fun checkForTimeout() {
+        val currentTime = System.currentTimeMillis()
+        val timeout = instance.config.maxShoppingCartAge
+        if (data!!.lastModificationTime + timeout < currentTime) {
+            clearBackup()
+            invalidate()
         }
     }
 
     /**
      * Returns the number of times items in the shopping cart were added
      */
-
-    public int getAddCount() {
-        return data.addCount;
-    }
+    val addCount: Int
+        get() = data!!.addCount
 
     /**
      * Returns the number of times items in the shopping cart were modified
      */
-    public int getModCount() {
-        return data.modCount;
-    }
+    val modCount: Int
+        get() = data!!.modCount
 
     /**
      * Generate a new uuid.
-     * <p>
+     *
+     *
      * UUID's are used to uniquely identify a specific purchase made by the user. If a new UUID
      * is generated a new checkout can be made.
-     * <p>
+     *
+     *
      * If a checkout already exist with the same UUID, the checkout will get continued.
      */
-    public void generateNewUUID() {
-        data.uuid = UUID.randomUUID().toString();
-        notifyProductsUpdate(this);
+    fun generateNewUUID() {
+        data!!.uuid = UUID.randomUUID().toString()
+        notifyProductsUpdate(this)
     }
 
     /**
      * The UUID of the cart
-     * <p>
+     *
+     *
      * UUID's are used to uniquely identify a specific purchase made by the user. If a new UUID
      * is generated a new checkout can be made.
-     * <p>
+     *
+     *
      * If a checkout already exist with the same UUID, the checkout will get continued.
      */
-    public String getUUID() {
-        return data.uuid;
-    }
+    val uUID: String?
+        get() = data!!.uuid
 
-    void setOnlineTotalPrice(int totalPrice) {
-        data.onlineTotalPrice = totalPrice;
+    fun setOnlineTotalPrice(totalPrice: Int) {
+        data!!.onlineTotalPrice = totalPrice
     }
 
     /**
      * Returns true of the carts price is calculated by the backend
      */
-    public boolean isOnlinePrice() {
-        return data.onlineTotalPrice != null;
-    }
+    val isOnlinePrice: Boolean
+        get() = data!!.onlineTotalPrice != null
 
-    void setInvalidProducts(List<Product> invalidProducts) {
-        this.data.invalidProducts = invalidProducts;
-    }
-
-    void setInvalidDepositReturnVoucher(boolean invalidDepositReturnVoucher) {
-        this.data.invalidDepositReturnVoucher = invalidDepositReturnVoucher;
+    fun setInvalidDepositReturnVoucher(invalidDepositReturnVoucher: Boolean) {
+        data!!.invalidDepositReturnVoucher = invalidDepositReturnVoucher
     }
 
     /**
      * Gets a list of invalid products that were rejected by the backend.
      */
-    public List<Product> getInvalidProducts() {
-        if (data.invalidProducts == null) {
-            return Collections.emptyList();
+    var invalidProducts: List<Product>?
+        get() = if (data!!.invalidProducts == null) {
+            emptyList()
+        } else data!!.invalidProducts
+        set(invalidProducts) {
+            data!!.invalidProducts = invalidProducts
         }
 
-        return data.invalidProducts;
-    }
-
-    public boolean hasInvalidDepositReturnVoucher() {
-        return data.invalidDepositReturnVoucher;
+    fun hasInvalidDepositReturnVoucher(): Boolean {
+        return data!!.invalidDepositReturnVoucher
     }
 
     /**
      * Returns the total price of the cart.
-     * <p>
+     *
+     *
      * If the cart was updated by the backend, the online price is used. If no update was made
      * a locally calculated price will be used
      */
-    public int getTotalPrice() {
-        if (data.onlineTotalPrice != null) {
-            return data.onlineTotalPrice;
+    val totalPrice: Int
+        get() {
+            if (data!!.onlineTotalPrice != null) {
+                return data!!.onlineTotalPrice!!
+            }
+            var sum = 0
+            for (e in data!!.items) {
+                sum += e.totalPrice
+            }
+            sum += totalDepositPrice
+            return sum
         }
-
-        int sum = 0;
-
-        for (Item e : data.items) {
-            sum += e.getTotalPrice();
-        }
-
-        sum += getTotalDepositPrice();
-
-        return sum;
-    }
 
     /**
      * Returns the total sum of deposit
      */
-    public int getTotalDepositPrice() {
-        int sum = 0;
-        int vPOSsum = 0;
-
-        for (Item e : data.items) {
-            if (e.getType() == ItemType.LINE_ITEM) {
-                vPOSsum += e.getTotalDepositPrice();
-            } else {
-                sum += e.getTotalDepositPrice();
+    val totalDepositPrice: Int
+        get() {
+            var sum = 0
+            var vPOSsum = 0
+            for (e in data!!.items) {
+                if (e.type == ItemType.LINE_ITEM) {
+                    vPOSsum += e.totalDepositPrice
+                } else {
+                    sum += e.totalDepositPrice
+                }
             }
+            return Math.max(vPOSsum, sum)
         }
-
-        return Math.max(vPOSsum, sum);
-    }
 
     /**
      * The quantity of items in the cart.
      */
-    public int getTotalQuantity() {
-        int sum = 0;
-
-        for (Item e : data.items) {
-            if (e.getType() == ItemType.LINE_ITEM) {
-                if (e.lineItem.getType() == LineItemType.DEFAULT) {
-                    sum += e.lineItem.getAmount();
-                }
-                continue;
-            } else if (e.getType() == ItemType.PRODUCT) {
-                Product product = e.product;
-                if (product.getType() == Product.Type.UserWeighed
-                        || product.getType() == Product.Type.PreWeighed
-                        || product.getReferenceUnit() == PIECE) {
-                    sum += 1;
-                } else {
-                    sum += e.quantity;
+    val totalQuantity: Int
+        get() {
+            var sum = 0
+            for (e in data!!.items) {
+                if (e.type == ItemType.LINE_ITEM) {
+                    if (e.lineItem!!.type === LineItemType.DEFAULT) {
+                        sum += e.lineItem!!.amount
+                    }
+                    continue
+                } else if (e.type == ItemType.PRODUCT) {
+                    val product = e.product
+                    sum += if (product!!.type == Product.Type.UserWeighed || product.type == Product.Type.PreWeighed || product.referenceUnit == Unit.PIECE) {
+                        1
+                    } else {
+                        e.quantity
+                    }
                 }
             }
+            return sum
         }
-
-        return sum;
-    }
 
     /**
      * Returns true if the shopping cart is over the current set limit
      */
-    public boolean hasReachedMaxCheckoutLimit() {
-        return data.hasRaisedMaxCheckoutLimit;
+    fun hasReachedMaxCheckoutLimit(): Boolean {
+        return data!!.hasRaisedMaxCheckoutLimit
     }
 
     /**
      * Returns true if the shopping cart is over the current set limit for online checkouts
      */
-    public boolean hasReachedMaxOnlinePaymentLimit() {
-        return data.hasRaisedMaxOnlinePaymentLimit;
+    fun hasReachedMaxOnlinePaymentLimit(): Boolean {
+        return data!!.hasRaisedMaxOnlinePaymentLimit
     }
 
-    private void updateTimestamp() {
-        data.lastModificationTime = System.currentTimeMillis();
+    private fun updateTimestamp() {
+        data!!.lastModificationTime = System.currentTimeMillis()
     }
 
-    void checkLimits() {
-        int totalPrice = getTotalPrice();
-        if (totalPrice < project.getMaxCheckoutLimit()) {
-            data.hasRaisedMaxCheckoutLimit = false;
+    fun checkLimits() {
+        val totalPrice = totalPrice
+        if (totalPrice < project!!.maxCheckoutLimit) {
+            data!!.hasRaisedMaxCheckoutLimit = false
         }
-
-        if (totalPrice < project.getMaxOnlinePaymentLimit()) {
-            data.hasRaisedMaxOnlinePaymentLimit = false;
+        if (totalPrice < project!!.maxOnlinePaymentLimit) {
+            data!!.hasRaisedMaxOnlinePaymentLimit = false
         }
-
-        if (!data.hasRaisedMaxCheckoutLimit && project.getMaxCheckoutLimit() > 0
-                && totalPrice >= project.getMaxCheckoutLimit()) {
-            data.hasRaisedMaxCheckoutLimit = true;
-            notifyCheckoutLimitReached(this);
-        } else if (!data.hasRaisedMaxOnlinePaymentLimit && project.getMaxOnlinePaymentLimit() > 0
-                && totalPrice >= project.getMaxOnlinePaymentLimit()) {
-            data.hasRaisedMaxOnlinePaymentLimit = true;
-            notifyOnlinePaymentLimitReached(this);
+        if (!data!!.hasRaisedMaxCheckoutLimit && project!!.maxCheckoutLimit > 0 && totalPrice >= project!!.maxCheckoutLimit) {
+            data!!.hasRaisedMaxCheckoutLimit = true
+            notifyCheckoutLimitReached(this)
+        } else if (!data!!.hasRaisedMaxOnlinePaymentLimit && project!!.maxOnlinePaymentLimit > 0 && totalPrice >= project!!.maxOnlinePaymentLimit) {
+            data!!.hasRaisedMaxOnlinePaymentLimit = true
+            notifyOnlinePaymentLimitReached(this)
         }
     }
 
     /**
      * Returns the current minimum age required to purchase all items of the shopping cart
      */
-    public int getMinimumAge() {
-        int minimumAge = 0;
-
-        for (Item item : data.items) {
-            minimumAge = Math.max(minimumAge, item.getMinimumAge());
+    val minimumAge: Int
+        get() {
+            var minimumAge = 0
+            for (item in data!!.items) {
+                minimumAge = Math.max(minimumAge, item.minimumAge)
+            }
+            return minimumAge
         }
-
-        return minimumAge;
-    }
 
     /**
      * Checks if the provided scanned code is contained inside the shopping cart
      */
-    public boolean containsScannedCode(ScannedCode scannedCode) {
-        for (Item item : data.items) {
-            if (item.scannedCode != null && item.scannedCode.getCode().equals(scannedCode.getCode())) {
-                return true;
+    fun containsScannedCode(scannedCode: ScannedCode): Boolean {
+        for (item in data!!.items) {
+            if (item.scannedCode != null && item.scannedCode!!.code == scannedCode.code) {
+                return true
             }
         }
-
-        return false;
+        return false
     }
 
-    public static class CouponItem {
-        private final Coupon coupon;
-        private final ScannedCode scannedCode;
+    class CouponItem(val coupon: Coupon, val scannedCode: ScannedCode) {
 
-        public CouponItem(Coupon coupon, ScannedCode scannedCode) {
-            this.coupon = coupon;
-            this.scannedCode = scannedCode;
+        override fun equals(o: Any?): Boolean {
+            if (this === o) return true
+            if (o == null || javaClass != o.javaClass) return false
+            val that = o as CouponItem
+            return coupon == that.coupon && scannedCode == that.scannedCode
         }
 
-        public Coupon getCoupon() {
-            return coupon;
-        }
-
-        public ScannedCode getScannedCode() {
-            return scannedCode;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            CouponItem that = (CouponItem) o;
-            return Objects.equals(coupon, that.coupon) &&
-                    Objects.equals(scannedCode, that.scannedCode);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(coupon, scannedCode);
+        override fun hashCode(): Int {
+            return Objects.hash(coupon, scannedCode)
         }
     }
 
     /**
      * Class describing a shopping cart item
      */
-    public static class Item {
-        private Product product;
-        private ScannedCode scannedCode;
-        private int quantity;
-        private LineItem lineItem;
-        private String id;
-        private boolean isUsingSpecifiedQuantity;
-        transient ShoppingCart cart;
-        private boolean isManualCouponApplied;
-        private Coupon coupon;
-        // The local generated UUID of a coupon which which will be used by the backend
-        private String backendCouponId;
-
-        protected Item() {
-            // for gson
-        }
-
-        private Item(ShoppingCart cart, Coupon coupon, ScannedCode scannedCode) {
-            this.id = UUID.randomUUID().toString();
-            this.cart = cart;
-            this.scannedCode = scannedCode;
-            this.coupon = coupon;
-            this.backendCouponId = UUID.randomUUID().toString();
-        }
-
-        private Item(ShoppingCart cart, Product product, ScannedCode scannedCode) {
-            this.id = UUID.randomUUID().toString();
-            this.cart = cart;
-            this.scannedCode = scannedCode;
-            this.product = product;
-
-            if (product.getType() == Product.Type.UserWeighed) {
-                this.quantity = 0;
-            } else {
-                for (Product.Code code : product.getScannableCodes()) {
-                    if (code.template != null && code.template.equals(scannedCode.getTemplateName())
-                            && code.lookupCode != null && code.lookupCode.equals(scannedCode.getLookupCode())) {
-                        this.quantity = code.specifiedQuantity;
-
-                        if (!code.isPrimary && code.specifiedQuantity > 1) {
-                            isUsingSpecifiedQuantity = true;
-                        }
-                    }
-                }
-
-                if (this.quantity == 0) {
-                    this.quantity = 1;
-                }
-            }
-
-            if (scannedCode.hasEmbeddedData() && product.getType() == Product.Type.DepositReturnVoucher) {
-                ScannedCode.Builder builder = scannedCode.newBuilder();
-
-                if (scannedCode.hasEmbeddedData()) {
-                    builder.setEmbeddedData(scannedCode.getEmbeddedData() * -1);
-                }
-                if (scannedCode.hasEmbeddedDecimalData()) {
-                    builder.setEmbeddedDecimalData(scannedCode.getEmbeddedDecimalData().multiply(new BigDecimal(-1)));
-                }
-
-                this.scannedCode = builder.create();
-            }
-        }
-
-        private Item(ShoppingCart cart, LineItem lineItem) {
-            this.id = UUID.randomUUID().toString();
-            this.cart = cart;
-            this.lineItem = lineItem;
-        }
-
-        /**
-         * Returns the id of the shopping cart item
-         */
-        public String getId() {
-            return id;
-        }
-
-        void setLineItem(LineItem lineItem) {
-            this.lineItem = lineItem;
-        }
+    class Item {
 
         /**
          * Returns the product associated with the shopping cart item.
          */
-        @Nullable
-        public Product getProduct() {
-            return product;
-        }
+        var product: Product? = null
 
         /**
          * Returns the scanned code which was used when scanning the product and adding it to the shopping cart
          */
-        @Nullable
-        public ScannedCode getScannedCode() {
-            return scannedCode;
+        var scannedCode: ScannedCode? = null
+            private set
+
+        //helper
+        var quantity = 0
+
+        var lineItem: LineItem? = null
+
+        /**
+         * Returns the id of the shopping cart item
+         */
+        var id: String? = null
+            private set
+        private var isUsingSpecifiedQuantity = false
+
+        @Transient
+        var cart: ShoppingCart? = null
+        var isManualCouponApplied = false
+        var coupon: Coupon? = null
+
+        // The local generated UUID of a coupon which which will be used by the backend
+        var backendCouponId: String? = null
+
+        protected constructor() {
+            // for gson
+        }
+
+        constructor(cart: ShoppingCart, coupon: Coupon, scannedCode: ScannedCode?) {
+            id = UUID.randomUUID().toString()
+            this.cart = cart
+            this.scannedCode = scannedCode
+            this.coupon = coupon
+            backendCouponId = UUID.randomUUID().toString()
+        }
+
+        constructor(cart: ShoppingCart, product: Product, scannedCode: ScannedCode) {
+            id = UUID.randomUUID().toString()
+            this.cart = cart
+            this.scannedCode = scannedCode
+            this.product = product
+            if (product.type == Product.Type.UserWeighed) {
+                quantity = 0
+            } else {
+                for (code in product.scannableCodes) {
+                    if (code.template != null && code.template == scannedCode.templateName && code.lookupCode != null && code.lookupCode == scannedCode.lookupCode) {
+                        quantity = code.specifiedQuantity
+                        if (!code.isPrimary && code.specifiedQuantity > 1) {
+                            isUsingSpecifiedQuantity = true
+                        }
+                    }
+                }
+                if (quantity == 0) {
+                    quantity = 1
+                }
+            }
+            if (scannedCode.hasEmbeddedData() && product.type == Product.Type.DepositReturnVoucher) {
+                val builder = scannedCode.newBuilder()
+                if (scannedCode.hasEmbeddedData()) {
+                    builder.setEmbeddedData(scannedCode.embeddedData * -1)
+                }
+                if (scannedCode.hasEmbeddedDecimalData()) {
+                    builder.setEmbeddedDecimalData(scannedCode.embeddedDecimalData.multiply(BigDecimal(-1)))
+                }
+                this.scannedCode = builder.create()
+            }
+        }
+
+        constructor(cart: ShoppingCart, lineItem: LineItem) {
+            id = UUID.randomUUID().toString()
+            this.cart = cart
+            this.lineItem = lineItem
+        }
+
+        fun setLineItem2(lineItem: LineItem?) {
+            this.lineItem = lineItem
         }
 
         /**
          * Returns the effective quantity (embedded weight OR embedded price)
          * depending on the type
          */
-        public int getEffectiveQuantity() {
-            return getEffectiveQuantity(false);
-        }
+        val effectiveQuantity: Int
+            get() = getEffectiveQuantity(false)
 
-        private int getEffectiveQuantity(boolean ignoreLineItem) {
-            return scannedCode != null
-                    && scannedCode.hasEmbeddedData()
-                    && scannedCode.getEmbeddedData() != 0 ? scannedCode.getEmbeddedData() : getQuantity(ignoreLineItem);
+        fun getEffectiveQuantity(ignoreLineItem: Boolean): Int {
+            return if (scannedCode != null && scannedCode!!.hasEmbeddedData() && scannedCode!!.embeddedData != 0) scannedCode!!.embeddedData else getQuantityMethod(
+                ignoreLineItem
+            )
         }
 
         /**
          * Returns the quantity of the cart item
          */
-        public int getQuantity() {
-            return getQuantity(false);
+        fun getQuantityMethod(): Int {
+            return getQuantityMethod(false)
         }
 
         /**
@@ -831,610 +729,560 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
          *
          * @param ignoreLineItem if set to true, only return the local quantity before backend updates
          */
-        public int getQuantity(boolean ignoreLineItem) {
-            if (lineItem != null && !ignoreLineItem) {
-                if (lineItem.getWeight() != null) {
-                    return lineItem.getWeight();
-                } else if (lineItem.getUnits() != null) {
-                    return lineItem.getUnits();
+        fun getQuantityMethod(ignoreLineItem: Boolean): Int {
+            return if (lineItem != null && !ignoreLineItem) {
+                if (lineItem!!.weight != null) {
+                    lineItem!!.weight!!
+                } else if (lineItem!!.units != null) {
+                    lineItem!!.units!!
                 } else {
-                    return lineItem.getAmount();
+                    lineItem!!.amount
                 }
-            }
-
-            return quantity;
+            } else quantity
         }
 
         /**
          * Set the quantity of the cart item
          */
-        public void setQuantity(int quantity) {
-            if (scannedCode.hasEmbeddedData() && scannedCode.getEmbeddedData() != 0) {
-                return;
+        fun setQuantityMethod(quantity: Int) {
+            if (scannedCode!!.hasEmbeddedData() && scannedCode!!.embeddedData != 0) {
+                return
             }
-
-            this.quantity = Math.max(0, Math.min(MAX_QUANTITY, quantity));
-
-            int index = cart.data.items.indexOf(this);
+            this.quantity = Math.max(0, Math.min(MAX_QUANTITY, quantity))
+            val index = cart!!.data!!.items.indexOf(this)
             if (index != -1) {
                 if (quantity == 0) {
-                    cart.data.items.remove(this);
-                    cart.notifyItemRemoved(cart, this, index);
+                    cart!!.data!!.items.remove(this)
+                    cart!!.notifyItemRemoved(cart, this, index)
                 } else {
-                    cart.notifyQuantityChanged(cart, this);
+                    cart!!.notifyQuantityChanged(cart, this)
                 }
-
-                cart.data.modCount++;
-                cart.generateNewUUID();
-                cart.invalidateOnlinePrices();
-                cart.updatePrices(true);
+                cart!!.data!!.modCount++
+                cart!!.generateNewUUID()
+                cart!!.invalidateOnlinePrices()
+                cart!!.updatePrices(true)
             }
         }
 
         /**
-         * Returns the {@link ItemType} of the cart item
+         * Returns the [ItemType] of the cart item
          */
-        public ItemType getType() {
-            if (product != null) {
-                return ItemType.PRODUCT;
-            } else if (coupon != null) {
-                return ItemType.COUPON;
-            } else if (lineItem != null) {
-                return ItemType.LINE_ITEM;
+        val type: ItemType?
+            get() {
+                if (product != null) {
+                    return ItemType.PRODUCT
+                } else if (coupon != null) {
+                    return ItemType.COUPON
+                } else if (lineItem != null) {
+                    return ItemType.LINE_ITEM
+                }
+                return null
             }
-
-            return null;
-        }
 
         /**
          * Sets if a manual coupon (coupon applied by the user after scanning) is applied
          */
-        public void setManualCouponApplied(boolean manualCouponApplied) {
-            isManualCouponApplied = manualCouponApplied;
+        fun setManualCouponApplied2(manualCouponApplied: Boolean) {
+            isManualCouponApplied = manualCouponApplied
         }
 
         /**
          * Returns true if a manual coupon (coupon applied by the user after scanning) is applied
          */
-        public boolean isManualCouponApplied() {
-            return isManualCouponApplied;
+        fun isManualCouponApplied2(): Boolean {
+            return isManualCouponApplied
         }
 
         /**
          * Returns true if the item is editable by the user
          */
-        public boolean isEditable() {
-            if (coupon != null && coupon.getType() != CouponType.MANUAL) {
-                return false;
-            }
-
-            return isEditableInDialog();
-        }
+        val isEditable: Boolean
+            get() = if (coupon != null && coupon!!.type !== CouponType.MANUAL) {
+                false
+            } else isEditableInDialog
 
         /**
          * Returns true if the item is editable by the user while scanning
          */
-        public boolean isEditableInDialog() {
-            if (lineItem != null) return lineItem.getType() == LineItemType.DEFAULT
-                    && (!scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0);
-
-            return (!scannedCode.hasEmbeddedData() || scannedCode.getEmbeddedData() == 0) &&
-                    product.getPrice(cart.project.getCustomerCardId()) != 0;
-        }
+        val isEditableInDialog: Boolean
+            get() = if (lineItem != null) (lineItem!!.type === LineItemType.DEFAULT
+                    && (!scannedCode!!.hasEmbeddedData() || scannedCode!!.embeddedData == 0)) else (!scannedCode!!.hasEmbeddedData() || scannedCode!!.embeddedData == 0) &&
+                    product!!.getPrice(cart!!.project!!.customerCardId) != 0
 
         /**
          * Returns true if the item can be merged with items that conain the same product and type
          */
-        public boolean isMergeable() {
-            @Nullable final IsMergeable isMergeableOverride = Snabble.getInstance().isMergeable();
-            final boolean isMergeable = isMergeableDefault();
-            if (isMergeableOverride == null) {
-                return isMergeable;
-            } else {
-                return isMergeableOverride.isMergeable(this, isMergeable);
+        val isMergeable: Boolean
+            get() {
+                val isMergeableOverride = instance.isMergeable
+                val isMergeable = isMergeableDefault
+                return isMergeableOverride?.isMergeable(this, isMergeable) ?: isMergeable
             }
-        }
-
-        private boolean isMergeableDefault() {
-            if (product == null && lineItem != null) return false;
-            if (coupon != null) return false;
-
-            return product.getType() == Product.Type.Article
-                    && getUnit() != PIECE
-                    && product.getPrice(cart.project.getCustomerCardId()) != 0
-                    && scannedCode.getEmbeddedData() == 0
-                    && !isUsingSpecifiedQuantity;
-        }
+        private val isMergeableDefault: Boolean
+            private get() {
+                if (product == null && lineItem != null) return false
+                return if (coupon != null) false else product!!.type == Product.Type.Article && unit != Unit.PIECE && product!!.getPrice(
+                    cart!!.project!!.customerCardId
+                ) != 0 && scannedCode!!.embeddedData == 0 && !isUsingSpecifiedQuantity
+            }
 
         /**
          * Returns the unit associated with the cart item, or null if the cart item has no unit
          */
-        @Nullable
-        public Unit getUnit() {
-            if (getType() == ItemType.PRODUCT) {
-                return scannedCode.getEmbeddedUnit() != null ? scannedCode.getEmbeddedUnit()
-                        : product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
-            } else if (getType() == ItemType.LINE_ITEM) {
-                if (lineItem.getWeightUnit() != null) {
-                    return Unit.fromString(lineItem.getWeightUnit());
+        val unit: Unit?
+            get() {
+                if (type == ItemType.PRODUCT) {
+                    return if (scannedCode!!.embeddedUnit != null) scannedCode!!.embeddedUnit else product!!.getEncodingUnit(
+                        scannedCode!!.templateName, scannedCode!!.lookupCode
+                    )
+                } else if (type == ItemType.LINE_ITEM) {
+                    if (lineItem!!.weightUnit != null) {
+                        return Unit.fromString(lineItem!!.weightUnit)
+                    }
                 }
+                return null
             }
-
-            return null;
-        }
 
         /**
          * Gets the total price of the item
          */
-        public int getTotalPrice() {
-            if (lineItem != null) {
-                return lineItem.getTotalPrice();
-            }
-
-            return getLocalTotalPrice();
-        }
+        val totalPrice: Int
+            get() = if (lineItem != null) {
+                lineItem!!.totalPrice
+            } else localTotalPrice
 
         /**
          * Gets the total price of the items, ignoring the backend response
          */
-        public int getLocalTotalPrice() {
-            if (getType() == ItemType.PRODUCT) {
-                if (getUnit() == Unit.PRICE) {
-                    return scannedCode.getEmbeddedData();
+        val localTotalPrice: Int
+            get() = if (type == ItemType.PRODUCT) {
+                if (unit == Unit.PRICE) {
+                    scannedCode!!.embeddedData
                 }
-
-                int price = product.getPriceForQuantity(getEffectiveQuantity(),
-                        scannedCode,
-                        cart.project.getRoundingMode(),
-                        cart.project.getCustomerCardId());
-
-                return price;
+                product!!.getPriceForQuantity(
+                    effectiveQuantity,
+                    scannedCode,
+                    cart!!.project!!.roundingMode,
+                    cart!!.project!!.customerCardId
+                )
             } else {
-                return 0;
+                0
             }
-        }
 
         /**
          * Gets the total deposit of the item
          */
-        public int getTotalDepositPrice() {
-            if (lineItem != null && lineItem.getType() == LineItemType.DEPOSIT) {
-                return lineItem.getTotalPrice();
+        val totalDepositPrice: Int
+            get() {
+                if (lineItem != null && lineItem!!.type === LineItemType.DEPOSIT) {
+                    return lineItem!!.totalPrice
+                }
+                return if (product != null && product!!.depositProduct != null) {
+                    quantity * product!!.depositProduct!!.getPrice(cart!!.project!!.customerCardId)
+                } else 0
             }
-
-            if (product != null && product.getDepositProduct() != null) {
-                return quantity * product.getDepositProduct().getPrice(cart.project.getCustomerCardId());
-            }
-
-            return 0;
-        }
 
         /**
          * Returns true if the item should be displayed as a discount
          */
-        public boolean isDiscount() {
-            return lineItem != null && lineItem.getType() == LineItemType.DISCOUNT;
-        }
+        val isDiscount: Boolean
+            get() = lineItem != null && lineItem!!.type === LineItemType.DISCOUNT
 
         /**
          * Returns true if the item should be displayed as a giveaway
          */
-        public boolean isGiveaway() {
-            return lineItem != null && lineItem.getType() == LineItemType.GIVEAWAY;
-        }
+        val isGiveaway: Boolean
+            get() = lineItem != null && lineItem!!.type === LineItemType.GIVEAWAY
 
         /**
          * Gets the price after applying all price modifiers
          */
-        public int getModifiedPrice() {
-            int sum = 0;
-
-            if (lineItem != null && lineItem.getPriceModifiers() != null) {
-                for (PriceModifier priceModifier : lineItem.getPriceModifiers()) {
-                    sum += lineItem.getAmount() * priceModifier.getPrice();
+        val modifiedPrice: Int
+            get() {
+                var sum = 0
+                if (lineItem != null && lineItem!!.priceModifiers != null) {
+                    for ((_, price) in lineItem!!.priceModifiers!!) {
+                        sum += lineItem!!.amount * price
+                    }
                 }
+                return sum
             }
-
-            return sum;
-        }
 
         /**
          * Gets the displayed name of the product
          */
-        public String getDisplayName() {
-            if (lineItem != null) {
-                return lineItem.getName();
+        val displayName: String?
+            get() = if (lineItem != null) {
+                lineItem!!.name
             } else {
-                if (getType() == ItemType.COUPON) {
-                    return coupon.getName();
+                if (type == ItemType.COUPON) {
+                    coupon!!.name
                 } else {
-                    return product.getName();
+                    product!!.name
                 }
             }
-        }
 
         /**
          * Gets text displaying quantity, can be a weight or price depending on the type
-         * <p>
+         *
+         *
          * E.g. "1" or "100g" or "2,03 €"
          */
-        public String getQuantityText() {
-            if (getType() == ItemType.LINE_ITEM) {
-                return String.valueOf(lineItem.getAmount());
-            }
-
-            Unit unit = getUnit();
-            if (unit == PRICE || (unit == PIECE && scannedCode.getEmbeddedData() > 0)) {
-                if (lineItem != null && lineItem.getUnits() != null) {
-                    return String.valueOf(lineItem.getUnits());
+        val quantityText: String
+            get() {
+                if (type == ItemType.LINE_ITEM) {
+                    return lineItem!!.amount.toString()
+                }
+                val unit = unit
+                if ((unit == Unit.PRICE || unit == Unit.PIECE) && scannedCode!!.embeddedData > 0) {
+                    return if (lineItem != null && lineItem!!.units != null) {
+                        lineItem!!.units.toString()
+                    } else {
+                        "1"
+                    }
+                }
+                val q = effectiveQuantity
+                return if (q > 0) {
+                    q.toString() + if (unit != null) unit.displayValue else ""
                 } else {
-                    return "1";
+                    "1"
                 }
             }
-
-            int q = getEffectiveQuantity();
-            if (q > 0) {
-                return q + (unit != null ? unit.getDisplayValue() : "");
-            } else {
-                return "1";
-            }
-        }
 
         /**
          * Gets text displaying price, including the calculation.
-         * <p>
+         *
+         *
          * E.g. "2 * 3,99 € = 7,98 €"
          */
-        public String getFullPriceText() {
-            String priceText = getPriceText();
-            if (priceText != null) {
-                String quantityText = getQuantityText();
-                if (quantityText.equals("1")) {
-                    return getPriceText();
+        val fullPriceText: String?
+            get() {
+                val priceText = priceText
+                if (priceText != null) {
+                    val quantityText = quantityText
+                    return if (quantityText == "1") {
+                        this.priceText
+                    } else {
+                        quantityText + " " + this.priceText
+                    }
+                }
+                return null
+            }
+        private val reducedPriceText: String?
+            private get() = if (lineItem!!.priceModifiers != null && lineItem!!.priceModifiers!!.size > 0) {
+                cart!!.priceFormatter!!.format(totalPrice, true)
+            } else null
+        private val extendedPriceText: String?
+            private get() {
+                val reducedPriceText = reducedPriceText
+                return if (reducedPriceText != null) {
+                    this.reducedPriceText
                 } else {
-                    return quantityText + " " + getPriceText();
+                    String.format(
+                        "\u00D7 %s = %s",
+                        cart!!.priceFormatter!!.format(product!!, lineItem!!.price),
+                        cart!!.priceFormatter!!.format(totalPrice)
+                    )
                 }
             }
-
-            return null;
-        }
-
-        private String getReducedPriceText() {
-            if (lineItem.getPriceModifiers() != null && lineItem.getPriceModifiers().size() > 0) {
-                return cart.priceFormatter.format(getTotalPrice(), true);
-            }
-
-            return null;
-        }
-
-        private String getExtendedPriceText() {
-            String reducedPriceText = getReducedPriceText();
-            if (reducedPriceText != null) {
-                return getReducedPriceText();
-            } else {
-                return String.format("\u00D7 %s = %s",
-                        cart.priceFormatter.format(product, lineItem.getPrice()),
-                        cart.priceFormatter.format(getTotalPrice()));
-            }
-        }
 
         /**
          * Gets the displayed total price
          */
-        public String getTotalPriceText() {
-            return cart.priceFormatter.format(getTotalPrice());
-        }
+        val totalPriceText: String
+            get() = cart!!.priceFormatter!!.format(totalPrice)
 
         /**
          * Gets text displaying price, including the calculation.
-         * <p>
+         *
+         *
          * E.g. "3,99 €" or "2,99 € /kg = 0,47 €"
          */
-        public String getPriceText() {
-            if (lineItem != null) {
-                if (lineItem.getPrice() != 0) {
-                    if (product != null && lineItem.getUnits() != null && lineItem.getUnits() > 1
-                            || (getUnit() != Unit.PRICE
-                            && (getUnit() != PIECE || scannedCode.getEmbeddedData() == 0)
-                            && getEffectiveQuantity() > 1)) {
-                        return getExtendedPriceText();
-                    } else {
-                        if (lineItem.getUnits() != null) {
-                            return getExtendedPriceText();
+        val priceText: String?
+            get() {
+                if (lineItem != null) {
+                    if (lineItem!!.price != 0) {
+                        return if (product != null && lineItem!!.units != null && lineItem!!.units!! > 1 || unit != Unit.PRICE && (unit != Unit.PIECE || scannedCode!!.embeddedData == 0) && effectiveQuantity > 1) {
+                            extendedPriceText
                         } else {
-                            String reducedPriceText = getReducedPriceText();
-                            if (reducedPriceText != null) {
-                                return reducedPriceText;
+                            if (lineItem!!.units != null) {
+                                extendedPriceText
                             } else {
-                                return cart.priceFormatter.format(getTotalPrice(), true);
+                                val reducedPriceText = reducedPriceText
+                                reducedPriceText ?: cart!!.priceFormatter!!.format(totalPrice, true)
                             }
                         }
                     }
                 }
-            }
-
-            if (product == null) {
-                return null;
-            }
-
-            if (product.getPrice(cart.project.getCustomerCardId()) > 0 || scannedCode.hasEmbeddedData()) {
-                Unit unit = getUnit();
-
-                if ((unit == Unit.PRICE || unit == PIECE) && !(scannedCode.hasEmbeddedData() && scannedCode.getEmbeddedData() == 0)) {
-                    return cart.priceFormatter.format(getTotalPrice());
-                } else if (getEffectiveQuantity() <= 1) {
-                    return cart.priceFormatter.format(product);
-                } else {
-                    return String.format("\u00D7 %s = %s",
-                            cart.priceFormatter.format(product),
-                            cart.priceFormatter.format(getTotalPrice()));
+                if (product == null) {
+                    return null
                 }
+                if (product!!.getPrice(cart!!.project!!.customerCardId) > 0 || scannedCode!!.hasEmbeddedData()) {
+                    val unit = unit
+                    return if ((unit == Unit.PRICE || unit == Unit.PIECE) && !(scannedCode!!.hasEmbeddedData() && scannedCode!!.embeddedData == 0)) {
+                        cart!!.priceFormatter!!.format(totalPrice)
+                    } else if (effectiveQuantity <= 1) {
+                        cart!!.priceFormatter!!.format(product!!)
+                    } else {
+                        String.format(
+                            "\u00D7 %s = %s",
+                            cart!!.priceFormatter!!.format(product!!),
+                            cart!!.priceFormatter!!.format(totalPrice)
+                        )
+                    }
+                }
+                return null
             }
-
-            return null;
-        }
 
         /**
          * Gets the minimum age required to purchase this item
          */
-        public int getMinimumAge() {
-            if (product != null) {
-                Product.SaleRestriction saleRestriction = product.getSaleRestriction();
-                if (saleRestriction != null && saleRestriction.isAgeRestriction()) {
-                    return (int) saleRestriction.getValue();
+        val minimumAge: Int
+            get() {
+                if (product != null) {
+                    val saleRestriction = product!!.saleRestriction
+                    if (saleRestriction != null && saleRestriction.isAgeRestriction) {
+                        return saleRestriction.value.toInt()
+                    }
                 }
+                return 0
             }
-
-            return 0;
-        }
 
         /**
          * Associate a user applied coupon with this item. E.g. manual price reductions.
          */
-        public void setCoupon(Coupon coupon) {
+        fun setCoupon2(coupon: Coupon?) {
             if (coupon == null) {
-                this.coupon = null;
-                return;
+                this.coupon = null
+                return
             }
-
-            if (coupon.getType() != CouponType.MANUAL) {
-                throw new RuntimeException("Only manual coupons can be added");
+            if (coupon.type !== CouponType.MANUAL) {
+                throw RuntimeException("Only manual coupons can be added")
             }
-
-            this.coupon = coupon;
+            this.coupon = coupon
         }
 
         /**
          * Gets the user associated coupon of this item
          */
-        public Coupon getCoupon() {
-            return this.coupon;
+        fun getCoupon2(): Coupon? {
+            return coupon
         }
 
-        void replace(Product product, ScannedCode scannedCode, int quantity) {
-            this.product = product;
-            this.scannedCode = scannedCode;
-            this.quantity = quantity;
+        fun replace(product: Product?, scannedCode: ScannedCode?, quantity: Int) {
+            this.product = product
+            this.scannedCode = scannedCode
+            this.quantity = quantity
         }
     }
 
-    public List<PaymentMethodInfo> getAvailablePaymentMethods() {
-        return updater.getLastAvailablePaymentMethods();
-    }
+    val availablePaymentMethods: List<PaymentMethodInfo>?
+        get() = updater?.lastAvailablePaymentMethods
+    val isVerifiedOnline: Boolean
+        get() = updater?.isUpdated == true
 
-    public boolean isVerifiedOnline() {
-        return updater.isUpdated();
-    }
-
-    public String toJson() {
-        return GsonHolder.get().toJson(this);
+    fun toJson(): String {
+        return GsonHolder.get().toJson(this)
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    public static class BackendCart implements Payload {
-        public String session;
+    class BackendCart : Payload {
+
+        var session: String? = null
+
         @SerializedName("shopID")
-        public String shopId;
+        var shopId: String? = null
+
         @SerializedName("clientID")
-        public String clientId;
+        var clientId: String? = null
+
         @SerializedName("appUserID")
-        public String appUserId;
-        public BackendCartCustomer customer;
-        public BackendCartItem[] items;
-        public List<BackendCartRequiredInformation> requiredInformation;
-
-        @Override
-        public EventType getEventType() {
-            return EventType.CART;
-        }
+        var appUserId: String? = null
+        var customer: BackendCartCustomer? = null
+        lateinit var items: Array<BackendCartItem>
+        var requiredInformation: MutableList<BackendCartRequiredInformation>? = null
+        override val eventType: EventType
+            get() = EventType.CART
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    public static class BackendCartCustomer {
-        String loyaltyCard;
+    class BackendCartCustomer {
+
+        var loyaltyCard: String? = null
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    public static class BackendCartRequiredInformation {
-        String id;
-        String value;
+    class BackendCartRequiredInformation {
+
+        var id: String? = null
+        var value: String? = null
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    public static class BackendCartItem {
-        String id;
-        String sku;
-        String scannedCode;
-        int amount;
-        String weightUnit;
-        Integer price;
-        Integer weight;
-        Integer units;
-        String refersTo;
-        String couponID;
+    class BackendCartItem {
+
+        var id: String? = null
+        var sku: String? = null
+
+        @JvmField
+        var scannedCode: String? = null
+
+        @JvmField
+        var amount = 0
+
+        @JvmField
+        var weightUnit: String? = null
+
+        @JvmField
+        var price: Int? = null
+
+        @JvmField
+        var weight: Int? = null
+
+        @JvmField
+        var units: Int? = null
+        var refersTo: String? = null
+        var couponID: String? = null
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    public BackendCart toBackendCart() {
-        BackendCart backendCart = new BackendCart();
-        backendCart.session = getId();
-        backendCart.shopId = "unknown";
-
-        UserPreferences userPreferences = Snabble.getInstance().getUserPreferences();
-        backendCart.clientId = userPreferences.getClientId();
-
-        AppUser appUser = userPreferences.getAppUser();
+    fun toBackendCart(): BackendCart {
+        val backendCart = BackendCart()
+        backendCart.session = id
+        backendCart.shopId = "unknown"
+        val userPreferences = instance.userPreferences
+        backendCart.clientId = userPreferences.clientId
+        val appUser = userPreferences.appUser
         if (appUser != null) {
-            backendCart.appUserId = appUser.id;
+            backendCart.appUserId = appUser.id
         }
-
-        String loyaltyCardId = project.getCustomerCardId();
+        val loyaltyCardId = project!!.customerCardId
         if (loyaltyCardId != null) {
-            backendCart.customer = new BackendCartCustomer();
-            backendCart.customer.loyaltyCard = loyaltyCardId;
+            backendCart.customer = BackendCartCustomer()
+            backendCart.customer!!.loyaltyCard = loyaltyCardId
         }
-
         if (backendCart.requiredInformation == null) {
-            backendCart.requiredInformation = new ArrayList<>();
+            backendCart.requiredInformation = ArrayList()
         }
-
-        if (data.taxation != Taxation.UNDECIDED) {
-            BackendCartRequiredInformation requiredInformation = new BackendCartRequiredInformation();
-            requiredInformation.id = "taxation";
-            requiredInformation.value = data.taxation.getValue();
-            backendCart.requiredInformation.add(requiredInformation);
+        if (data!!.taxation != Taxation.UNDECIDED) {
+            val requiredInformation = BackendCartRequiredInformation()
+            requiredInformation.id = "taxation"
+            requiredInformation.value = data!!.taxation.value
+            backendCart.requiredInformation!!.add(requiredInformation)
         }
-
-        Shop shop = Snabble.getInstance().getCheckedInShop();
+        val shop = instance.checkedInShop
         if (shop != null) {
-            String id = shop.getId();
+            val id = shop.id
             if (id != null) {
-                backendCart.shopId = id;
+                backendCart.shopId = id
             }
         }
-
-        List<BackendCartItem> items = new ArrayList<>();
-
-        for (int i = 0; i < size(); i++) {
-            ShoppingCart.Item cartItem = get(i);
-            if (cartItem.getType() == ItemType.PRODUCT) {
-                BackendCartItem item = new BackendCartItem();
-
-                Product product = cartItem.getProduct();
-                int quantity = cartItem.getQuantity();
-
-                ScannedCode scannedCode = cartItem.getScannedCode();
-                Unit encodingUnit = product.getEncodingUnit(scannedCode.getTemplateName(), scannedCode.getLookupCode());
-
-                if (scannedCode.getEmbeddedUnit() != null) {
-                    encodingUnit = scannedCode.getEmbeddedUnit();
+        val items: MutableList<BackendCartItem> = ArrayList()
+        for (i in 0 until size()) {
+            val cartItem = get(i)
+            if (cartItem.type == ItemType.PRODUCT) {
+                val item = BackendCartItem()
+                val product = cartItem.product
+                val quantity = cartItem.getQuantityMethod()
+                val scannedCode = cartItem.scannedCode
+                var encodingUnit = product!!.getEncodingUnit(scannedCode!!.templateName, scannedCode.lookupCode)
+                if (scannedCode.embeddedUnit != null) {
+                    encodingUnit = scannedCode.embeddedUnit
                 }
-
-                item.id = cartItem.id;
-                item.sku = String.valueOf(product.getSku());
-                item.scannedCode = scannedCode.getCode();
-
-                if (product.getPrimaryCode() != null) {
-                    item.scannedCode = product.getPrimaryCode().lookupCode;
+                item.id = cartItem.id
+                item.sku = product.sku.toString()
+                item.scannedCode = scannedCode.code
+                if (product.primaryCode != null) {
+                    item.scannedCode = product.primaryCode.lookupCode
                 }
-
                 if (encodingUnit != null) {
-                    item.weightUnit = encodingUnit.getId();
+                    item.weightUnit = encodingUnit.id
                 }
-
-                item.amount = 1;
-
-                if (cartItem.getUnit() == Unit.PIECE) {
-                    item.units = cartItem.getEffectiveQuantity(true);
-                } else if (cartItem.getUnit() == Unit.PRICE) {
-                    item.price = cartItem.getLocalTotalPrice();
-                } else if (cartItem.getUnit() != null) {
-                    item.weight = cartItem.getEffectiveQuantity(true);
-                } else if (product.getType() == Product.Type.UserWeighed) {
-                    item.weight = quantity;
+                item.amount = 1
+                if (cartItem.unit == Unit.PIECE) {
+                    item.units = cartItem.getEffectiveQuantity(true)
+                } else if (cartItem.unit == Unit.PRICE) {
+                    item.price = cartItem.localTotalPrice
+                } else if (cartItem.unit != null) {
+                    item.weight = cartItem.getEffectiveQuantity(true)
+                } else if (product.type == Product.Type.UserWeighed) {
+                    item.weight = quantity
                 } else {
-                    item.amount = quantity;
+                    item.amount = quantity
                 }
-
                 if (item.price == null && scannedCode.hasPrice()) {
-                    item.price = scannedCode.getPrice();
+                    item.price = scannedCode.price
                 }
 
                 // reencode user input from scanned code with 0 amount
-                if (cartItem.getUnit() == Unit.PIECE && scannedCode.getEmbeddedData() == 0) {
-                    CodeTemplate codeTemplate = project.getCodeTemplate(scannedCode.getTemplateName());
-
+                if (cartItem.unit == Unit.PIECE && scannedCode.embeddedData == 0) {
+                    val codeTemplate = project!!.getCodeTemplate(scannedCode.templateName!!)
                     if (codeTemplate != null) {
-                        ScannedCode newCode = codeTemplate.code(scannedCode.getLookupCode())
-                                .embed(cartItem.getEffectiveQuantity())
-                                .buildCode();
-
+                        val newCode = codeTemplate.code(scannedCode.lookupCode)
+                            .embed(cartItem.effectiveQuantity)
+                            .buildCode()
                         if (newCode != null) {
-                            item.scannedCode = newCode.getCode();
+                            item.scannedCode = newCode.code
                         }
                     }
                 }
-
-                items.add(item);
-
+                items.add(item)
                 if (cartItem.coupon != null) {
-                    BackendCartItem couponItem = new BackendCartItem();
+                    val couponItem = BackendCartItem()
                     // this item id needs to be unique per item or else the
                     // promotion engine on the backend gets confused
-                    couponItem.id = UUID.randomUUID().toString();
-                    couponItem.refersTo = item.id;
-                    couponItem.amount = 1;
-                    couponItem.couponID = cartItem.coupon.getId();
-                    items.add(couponItem);
+                    couponItem.id = UUID.randomUUID().toString()
+                    couponItem.refersTo = item.id
+                    couponItem.amount = 1
+                    couponItem.couponID = cartItem.coupon!!.id
+                    items.add(couponItem)
                 }
-            } else if (cartItem.getType() == ItemType.COUPON) {
-                BackendCartItem item = new BackendCartItem();
-                item.id = cartItem.backendCouponId;
-                item.amount = 1;
-
-                ScannedCode scannedCode = cartItem.getScannedCode();
+            } else if (cartItem.type == ItemType.COUPON) {
+                val item = BackendCartItem()
+                item.id = cartItem.backendCouponId
+                item.amount = 1
+                val scannedCode = cartItem.scannedCode
                 if (scannedCode != null) {
-                    item.scannedCode = scannedCode.getCode();
+                    item.scannedCode = scannedCode.code
                 }
-
-                item.couponID = cartItem.coupon.getId();
-                items.add(item);
+                item.couponID = cartItem.coupon!!.id
+                items.add(item)
             }
         }
-
-        backendCart.items = items.toArray(new BackendCartItem[0]);
-
-        return backendCart;
+        backendCart.items = items.toTypedArray()
+        return backendCart
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    void resolveViolations(List<Violation> violations) {
-        for (Violation violation : violations) {
-            for (int i = data.items.size() - 1; i >= 0; i--) {
-                Item item = data.items.get(i);
-                if (item.coupon != null && item.backendCouponId != null && item.backendCouponId.equals(violation.getRefersTo())) {
-                    data.items.remove(item);
-                    data.modCount++;
-                    boolean found = false;
-                    for (ViolationNotification notification : data.violationNotifications) {
-                        if (notification.getRefersTo().equals(violation.getRefersTo())) {
-                            found = true;
-                            break;
+    fun resolveViolations(violations: List<Violation>) {
+        for ((type, refersTo, message) in violations) {
+            for (i in data!!.items.indices.reversed()) {
+                val item = data!!.items[i]
+                if (item.coupon != null && item.backendCouponId != null && item.backendCouponId == refersTo) {
+                    data!!.items.remove(item)
+                    data!!.modCount++
+                    var found = false
+                    for ((_, refersTo1) in data!!.violationNotifications) {
+                        if (refersTo1 == refersTo) {
+                            found = true
+                            break
                         }
                     }
                     if (!found) {
-                        data.violationNotifications.add(new ViolationNotification(
-                                item.coupon.getName(),
-                                violation.getRefersTo(),
-                                violation.getType(),
-                                violation.getMessage()
-                        ));
+                        data!!.violationNotifications.add(
+                            ViolationNotification(
+                                item.coupon!!.name,
+                                refersTo,
+                                type,
+                                message
+                            )
+                        )
                     }
                 }
             }
         }
-        notifyViolations();
-        updatePrices(false);
+        notifyViolations()
+        updatePrices(false)
     }
 
     /**
@@ -1442,225 +1290,199 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
      *
      * @param violations the handled ViolationNotifications.
      */
-    public void removeViolationNotification(List<ViolationNotification> violations) {
-        data.violationNotifications.removeAll(violations);
-        data.modCount++;
-        notifyCartDataChanged(this);
+    fun removeViolationNotification(violations: List<ViolationNotification?>?) {
+        violations ?: return
+        data!!.violationNotifications.removeAll(violations)
+        data!!.modCount++
+        notifyCartDataChanged(this)
     }
 
-    @NonNull
-    public List<ViolationNotification> getViolationNotifications() {
-        return data.violationNotifications;
-    }
+    val violationNotifications: List<ViolationNotification>
+        get() = data!!.violationNotifications
 
     /**
-     * Adds a {@link ShoppingCartListener} to the list of listeners if it does not already exist.
+     * Adds a [ShoppingCartListener] to the list of listeners if it does not already exist.
      *
      * @param listener the listener to addNamedOnly
      */
-    public void addListener(ShoppingCartListener listener) {
-        if (!listeners.contains(listener)) {
-            listeners.add(listener);
+    fun addListener(listener: ShoppingCartListener) {
+        if (!listeners!!.contains(listener)) {
+            listeners!!.add(listener)
         }
-        if (!data.violationNotifications.isEmpty()) {
-            listener.onViolationDetected(data.violationNotifications);
+        if (!data!!.violationNotifications.isEmpty()) {
+            listener.onViolationDetected(data!!.violationNotifications)
         }
     }
 
     /**
-     * Removes a given {@link ShoppingCartListener} from the list of listeners.
+     * Removes a given [ShoppingCartListener] from the list of listeners.
      *
      * @param listener the listener to remove
      */
-    public void removeListener(ShoppingCartListener listener) {
-        listeners.remove(listener);
+    fun removeListener(listener: ShoppingCartListener) {
+        listeners!!.remove(listener)
     }
 
     /**
      * Shopping list listener that detects various changes to the shopping list.
      */
-    public interface ShoppingCartListener {
-        void onItemAdded(ShoppingCart list, Item item);
+    interface ShoppingCartListener {
 
-        void onQuantityChanged(ShoppingCart list, Item item);
-
-        void onCleared(ShoppingCart list);
-
-        void onItemRemoved(ShoppingCart list, Item item, int pos);
-
-        void onProductsUpdated(ShoppingCart list);
-
-        void onPricesUpdated(ShoppingCart list);
-
-        void onCheckoutLimitReached(ShoppingCart list);
-
-        void onOnlinePaymentLimitReached(ShoppingCart list);
-
-        void onTaxationChanged(ShoppingCart list, Taxation taxation);
-
-        void onViolationDetected(@NonNull List<ViolationNotification> violations);
-
-        void onCartDataChanged(ShoppingCart list);
+        fun onItemAdded(list: ShoppingCart?, item: Item?)
+        fun onQuantityChanged(list: ShoppingCart?, item: Item?)
+        fun onCleared(list: ShoppingCart?)
+        fun onItemRemoved(list: ShoppingCart?, item: Item?, pos: Int)
+        fun onProductsUpdated(list: ShoppingCart?)
+        fun onPricesUpdated(list: ShoppingCart?)
+        fun onCheckoutLimitReached(list: ShoppingCart?)
+        fun onOnlinePaymentLimitReached(list: ShoppingCart?)
+        fun onTaxationChanged(list: ShoppingCart?, taxation: Taxation?)
+        fun onViolationDetected(violations: List<ViolationNotification?>)
+        fun onCartDataChanged(list: ShoppingCart?)
     }
 
-    public static abstract class SimpleShoppingCartListener implements ShoppingCartListener {
-        public abstract void onChanged(ShoppingCart list);
+    abstract class SimpleShoppingCartListener : ShoppingCartListener {
 
-        @Override
-        public void onProductsUpdated(ShoppingCart list) {
-            onChanged(list);
+        abstract fun onChanged(list: ShoppingCart?)
+        override fun onProductsUpdated(list: ShoppingCart?) {
+            onChanged(list)
         }
 
-        @Override
-        public void onItemAdded(ShoppingCart list, Item item) {
-            onChanged(list);
+        override fun onItemAdded(list: ShoppingCart?, item: Item?) {
+            onChanged(list)
         }
 
-        @Override
-        public void onQuantityChanged(ShoppingCart list, Item item) {
-            onChanged(list);
+        override fun onQuantityChanged(list: ShoppingCart?, item: Item?) {
+            onChanged(list)
         }
 
-        @Override
-        public void onCleared(ShoppingCart list) {
-            onChanged(list);
+        override fun onCleared(list: ShoppingCart?) {
+            onChanged(list)
         }
 
-        @Override
-        public void onItemRemoved(ShoppingCart list, Item item, int pos) {
-            onChanged(list);
+        override fun onItemRemoved(list: ShoppingCart?, item: Item?, pos: Int) {
+            onChanged(list)
         }
 
-        @Override
-        public void onPricesUpdated(ShoppingCart list) {
-            onChanged(list);
+        override fun onPricesUpdated(list: ShoppingCart?) {
+            onChanged(list)
         }
 
-        @Override
-        public void onTaxationChanged(ShoppingCart list, Taxation taxation) {
-            onChanged(list);
+        override fun onTaxationChanged(list: ShoppingCart?, taxation: Taxation?) {
+            onChanged(list)
         }
 
-        @Override
-        public void onCheckoutLimitReached(ShoppingCart list) {
-        }
-
-        @Override
-        public void onOnlinePaymentLimitReached(ShoppingCart list) {
-        }
-
-        @Override
-        public void onViolationDetected(@NonNull List<ViolationNotification> violations) {
-        }
-
-        @Override
-        public void onCartDataChanged(ShoppingCart list) {
-            onChanged(list);
+        override fun onCheckoutLimitReached(list: ShoppingCart?) {}
+        override fun onOnlinePaymentLimitReached(list: ShoppingCart?) {}
+        override fun onViolationDetected(violations: List<ViolationNotification?>) {}
+        override fun onCartDataChanged(list: ShoppingCart?) {
+            onChanged(list)
         }
     }
 
-    private void notifyItemAdded(final ShoppingCart list, final Item item) {
-        updateTimestamp();
-
-        Dispatch.mainThread(() -> {
-            if (list.data.items.contains(item)) {
-                for (ShoppingCartListener listener : listeners) {
-                    listener.onItemAdded(list, item);
+    private fun notifyItemAdded(list: ShoppingCart, item: Item) {
+        updateTimestamp()
+        Dispatch.mainThread {
+            if (list.data!!.items.contains(item)) {
+                for (listener in listeners!!) {
+                    listener.onItemAdded(list, item)
                 }
             }
-        });
+        }
     }
 
-    private void notifyItemRemoved(final ShoppingCart list, final Item item, final int pos) {
-        updateTimestamp();
-
-        Dispatch.mainThread(() -> {
-            for (ShoppingCartListener listener : listeners) {
-                listener.onItemRemoved(list, item, pos);
+    private fun notifyItemRemoved(list: ShoppingCart?, item: Item, pos: Int) {
+        updateTimestamp()
+        Dispatch.mainThread {
+            for (listener in listeners!!) {
+                listener.onItemRemoved(list, item, pos)
             }
-        });
+        }
     }
 
-    private void notifyQuantityChanged(final ShoppingCart list, final Item item) {
-        updateTimestamp();
-
-        Dispatch.mainThread(() -> {
-            if (list.data.items.contains(item)) {
-                for (ShoppingCartListener listener : listeners) {
-                    listener.onQuantityChanged(list, item);
+    private fun notifyQuantityChanged(list: ShoppingCart?, item: Item) {
+        updateTimestamp()
+        Dispatch.mainThread {
+            if (list!!.data!!.items.contains(item)) {
+                for (listener in listeners!!) {
+                    listener.onQuantityChanged(list, item)
                 }
             }
-        });
+        }
     }
 
-    private void notifyProductsUpdate(final ShoppingCart list) {
-        Dispatch.mainThread(() -> {
-            for (ShoppingCartListener listener : listeners) {
-                listener.onProductsUpdated(list);
+    private fun notifyProductsUpdate(list: ShoppingCart) {
+        Dispatch.mainThread {
+            for (listener in listeners!!) {
+                listener.onProductsUpdated(list)
             }
-        });
+        }
     }
 
-    void notifyPriceUpdate(final ShoppingCart list) {
-        Dispatch.mainThread(() -> {
-            for (ShoppingCartListener listener : listeners) {
-                listener.onPricesUpdated(list);
+    fun notifyPriceUpdate(list: ShoppingCart?) {
+        Dispatch.mainThread {
+            for (listener in listeners!!) {
+                listener.onPricesUpdated(list)
             }
-        });
+        }
     }
 
-    private void notifyTaxationChanged(final ShoppingCart list, final Taxation taxation) {
-        Dispatch.mainThread(() -> {
-            for (ShoppingCartListener listener : listeners) {
-                listener.onTaxationChanged(list, taxation);
+    private fun notifyTaxationChanged(list: ShoppingCart, taxation: Taxation) {
+        Dispatch.mainThread {
+            for (listener in listeners!!) {
+                listener.onTaxationChanged(list, taxation)
             }
-        });
+        }
     }
 
-    private void notifyCheckoutLimitReached(final ShoppingCart list) {
-        Dispatch.mainThread(() -> {
-            for (ShoppingCartListener listener : listeners) {
-                listener.onCheckoutLimitReached(list);
+    private fun notifyCheckoutLimitReached(list: ShoppingCart) {
+        Dispatch.mainThread {
+            for (listener in listeners!!) {
+                listener.onCheckoutLimitReached(list)
             }
-        });
+        }
     }
 
-    private void notifyOnlinePaymentLimitReached(final ShoppingCart list) {
-        Dispatch.mainThread(() -> {
-            for (ShoppingCartListener listener : listeners) {
-                listener.onOnlinePaymentLimitReached(list);
+    private fun notifyOnlinePaymentLimitReached(list: ShoppingCart) {
+        Dispatch.mainThread {
+            for (listener in listeners!!) {
+                listener.onOnlinePaymentLimitReached(list)
             }
-        });
+        }
     }
 
-    private void notifyViolations() {
-        Dispatch.mainThread(() -> {
-            for (ShoppingCartListener listener : listeners) {
-                listener.onViolationDetected(data.violationNotifications);
+    private fun notifyViolations() {
+        Dispatch.mainThread {
+            for (listener in listeners!!) {
+                listener.onViolationDetected(data!!.violationNotifications)
             }
-        });
+        }
     }
 
-    private void notifyCartDataChanged(final ShoppingCart list) {
-        Dispatch.mainThread(() -> {
-            for (ShoppingCartListener listener : listeners) {
-                listener.onCartDataChanged(list);
+    private fun notifyCartDataChanged(list: ShoppingCart) {
+        Dispatch.mainThread {
+            for (listener in listeners!!) {
+                listener.onCartDataChanged(list)
             }
-        });
+        }
     }
 
     /**
-     * Notifies all {@link #listeners} that the shopping list was cleared of all entries.
+     * Notifies all [.listeners] that the shopping list was cleared of all entries.
      *
-     * @param list the {@link ShoppingCart}
+     * @param list the [ShoppingCart]
      */
-    private void notifyCleared(final ShoppingCart list) {
-        updateTimestamp();
-
-        Dispatch.mainThread(() -> {
-            for (ShoppingCartListener listener : listeners) {
-                listener.onCleared(list);
+    private fun notifyCleared(list: ShoppingCart) {
+        updateTimestamp()
+        Dispatch.mainThread {
+            for (listener in listeners!!) {
+                listener.onCleared(list)
             }
-        });
+        }
+    }
+
+    companion object {
+
+        const val MAX_QUANTITY = 99999
     }
 }

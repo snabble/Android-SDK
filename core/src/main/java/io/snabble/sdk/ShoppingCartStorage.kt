@@ -27,7 +27,7 @@ internal class ShoppingCartStorage(val project: Project) {
 
         Dispatch.mainThread {
             project.shoppingCart.addListener(object : SimpleShoppingCartListener() {
-                override fun onChanged(list: ShoppingCart) {
+                override fun onChanged(list: ShoppingCart?) {
                     saveDebounced()
                 }
             })

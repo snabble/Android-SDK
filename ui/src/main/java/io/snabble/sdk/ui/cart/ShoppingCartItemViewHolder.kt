@@ -84,7 +84,7 @@ class ShoppingCartItemViewHolder internal constructor(
             image.isVisible = hasAnyImages
             image.setImageBitmap(null)
         }
-        val hasCoupon = row.item.coupon != null
+        val hasCoupon = row.item.getCoupon2() != null
         val isAgeRestricted = row.item.product?.saleRestriction?.isAgeRestriction ?: false
         redLabel.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#ff0000"))
         redLabel.isVisible = hasCoupon || isAgeRestricted
@@ -116,22 +116,22 @@ class ShoppingCartItemViewHolder internal constructor(
             undoHelper.removeAndShowUndoSnackbar(bindingAdapterPosition, row.item)
         }
         plus.setOnClickListener {
-            row.item.quantity++
+            row.item.setQuantityMethod(row.item.getQuantityMethod().inc())
 
-            updateMinusButtonIcon(row.item.quantity)
+            updateMinusButtonIcon(row.item.getQuantityMethod())
 
             Telemetry.event(Telemetry.Event.CartAmountChanged, row.item.product)
         }
 
-        updateMinusButtonIcon(row.item.quantity)
+        updateMinusButtonIcon(row.item.getQuantityMethod())
 
         minus.setOnClickListener {
             val p = bindingAdapterPosition
-            val newQuantity = row.item.quantity - 1
+            val newQuantity = row.item.getQuantityMethod() - 1
             if (newQuantity <= 0) {
                 undoHelper.removeAndShowUndoSnackbar(p, row.item)
             } else {
-                row.item.quantity = newQuantity
+                row.item.setQuantityMethod(newQuantity)
                 Telemetry.event(Telemetry.Event.CartAmountChanged, row.item.product)
             }
 
@@ -139,7 +139,7 @@ class ShoppingCartItemViewHolder internal constructor(
         }
 
         quantityEditApply.setOneShotClickListener {
-            row.item.quantity = quantityEditValue
+            row.item.setQuantityMethod(quantityEditValue)
             hideInput()
             Telemetry.event(Telemetry.Event.CartAmountChanged, row.item.product)
         }

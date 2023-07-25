@@ -187,11 +187,11 @@ class ShoppingCartUpdater {
                             ScannedCode scannedCode = ScannedCode.parseDefault(project, lineItem.getScannedCode());
                             if (scannedCode != null) {
                                 item.replace(product, scannedCode, lineItem.getAmount());
-                                item.setLineItem(lineItem);
+                                item.setLineItem2(lineItem);
                             }
                         }
                     } else {
-                        item.setLineItem(lineItem);
+                        item.setLineItem2(lineItem);
                     }
                 } else {
                     if (lineItem.getType() == LineItemType.DISCOUNT) {
@@ -212,7 +212,7 @@ class ShoppingCartUpdater {
                         if (lineItem.getType() == LineItemType.COUPON) {
                             ShoppingCart.Item refersTo = cart.getByItemId(lineItem.getRefersTo());
                             if (refersTo != null) {
-                                refersTo.setManualCouponApplied(lineItem.getRedeemed());
+                                refersTo.setManualCouponApplied2(lineItem.getRedeemed());
                                 discounts += refersTo.getModifiedPrice();
                             }
                         }

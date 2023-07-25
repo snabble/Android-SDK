@@ -210,7 +210,7 @@ open class CheckoutBar @JvmOverloads constructor(
             priceSum.text = project.priceFormatter.format(price)
 
             val onlinePaymentAvailable =
-                cart.availablePaymentMethods != null && cart.availablePaymentMethods.isNotEmpty()
+                cart.availablePaymentMethods != null && !cart.availablePaymentMethods.isNullOrEmpty()
             payButton.isEnabled =
                 price > 0 && (onlinePaymentAvailable || paymentSelectionHelper.selectedEntry.value != null)
 

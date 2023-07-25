@@ -421,7 +421,7 @@ public class ShoppingCartView extends FrameLayout {
             } else if (item.getType() == ShoppingCart.ItemType.PRODUCT) {
                 final ProductRow row = new ProductRow();
                 final Product product = item.getProduct();
-                final int quantity = item.getQuantity();
+                final int quantity = item.getQuantityMethod();
 
                 if (product != null) {
                     row.subtitle = sanitize(product.getSubtitle());
@@ -435,7 +435,7 @@ public class ShoppingCartView extends FrameLayout {
                 row.quantityText = sanitize(item.getQuantityText());
                 row.editable = item.isEditable();
                 row.isDismissible = true;
-                row.manualDiscountApplied = item.isManualCouponApplied();
+                row.manualDiscountApplied = item.isManualCouponApplied2();
                 row.item = item;
                 rows.add(row);
             }
