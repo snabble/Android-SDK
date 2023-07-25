@@ -559,20 +559,6 @@ class ShoppingCart(
         return false
     }
 
-    class CouponItem(val coupon: Coupon, val scannedCode: ScannedCode) {
-
-        override fun equals(o: Any?): Boolean {
-            if (this === o) return true
-            if (o == null || javaClass != o.javaClass) return false
-            val that = o as CouponItem
-            return coupon == that.coupon && scannedCode == that.scannedCode
-        }
-
-        override fun hashCode(): Int {
-            return Objects.hash(coupon, scannedCode)
-        }
-    }
-
     /**
      * Class describing a shopping cart item
      */
