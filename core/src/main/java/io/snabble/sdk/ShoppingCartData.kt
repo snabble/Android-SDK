@@ -5,7 +5,7 @@ import java.util.*
 
 data class ShoppingCartData @JvmOverloads constructor(
     @JvmField var id: String = UUID.randomUUID().toString(),
-    @JvmField var uuid: String? = UUID.randomUUID().toString(),
+    @JvmField var uuid: String = UUID.randomUUID().toString(),
     @JvmField var lastModificationTime: Long = 0,
     @JvmSuppressWildcards @JvmField var items: MutableList<ShoppingCart.Item> = mutableListOf(),
     @JvmField var violationNotifications: MutableList<ViolationNotification> = mutableListOf(),

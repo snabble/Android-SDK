@@ -24,7 +24,9 @@ import java.util.concurrent.TimeUnit
 /**
  * Class representing the snabble shopping cart
  */
-class ShoppingCart : Iterable<ShoppingCart.Item?> {
+class ShoppingCart(
+    private val project: Project? = null
+) : Iterable<ShoppingCart.Item?> {
 
     /**
      * Enum describing the type of item
@@ -42,14 +44,11 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
         UNDECIDED("undecided"), IN_HOUSE("inHouse"), TAKEAWAY("takeaway");
     }
 
-    var data: ShoppingCartData? = ShoppingCartData()
+    var data: ShoppingCartData = ShoppingCartData()
     private var oldData: ShoppingCartData? = ShoppingCartData()
 
     @Transient
-    private var listeners: MutableList<ShoppingCartListener>? = null
-
-    @Transient
-    private var project: Project? = null
+    private var listeners: MutableList<ShoppingCartListener>? = CopyOnWriteArrayList()
 
     @Transient
     private var updater: ShoppingCartUpdater? = null
@@ -57,35 +56,33 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
     @Transient
     private var priceFormatter: PriceFormatter? = null
 
-    internal constructor(project: Project? = null) {
-        data = ShoppingCartData()
+    init {
         updateTimestamp()
-        this.project = project
         project?.let {
             updater = ShoppingCartUpdater(project, this)
         }
         priceFormatter = project?.priceFormatter
-        listeners = CopyOnWriteArrayList()
     }
 
     fun initWithData(data: ShoppingCartData) {
-        this.data = data
-        oldData = null
-        if (data.uuid == null) {
-            generateNewUUID()
-        }
+        updateData(data)
         checkForTimeout()
-        data.applyShoppingCart(this)
-        oldData?.applyShoppingCart(this)
         updatePrices(false)
         notifyCartDataChanged(this)
+    }
+
+    private fun updateData(data: ShoppingCartData){
+        this.data = data
+        oldData = null
+        data.applyShoppingCart(this)
+        oldData?.applyShoppingCart(this)
     }
 
     /**
      * The id used to identify this cart session
      */
     val id: String
-        get() = data!!.id
+        get() = data.id
 
     /**
      * Create a new cart item using a product and a scanned code
@@ -142,9 +139,9 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
         if (item.isMergeable) {
             val existing = getExistingMergeableProduct(item.product)
             if (existing != null) {
-                data!!.items.remove(existing)
-                data!!.items.add(index, item)
-                data!!.modCount++
+                data.items.remove(existing)
+                data.items.add(index, item)
+                data.modCount++
                 generateNewUUID()
                 checkLimits()
                 notifyQuantityChanged(this, item)
@@ -155,13 +152,13 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
                 return
             }
         }
-        data!!.items.add(index, item)
+        data.items.add(index, item)
         clearBackup()
         checkLimits()
         notifyItemAdded(this, item)
 
         // sort coupons to bottom
-        Collections.sort(data!!.items) { o1: Item, o2: Item ->
+        Collections.sort(data.items) { o1: Item, o2: Item ->
             val t1 = o1.type
             val t2 = o2.type
             if (t2 == ItemType.COUPON && t1 == ItemType.PRODUCT) {
@@ -173,8 +170,8 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
             }
         }
         if (update) {
-            data!!.addCount++
-            data!!.modCount++
+            data.addCount++
+            data.modCount++
             generateNewUUID()
             invalidateOnlinePrices()
             updatePrices(true)
@@ -185,11 +182,11 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
      * Gets the cart item a specific index
      */
     operator fun get(index: Int): Item {
-        return data!!.items[index]
+        return data.items[index]
     }
 
     override fun iterator(): MutableIterator<Item> {
-        return data!!.items.iterator()
+        return data.items.iterator()
     }
 
     /**
@@ -203,7 +200,7 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
         if (product == null) {
             return null
         }
-        for (item in data!!.items) {
+        for (item in data.items) {
             if (product == item.product && item.isMergeable) {
                 return item
             }
@@ -218,7 +215,7 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
         if (itemId == null) {
             return null
         }
-        for (item in data!!.items) {
+        for (item in data.items) {
             if (itemId == item.id) {
                 return item
             }
@@ -230,16 +227,16 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
      * Gets the current index of a cart item
      */
     fun indexOf(item: Item?): Int {
-        return data!!.items.indexOf(item)
+        return data.items.indexOf(item)
     }
 
     /**
      * Removed a cart item from the cart by its index
      */
     fun remove(index: Int) {
-        data!!.modCount++
+        data.modCount++
         generateNewUUID()
-        val item = data!!.items.removeAt(index)
+        val item = data.items.removeAt(index)
         checkLimits()
         updatePrices(size() != 0)
         invalidateOnlinePrices()
@@ -253,14 +250,14 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
      * This is not the sum of articles.
      */
     fun size(): Int {
-        return data!!.items.size
+        return data.items.size
     }
 
     /**
      * Check if the cart is empty
      */
     val isEmpty: Boolean
-        get() = data!!.items.isEmpty()
+        get() = data.items.isEmpty()
 
     /**
      * Backups the cart, so it can be restured using [.restore] later.
@@ -269,9 +266,9 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
      * A cart is restorable for up to 5 minutes.
      */
     fun backup() {
-        if (data!!.items.size > 0) {
-            oldData = data!!.deepCopy()
-            data!!.backupTimestamp = System.currentTimeMillis()
+        if (data.items.size > 0) {
+            oldData = data.deepCopy()
+            data.backupTimestamp = System.currentTimeMillis()
         }
     }
 
@@ -279,23 +276,24 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
      * Check if the cart is backed up by [.backup] and still in the 5 minute time window
      */
     val isRestorable: Boolean
-        get() = oldData != null && data!!.backupTimestamp > System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5)
+        get() = oldData != null && data.backupTimestamp > System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5)
 
     /**
      * Clears the backup storage of the cart
      */
     fun clearBackup() {
         oldData = null
-        data!!.backupTimestamp = 0
+        data.backupTimestamp = 0
     }
 
     /**
      * Restores the cart previously backed up by [.backup]
      */
     fun restore() {
+        val restorableData = oldData?: return
         if (isRestorable) {
-            data = oldData
-            data!!.applyShoppingCart(this)
+            data = restorableData
+            data.applyShoppingCart(this)
             clearBackup()
             checkLimits()
             updatePrices(false)
@@ -309,17 +307,17 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
      * @return
      */
     val backupTimestamp: Long
-        get() = data!!.backupTimestamp
+        get() = data.backupTimestamp
 
     /**
      * Clears the cart of all items
      */
     fun clear() {
-        data!!.items = ArrayList()
-        data!!.modCount = 0
-        data!!.addCount = 0
+        data.items = ArrayList()
+        data.modCount = 0
+        data.addCount = 0
         generateNewUUID()
-        data!!.onlineTotalPrice = null
+        data.onlineTotalPrice = null
         checkLimits()
         updatePrices(false)
         notifyCleared(this)
@@ -332,11 +330,11 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
      */
     var taxation: Taxation
         get() =// migration for old shopping carts
-            if (data!!.taxation == null) {
+            if (data.taxation == null) {
                 Taxation.UNDECIDED
-            } else data!!.taxation
+            } else data.taxation
         set(taxation) {
-            data!!.taxation = taxation
+            data.taxation = taxation
             notifyTaxationChanged(this, taxation)
         }
 
@@ -344,7 +342,7 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
      * Clears the cart and generated a cart new session.
      */
     fun invalidate() {
-        data!!.id = UUID.randomUUID().toString()
+        data.id = UUID.randomUUID().toString()
         generateNewUUID()
         clear()
     }
@@ -355,7 +353,7 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
     fun updateProducts() {
         val productDatabase = project!!.productDatabase
         if (productDatabase.isUpToDate) {
-            for (e in data!!.items) {
+            for (e in data.items) {
                 val product = productDatabase.findByCode(e.scannedCode)
                 if (product != null) {
                     e.product = product
@@ -370,15 +368,15 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
      * Resets the cart to the state before it was updated by the backend
      */
     fun invalidateOnlinePrices() {
-        data!!.invalidProducts = null
-        data!!.invalidDepositReturnVoucher = false
-        data!!.onlineTotalPrice = null
+        data.invalidProducts = null
+        data.invalidDepositReturnVoucher = false
+        data.onlineTotalPrice = null
 
         // reverse-order because we are removing items
-        for (i in data!!.items.indices.reversed()) {
-            val item = data!!.items[i]
+        for (i in data.items.indices.reversed()) {
+            val item = data.items[i]
             if (item.type == ItemType.LINE_ITEM) {
-                data!!.items.removeAt(i)
+                data.items.removeAt(i)
             } else {
                 item.lineItem = null
                 item.isManualCouponApplied = false
@@ -405,7 +403,7 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
     fun checkForTimeout() {
         val currentTime = System.currentTimeMillis()
         val timeout = instance.config.maxShoppingCartAge
-        if (data!!.lastModificationTime + timeout < currentTime) {
+        if (data.lastModificationTime + timeout < currentTime) {
             clearBackup()
             invalidate()
         }
@@ -415,13 +413,13 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
      * Returns the number of times items in the shopping cart were added
      */
     val addCount: Int
-        get() = data!!.addCount
+        get() = data.addCount
 
     /**
      * Returns the number of times items in the shopping cart were modified
      */
     val modCount: Int
-        get() = data!!.modCount
+        get() = data.modCount
 
     /**
      * Generate a new uuid.
@@ -434,7 +432,7 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
      * If a checkout already exist with the same UUID, the checkout will get continued.
      */
     fun generateNewUUID() {
-        data!!.uuid = UUID.randomUUID().toString()
+        data.uuid = UUID.randomUUID().toString()
         notifyProductsUpdate(this)
     }
 
@@ -449,35 +447,35 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
      * If a checkout already exist with the same UUID, the checkout will get continued.
      */
     val uUID: String?
-        get() = data!!.uuid
+        get() = data.uuid
 
     fun setOnlineTotalPrice(totalPrice: Int) {
-        data!!.onlineTotalPrice = totalPrice
+        data.onlineTotalPrice = totalPrice
     }
 
     /**
      * Returns true of the carts price is calculated by the backend
      */
     val isOnlinePrice: Boolean
-        get() = data!!.onlineTotalPrice != null
+        get() = data.onlineTotalPrice != null
 
     fun setInvalidDepositReturnVoucher(invalidDepositReturnVoucher: Boolean) {
-        data!!.invalidDepositReturnVoucher = invalidDepositReturnVoucher
+        data.invalidDepositReturnVoucher = invalidDepositReturnVoucher
     }
 
     /**
      * Gets a list of invalid products that were rejected by the backend.
      */
     var invalidProducts: List<Product>?
-        get() = if (data!!.invalidProducts == null) {
+        get() = if (data.invalidProducts == null) {
             emptyList()
-        } else data!!.invalidProducts
+        } else data.invalidProducts
         set(invalidProducts) {
-            data!!.invalidProducts = invalidProducts
+            data.invalidProducts = invalidProducts
         }
 
     fun hasInvalidDepositReturnVoucher(): Boolean {
-        return data!!.invalidDepositReturnVoucher
+        return data.invalidDepositReturnVoucher
     }
 
     /**
@@ -489,11 +487,11 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
      */
     val totalPrice: Int
         get() {
-            if (data!!.onlineTotalPrice != null) {
-                return data!!.onlineTotalPrice!!
+            if (data.onlineTotalPrice != null) {
+                return data.onlineTotalPrice!!
             }
             var sum = 0
-            for (e in data!!.items) {
+            for (e in data.items) {
                 sum += e.totalPrice
             }
             sum += totalDepositPrice
@@ -507,7 +505,7 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
         get() {
             var sum = 0
             var vPOSsum = 0
-            for (e in data!!.items) {
+            for (e in data.items) {
                 if (e.type == ItemType.LINE_ITEM) {
                     vPOSsum += e.totalDepositPrice
                 } else {
@@ -523,7 +521,7 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
     val totalQuantity: Int
         get() {
             var sum = 0
-            for (e in data!!.items) {
+            for (e in data.items) {
                 if (e.type == ItemType.LINE_ITEM) {
                     if (e.lineItem!!.type === LineItemType.DEFAULT) {
                         sum += e.lineItem!!.amount
@@ -545,33 +543,33 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
      * Returns true if the shopping cart is over the current set limit
      */
     fun hasReachedMaxCheckoutLimit(): Boolean {
-        return data!!.hasRaisedMaxCheckoutLimit
+        return data.hasRaisedMaxCheckoutLimit
     }
 
     /**
      * Returns true if the shopping cart is over the current set limit for online checkouts
      */
     fun hasReachedMaxOnlinePaymentLimit(): Boolean {
-        return data!!.hasRaisedMaxOnlinePaymentLimit
+        return data.hasRaisedMaxOnlinePaymentLimit
     }
 
     private fun updateTimestamp() {
-        data!!.lastModificationTime = System.currentTimeMillis()
+        data.lastModificationTime = System.currentTimeMillis()
     }
 
     fun checkLimits() {
         val totalPrice = totalPrice
         if (totalPrice < project!!.maxCheckoutLimit) {
-            data!!.hasRaisedMaxCheckoutLimit = false
+            data.hasRaisedMaxCheckoutLimit = false
         }
         if (totalPrice < project!!.maxOnlinePaymentLimit) {
-            data!!.hasRaisedMaxOnlinePaymentLimit = false
+            data.hasRaisedMaxOnlinePaymentLimit = false
         }
-        if (!data!!.hasRaisedMaxCheckoutLimit && project!!.maxCheckoutLimit > 0 && totalPrice >= project!!.maxCheckoutLimit) {
-            data!!.hasRaisedMaxCheckoutLimit = true
+        if (!data.hasRaisedMaxCheckoutLimit && project!!.maxCheckoutLimit > 0 && totalPrice >= project!!.maxCheckoutLimit) {
+            data.hasRaisedMaxCheckoutLimit = true
             notifyCheckoutLimitReached(this)
-        } else if (!data!!.hasRaisedMaxOnlinePaymentLimit && project!!.maxOnlinePaymentLimit > 0 && totalPrice >= project!!.maxOnlinePaymentLimit) {
-            data!!.hasRaisedMaxOnlinePaymentLimit = true
+        } else if (!data.hasRaisedMaxOnlinePaymentLimit && project!!.maxOnlinePaymentLimit > 0 && totalPrice >= project!!.maxOnlinePaymentLimit) {
+            data.hasRaisedMaxOnlinePaymentLimit = true
             notifyOnlinePaymentLimitReached(this)
         }
     }
@@ -582,7 +580,7 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
     val minimumAge: Int
         get() {
             var minimumAge = 0
-            for (item in data!!.items) {
+            for (item in data.items) {
                 minimumAge = Math.max(minimumAge, item.minimumAge)
             }
             return minimumAge
@@ -592,7 +590,7 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
      * Checks if the provided scanned code is contained inside the shopping cart
      */
     fun containsScannedCode(scannedCode: ScannedCode): Boolean {
-        for (item in data!!.items) {
+        for (item in data.items) {
             if (item.scannedCode != null && item.scannedCode!!.code == scannedCode.code) {
                 return true
             }
@@ -749,15 +747,15 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
                 return
             }
             this.quantity = Math.max(0, Math.min(MAX_QUANTITY, quantity))
-            val index = cart!!.data!!.items.indexOf(this)
+            val index = cart!!.data.items.indexOf(this)
             if (index != -1) {
                 if (quantity == 0) {
-                    cart!!.data!!.items.remove(this)
+                    cart!!.data.items.remove(this)
                     cart!!.notifyItemRemoved(cart, this, index)
                 } else {
                     cart!!.notifyQuantityChanged(cart, this)
                 }
-                cart!!.data!!.modCount++
+                cart!!.data.modCount++
                 cart!!.generateNewUUID()
                 cart!!.invalidateOnlinePrices()
                 cart!!.updatePrices(true)
@@ -1164,10 +1162,10 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
         if (backendCart.requiredInformation == null) {
             backendCart.requiredInformation = ArrayList()
         }
-        if (data!!.taxation != Taxation.UNDECIDED) {
+        if (data.taxation != Taxation.UNDECIDED) {
             val requiredInformation = BackendCartRequiredInformation()
             requiredInformation.id = "taxation"
-            requiredInformation.value = data!!.taxation.value
+            requiredInformation.value = data.taxation.value
             backendCart.requiredInformation!!.add(requiredInformation)
         }
         val shop = instance.checkedInShop
@@ -1256,20 +1254,20 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun resolveViolations(violations: List<Violation>) {
         for ((type, refersTo, message) in violations) {
-            for (i in data!!.items.indices.reversed()) {
-                val item = data!!.items[i]
+            for (i in data.items.indices.reversed()) {
+                val item = data.items[i]
                 if (item.coupon != null && item.backendCouponId != null && item.backendCouponId == refersTo) {
-                    data!!.items.remove(item)
-                    data!!.modCount++
+                    data.items.remove(item)
+                    data.modCount++
                     var found = false
-                    for ((_, refersTo1) in data!!.violationNotifications) {
+                    for ((_, refersTo1) in data.violationNotifications) {
                         if (refersTo1 == refersTo) {
                             found = true
                             break
                         }
                     }
                     if (!found) {
-                        data!!.violationNotifications.add(
+                        data.violationNotifications.add(
                             ViolationNotification(
                                 item.coupon!!.name,
                                 refersTo,
@@ -1292,13 +1290,13 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
      */
     fun removeViolationNotification(violations: List<ViolationNotification?>?) {
         violations ?: return
-        data!!.violationNotifications.removeAll(violations)
-        data!!.modCount++
+        data.violationNotifications.removeAll(violations)
+        data.modCount++
         notifyCartDataChanged(this)
     }
 
     val violationNotifications: List<ViolationNotification>
-        get() = data!!.violationNotifications
+        get() = data.violationNotifications
 
     /**
      * Adds a [ShoppingCartListener] to the list of listeners if it does not already exist.
@@ -1309,8 +1307,8 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
         if (!listeners!!.contains(listener)) {
             listeners!!.add(listener)
         }
-        if (!data!!.violationNotifications.isEmpty()) {
-            listener.onViolationDetected(data!!.violationNotifications)
+        if (!data.violationNotifications.isEmpty()) {
+            listener.onViolationDetected(data.violationNotifications)
         }
     }
 
@@ -1383,7 +1381,7 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
     private fun notifyItemAdded(list: ShoppingCart, item: Item) {
         updateTimestamp()
         Dispatch.mainThread {
-            if (list.data!!.items.contains(item)) {
+            if (list.data.items.contains(item)) {
                 for (listener in listeners!!) {
                     listener.onItemAdded(list, item)
                 }
@@ -1403,7 +1401,7 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
     private fun notifyQuantityChanged(list: ShoppingCart?, item: Item) {
         updateTimestamp()
         Dispatch.mainThread {
-            if (list!!.data!!.items.contains(item)) {
+            if (list!!.data.items.contains(item)) {
                 for (listener in listeners!!) {
                     listener.onQuantityChanged(list, item)
                 }
@@ -1454,7 +1452,7 @@ class ShoppingCart : Iterable<ShoppingCart.Item?> {
     private fun notifyViolations() {
         Dispatch.mainThread {
             for (listener in listeners!!) {
-                listener.onViolationDetected(data!!.violationNotifications)
+                listener.onViolationDetected(data.violationNotifications)
             }
         }
     }
