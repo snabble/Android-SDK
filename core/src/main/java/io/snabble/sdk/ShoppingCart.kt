@@ -17,7 +17,6 @@ import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
 import java.math.BigDecimal
-import java.util.Collections
 import java.util.Objects
 import java.util.UUID
 import java.util.concurrent.CopyOnWriteArrayList
@@ -57,7 +56,7 @@ class ShoppingCart(
         notifyCartDataChanged(this)
     }
 
-    private fun updateData(data: ShoppingCartData){
+    private fun updateData(data: ShoppingCartData) {
         this.data = data
         oldData = null
         data.applyShoppingCart(this)
@@ -73,53 +72,39 @@ class ShoppingCart(
     /**
      * Create a new cart item using a product and a scanned code
      */
-    fun newItem(product: Product, scannedCode: ScannedCode): Item {
-        return Item(this, product, scannedCode)
-    }
+    fun newItem(product: Product, scannedCode: ScannedCode): Item = Item(this, product, scannedCode)
 
     /**
      * Create a new cart item using a coupon and a scanned code
      */
-    fun newItem(coupon: Coupon, scannedCode: ScannedCode?): Item {
-        return Item(this, coupon, scannedCode)
-    }
+    fun newItem(coupon: Coupon, scannedCode: ScannedCode?): Item = Item(this, coupon, scannedCode)
 
     /**
      * Create a new cart item using a line item of a checkout info
      */
-    fun newItem(lineItem: LineItem): Item {
-        return Item(this, lineItem)
-    }
+    fun newItem(lineItem: LineItem): Item = Item(this, lineItem)
 
     /**
      * Add a item to the cart
      */
-    fun add(item: Item) {
-        insert(item, 0)
-    }
+    fun add(item: Item) = insert(item, 0)
 
     /**
      * Adds coupons without adding a scanned code to it, you can use this function to quickly
      * add DIGITAL coupons that do not have a barcode associated with them
      */
-    fun addCoupon(coupon: Coupon) {
-        add(newItem(coupon, null))
-    }
+    fun addCoupon(coupon: Coupon) = add(newItem(coupon, null))
 
     /**
      * Adds coupons with a scanned code to it, you can use this function to quickly
      * add PRINTED coupons
      */
-    fun addCoupon(coupon: Coupon, scannedCode: ScannedCode?) {
-        add(newItem(coupon, scannedCode))
-    }
+    fun addCoupon(coupon: Coupon, scannedCode: ScannedCode?) = add(newItem(coupon, scannedCode))
 
     /**
      * Insert a cart item into the shopping cart at a specific index
      */
-    fun insert(item: Item, index: Int) {
-        insert(item, index, true)
-    }
+    fun insert(item: Item, index: Int) = insert(item, index, true)
 
     fun insert(item: Item, index: Int, update: Boolean) {
         if (item.isMergeable) {
@@ -144,17 +129,18 @@ class ShoppingCart(
         notifyItemAdded(this, item)
 
         // sort coupons to bottom
-        Collections.sort(data.items) { o1: Item, o2: Item ->
+        data.items.sortWith(Comparator { o1: Item, o2: Item ->
             val t1 = o1.type
             val t2 = o2.type
             if (t2 == ItemType.COUPON && t1 == ItemType.PRODUCT) {
-                return@sort -1
+                return@Comparator -1
             } else if (t1 == ItemType.COUPON && t2 == ItemType.PRODUCT) {
-                return@sort 1
+                return@Comparator 1
             } else {
-                return@sort 0
+                return@Comparator 0
             }
-        }
+        })
+
         if (update) {
             data.addCount++
             data.modCount++
@@ -164,15 +150,21 @@ class ShoppingCart(
         }
     }
 
-    /**
-     * Gets the cart item a specific index
-     */
-    operator fun get(index: Int): Item {
-        return data.items[index]
-    }
-
-    override fun iterator(): MutableIterator<Item> {
-        return data.items.iterator()
+    private fun insertIfMergeable(item: Item, index: Int, update: Boolean): Boolean {
+        return if (item.isMergeable) {
+            val existing = getExistingMergeableProduct(item.product) ?: return false
+            data.items.remove(existing)
+            data.items.add(index, item)
+            data.modCount++
+            generateNewUUID()
+            checkLimits()
+            notifyQuantityChanged(this, item)
+            if (update) {
+                invalidateOnlinePrices()
+                updatePrices(true)
+            }
+            true
+        } else false
     }
 
     /**
@@ -183,16 +175,20 @@ class ShoppingCart(
      * A cart item is not mergeable if it uses encoded data of a scanned code (e.g. a different price)
      */
     fun getExistingMergeableProduct(product: Product?): Item? {
-        if (product == null) {
-            return null
-        }
-        for (item in data.items) {
+        data.items.forEach { item ->
             if (product == item.product && item.isMergeable) {
                 return item
             }
         }
         return null
     }
+
+    /**
+     * Gets the cart item a specific index
+     */
+    operator fun get(index: Int): Item = data.items[index]
+
+    override fun iterator(): MutableIterator<Item> = data.items.iterator()
 
     /**
      * Find a cart item by it's id
@@ -276,7 +272,7 @@ class ShoppingCart(
      * Restores the cart previously backed up by [.backup]
      */
     fun restore() {
-        val restorableData = oldData?: return
+        val restorableData = oldData ?: return
         if (isRestorable) {
             data = restorableData
             data.applyShoppingCart(this)
