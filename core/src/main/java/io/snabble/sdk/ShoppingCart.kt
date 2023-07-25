@@ -355,9 +355,9 @@ class ShoppingCart(
      */
     fun updatePrices(debounce: Boolean) {
         if (debounce) {
-            updater!!.dispatchUpdate()
+            updater?.dispatchUpdate()
         } else {
-            updater!!.update(true)
+            updater?.update(true)
         }
     }
 
@@ -407,7 +407,7 @@ class ShoppingCart(
      *
      * If a checkout already exist with the same UUID, the checkout will get continued.
      */
-    val uUID: String?
+    val uUID: String
         get() = data.uuid
 
     fun setOnlineTotalPrice(totalPrice: Int) {
@@ -428,36 +428,31 @@ class ShoppingCart(
      * Gets a list of invalid products that were rejected by the backend.
      */
     var invalidProducts: List<Product>?
-        get() = if (data.invalidProducts == null) {
-            emptyList()
-        } else data.invalidProducts
+        get() = data.invalidProducts?: emptyList()
         set(invalidProducts) {
             data.invalidProducts = invalidProducts
         }
 
-    fun hasInvalidDepositReturnVoucher(): Boolean {
-        return data.invalidDepositReturnVoucher
-    }
+    fun hasInvalidDepositReturnVoucher(): Boolean = data.invalidDepositReturnVoucher
 
     /**
      * Returns the total price of the cart.
-     *
      *
      * If the cart was updated by the backend, the online price is used. If no update was made
      * a locally calculated price will be used
      */
     val totalPrice: Int
-        get() {
-            if (data.onlineTotalPrice != null) {
-                return data.onlineTotalPrice!!
-            }
-            var sum = 0
-            for (e in data.items) {
-                sum += e.totalPrice
-            }
-            sum += totalDepositPrice
-            return sum
+        get() = data.onlineTotalPrice?: calculateTotalPrice()
+
+
+    private fun calculateTotalPrice(): Int {
+        var sum = 0
+        data.items.forEach { item ->
+            sum += item.totalPrice
         }
+        sum += totalDepositPrice
+        return sum
+    }
 
     /**
      * Returns the total sum of deposit
