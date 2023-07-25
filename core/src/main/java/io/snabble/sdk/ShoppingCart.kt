@@ -107,22 +107,8 @@ class ShoppingCart(
     fun insert(item: Item, index: Int) = insert(item, index, true)
 
     fun insert(item: Item, index: Int, update: Boolean) {
-        if (item.isMergeable) {
-            val existing = getExistingMergeableProduct(item.product)
-            if (existing != null) {
-                data.items.remove(existing)
-                data.items.add(index, item)
-                data.modCount++
-                generateNewUUID()
-                checkLimits()
-                notifyQuantityChanged(this, item)
-                if (update) {
-                    invalidateOnlinePrices()
-                    updatePrices(true)
-                }
-                return
-            }
-        }
+        val itemIsMerged = insertIfMergeable(item, index, update)
+        if (itemIsMerged) return
         data.items.add(index, item)
         clearBackup()
         checkLimits()
