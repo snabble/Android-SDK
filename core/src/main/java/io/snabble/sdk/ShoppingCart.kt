@@ -461,14 +461,15 @@ class ShoppingCart(
         get() {
             var sum = 0
             var vPOSsum = 0
-            for (e in data.items) {
-                if (e.type == ItemType.LINE_ITEM) {
-                    vPOSsum += e.totalDepositPrice
+            data.items.forEach {item ->
+                if (item.type == ItemType.LINE_ITEM) {
+                    vPOSsum += item.totalDepositPrice
                 } else {
-                    sum += e.totalDepositPrice
+                    sum += item.totalDepositPrice
                 }
             }
-            return Math.max(vPOSsum, sum)
+
+            return vPOSsum.coerceAtLeast(sum)
         }
 
     /**
