@@ -649,14 +649,9 @@ class ShoppingCart(
          * @param ignoreLineItem if set to true, only return the local quantity before backend updates
          */
         fun getQuantityMethod(ignoreLineItem: Boolean): Int {
+            val lineItem = lineItem
             return if (lineItem != null && !ignoreLineItem) {
-                if (lineItem!!.weight != null) {
-                    lineItem!!.weight!!
-                } else if (lineItem!!.units != null) {
-                    lineItem!!.units!!
-                } else {
-                    lineItem!!.amount
-                }
+                lineItem.weight ?: lineItem.units?: lineItem.amount
             } else quantity
         }
 
