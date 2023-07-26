@@ -161,15 +161,8 @@ class ShoppingCart(
      *
      * A cart item is not mergeable if it uses encoded data of a scanned code (e.g. a different price)
      */
-    fun getExistingMergeableProduct(product: Product?): Item? {
-        product ?: return null
-        data.items.forEach { item ->
-            if (product == item.product && item.isMergeable) {
-                return item
-            }
-        }
-        return null
-    }
+    fun getExistingMergeableProduct(product: Product?): Item? =
+        data.items.firstOrNull { product == it.product && it.isMergeable }
 
     /**
      * Gets the cart item a specific index
@@ -181,15 +174,7 @@ class ShoppingCart(
     /**
      * Find a cart item by it's id
      */
-    fun getByItemId(itemId: String?): Item? {
-        itemId ?: return null
-        data.items.forEach { item ->
-            if (itemId == item.id) {
-                return item
-            }
-        }
-        return null
-    }
+    fun getByItemId(itemId: String?): Item? = data.items.firstOrNull { itemId == it.id }
 
     /**
      * Gets the current index of a cart item
@@ -595,10 +580,6 @@ class ShoppingCart(
         // The local generated UUID of a coupon which which will be used by the backend
         var backendCouponId: String? = null
 
-        protected constructor() {
-            // for gson
-        }
-
         constructor(cart: ShoppingCart, coupon: Coupon, scannedCode: ScannedCode?) {
             id = UUID.randomUUID().toString()
             this.cart = cart
@@ -612,11 +593,11 @@ class ShoppingCart(
             this.cart = cart
             this.scannedCode = scannedCode
             this.product = product
-            if (product.type == Product.Type.UserWeighed) {
+            if (product.type == Type.UserWeighed) {
                 quantity = 0
             } else {
-                for (code in product.scannableCodes) {
-                    if (code.template != null && code.template == scannedCode.templateName && code.lookupCode != null && code.lookupCode == scannedCode.lookupCode) {
+                product.scannableCodes.forEach { code: Product.Code? ->
+                    if (code != null && code.template == scannedCode.templateName && code.lookupCode == scannedCode.lookupCode) {
                         quantity = code.specifiedQuantity
                         if (!code.isPrimary && code.specifiedQuantity > 1) {
                             isUsingSpecifiedQuantity = true
@@ -627,7 +608,7 @@ class ShoppingCart(
                     quantity = 1
                 }
             }
-            if (scannedCode.hasEmbeddedData() && product.type == Product.Type.DepositReturnVoucher) {
+            if (scannedCode.hasEmbeddedData() && product.type == Type.DepositReturnVoucher) {
                 val builder = scannedCode.newBuilder()
                 if (scannedCode.hasEmbeddedData()) {
                     builder.setEmbeddedData(scannedCode.embeddedData * -1)
@@ -1056,7 +1037,7 @@ class ShoppingCart(
 
     private fun backendCartItems(): MutableList<BackendCartItem> {
         val items: MutableList<BackendCartItem> = mutableListOf()
-        forEach {cartItem ->
+        forEach { cartItem ->
             if (cartItem?.type == ItemType.PRODUCT) {
                 val product = cartItem.product
                 val quantity = cartItem.getQuantityMethod()
