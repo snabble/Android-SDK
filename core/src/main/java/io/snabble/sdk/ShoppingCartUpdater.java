@@ -213,7 +213,7 @@ class ShoppingCartUpdater {
                         if (lineItem.getType() == LineItemType.COUPON) {
                             ShoppingCart.Item refersTo = cart.getByItemId(lineItem.getRefersTo());
                             if (refersTo != null) {
-                                refersTo.setManualCouponApplied2(lineItem.getRedeemed());
+                                refersTo.isManualCouponApplied = lineItem.getRedeemed();
                                 discounts += refersTo.getModifiedPrice();
                             }
                         }

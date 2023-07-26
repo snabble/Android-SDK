@@ -438,7 +438,7 @@ public class ShoppingCartView extends FrameLayout {
                 row.quantityText = sanitize(item.getQuantityText());
                 row.editable = item.isEditable();
                 row.isDismissible = true;
-                row.manualDiscountApplied = item.isManualCouponApplied2();
+                row.manualDiscountApplied = item.isManualCouponApplied;
                 row.item = item;
                 rows.add(row);
             }

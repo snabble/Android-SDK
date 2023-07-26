@@ -97,7 +97,7 @@ public class EncodedCodesGenerator {
                 productInfos.add(new ProductInfo(product,
                         item.getQuantityMethod(),
                         item.getScannedCode(),
-                        item.isManualCouponApplied2()));
+                        item.isManualCouponApplied));
             }
         }
 

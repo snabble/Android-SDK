@@ -567,7 +567,11 @@ class ShoppingCart(
 
         @Transient
         var cart: ShoppingCart? = null
-        var isManualCouponApplied = false
+
+        /**
+         * Sets or Returns true  if a manual coupon (coupon applied by the user after scanning) is applied
+         */
+        @JvmField var isManualCouponApplied = false
         var coupon: Coupon? = null
 
         // The local generated UUID of a coupon which which will be used by the backend
@@ -695,20 +699,6 @@ class ShoppingCart(
                 }
                 return null
             }
-
-        /**
-         * Sets if a manual coupon (coupon applied by the user after scanning) is applied
-         */
-        fun setManualCouponApplied2(manualCouponApplied: Boolean) {
-            isManualCouponApplied = manualCouponApplied
-        }
-
-        /**
-         * Returns true if a manual coupon (coupon applied by the user after scanning) is applied
-         */
-        fun isManualCouponApplied2(): Boolean {
-            return isManualCouponApplied
-        }
 
         /**
          * Returns true if the item is editable by the user
