@@ -30,6 +30,7 @@ import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.extensions.getApplicationInfoCompat
 import io.snabble.sdk.shoppingcart.data.Taxation
+import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
 import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
@@ -74,7 +75,7 @@ open class CheckoutBar @JvmOverloads constructor(
     private val paymentSelectionHelper by lazy { PaymentSelectionHelper.getInstance() }
     private lateinit var project: Project
     private val cart: ShoppingCart by lazy { project.shoppingCart }
-    private val cartChangeListener = object : ShoppingCart.SimpleShoppingCartListener() {
+    private val cartChangeListener = object : SimpleShoppingCartListener() {
         override fun onChanged(list: ShoppingCart?) = update()
     }
 

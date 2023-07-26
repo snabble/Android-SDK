@@ -15,6 +15,7 @@ import io.snabble.sdk.events.data.EventType
 import io.snabble.sdk.events.data.payload.Payload
 import io.snabble.sdk.shoppingcart.data.ItemType
 import io.snabble.sdk.shoppingcart.data.Taxation
+import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
 import java.math.BigDecimal
@@ -575,7 +576,6 @@ class ShoppingCart(
         var scannedCode: ScannedCode? = null
             private set
 
-        //helper
         var quantity = 0
 
         var lineItem: LineItem? = null
@@ -1266,63 +1266,6 @@ class ShoppingCart(
      */
     fun removeListener(listener: ShoppingCartListener) {
         listeners!!.remove(listener)
-    }
-
-    /**
-     * Shopping list listener that detects various changes to the shopping list.
-     */
-    interface ShoppingCartListener {
-
-        fun onItemAdded(list: ShoppingCart?, item: Item?)
-        fun onQuantityChanged(list: ShoppingCart?, item: Item?)
-        fun onCleared(list: ShoppingCart?)
-        fun onItemRemoved(list: ShoppingCart?, item: Item?, pos: Int)
-        fun onProductsUpdated(list: ShoppingCart?)
-        fun onPricesUpdated(list: ShoppingCart?)
-        fun onCheckoutLimitReached(list: ShoppingCart?)
-        fun onOnlinePaymentLimitReached(list: ShoppingCart?)
-        fun onTaxationChanged(list: ShoppingCart?, taxation: Taxation?)
-        fun onViolationDetected(violations: List<ViolationNotification?>)
-        fun onCartDataChanged(list: ShoppingCart?)
-    }
-
-    abstract class SimpleShoppingCartListener : ShoppingCartListener {
-
-        abstract fun onChanged(list: ShoppingCart?)
-        override fun onProductsUpdated(list: ShoppingCart?) {
-            onChanged(list)
-        }
-
-        override fun onItemAdded(list: ShoppingCart?, item: Item?) {
-            onChanged(list)
-        }
-
-        override fun onQuantityChanged(list: ShoppingCart?, item: Item?) {
-            onChanged(list)
-        }
-
-        override fun onCleared(list: ShoppingCart?) {
-            onChanged(list)
-        }
-
-        override fun onItemRemoved(list: ShoppingCart?, item: Item?, pos: Int) {
-            onChanged(list)
-        }
-
-        override fun onPricesUpdated(list: ShoppingCart?) {
-            onChanged(list)
-        }
-
-        override fun onTaxationChanged(list: ShoppingCart?, taxation: Taxation?) {
-            onChanged(list)
-        }
-
-        override fun onCheckoutLimitReached(list: ShoppingCart?) {}
-        override fun onOnlinePaymentLimitReached(list: ShoppingCart?) {}
-        override fun onViolationDetected(violations: List<ViolationNotification?>) {}
-        override fun onCartDataChanged(list: ShoppingCart?) {
-            onChanged(list)
-        }
     }
 
     private fun notifyItemAdded(list: ShoppingCart, item: Item) {

@@ -3,8 +3,7 @@ package io.snabble.sdk
 import android.os.Handler
 import io.snabble.sdk.utils.GsonHolder
 import android.os.Looper
-import android.util.Log
-import io.snabble.sdk.ShoppingCart.SimpleShoppingCartListener
+import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.Logger
 import org.apache.commons.io.FileUtils

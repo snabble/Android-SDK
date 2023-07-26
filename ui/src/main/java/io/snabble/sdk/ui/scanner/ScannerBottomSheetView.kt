@@ -19,6 +19,7 @@ import io.snabble.sdk.ShoppingCart
 import io.snabble.sdk.ViolationNotification
 import io.snabble.sdk.shoppingcart.data.ItemType
 import io.snabble.sdk.shoppingcart.data.Taxation
+import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.CheckoutBar
 import io.snabble.sdk.ui.cart.ShoppingCartView
@@ -27,7 +28,7 @@ import io.snabble.sdk.ui.utils.behavior
 
 class ScannerBottomSheetView @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
-) : LinearLayout(context, attrs, defStyleAttr), ShoppingCart.ShoppingCartListener {
+) : LinearLayout(context, attrs, defStyleAttr), ShoppingCartListener {
     val checkout: CheckoutBar
     val recyclerView: RecyclerView
     val onItemsChangedListener: MutableList<(cart: ShoppingCart) -> Unit> = mutableListOf()

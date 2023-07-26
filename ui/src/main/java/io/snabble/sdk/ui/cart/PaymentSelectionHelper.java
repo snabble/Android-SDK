@@ -28,6 +28,8 @@ import io.snabble.sdk.checkout.PaymentMethodInfo;
 import io.snabble.sdk.googlepay.GooglePayHelper;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
+import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener;
+import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.utils.GsonHolder;
 
@@ -63,8 +65,8 @@ public class PaymentSelectionHelper {
     private PaymentCredentials lastAddedPaymentCredentials;
     private boolean googlePayIsReady = false;
 
-    private final ShoppingCart.ShoppingCartListener shoppingCartListener =
-            new ShoppingCart.SimpleShoppingCartListener() {
+    private final ShoppingCartListener shoppingCartListener =
+            new SimpleShoppingCartListener() {
                 @Override
                 public void onChanged(ShoppingCart list) {
                     update();

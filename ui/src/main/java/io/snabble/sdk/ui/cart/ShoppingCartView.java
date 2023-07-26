@@ -37,6 +37,8 @@ import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.ViolationNotification;
 import io.snabble.sdk.shoppingcart.data.ItemType;
+import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener;
+import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener;
 import io.snabble.sdk.ui.GestureHandler;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -66,7 +68,7 @@ public class ShoppingCartView extends FrameLayout {
     private Project project;
     private boolean isRegistered;
 
-    private final ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.SimpleShoppingCartListener() {
+    private final ShoppingCartListener shoppingCartListener = new SimpleShoppingCartListener() {
 
         @Override
         public void onChanged(ShoppingCart cart) {
