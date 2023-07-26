@@ -14,6 +14,7 @@ import io.snabble.sdk.coupons.CouponType
 import io.snabble.sdk.events.data.EventType
 import io.snabble.sdk.events.data.payload.Payload
 import io.snabble.sdk.shoppingcart.data.BackendCartCustomer
+import io.snabble.sdk.shoppingcart.data.BackendCartRequiredInformation
 import io.snabble.sdk.shoppingcart.data.ItemType
 import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
@@ -1051,14 +1052,6 @@ class ShoppingCart(
             get() = EventType.CART
     }
 
-
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
-    class BackendCartRequiredInformation {
-
-        var id: String? = null
-        var value: String? = null
-    }
-
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     class BackendCartItem {
 
@@ -1105,9 +1098,10 @@ class ShoppingCart(
             backendCart.requiredInformation = ArrayList()
         }
         if (data.taxation != Taxation.UNDECIDED) {
-            val requiredInformation = BackendCartRequiredInformation()
-            requiredInformation.id = "taxation"
-            requiredInformation.value = data.taxation.value
+            val requiredInformation = BackendCartRequiredInformation(
+                id = "taxation",
+                value = data.taxation.value
+            )
             backendCart.requiredInformation!!.add(requiredInformation)
         }
         val shop = instance.checkedInShop
