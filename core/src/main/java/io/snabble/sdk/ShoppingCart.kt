@@ -651,7 +651,7 @@ class ShoppingCart(
         fun getQuantityMethod(ignoreLineItem: Boolean): Int {
             val lineItem = lineItem
             return if (lineItem != null && !ignoreLineItem) {
-                lineItem.weight ?: lineItem.units?: lineItem.amount
+                lineItem.weight ?: lineItem.units ?: lineItem.amount
             } else quantity
         }
 
@@ -659,22 +659,25 @@ class ShoppingCart(
          * Set the quantity of the cart item
          */
         fun setQuantityMethod(quantity: Int) {
-            if (scannedCode!!.hasEmbeddedData() && scannedCode!!.embeddedData != 0) {
+            if (scannedCode?.hasEmbeddedData() == true && scannedCode?.embeddedData != 0) {
                 return
             }
-            this.quantity = Math.max(0, Math.min(MAX_QUANTITY, quantity))
-            val index = cart!!.data.items.indexOf(this)
+
+            this.quantity = quantity.coerceIn(0, MAX_QUANTITY)
+            val index = cart?.data?.items?.indexOf(this) ?: -1
             if (index != -1) {
-                if (quantity == 0) {
-                    cart!!.data.items.remove(this)
-                    cart!!.notifyItemRemoved(cart, this, index)
-                } else {
-                    cart!!.notifyQuantityChanged(cart, this)
+                cart?.let { currentCart ->
+                    if (quantity == 0) {
+                        currentCart.data.items.remove(this)
+                        currentCart.notifyItemRemoved(cart, this, index)
+                    } else {
+                        currentCart.notifyQuantityChanged(cart, this)
+                    }
+                    currentCart.data.modCount++
+                    currentCart.generateNewUUID()
+                    currentCart.invalidateOnlinePrices()
+                    currentCart.updatePrices(true)
                 }
-                cart!!.data.modCount++
-                cart!!.generateNewUUID()
-                cart!!.invalidateOnlinePrices()
-                cart!!.updatePrices(true)
             }
         }
 
