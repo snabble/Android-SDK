@@ -155,7 +155,7 @@ interface ProductConfirmationDialog {
             updatePrice()
             updateButtons()
             appliedCoupon.observeForever {
-                cartItem.setCoupon2(it)
+                cartItem.coupon = it
                 updatePrice()
             }
         }
@@ -316,7 +316,7 @@ interface ProductConfirmationDialog {
             val manualCoupons = project.coupons.filter(CouponType.MANUAL)
             when {
                 manualCoupons.isEmpty() || cartItem.totalPrice <= 0 -> enterReducedPriceButtonText.postValue(null)
-                cartItem.getCoupon2() != null -> enterReducedPriceButtonText.postValue(cartItem.getCoupon2()!!.name)
+                cartItem.coupon != null -> enterReducedPriceButtonText.postValue(cartItem.coupon?.name)
                 else -> enterReducedPriceButtonText.postNullableString(R.string.Snabble_addDiscount)
             }
         }

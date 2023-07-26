@@ -81,7 +81,7 @@ open class CouponDetailFragment : Fragment() {
             } else {
                 project.shoppingCart.let { cart ->
                     for (i in 0 until cart.size()) {
-                        val cartCoupon = cart.get(i).getCoupon2()
+                        val cartCoupon = cart.get(i).coupon
                         if (cartCoupon != null) {
                             if (cartCoupon.id == sdkCoupon.id) {
                                 markAsApplied()

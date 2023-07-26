@@ -84,7 +84,7 @@ class ShoppingCartItemViewHolder internal constructor(
             image.isVisible = hasAnyImages
             image.setImageBitmap(null)
         }
-        val hasCoupon = row.item.getCoupon2() != null
+        val hasCoupon = row.item.coupon != null
         val isAgeRestricted = row.item.product?.saleRestriction?.isAgeRestriction ?: false
         redLabel.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#ff0000"))
         redLabel.isVisible = hasCoupon || isAgeRestricted

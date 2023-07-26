@@ -1,5 +1,6 @@
 package io.snabble.sdk
 
+import android.util.Log
 import androidx.annotation.RestrictTo
 import io.snabble.sdk.Product.Type
 import io.snabble.sdk.Snabble.instance
@@ -20,6 +21,7 @@ import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
 import java.math.BigDecimal
+import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.time.Duration.Companion.minutes
@@ -573,7 +575,24 @@ class ShoppingCart(
          */
         @JvmField
         var isManualCouponApplied = false
+
+        /**
+         * Gets the user associated coupon of this item
+         */
         var coupon: Coupon? = null
+            /**
+             * Associate a user applied coupon with this item. E.g. manual price reductions.
+             */
+            set(value) {
+                if (value == null) {
+                    field = null
+                    return
+                }
+                if (value.type != CouponType.MANUAL) {
+                    throw RuntimeException("Only manual coupons can be added") // Todo: Do we want the app to crash?
+                }
+                field = coupon
+            }
 
         // The local generated UUID of a coupon which which will be used by the backend
         var backendCouponId: String? = null
@@ -801,13 +820,13 @@ class ShoppingCart(
          * Returns true if the item should be displayed as a discount
          */
         val isDiscount: Boolean
-            get() = lineItem != null && lineItem!!.type === LineItemType.DISCOUNT
+            get() = lineItem != null && lineItem?.type == LineItemType.DISCOUNT
 
         /**
          * Returns true if the item should be displayed as a giveaway
          */
         val isGiveaway: Boolean
-            get() = lineItem != null && lineItem!!.type === LineItemType.GIVEAWAY
+            get() = lineItem != null && lineItem?.type == LineItemType.GIVEAWAY
 
         /**
          * Gets the price after applying all price modifiers
@@ -815,9 +834,9 @@ class ShoppingCart(
         val modifiedPrice: Int
             get() {
                 var sum = 0
-                if (lineItem != null && lineItem!!.priceModifiers != null) {
-                    for ((_, price) in lineItem!!.priceModifiers!!) {
-                        sum += lineItem!!.amount * price
+                lineItem?.priceModifiers?.forEach { priceModifier ->
+                    lineItem?.let {
+                        sum += it.amount * priceModifier.price
                     }
                 }
                 return sum
@@ -828,12 +847,12 @@ class ShoppingCart(
          */
         val displayName: String?
             get() = if (lineItem != null) {
-                lineItem!!.name
+                lineItem?.name
             } else {
                 if (type == ItemType.COUPON) {
-                    coupon!!.name
+                    coupon?.name
                 } else {
-                    product!!.name
+                    product?.name
                 }
             }
 
@@ -846,19 +865,16 @@ class ShoppingCart(
         val quantityText: String
             get() {
                 if (type == ItemType.LINE_ITEM) {
-                    return lineItem!!.amount.toString()
+                    return lineItem?.amount.toString()
                 }
-                val unit = unit
-                if ((unit == Unit.PRICE || unit == Unit.PIECE) && scannedCode!!.embeddedData > 0) {
-                    return if (lineItem != null && lineItem!!.units != null) {
-                        lineItem!!.units.toString()
-                    } else {
-                        "1"
-                    }
+                val embeddedData = scannedCode?.embeddedData ?: 0
+                if ((unit == Unit.PRICE || unit == Unit.PIECE) && embeddedData > 0) {
+                    val units = lineItem?.units ?: 1
+                    return units.toString()
                 }
                 val q = effectiveQuantity
                 return if (q > 0) {
-                    q.toString() + if (unit != null) unit.displayValue else ""
+                    q.toString() + if (unit != null) unit?.displayValue else ""
                 } else {
                     "1"
                 }
@@ -872,40 +888,44 @@ class ShoppingCart(
          */
         val fullPriceText: String?
             get() {
-                val priceText = priceText
-                if (priceText != null) {
-                    val quantityText = quantityText
-                    return if (quantityText == "1") {
-                        this.priceText
-                    } else {
-                        quantityText + " " + this.priceText
-                    }
+                priceText ?: return null
+                val quantityText = quantityText
+                return if (quantityText == "1") {
+                    this.priceText
+                } else {
+                    quantityText + " " + this.priceText
                 }
-                return null
             }
+
         private val reducedPriceText: String?
-            private get() = if (lineItem!!.priceModifiers != null && lineItem!!.priceModifiers!!.size > 0) {
-                cart!!.priceFormatter!!.format(totalPrice, true)
+            get() = if (lineItem?.priceModifiers?.isNotEmpty() == true) {
+                cart?.priceFormatter?.format(totalPrice, true)
             } else null
+
         private val extendedPriceText: String?
-            private get() {
+            get() {
                 val reducedPriceText = reducedPriceText
                 return if (reducedPriceText != null) {
                     this.reducedPriceText
                 } else {
-                    String.format(
-                        "\u00D7 %s = %s",
-                        cart!!.priceFormatter!!.format(product!!, lineItem!!.price),
-                        cart!!.priceFormatter!!.format(totalPrice)
-                    )
+                    product?.let { product ->
+                        lineItem?.let {
+                            String.format(
+                                Locale.getDefault(),
+                                "\u00D7 %s = %s",
+                                cart?.priceFormatter?.format(product, it.price),
+                                cart?.priceFormatter?.format(totalPrice)
+                            )
+                        }
+                    }
                 }
             }
 
         /**
          * Gets the displayed total price
          */
-        val totalPriceText: String
-            get() = cart!!.priceFormatter!!.format(totalPrice)
+        val totalPriceText: String?
+            get() = cart?.priceFormatter?.format(totalPrice)
 
         /**
          * Gets text displaying price, including the calculation.
@@ -915,34 +935,43 @@ class ShoppingCart(
          */
         val priceText: String?
             get() {
+                val lineItem = lineItem
                 if (lineItem != null) {
-                    if (lineItem!!.price != 0) {
-                        return if (product != null && lineItem!!.units != null && lineItem!!.units!! > 1 || unit != Unit.PRICE && (unit != Unit.PIECE || scannedCode!!.embeddedData == 0) && effectiveQuantity > 1) {
+                    val units = lineItem.units
+                    if (lineItem.price != 0) {
+                        return if (product != null
+                            && units != null
+                            && units > 1
+                            || unit != Unit.PRICE
+                            && (unit != Unit.PIECE || scannedCode?.embeddedData == 0)
+                            && effectiveQuantity > 1
+                        ) {
                             extendedPriceText
                         } else {
-                            if (lineItem!!.units != null) {
+                            if (units != null) {
                                 extendedPriceText
                             } else {
-                                val reducedPriceText = reducedPriceText
-                                reducedPriceText ?: cart!!.priceFormatter!!.format(totalPrice, true)
+                                reducedPriceText ?: cart?.priceFormatter?.format(totalPrice, true)
                             }
                         }
                     }
                 }
-                if (product == null) {
-                    return null
-                }
-                if (product!!.getPrice(cart!!.project!!.customerCardId) > 0 || scannedCode!!.hasEmbeddedData()) {
+                val product = product ?: return null
+                if (product.getPrice(cart?.project?.customerCardId) > 0 || scannedCode?.hasEmbeddedData() == true) {
                     val unit = unit
-                    return if ((unit == Unit.PRICE || unit == Unit.PIECE) && !(scannedCode!!.hasEmbeddedData() && scannedCode!!.embeddedData == 0)) {
-                        cart!!.priceFormatter!!.format(totalPrice)
+                    val unitList = listOf(Unit.PRICE, Unit.PIECE)
+                    return if (unitList.contains(unit)
+                        && !(scannedCode?.hasEmbeddedData() == true && scannedCode?.embeddedData == 0)
+                    ) {
+                        cart?.priceFormatter?.format(totalPrice)
                     } else if (effectiveQuantity <= 1) {
-                        cart!!.priceFormatter!!.format(product!!)
+                        cart?.priceFormatter?.format(product)
                     } else {
                         String.format(
+                            Locale.getDefault(),
                             "\u00D7 %s = %s",
-                            cart!!.priceFormatter!!.format(product!!),
-                            cart!!.priceFormatter!!.format(totalPrice)
+                            cart?.priceFormatter?.format(product),
+                            cart?.priceFormatter?.format(totalPrice)
                         )
                     }
                 }
@@ -955,34 +984,13 @@ class ShoppingCart(
         val minimumAge: Int
             get() {
                 if (product != null) {
-                    val saleRestriction = product!!.saleRestriction
+                    val saleRestriction = product?.saleRestriction
                     if (saleRestriction != null && saleRestriction.isAgeRestriction) {
                         return saleRestriction.value.toInt()
                     }
                 }
                 return 0
             }
-
-        /**
-         * Associate a user applied coupon with this item. E.g. manual price reductions.
-         */
-        fun setCoupon2(coupon: Coupon?) {
-            if (coupon == null) {
-                this.coupon = null
-                return
-            }
-            if (coupon.type !== CouponType.MANUAL) {
-                throw RuntimeException("Only manual coupons can be added")
-            }
-            this.coupon = coupon
-        }
-
-        /**
-         * Gets the user associated coupon of this item
-         */
-        fun getCoupon2(): Coupon? {
-            return coupon
-        }
 
         fun replace(product: Product?, scannedCode: ScannedCode?, quantity: Int) {
             this.product = product
