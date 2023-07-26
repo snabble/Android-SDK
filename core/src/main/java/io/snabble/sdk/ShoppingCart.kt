@@ -535,15 +535,8 @@ class ShoppingCart(
     /**
      * Checks if the provided scanned code is contained inside the shopping cart
      */
-    fun containsScannedCode(scannedCode: ScannedCode): Boolean {
-        data.items.forEach { item ->
-            if (item.scannedCode != null && item.scannedCode?.code == scannedCode.code) {
-                return true
-            }
-
-        }
-        return false
-    }
+    fun containsScannedCode(scannedCode: ScannedCode): Boolean =
+        data.items.any { it.scannedCode != null && it.scannedCode?.code == scannedCode.code }
 
     /**
      * Class describing a shopping cart item
@@ -597,7 +590,10 @@ class ShoppingCart(
                 quantity = 0
             } else {
                 product.scannableCodes.forEach { code: Product.Code? ->
-                    if (code != null && code.template == scannedCode.templateName && code.lookupCode == scannedCode.lookupCode) {
+                    if (code != null
+                        && code.template == scannedCode.templateName
+                        && code.lookupCode == scannedCode.lookupCode
+                    ) {
                         quantity = code.specifiedQuantity
                         if (!code.isPrimary && code.specifiedQuantity > 1) {
                             isUsingSpecifiedQuantity = true
@@ -623,10 +619,6 @@ class ShoppingCart(
         constructor(cart: ShoppingCart, lineItem: LineItem) {
             id = UUID.randomUUID().toString()
             this.cart = cart
-            this.lineItem = lineItem
-        }
-
-        fun setLineItem2(lineItem: LineItem?) {
             this.lineItem = lineItem
         }
 

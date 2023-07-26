@@ -188,11 +188,11 @@ class ShoppingCartUpdater {
                             ScannedCode scannedCode = ScannedCode.parseDefault(project, lineItem.getScannedCode());
                             if (scannedCode != null) {
                                 item.replace(product, scannedCode, lineItem.getAmount());
-                                item.setLineItem2(lineItem);
+                                item.setLineItem(lineItem);
                             }
                         }
                     } else {
-                        item.setLineItem2(lineItem);
+                        item.setLineItem(lineItem);
                     }
                 } else {
                     if (lineItem.getType() == LineItemType.DISCOUNT) {
