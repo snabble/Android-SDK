@@ -630,17 +630,18 @@ class ShoppingCart(
             get() = getEffectiveQuantity(false)
 
         fun getEffectiveQuantity(ignoreLineItem: Boolean): Int {
-            return if (scannedCode != null && scannedCode!!.hasEmbeddedData() && scannedCode!!.embeddedData != 0) scannedCode!!.embeddedData else getQuantityMethod(
-                ignoreLineItem
-            )
+            val scannedCode = scannedCode
+            return if (scannedCode != null && scannedCode.hasEmbeddedData() && scannedCode.embeddedData != 0) {
+                scannedCode.embeddedData
+            } else {
+                getQuantityMethod(ignoreLineItem)
+            }
         }
 
         /**
          * Returns the quantity of the cart item
          */
-        fun getQuantityMethod(): Int {
-            return getQuantityMethod(false)
-        }
+        fun getQuantityMethod(): Int = getQuantityMethod(false)
 
         /**
          * Returns the quantity of the cart item
