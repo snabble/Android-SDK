@@ -1,4 +1,4 @@
-package io.snabble.sdk.shoppingcart.data
+package io.snabble.sdk.shoppingcart.data.cart
 
 import androidx.annotation.RestrictTo
 

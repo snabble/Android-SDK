@@ -4,12 +4,12 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
-import io.snabble.sdk.ShoppingCart.BackendCart
 import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.Product
 import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.FulfillmentState
 import io.snabble.sdk.PaymentMethod
+import io.snabble.sdk.shoppingcart.data.cart.BackendCart
 import java.io.Serializable
 import java.lang.Exception
 import java.util.*

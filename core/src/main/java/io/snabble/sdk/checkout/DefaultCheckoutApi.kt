@@ -3,8 +3,8 @@ package io.snabble.sdk.checkout
 import android.annotation.SuppressLint
 import com.google.gson.JsonObject
 import io.snabble.sdk.*
-import io.snabble.sdk.ShoppingCart.BackendCart
 import io.snabble.sdk.payment.PaymentCredentials
+import io.snabble.sdk.shoppingcart.data.cart.BackendCart
 import io.snabble.sdk.utils.*
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType

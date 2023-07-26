@@ -1,7 +1,6 @@
 package io.snabble.sdk
 
 import androidx.annotation.RestrictTo
-import com.google.gson.annotations.SerializedName
 import io.snabble.sdk.Product.Type
 import io.snabble.sdk.Snabble.instance
 import io.snabble.sdk.checkout.LineItem
@@ -11,17 +10,15 @@ import io.snabble.sdk.checkout.Violation
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.coupons.CouponType
-import io.snabble.sdk.events.data.EventType
-import io.snabble.sdk.events.data.payload.Payload
-import io.snabble.sdk.shoppingcart.data.BackendCartCustomer
-import io.snabble.sdk.shoppingcart.data.BackendCartRequiredInformation
 import io.snabble.sdk.shoppingcart.data.ItemType
 import io.snabble.sdk.shoppingcart.data.Taxation
+import io.snabble.sdk.shoppingcart.data.cart.BackendCart
+import io.snabble.sdk.shoppingcart.data.cart.BackendCartCustomer
+import io.snabble.sdk.shoppingcart.data.cart.BackendCartRequiredInformation
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
 import java.math.BigDecimal
-import java.util.Objects
 import java.util.UUID
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.time.Duration.Companion.minutes
@@ -1033,26 +1030,6 @@ class ShoppingCart(
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    class BackendCart : Payload {
-
-        var session: String? = null
-
-        @SerializedName("shopID")
-        var shopId: String? = null
-
-        @SerializedName("clientID")
-        var clientId: String? = null
-
-        @SerializedName("appUserID")
-        var appUserId: String? = null
-        var customer: BackendCartCustomer? = null
-        lateinit var items: Array<BackendCartItem>
-        var requiredInformation: MutableList<BackendCartRequiredInformation>? = null
-        override val eventType: EventType
-            get() = EventType.CART
-    }
-
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
     class BackendCartItem {
 
         var id: String? = null
@@ -1081,22 +1058,20 @@ class ShoppingCart(
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun toBackendCart(): BackendCart {
-        val backendCart = BackendCart()
-        backendCart.session = id
-        backendCart.shopId = "unknown"
         val userPreferences = instance.userPreferences
-        backendCart.clientId = userPreferences.clientId
-        val appUser = userPreferences.appUser
-        if (appUser != null) {
-            backendCart.appUserId = appUser.id
-        }
-        val loyaltyCardId = project!!.customerCardId
-        if (loyaltyCardId != null) {
-            backendCart.customer = BackendCartCustomer(loyaltyCardId)
-        }
-        if (backendCart.requiredInformation == null) {
-            backendCart.requiredInformation = ArrayList()
-        }
+        val loyaltyCardId = project?.customerCardId
+
+        val backendCart = BackendCart(
+            session = id,
+            shopId = instance.checkedInShop?.id ?: "unknown",
+            clientId = userPreferences.clientId,
+            appUserId = userPreferences.appUser?.id,
+            customer = if (loyaltyCardId != null) BackendCartCustomer(loyaltyCardId) else null,
+            requiredInformation = mutableListOf(),
+            items = backendCartItems()
+
+            )
+
         if (data.taxation != Taxation.UNDECIDED) {
             val requiredInformation = BackendCartRequiredInformation(
                 id = "taxation",
@@ -1104,14 +1079,12 @@ class ShoppingCart(
             )
             backendCart.requiredInformation!!.add(requiredInformation)
         }
-        val shop = instance.checkedInShop
-        if (shop != null) {
-            val id = shop.id
-            if (id != null) {
-                backendCart.shopId = id
-            }
-        }
-        val items: MutableList<BackendCartItem> = ArrayList()
+
+        return backendCart
+    }
+
+    private fun backendCartItems(): MutableList<BackendCartItem> {
+        val items: MutableList<BackendCartItem> = mutableListOf()
         for (i in 0 until size()) {
             val cartItem = get(i)
             if (cartItem.type == ItemType.PRODUCT) {
@@ -1139,7 +1112,7 @@ class ShoppingCart(
                     item.price = cartItem.localTotalPrice
                 } else if (cartItem.unit != null) {
                     item.weight = cartItem.getEffectiveQuantity(true)
-                } else if (product.type == Product.Type.UserWeighed) {
+                } else if (product.type == Type.UserWeighed) {
                     item.weight = quantity
                 } else {
                     item.amount = quantity
@@ -1183,8 +1156,7 @@ class ShoppingCart(
                 items.add(item)
             }
         }
-        backendCart.items = items.toTypedArray()
-        return backendCart
+        return items
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
