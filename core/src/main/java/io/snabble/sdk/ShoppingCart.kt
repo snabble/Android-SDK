@@ -731,11 +731,13 @@ class ShoppingCart(
                 return isMergeableOverride?.isMergeable(this, isMergeable) ?: isMergeable
             }
         private val isMergeableDefault: Boolean
-            private get() {
-                if (product == null && lineItem != null) return false
-                return if (coupon != null) false else product!!.type == Product.Type.Article && unit != Unit.PIECE && product!!.getPrice(
-                    cart!!.project!!.customerCardId
-                ) != 0 && scannedCode!!.embeddedData == 0 && !isUsingSpecifiedQuantity
+            get() {
+                if (product == null && lineItem != null || coupon != null) return false
+                return product?.type == Type.Article
+                        && unit != Unit.PIECE
+                        && product?.getPrice(cart?.project?.customerCardId) != 0
+                        && scannedCode?.embeddedData == 0
+                        && !isUsingSpecifiedQuantity
             }
 
         /**
@@ -744,12 +746,13 @@ class ShoppingCart(
         val unit: Unit?
             get() {
                 if (type == ItemType.PRODUCT) {
-                    return if (scannedCode!!.embeddedUnit != null) scannedCode!!.embeddedUnit else product!!.getEncodingUnit(
-                        scannedCode!!.templateName, scannedCode!!.lookupCode
+                    return scannedCode?.embeddedUnit ?: product?.getEncodingUnit(
+                        scannedCode?.templateName,
+                        scannedCode?.lookupCode
                     )
                 } else if (type == ItemType.LINE_ITEM) {
-                    if (lineItem!!.weightUnit != null) {
-                        return Unit.fromString(lineItem!!.weightUnit)
+                    if (lineItem?.weightUnit != null) {
+                        return Unit.fromString(lineItem?.weightUnit)
                     }
                 }
                 return null
@@ -759,9 +762,7 @@ class ShoppingCart(
          * Gets the total price of the item
          */
         val totalPrice: Int
-            get() = if (lineItem != null) {
-                lineItem!!.totalPrice
-            } else localTotalPrice
+            get() = lineItem?.totalPrice ?: localTotalPrice
 
         /**
          * Gets the total price of the items, ignoring the backend response
@@ -769,14 +770,14 @@ class ShoppingCart(
         val localTotalPrice: Int
             get() = if (type == ItemType.PRODUCT) {
                 if (unit == Unit.PRICE) {
-                    scannedCode!!.embeddedData
+                    scannedCode?.embeddedData
                 }
-                product!!.getPriceForQuantity(
+                product?.getPriceForQuantity(
                     effectiveQuantity,
                     scannedCode,
-                    cart!!.project!!.roundingMode,
-                    cart!!.project!!.customerCardId
-                )
+                    cart?.project?.roundingMode,
+                    cart?.project?.customerCardId
+                ) ?: 0
             } else {
                 0
             }
@@ -786,11 +787,13 @@ class ShoppingCart(
          */
         val totalDepositPrice: Int
             get() {
-                if (lineItem != null && lineItem!!.type === LineItemType.DEPOSIT) {
-                    return lineItem!!.totalPrice
+                val lineItem = lineItem
+                if (lineItem != null && lineItem.type == LineItemType.DEPOSIT) {
+                    return lineItem.totalPrice
                 }
-                return if (product != null && product!!.depositProduct != null) {
-                    quantity * product!!.depositProduct!!.getPrice(cart!!.project!!.customerCardId)
+                return if (product != null && product?.depositProduct != null) {
+                    val price = product?.depositProduct?.getPrice(cart?.project?.customerCardId) ?: 0
+                    quantity * price
                 } else 0
             }
 
