@@ -15,6 +15,7 @@ import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.shoppingcart.data.cart.BackendCart
 import io.snabble.sdk.shoppingcart.data.cart.BackendCartCustomer
 import io.snabble.sdk.shoppingcart.data.cart.BackendCartRequiredInformation
+import io.snabble.sdk.shoppingcart.data.item.BackendCartItem
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
@@ -1030,33 +1031,6 @@ class ShoppingCart(
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
-    class BackendCartItem {
-
-        var id: String? = null
-        var sku: String? = null
-
-        @JvmField
-        var scannedCode: String? = null
-
-        @JvmField
-        var amount = 0
-
-        @JvmField
-        var weightUnit: String? = null
-
-        @JvmField
-        var price: Int? = null
-
-        @JvmField
-        var weight: Int? = null
-
-        @JvmField
-        var units: Int? = null
-        var refersTo: String? = null
-        var couponID: String? = null
-    }
-
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun toBackendCart(): BackendCart {
         val userPreferences = instance.userPreferences
         val loyaltyCardId = project?.customerCardId
@@ -1070,7 +1044,7 @@ class ShoppingCart(
             requiredInformation = mutableListOf(),
             items = backendCartItems()
 
-            )
+        )
 
         if (data.taxation != Taxation.UNDECIDED) {
             val requiredInformation = BackendCartRequiredInformation(
@@ -1088,71 +1062,80 @@ class ShoppingCart(
         for (i in 0 until size()) {
             val cartItem = get(i)
             if (cartItem.type == ItemType.PRODUCT) {
-                val item = BackendCartItem()
                 val product = cartItem.product
                 val quantity = cartItem.getQuantityMethod()
                 val scannedCode = cartItem.scannedCode
-                var encodingUnit = product!!.getEncodingUnit(scannedCode!!.templateName, scannedCode.lookupCode)
-                if (scannedCode.embeddedUnit != null) {
+                var encodingUnit = product?.getEncodingUnit(scannedCode?.templateName, scannedCode?.lookupCode)
+                if (scannedCode?.embeddedUnit != null) {
                     encodingUnit = scannedCode.embeddedUnit
                 }
-                item.id = cartItem.id
-                item.sku = product.sku.toString()
-                item.scannedCode = scannedCode.code
-                if (product.primaryCode != null) {
-                    item.scannedCode = product.primaryCode.lookupCode
-                }
-                if (encodingUnit != null) {
-                    item.weightUnit = encodingUnit.id
-                }
-                item.amount = 1
+                var weight: Int? = null
+                var units: Int? = null
+                var price: Int? = null
+                var amount: Int = 1
+
+                var selectedScannedCode = product?.primaryCode?.lookupCode ?: scannedCode?.code
+
                 if (cartItem.unit == Unit.PIECE) {
-                    item.units = cartItem.getEffectiveQuantity(true)
+                    units = cartItem.getEffectiveQuantity(true)
                 } else if (cartItem.unit == Unit.PRICE) {
-                    item.price = cartItem.localTotalPrice
+                    price = cartItem.localTotalPrice
                 } else if (cartItem.unit != null) {
-                    item.weight = cartItem.getEffectiveQuantity(true)
-                } else if (product.type == Type.UserWeighed) {
-                    item.weight = quantity
+                    weight = cartItem.getEffectiveQuantity(true)
+                } else if (product?.type == Type.UserWeighed) {
+                    weight = quantity
                 } else {
-                    item.amount = quantity
-                }
-                if (item.price == null && scannedCode.hasPrice()) {
-                    item.price = scannedCode.price
+                    amount = quantity
                 }
 
+                if (price == null && scannedCode?.hasPrice() == true) {
+                    price = scannedCode.price
+                }
                 // reencode user input from scanned code with 0 amount
-                if (cartItem.unit == Unit.PIECE && scannedCode.embeddedData == 0) {
-                    val codeTemplate = project!!.getCodeTemplate(scannedCode.templateName!!)
-                    if (codeTemplate != null) {
-                        val newCode = codeTemplate.code(scannedCode.lookupCode)
-                            .embed(cartItem.effectiveQuantity)
-                            .buildCode()
-                        if (newCode != null) {
-                            item.scannedCode = newCode.code
+                if (cartItem.unit == Unit.PIECE && scannedCode?.embeddedData == 0) {
+                    scannedCode.templateName?.let {
+                        val codeTemplate = project?.getCodeTemplate(it)
+                        if (codeTemplate != null) {
+                            val newCode = codeTemplate.code(scannedCode.lookupCode)
+                                .embed(cartItem.effectiveQuantity)
+                                .buildCode()
+                            if (newCode != null) {
+                                selectedScannedCode = newCode.code
+                            }
                         }
                     }
                 }
+
+                val item = BackendCartItem(
+                    id = cartItem.id,
+                    sku = product?.sku.toString(),
+                    scannedCode = selectedScannedCode,
+                    weightUnit = encodingUnit?.id,
+                    weight = weight,
+                    amount = amount,
+                    units = units,
+                    price = price
+                )
+
                 items.add(item)
                 if (cartItem.coupon != null) {
-                    val couponItem = BackendCartItem()
+                    val couponItem = BackendCartItem(
+                        id = UUID.randomUUID().toString(),
+                        refersTo = item.id,
+                        amount = 1,
+                        couponID = cartItem.coupon?.id
+                    )
                     // this item id needs to be unique per item or else the
                     // promotion engine on the backend gets confused
-                    couponItem.id = UUID.randomUUID().toString()
-                    couponItem.refersTo = item.id
-                    couponItem.amount = 1
-                    couponItem.couponID = cartItem.coupon!!.id
                     items.add(couponItem)
                 }
             } else if (cartItem.type == ItemType.COUPON) {
-                val item = BackendCartItem()
-                item.id = cartItem.backendCouponId
-                item.amount = 1
-                val scannedCode = cartItem.scannedCode
-                if (scannedCode != null) {
-                    item.scannedCode = scannedCode.code
-                }
-                item.couponID = cartItem.coupon!!.id
+                val item = BackendCartItem(
+                    id = cartItem.backendCouponId,
+                    amount = 1,
+                    scannedCode = cartItem.scannedCode?.code,
+                    couponID = cartItem.coupon?.id
+                )
                 items.add(item)
             }
         }
