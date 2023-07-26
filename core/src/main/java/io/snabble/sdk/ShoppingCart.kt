@@ -1026,9 +1026,7 @@ class ShoppingCart(
     val isVerifiedOnline: Boolean
         get() = updater?.isUpdated == true
 
-    fun toJson(): String {
-        return GsonHolder.get().toJson(this)
-    }
+    fun toJson(): String = GsonHolder.get().toJson(this)
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun toBackendCart(): BackendCart {
@@ -1043,7 +1041,6 @@ class ShoppingCart(
             customer = if (loyaltyCardId != null) BackendCartCustomer(loyaltyCardId) else null,
             requiredInformation = mutableListOf(),
             items = backendCartItems()
-
         )
 
         if (data.taxation != Taxation.UNDECIDED) {
@@ -1051,7 +1048,7 @@ class ShoppingCart(
                 id = "taxation",
                 value = data.taxation.value
             )
-            backendCart.requiredInformation!!.add(requiredInformation)
+            backendCart.requiredInformation?.add(requiredInformation)
         }
 
         return backendCart
@@ -1059,9 +1056,8 @@ class ShoppingCart(
 
     private fun backendCartItems(): MutableList<BackendCartItem> {
         val items: MutableList<BackendCartItem> = mutableListOf()
-        for (i in 0 until size()) {
-            val cartItem = get(i)
-            if (cartItem.type == ItemType.PRODUCT) {
+        forEach {cartItem ->
+            if (cartItem?.type == ItemType.PRODUCT) {
                 val product = cartItem.product
                 val quantity = cartItem.getQuantityMethod()
                 val scannedCode = cartItem.scannedCode
@@ -1129,7 +1125,7 @@ class ShoppingCart(
                     // promotion engine on the backend gets confused
                     items.add(couponItem)
                 }
-            } else if (cartItem.type == ItemType.COUPON) {
+            } else if (cartItem?.type == ItemType.COUPON) {
                 val item = BackendCartItem(
                     id = cartItem.backendCouponId,
                     amount = 1,
@@ -1144,29 +1140,24 @@ class ShoppingCart(
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun resolveViolations(violations: List<Violation>) {
-        for ((type, refersTo, message) in violations) {
-            for (i in data.items.indices.reversed()) {
-                val item = data.items[i]
-                if (item.coupon != null && item.backendCouponId != null && item.backendCouponId == refersTo) {
-                    data.items.remove(item)
-                    data.modCount++
-                    var found = false
-                    for ((_, refersTo1) in data.violationNotifications) {
-                        if (refersTo1 == refersTo) {
-                            found = true
-                            break
-                        }
-                    }
-                    if (!found) {
-                        data.violationNotifications.add(
-                            ViolationNotification(
-                                item.coupon!!.name,
-                                refersTo,
-                                type,
-                                message
-                            )
+        violations.forEach { violation ->
+            data.items.reversed().forEach { item ->
+                if (item.coupon == null
+                    || item.backendCouponId == null
+                    || item.backendCouponId != violation.refersTo
+                ) return
+                data.items.remove(item)
+                data.modCount++
+                val foundViolation = data.violationNotifications.any { it.refersTo == violation.refersTo }
+                if (!foundViolation) {
+                    data.violationNotifications.add(
+                        ViolationNotification(
+                            item.coupon?.name,
+                            violation.refersTo,
+                            violation.type,
+                            violation.message
                         )
-                    }
+                    )
                 }
             }
         }
@@ -1195,10 +1186,10 @@ class ShoppingCart(
      * @param listener the listener to addNamedOnly
      */
     fun addListener(listener: ShoppingCartListener) {
-        if (!listeners!!.contains(listener)) {
-            listeners!!.add(listener)
+        if (listeners?.contains(listener) == false) {
+            listeners?.add(listener)
         }
-        if (!data.violationNotifications.isEmpty()) {
+        if (data.violationNotifications.isNotEmpty()) {
             listener.onViolationDetected(data.violationNotifications)
         }
     }
@@ -1209,14 +1200,14 @@ class ShoppingCart(
      * @param listener the listener to remove
      */
     fun removeListener(listener: ShoppingCartListener) {
-        listeners!!.remove(listener)
+        listeners?.remove(listener)
     }
 
     private fun notifyItemAdded(list: ShoppingCart, item: Item) {
         updateTimestamp()
         Dispatch.mainThread {
             if (list.data.items.contains(item)) {
-                for (listener in listeners!!) {
+                listeners?.forEach { listener ->
                     listener.onItemAdded(list, item)
                 }
             }
@@ -1226,7 +1217,7 @@ class ShoppingCart(
     private fun notifyItemRemoved(list: ShoppingCart?, item: Item, pos: Int) {
         updateTimestamp()
         Dispatch.mainThread {
-            for (listener in listeners!!) {
+            listeners?.forEach { listener ->
                 listener.onItemRemoved(list, item, pos)
             }
         }
@@ -1235,8 +1226,8 @@ class ShoppingCart(
     private fun notifyQuantityChanged(list: ShoppingCart?, item: Item) {
         updateTimestamp()
         Dispatch.mainThread {
-            if (list!!.data.items.contains(item)) {
-                for (listener in listeners!!) {
+            if (list?.data?.items?.contains(item) == true) {
+                listeners?.forEach { listener ->
                     listener.onQuantityChanged(list, item)
                 }
             }
@@ -1245,7 +1236,7 @@ class ShoppingCart(
 
     private fun notifyProductsUpdate(list: ShoppingCart) {
         Dispatch.mainThread {
-            for (listener in listeners!!) {
+            listeners?.forEach { listener ->
                 listener.onProductsUpdated(list)
             }
         }
@@ -1253,7 +1244,7 @@ class ShoppingCart(
 
     fun notifyPriceUpdate(list: ShoppingCart?) {
         Dispatch.mainThread {
-            for (listener in listeners!!) {
+            listeners?.forEach { listener ->
                 listener.onPricesUpdated(list)
             }
         }
@@ -1261,7 +1252,7 @@ class ShoppingCart(
 
     private fun notifyTaxationChanged(list: ShoppingCart, taxation: Taxation) {
         Dispatch.mainThread {
-            for (listener in listeners!!) {
+            listeners?.forEach { listener ->
                 listener.onTaxationChanged(list, taxation)
             }
         }
@@ -1269,7 +1260,7 @@ class ShoppingCart(
 
     private fun notifyCheckoutLimitReached(list: ShoppingCart) {
         Dispatch.mainThread {
-            for (listener in listeners!!) {
+            listeners?.forEach { listener ->
                 listener.onCheckoutLimitReached(list)
             }
         }
@@ -1277,7 +1268,7 @@ class ShoppingCart(
 
     private fun notifyOnlinePaymentLimitReached(list: ShoppingCart) {
         Dispatch.mainThread {
-            for (listener in listeners!!) {
+            listeners?.forEach { listener ->
                 listener.onOnlinePaymentLimitReached(list)
             }
         }
@@ -1285,7 +1276,7 @@ class ShoppingCart(
 
     private fun notifyViolations() {
         Dispatch.mainThread {
-            for (listener in listeners!!) {
+            listeners?.forEach { listener ->
                 listener.onViolationDetected(data.violationNotifications)
             }
         }
@@ -1293,7 +1284,7 @@ class ShoppingCart(
 
     private fun notifyCartDataChanged(list: ShoppingCart) {
         Dispatch.mainThread {
-            for (listener in listeners!!) {
+            listeners?.forEach { listener ->
                 listener.onCartDataChanged(list)
             }
         }
@@ -1307,7 +1298,7 @@ class ShoppingCart(
     private fun notifyCleared(list: ShoppingCart) {
         updateTimestamp()
         Dispatch.mainThread {
-            for (listener in listeners!!) {
+            listeners?.forEach { listener ->
                 listener.onCleared(list)
             }
         }
