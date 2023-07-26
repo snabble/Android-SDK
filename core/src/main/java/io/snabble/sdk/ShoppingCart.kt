@@ -13,6 +13,7 @@ import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.coupons.CouponType
 import io.snabble.sdk.events.data.EventType
 import io.snabble.sdk.events.data.payload.Payload
+import io.snabble.sdk.shoppingcart.data.BackendCartCustomer
 import io.snabble.sdk.shoppingcart.data.ItemType
 import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
@@ -1050,11 +1051,6 @@ class ShoppingCart(
             get() = EventType.CART
     }
 
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
-    class BackendCartCustomer {
-
-        var loyaltyCard: String? = null
-    }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     class BackendCartRequiredInformation {
@@ -1103,8 +1099,7 @@ class ShoppingCart(
         }
         val loyaltyCardId = project!!.customerCardId
         if (loyaltyCardId != null) {
-            backendCart.customer = BackendCartCustomer()
-            backendCart.customer!!.loyaltyCard = loyaltyCardId
+            backendCart.customer = BackendCartCustomer(loyaltyCardId)
         }
         if (backendCart.requiredInformation == null) {
             backendCart.requiredInformation = ArrayList()
