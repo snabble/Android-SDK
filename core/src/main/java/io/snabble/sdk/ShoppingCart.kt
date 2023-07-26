@@ -571,7 +571,8 @@ class ShoppingCart(
         /**
          * Sets or Returns true  if a manual coupon (coupon applied by the user after scanning) is applied
          */
-        @JvmField var isManualCouponApplied = false
+        @JvmField
+        var isManualCouponApplied = false
         var coupon: Coupon? = null
 
         // The local generated UUID of a coupon which which will be used by the backend
@@ -704,7 +705,7 @@ class ShoppingCart(
          * Returns true if the item is editable by the user
          */
         val isEditable: Boolean
-            get() = if (coupon != null && coupon!!.type !== CouponType.MANUAL) {
+            get() = if (coupon != null && coupon?.type != CouponType.MANUAL) {
                 false
             } else isEditableInDialog
 
@@ -712,9 +713,13 @@ class ShoppingCart(
          * Returns true if the item is editable by the user while scanning
          */
         val isEditableInDialog: Boolean
-            get() = if (lineItem != null) (lineItem!!.type === LineItemType.DEFAULT
-                    && (!scannedCode!!.hasEmbeddedData() || scannedCode!!.embeddedData == 0)) else (!scannedCode!!.hasEmbeddedData() || scannedCode!!.embeddedData == 0) &&
-                    product!!.getPrice(cart!!.project!!.customerCardId) != 0
+            get() = if (lineItem != null) {
+                (lineItem?.type == LineItemType.DEFAULT
+                        && (scannedCode?.hasEmbeddedData() == false || scannedCode?.embeddedData == 0))
+            } else {
+                (scannedCode?.hasEmbeddedData() == false || scannedCode?.embeddedData == 0)
+                        && product?.getPrice(cart?.project?.customerCardId) != 0
+            }
 
         /**
          * Returns true if the item can be merged with items that conain the same product and type
