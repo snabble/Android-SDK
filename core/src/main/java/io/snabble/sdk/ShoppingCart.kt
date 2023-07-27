@@ -1,6 +1,5 @@
 package io.snabble.sdk
 
-import android.util.Log
 import androidx.annotation.RestrictTo
 import io.snabble.sdk.Product.Type
 import io.snabble.sdk.Snabble.instance
@@ -1046,7 +1045,7 @@ class ShoppingCart(
                 var weight: Int? = null
                 var units: Int? = null
                 var price: Int? = null
-                var amount: Int = 1
+                var amount = 1
 
                 var selectedScannedCode = product?.primaryCode?.lookupCode ?: scannedCode?.code
 
