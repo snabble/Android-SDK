@@ -1,5 +1,6 @@
 package io.snabble.sdk.shoppingcart
 
+import android.util.Log
 import androidx.annotation.RestrictTo
 import io.snabble.sdk.PriceFormatter
 import io.snabble.sdk.Product
@@ -870,14 +871,10 @@ class ShoppingCart(
              * Associate a user applied coupon with this item. E.g. manual price reductions.
              */
             set(value) {
-                if (value == null) {
-                    field = null
-                    return
-                }
-                if (value.type != CouponType.MANUAL) {
+                if (value != null && value.type != CouponType.MANUAL) {
                     throw RuntimeException("Only manual coupons can be added") // Todo: Do we want the app to crash?
                 }
-                field = coupon
+                field = value
             }
 
         // The local generated UUID of a coupon which which will be used by the backend
