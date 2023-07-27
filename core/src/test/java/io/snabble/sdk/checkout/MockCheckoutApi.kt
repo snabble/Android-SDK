@@ -6,6 +6,7 @@ import io.snabble.sdk.Project
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.merge
 import io.snabble.sdk.payment.PaymentCredentials
+import io.snabble.sdk.shoppingcart.data.cart.BackendCart
 import io.snabble.sdk.utils.GsonHolder
 import java.util.*
 
@@ -30,7 +31,7 @@ class MockCheckoutApi(
     }
 
     override fun createCheckoutInfo(
-        backendCart: ShoppingCart.BackendCart,
+        backendCart: BackendCart,
         checkoutInfoResult: CheckoutInfoResult?,
         timeout: Long
     ) {

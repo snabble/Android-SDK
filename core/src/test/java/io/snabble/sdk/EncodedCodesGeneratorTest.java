@@ -456,7 +456,7 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
         Assert.assertEquals("snabble;1;1\n7;4008400301020", codes.get(0));
 
         ShoppingCart cart = project.getShoppingCart();
-        cart.get(0).setManualCouponApplied(true);
+        cart.get(0).isManualCouponApplied = true;
         generator.add(project.getShoppingCart());
 
         codes = generator.generate();
@@ -488,7 +488,7 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
         Assert.assertEquals("snabble;1;1\n7;4008400301020\n1;FINAL_CODE", codes.get(0));
 
         ShoppingCart cart = project.getShoppingCart();
-        cart.get(0).setManualCouponApplied(true);
+        cart.get(0).isManualCouponApplied = true;
         generator.add(project.getShoppingCart());
 
         codes = generator.generate();

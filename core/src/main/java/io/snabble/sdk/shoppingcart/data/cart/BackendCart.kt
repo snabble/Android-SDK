@@ -13,7 +13,7 @@ data class BackendCart(
     @SerializedName("clientID") val clientId: String? = null,
     @SerializedName("appUserID") val appUserId: String? = null,
     val customer: BackendCartCustomer? = null,
-    val items: List<BackendCartItem>,
+    @JvmField val items: List<BackendCartItem>,
     val requiredInformation: MutableList<BackendCartRequiredInformation>? = null,
     override val eventType: EventType = EventType.CART
 ) : Payload

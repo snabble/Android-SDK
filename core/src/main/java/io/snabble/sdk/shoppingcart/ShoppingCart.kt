@@ -710,7 +710,7 @@ class ShoppingCart(
      */
     fun addListener(listener: ShoppingCartListener) {
         if (listeners?.contains(listener) == false) {
-            listeners?.add(listener)
+            listeners.add(listener)
         }
         if (data.violationNotifications.isNotEmpty()) {
             listener.onViolationDetected(data.violationNotifications)
