@@ -1,4 +1,4 @@
-package io.snabble.sdk;
+package io.snabble.sdk.shoppingcart;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -15,6 +15,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
+import io.snabble.sdk.OnProductAvailableListener;
+import io.snabble.sdk.Product;
+import io.snabble.sdk.Project;
 import io.snabble.sdk.checkout.CheckoutInfo;
 import io.snabble.sdk.checkout.CheckoutInfoResult;
 import io.snabble.sdk.checkout.DefaultCheckoutApi;
@@ -24,7 +27,7 @@ import io.snabble.sdk.checkout.PaymentMethodInfo;
 import io.snabble.sdk.checkout.SignedCheckoutInfo;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.coupons.Coupon;
-import io.snabble.sdk.shoppingcart.data.ItemType;
+import io.snabble.sdk.shoppingcart.data.item.ItemType;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;

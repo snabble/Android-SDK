@@ -1,8 +1,13 @@
-package io.snabble.sdk
+package io.snabble.sdk.shoppingcart
 
 import androidx.annotation.RestrictTo
+import io.snabble.sdk.PriceFormatter
+import io.snabble.sdk.Product
 import io.snabble.sdk.Product.Type
-import io.snabble.sdk.Snabble.instance
+import io.snabble.sdk.Project
+import io.snabble.sdk.Snabble
+import io.snabble.sdk.Unit
+import io.snabble.sdk.ViolationNotification
 import io.snabble.sdk.checkout.LineItem
 import io.snabble.sdk.checkout.LineItemType
 import io.snabble.sdk.checkout.PaymentMethodInfo
@@ -10,7 +15,7 @@ import io.snabble.sdk.checkout.Violation
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.coupons.CouponType
-import io.snabble.sdk.shoppingcart.data.ItemType
+import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.shoppingcart.data.cart.BackendCart
 import io.snabble.sdk.shoppingcart.data.cart.BackendCartCustomer
@@ -36,7 +41,7 @@ class ShoppingCart(
     private var oldData: ShoppingCartData? = ShoppingCartData()
 
     @Transient
-    private var listeners: MutableList<ShoppingCartListener>? = CopyOnWriteArrayList()
+    private val listeners: MutableList<ShoppingCartListener>? = CopyOnWriteArrayList()
 
     @Transient
     private var updater: ShoppingCartUpdater? = null
@@ -348,7 +353,7 @@ class ShoppingCart(
 
     fun checkForTimeout() {
         val currentTime = System.currentTimeMillis()
-        val timeout = instance.config.maxShoppingCartAge
+        val timeout = Snabble.config.maxShoppingCartAge
         if (data.lastModificationTime + timeout < currentTime) {
             clearBackup()
             invalidate()
@@ -539,465 +544,6 @@ class ShoppingCart(
     fun containsScannedCode(scannedCode: ScannedCode): Boolean =
         data.items.any { it.scannedCode != null && it.scannedCode?.code == scannedCode.code }
 
-    /**
-     * Class describing a shopping cart item
-     */
-    class Item {
-
-        /**
-         * Returns the product associated with the shopping cart item.
-         */
-        var product: Product? = null
-
-        /**
-         * Returns the scanned code which was used when scanning the product and adding it to the shopping cart
-         */
-        var scannedCode: ScannedCode? = null
-            private set
-
-        var quantity = 0
-
-        var lineItem: LineItem? = null
-
-        /**
-         * Returns the id of the shopping cart item
-         */
-        var id: String? = null
-            private set
-        private var isUsingSpecifiedQuantity = false
-
-        @Transient
-        var cart: ShoppingCart? = null
-
-        /**
-         * Sets or Returns true  if a manual coupon (coupon applied by the user after scanning) is applied
-         */
-        @JvmField
-        var isManualCouponApplied = false
-
-        /**
-         * Gets the user associated coupon of this item
-         */
-        var coupon: Coupon? = null
-            /**
-             * Associate a user applied coupon with this item. E.g. manual price reductions.
-             */
-            set(value) {
-                if (value == null) {
-                    field = null
-                    return
-                }
-                if (value.type != CouponType.MANUAL) {
-                    throw RuntimeException("Only manual coupons can be added") // Todo: Do we want the app to crash?
-                }
-                field = coupon
-            }
-
-        // The local generated UUID of a coupon which which will be used by the backend
-        var backendCouponId: String? = null
-
-        constructor(cart: ShoppingCart, coupon: Coupon, scannedCode: ScannedCode?) {
-            id = UUID.randomUUID().toString()
-            this.cart = cart
-            this.scannedCode = scannedCode
-            this.coupon = coupon
-            backendCouponId = UUID.randomUUID().toString()
-        }
-
-        constructor(cart: ShoppingCart, product: Product, scannedCode: ScannedCode) {
-            id = UUID.randomUUID().toString()
-            this.cart = cart
-            this.scannedCode = scannedCode
-            this.product = product
-            if (product.type == Type.UserWeighed) {
-                quantity = 0
-            } else {
-                product.scannableCodes.forEach { code: Product.Code? ->
-                    if (code != null
-                        && code.template == scannedCode.templateName
-                        && code.lookupCode == scannedCode.lookupCode
-                    ) {
-                        quantity = code.specifiedQuantity
-                        if (!code.isPrimary && code.specifiedQuantity > 1) {
-                            isUsingSpecifiedQuantity = true
-                        }
-                    }
-                }
-                if (quantity == 0) {
-                    quantity = 1
-                }
-            }
-            if (scannedCode.hasEmbeddedData() && product.type == Type.DepositReturnVoucher) {
-                val builder = scannedCode.newBuilder()
-                if (scannedCode.hasEmbeddedData()) {
-                    builder.setEmbeddedData(scannedCode.embeddedData * -1)
-                }
-                if (scannedCode.hasEmbeddedDecimalData()) {
-                    builder.setEmbeddedDecimalData(scannedCode.embeddedDecimalData.multiply(BigDecimal(-1)))
-                }
-                this.scannedCode = builder.create()
-            }
-        }
-
-        constructor(cart: ShoppingCart, lineItem: LineItem) {
-            id = UUID.randomUUID().toString()
-            this.cart = cart
-            this.lineItem = lineItem
-        }
-
-        /**
-         * Returns the effective quantity (embedded weight OR embedded price)
-         * depending on the type
-         */
-        val effectiveQuantity: Int
-            get() = getEffectiveQuantity(false)
-
-        fun getEffectiveQuantity(ignoreLineItem: Boolean): Int {
-            val scannedCode = scannedCode
-            return if (scannedCode != null && scannedCode.hasEmbeddedData() && scannedCode.embeddedData != 0) {
-                scannedCode.embeddedData
-            } else {
-                getQuantityMethod(ignoreLineItem)
-            }
-        }
-
-        /**
-         * Returns the quantity of the cart item
-         */
-        fun getQuantityMethod(): Int = getQuantityMethod(false)
-
-        /**
-         * Returns the quantity of the cart item
-         *
-         * @param ignoreLineItem if set to true, only return the local quantity before backend updates
-         */
-        fun getQuantityMethod(ignoreLineItem: Boolean): Int {
-            val lineItem = lineItem
-            return if (lineItem != null && !ignoreLineItem) {
-                lineItem.weight ?: lineItem.units ?: lineItem.amount
-            } else quantity
-        }
-
-        /**
-         * Set the quantity of the cart item
-         */
-        fun setQuantityMethod(quantity: Int) {
-            if (scannedCode?.hasEmbeddedData() == true && scannedCode?.embeddedData != 0) {
-                return
-            }
-
-            this.quantity = quantity.coerceIn(0, MAX_QUANTITY)
-            val index = cart?.data?.items?.indexOf(this) ?: -1
-            if (index != -1) {
-                cart?.let { currentCart ->
-                    if (quantity == 0) {
-                        currentCart.data.items.remove(this)
-                        currentCart.notifyItemRemoved(cart, this, index)
-                    } else {
-                        currentCart.notifyQuantityChanged(cart, this)
-                    }
-                    currentCart.data.modCount++
-                    currentCart.generateNewUUID()
-                    currentCart.invalidateOnlinePrices()
-                    currentCart.updatePrices(true)
-                }
-            }
-        }
-
-        /**
-         * Returns the [ItemType] of the cart item
-         */
-        val type: ItemType?
-            get() {
-                if (product != null) {
-                    return ItemType.PRODUCT
-                } else if (coupon != null) {
-                    return ItemType.COUPON
-                } else if (lineItem != null) {
-                    return ItemType.LINE_ITEM
-                }
-                return null
-            }
-
-        /**
-         * Returns true if the item is editable by the user
-         */
-        val isEditable: Boolean
-            get() = if (coupon != null && coupon?.type != CouponType.MANUAL) {
-                false
-            } else isEditableInDialog
-
-        /**
-         * Returns true if the item is editable by the user while scanning
-         */
-        val isEditableInDialog: Boolean
-            get() = if (lineItem != null) {
-                (lineItem?.type == LineItemType.DEFAULT
-                        && (scannedCode?.hasEmbeddedData() == false || scannedCode?.embeddedData == 0))
-            } else {
-                (scannedCode?.hasEmbeddedData() == false || scannedCode?.embeddedData == 0)
-                        && product?.getPrice(cart?.project?.customerCardId) != 0
-            }
-
-        /**
-         * Returns true if the item can be merged with items that conain the same product and type
-         */
-        val isMergeable: Boolean
-            get() {
-                val isMergeableOverride = instance.isMergeable
-                val isMergeable = isMergeableDefault
-                return isMergeableOverride?.isMergeable(this, isMergeable) ?: isMergeable
-            }
-        private val isMergeableDefault: Boolean
-            get() {
-                if (product == null && lineItem != null || coupon != null) return false
-                return product?.type == Type.Article
-                        && unit != Unit.PIECE
-                        && product?.getPrice(cart?.project?.customerCardId) != 0
-                        && scannedCode?.embeddedData == 0
-                        && !isUsingSpecifiedQuantity
-            }
-
-        /**
-         * Returns the unit associated with the cart item, or null if the cart item has no unit
-         */
-        val unit: Unit?
-            get() {
-                if (type == ItemType.PRODUCT) {
-                    return scannedCode?.embeddedUnit ?: product?.getEncodingUnit(
-                        scannedCode?.templateName,
-                        scannedCode?.lookupCode
-                    )
-                } else if (type == ItemType.LINE_ITEM) {
-                    if (lineItem?.weightUnit != null) {
-                        return Unit.fromString(lineItem?.weightUnit)
-                    }
-                }
-                return null
-            }
-
-        /**
-         * Gets the total price of the item
-         */
-        val totalPrice: Int
-            get() = lineItem?.totalPrice ?: localTotalPrice
-
-        /**
-         * Gets the total price of the items, ignoring the backend response
-         */
-        val localTotalPrice: Int
-            get() = if (type == ItemType.PRODUCT) {
-                if (unit == Unit.PRICE) {
-                    scannedCode?.embeddedData
-                }
-                product?.getPriceForQuantity(
-                    effectiveQuantity,
-                    scannedCode,
-                    cart?.project?.roundingMode,
-                    cart?.project?.customerCardId
-                ) ?: 0
-            } else {
-                0
-            }
-
-        /**
-         * Gets the total deposit of the item
-         */
-        val totalDepositPrice: Int
-            get() {
-                val lineItem = lineItem
-                if (lineItem != null && lineItem.type == LineItemType.DEPOSIT) {
-                    return lineItem.totalPrice
-                }
-                return if (product != null && product?.depositProduct != null) {
-                    val price = product?.depositProduct?.getPrice(cart?.project?.customerCardId) ?: 0
-                    quantity * price
-                } else 0
-            }
-
-        /**
-         * Returns true if the item should be displayed as a discount
-         */
-        val isDiscount: Boolean
-            get() = lineItem != null && lineItem?.type == LineItemType.DISCOUNT
-
-        /**
-         * Returns true if the item should be displayed as a giveaway
-         */
-        val isGiveaway: Boolean
-            get() = lineItem != null && lineItem?.type == LineItemType.GIVEAWAY
-
-        /**
-         * Gets the price after applying all price modifiers
-         */
-        val modifiedPrice: Int
-            get() {
-                var sum = 0
-                lineItem?.priceModifiers?.forEach { priceModifier ->
-                    lineItem?.let {
-                        sum += it.amount * priceModifier.price
-                    }
-                }
-                return sum
-            }
-
-        /**
-         * Gets the displayed name of the product
-         */
-        val displayName: String?
-            get() = if (lineItem != null) {
-                lineItem?.name
-            } else {
-                if (type == ItemType.COUPON) {
-                    coupon?.name
-                } else {
-                    product?.name
-                }
-            }
-
-        /**
-         * Gets text displaying quantity, can be a weight or price depending on the type
-         *
-         *
-         * E.g. "1" or "100g" or "2,03 €"
-         */
-        val quantityText: String
-            get() {
-                if (type == ItemType.LINE_ITEM) {
-                    return lineItem?.amount.toString()
-                }
-                val embeddedData = scannedCode?.embeddedData ?: 0
-                if ((unit == Unit.PRICE || unit == Unit.PIECE) && embeddedData > 0) {
-                    val units = lineItem?.units ?: 1
-                    return units.toString()
-                }
-                val q = effectiveQuantity
-                return if (q > 0) {
-                    q.toString() + if (unit != null) unit?.displayValue else ""
-                } else {
-                    "1"
-                }
-            }
-
-        /**
-         * Gets text displaying price, including the calculation.
-         *
-         *
-         * E.g. "2 * 3,99 € = 7,98 €"
-         */
-        val fullPriceText: String?
-            get() {
-                priceText ?: return null
-                val quantityText = quantityText
-                return if (quantityText == "1") {
-                    this.priceText
-                } else {
-                    quantityText + " " + this.priceText
-                }
-            }
-
-        private val reducedPriceText: String?
-            get() = if (lineItem?.priceModifiers?.isNotEmpty() == true) {
-                cart?.priceFormatter?.format(totalPrice, true)
-            } else null
-
-        private val extendedPriceText: String?
-            get() {
-                val reducedPriceText = reducedPriceText
-                return if (reducedPriceText != null) {
-                    this.reducedPriceText
-                } else {
-                    product?.let { product ->
-                        lineItem?.let {
-                            String.format(
-                                Locale.getDefault(),
-                                "\u00D7 %s = %s",
-                                cart?.priceFormatter?.format(product, it.price),
-                                cart?.priceFormatter?.format(totalPrice)
-                            )
-                        }
-                    }
-                }
-            }
-
-        /**
-         * Gets the displayed total price
-         */
-        val totalPriceText: String?
-            get() = cart?.priceFormatter?.format(totalPrice)
-
-        /**
-         * Gets text displaying price, including the calculation.
-         *
-         *
-         * E.g. "3,99 €" or "2,99 € /kg = 0,47 €"
-         */
-        val priceText: String?
-            get() {
-                val lineItem = lineItem
-                if (lineItem != null) {
-                    val units = lineItem.units
-                    if (lineItem.price != 0) {
-                        return if (product != null
-                            && units != null
-                            && units > 1
-                            || unit != Unit.PRICE
-                            && (unit != Unit.PIECE || scannedCode?.embeddedData == 0)
-                            && effectiveQuantity > 1
-                        ) {
-                            extendedPriceText
-                        } else {
-                            if (units != null) {
-                                extendedPriceText
-                            } else {
-                                reducedPriceText ?: cart?.priceFormatter?.format(totalPrice, true)
-                            }
-                        }
-                    }
-                }
-                val product = product ?: return null
-                if (product.getPrice(cart?.project?.customerCardId) > 0 || scannedCode?.hasEmbeddedData() == true) {
-                    val unit = unit
-                    val unitList = listOf(Unit.PRICE, Unit.PIECE)
-                    return if (unitList.contains(unit)
-                        && !(scannedCode?.hasEmbeddedData() == true && scannedCode?.embeddedData == 0)
-                    ) {
-                        cart?.priceFormatter?.format(totalPrice)
-                    } else if (effectiveQuantity <= 1) {
-                        cart?.priceFormatter?.format(product)
-                    } else {
-                        String.format(
-                            Locale.getDefault(),
-                            "\u00D7 %s = %s",
-                            cart?.priceFormatter?.format(product),
-                            cart?.priceFormatter?.format(totalPrice)
-                        )
-                    }
-                }
-                return null
-            }
-
-        /**
-         * Gets the minimum age required to purchase this item
-         */
-        val minimumAge: Int
-            get() {
-                if (product != null) {
-                    val saleRestriction = product?.saleRestriction
-                    if (saleRestriction != null && saleRestriction.isAgeRestriction) {
-                        return saleRestriction.value.toInt()
-                    }
-                }
-                return 0
-            }
-
-        fun replace(product: Product?, scannedCode: ScannedCode?, quantity: Int) {
-            this.product = product
-            this.scannedCode = scannedCode
-            this.quantity = quantity
-        }
-    }
-
     val availablePaymentMethods: List<PaymentMethodInfo>?
         get() = updater?.lastAvailablePaymentMethods
     val isVerifiedOnline: Boolean
@@ -1007,12 +553,12 @@ class ShoppingCart(
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun toBackendCart(): BackendCart {
-        val userPreferences = instance.userPreferences
+        val userPreferences = Snabble.userPreferences
         val loyaltyCardId = project?.customerCardId
 
         val backendCart = BackendCart(
             session = id,
-            shopId = instance.checkedInShop?.id ?: "unknown",
+            shopId = Snabble.checkedInShop?.id ?: "unknown",
             clientId = userPreferences.clientId,
             appUserId = userPreferences.appUser?.id,
             customer = if (loyaltyCardId != null) BackendCartCustomer(loyaltyCardId) else null,
@@ -1278,6 +824,464 @@ class ShoppingCart(
             listeners?.forEach { listener ->
                 listener.onCleared(list)
             }
+        }
+    }
+    /**
+     * Class describing a shopping cart item
+     */
+    class Item {
+
+        /**
+         * Returns the product associated with the shopping cart item.
+         */
+        var product: Product? = null
+
+        /**
+         * Returns the scanned code which was used when scanning the product and adding it to the shopping cart
+         */
+        var scannedCode: ScannedCode? = null
+            private set
+
+        var quantity = 0
+
+        var lineItem: LineItem? = null
+
+        /**
+         * Returns the id of the shopping cart item
+         */
+        var id: String? = null
+            private set
+        private var isUsingSpecifiedQuantity = false
+
+        @Transient
+        var cart: ShoppingCart? = null
+
+        /**
+         * Sets or Returns true  if a manual coupon (coupon applied by the user after scanning) is applied
+         */
+        @JvmField
+        var isManualCouponApplied = false
+
+        /**
+         * Gets the user associated coupon of this item
+         */
+        var coupon: Coupon? = null
+            /**
+             * Associate a user applied coupon with this item. E.g. manual price reductions.
+             */
+            set(value) {
+                if (value == null) {
+                    field = null
+                    return
+                }
+                if (value.type != CouponType.MANUAL) {
+                    throw RuntimeException("Only manual coupons can be added") // Todo: Do we want the app to crash?
+                }
+                field = coupon
+            }
+
+        // The local generated UUID of a coupon which which will be used by the backend
+        var backendCouponId: String? = null
+
+        constructor(cart: ShoppingCart, coupon: Coupon, scannedCode: ScannedCode?) {
+            id = UUID.randomUUID().toString()
+            this.cart = cart
+            this.scannedCode = scannedCode
+            this.coupon = coupon
+            backendCouponId = UUID.randomUUID().toString()
+        }
+
+        constructor(cart: ShoppingCart, product: Product, scannedCode: ScannedCode) {
+            id = UUID.randomUUID().toString()
+            this.cart = cart
+            this.scannedCode = scannedCode
+            this.product = product
+            if (product.type == Type.UserWeighed) {
+                quantity = 0
+            } else {
+                product.scannableCodes.forEach { code: Product.Code? ->
+                    if (code != null
+                        && code.template == scannedCode.templateName
+                        && code.lookupCode == scannedCode.lookupCode
+                    ) {
+                        quantity = code.specifiedQuantity
+                        if (!code.isPrimary && code.specifiedQuantity > 1) {
+                            isUsingSpecifiedQuantity = true
+                        }
+                    }
+                }
+                if (quantity == 0) {
+                    quantity = 1
+                }
+            }
+            if (scannedCode.hasEmbeddedData() && product.type == Type.DepositReturnVoucher) {
+                val builder = scannedCode.newBuilder()
+                if (scannedCode.hasEmbeddedData()) {
+                    builder.setEmbeddedData(scannedCode.embeddedData * -1)
+                }
+                if (scannedCode.hasEmbeddedDecimalData()) {
+                    builder.setEmbeddedDecimalData(scannedCode.embeddedDecimalData.multiply(BigDecimal(-1)))
+                }
+                this.scannedCode = builder.create()
+            }
+        }
+
+        constructor(cart: ShoppingCart, lineItem: LineItem) {
+            id = UUID.randomUUID().toString()
+            this.cart = cart
+            this.lineItem = lineItem
+        }
+
+        /**
+         * Returns the effective quantity (embedded weight OR embedded price)
+         * depending on the type
+         */
+        val effectiveQuantity: Int
+            get() = getEffectiveQuantity(false)
+
+        fun getEffectiveQuantity(ignoreLineItem: Boolean): Int {
+            val scannedCode = scannedCode
+            return if (scannedCode != null && scannedCode.hasEmbeddedData() && scannedCode.embeddedData != 0) {
+                scannedCode.embeddedData
+            } else {
+                getQuantityMethod(ignoreLineItem)
+            }
+        }
+
+        /**
+         * Returns the quantity of the cart item
+         */
+        fun getQuantityMethod(): Int = getQuantityMethod(false)
+
+        /**
+         * Returns the quantity of the cart item
+         *
+         * @param ignoreLineItem if set to true, only return the local quantity before backend updates
+         */
+        fun getQuantityMethod(ignoreLineItem: Boolean): Int {
+            val lineItem = lineItem
+            return if (lineItem != null && !ignoreLineItem) {
+                lineItem.weight ?: lineItem.units ?: lineItem.amount
+            } else quantity
+        }
+
+        /**
+         * Set the quantity of the cart item
+         */
+        fun setQuantityMethod(quantity: Int) {
+            if (scannedCode?.hasEmbeddedData() == true && scannedCode?.embeddedData != 0) {
+                return
+            }
+
+            this.quantity = quantity.coerceIn(0, MAX_QUANTITY)
+            val index = cart?.data?.items?.indexOf(this) ?: -1
+            if (index != -1) {
+                cart?.let { currentCart ->
+                    if (quantity == 0) {
+                        currentCart.data.items.remove(this)
+                        currentCart.notifyItemRemoved(cart, this, index)
+                    } else {
+                        currentCart.notifyQuantityChanged(cart, this)
+                    }
+                    currentCart.data.modCount++
+                    currentCart.generateNewUUID()
+                    currentCart.invalidateOnlinePrices()
+                    currentCart.updatePrices(true)
+                }
+            }
+        }
+
+        /**
+         * Returns the [ItemType] of the cart item
+         */
+        val type: ItemType?
+            get() {
+                if (product != null) {
+                    return ItemType.PRODUCT
+                } else if (coupon != null) {
+                    return ItemType.COUPON
+                } else if (lineItem != null) {
+                    return ItemType.LINE_ITEM
+                }
+                return null
+            }
+
+        /**
+         * Returns true if the item is editable by the user
+         */
+        val isEditable: Boolean
+            get() = if (coupon != null && coupon?.type != CouponType.MANUAL) {
+                false
+            } else isEditableInDialog
+
+        /**
+         * Returns true if the item is editable by the user while scanning
+         */
+        val isEditableInDialog: Boolean
+            get() = if (lineItem != null) {
+                (lineItem?.type == LineItemType.DEFAULT
+                        && (scannedCode?.hasEmbeddedData() == false || scannedCode?.embeddedData == 0))
+            } else {
+                (scannedCode?.hasEmbeddedData() == false || scannedCode?.embeddedData == 0)
+                        && product?.getPrice(cart?.project?.customerCardId) != 0
+            }
+
+        /**
+         * Returns true if the item can be merged with items that conain the same product and type
+         */
+        val isMergeable: Boolean
+            get() {
+                val isMergeableOverride = Snabble.isMergeable
+                val isMergeable = isMergeableDefault
+                return isMergeableOverride?.isMergeable(this, isMergeable) ?: isMergeable
+            }
+        private val isMergeableDefault: Boolean
+            get() {
+                if (product == null && lineItem != null || coupon != null) return false
+                return product?.type == Type.Article
+                        && unit != Unit.PIECE
+                        && product?.getPrice(cart?.project?.customerCardId) != 0
+                        && scannedCode?.embeddedData == 0
+                        && !isUsingSpecifiedQuantity
+            }
+
+        /**
+         * Returns the unit associated with the cart item, or null if the cart item has no unit
+         */
+        val unit: Unit?
+            get() {
+                if (type == ItemType.PRODUCT) {
+                    return scannedCode?.embeddedUnit ?: product?.getEncodingUnit(
+                        scannedCode?.templateName,
+                        scannedCode?.lookupCode
+                    )
+                } else if (type == ItemType.LINE_ITEM) {
+                    if (lineItem?.weightUnit != null) {
+                        return Unit.fromString(lineItem?.weightUnit)
+                    }
+                }
+                return null
+            }
+
+        /**
+         * Gets the total price of the item
+         */
+        val totalPrice: Int
+            get() = lineItem?.totalPrice ?: localTotalPrice
+
+        /**
+         * Gets the total price of the items, ignoring the backend response
+         */
+        val localTotalPrice: Int
+            get() = if (type == ItemType.PRODUCT) {
+                if (unit == Unit.PRICE) {
+                    scannedCode?.embeddedData
+                }
+                product?.getPriceForQuantity(
+                    effectiveQuantity,
+                    scannedCode,
+                    cart?.project?.roundingMode,
+                    cart?.project?.customerCardId
+                ) ?: 0
+            } else {
+                0
+            }
+
+        /**
+         * Gets the total deposit of the item
+         */
+        val totalDepositPrice: Int
+            get() {
+                val lineItem = lineItem
+                if (lineItem != null && lineItem.type == LineItemType.DEPOSIT) {
+                    return lineItem.totalPrice
+                }
+                return if (product != null && product?.depositProduct != null) {
+                    val price = product?.depositProduct?.getPrice(cart?.project?.customerCardId) ?: 0
+                    quantity * price
+                } else 0
+            }
+
+        /**
+         * Returns true if the item should be displayed as a discount
+         */
+        val isDiscount: Boolean
+            get() = lineItem != null && lineItem?.type == LineItemType.DISCOUNT
+
+        /**
+         * Returns true if the item should be displayed as a giveaway
+         */
+        val isGiveaway: Boolean
+            get() = lineItem != null && lineItem?.type == LineItemType.GIVEAWAY
+
+        /**
+         * Gets the price after applying all price modifiers
+         */
+        val modifiedPrice: Int
+            get() {
+                var sum = 0
+                lineItem?.priceModifiers?.forEach { priceModifier ->
+                    lineItem?.let {
+                        sum += it.amount * priceModifier.price
+                    }
+                }
+                return sum
+            }
+
+        /**
+         * Gets the displayed name of the product
+         */
+        val displayName: String?
+            get() = if (lineItem != null) {
+                lineItem?.name
+            } else {
+                if (type == ItemType.COUPON) {
+                    coupon?.name
+                } else {
+                    product?.name
+                }
+            }
+
+        /**
+         * Gets text displaying quantity, can be a weight or price depending on the type
+         *
+         *
+         * E.g. "1" or "100g" or "2,03 €"
+         */
+        val quantityText: String
+            get() {
+                if (type == ItemType.LINE_ITEM) {
+                    return lineItem?.amount.toString()
+                }
+                val embeddedData = scannedCode?.embeddedData ?: 0
+                if ((unit == Unit.PRICE || unit == Unit.PIECE) && embeddedData > 0) {
+                    val units = lineItem?.units ?: 1
+                    return units.toString()
+                }
+                val q = effectiveQuantity
+                return if (q > 0) {
+                    q.toString() + if (unit != null) unit?.displayValue else ""
+                } else {
+                    "1"
+                }
+            }
+
+        /**
+         * Gets text displaying price, including the calculation.
+         *
+         *
+         * E.g. "2 * 3,99 € = 7,98 €"
+         */
+        val fullPriceText: String?
+            get() {
+                priceText ?: return null
+                val quantityText = quantityText
+                return if (quantityText == "1") {
+                    this.priceText
+                } else {
+                    quantityText + " " + this.priceText
+                }
+            }
+
+        private val reducedPriceText: String?
+            get() = if (lineItem?.priceModifiers?.isNotEmpty() == true) {
+                cart?.priceFormatter?.format(totalPrice, true)
+            } else null
+
+        private val extendedPriceText: String?
+            get() {
+                val reducedPriceText = reducedPriceText
+                return if (reducedPriceText != null) {
+                    this.reducedPriceText
+                } else {
+                    product?.let { product ->
+                        lineItem?.let {
+                            String.format(
+                                Locale.getDefault(),
+                                "\u00D7 %s = %s",
+                                cart?.priceFormatter?.format(product, it.price),
+                                cart?.priceFormatter?.format(totalPrice)
+                            )
+                        }
+                    }
+                }
+            }
+
+        /**
+         * Gets the displayed total price
+         */
+        val totalPriceText: String?
+            get() = cart?.priceFormatter?.format(totalPrice)
+
+        /**
+         * Gets text displaying price, including the calculation.
+         *
+         *
+         * E.g. "3,99 €" or "2,99 € /kg = 0,47 €"
+         */
+        val priceText: String?
+            get() {
+                val lineItem = lineItem
+                if (lineItem != null) {
+                    val units = lineItem.units
+                    if (lineItem.price != 0) {
+                        return if (product != null
+                            && units != null
+                            && units > 1
+                            || unit != Unit.PRICE
+                            && (unit != Unit.PIECE || scannedCode?.embeddedData == 0)
+                            && effectiveQuantity > 1
+                        ) {
+                            extendedPriceText
+                        } else {
+                            if (units != null) {
+                                extendedPriceText
+                            } else {
+                                reducedPriceText ?: cart?.priceFormatter?.format(totalPrice, true)
+                            }
+                        }
+                    }
+                }
+                val product = product ?: return null
+                if (product.getPrice(cart?.project?.customerCardId) > 0 || scannedCode?.hasEmbeddedData() == true) {
+                    val unit = unit
+                    val unitList = listOf(Unit.PRICE, Unit.PIECE)
+                    return if (unitList.contains(unit)
+                        && !(scannedCode?.hasEmbeddedData() == true && scannedCode?.embeddedData == 0)
+                    ) {
+                        cart?.priceFormatter?.format(totalPrice)
+                    } else if (effectiveQuantity <= 1) {
+                        cart?.priceFormatter?.format(product)
+                    } else {
+                        String.format(
+                            Locale.getDefault(),
+                            "\u00D7 %s = %s",
+                            cart?.priceFormatter?.format(product),
+                            cart?.priceFormatter?.format(totalPrice)
+                        )
+                    }
+                }
+                return null
+            }
+
+        /**
+         * Gets the minimum age required to purchase this item
+         */
+        val minimumAge: Int
+            get() {
+                if (product != null) {
+                    val saleRestriction = product?.saleRestriction
+                    if (saleRestriction != null && saleRestriction.isAgeRestriction) {
+                        return saleRestriction.value.toInt()
+                    }
+                }
+                return 0
+            }
+
+        fun replace(product: Product?, scannedCode: ScannedCode?, quantity: Int) {
+            this.product = product
+            this.scannedCode = scannedCode
+            this.quantity = quantity
         }
     }
 

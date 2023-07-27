@@ -26,6 +26,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
+import io.snabble.sdk.shoppingcart.ShoppingCart;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Downloader;
 import io.snabble.sdk.utils.Logger;

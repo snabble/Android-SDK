@@ -1,10 +1,13 @@
-package io.snabble.sdk
+package io.snabble.sdk.shoppingcart
 
 import android.os.Handler
-import io.snabble.sdk.utils.GsonHolder
 import android.os.Looper
+import com.google.gson.JsonSyntaxException
+import io.snabble.sdk.Project
+import io.snabble.sdk.Snabble
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
 import io.snabble.sdk.utils.Dispatch
+import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
@@ -12,10 +15,11 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
-import java.lang.Exception
 import java.nio.charset.Charset
+import kotlin.time.Duration.Companion.seconds
 
 internal class ShoppingCartStorage(val project: Project) {
+
     private val mainThreadHandler: Handler = Handler(Looper.getMainLooper())
     private val fileMap = mutableMapOf<String, File>()
     private var currentFile: File? = null
@@ -47,7 +51,6 @@ internal class ShoppingCartStorage(val project: Project) {
                 currentFile = null
             }
         }
-
     }
 
     private fun updateFileMap() {
@@ -68,10 +71,12 @@ internal class ShoppingCartStorage(val project: Project) {
             } else {
                 project.shoppingCart.initWithData(ShoppingCartData())
             }
-        } catch (e: Exception) {
+        } catch (e: IOException) {
             //shopping cart could not be read, create a new one.
             Logger.e("Could not load shopping list from: " + currentFile?.absolutePath + ", creating a new one.")
             project.shoppingCart.initWithData(ShoppingCartData())
+        } catch (e: JsonSyntaxException) {
+            Logger.e("Could not parse shopping list due to: ${e.message}")
         }
     }
 
@@ -92,7 +97,7 @@ internal class ShoppingCartStorage(val project: Project) {
                         Logger.e("Could not save shopping list: " + e.message)
                     }
                 }
-            }, 1000)
+            }, 1.seconds.inWholeMilliseconds)
         }
     }
 }

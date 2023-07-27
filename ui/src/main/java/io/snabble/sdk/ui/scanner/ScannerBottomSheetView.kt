@@ -15,9 +15,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import io.snabble.accessibility.accessibility
 import io.snabble.accessibility.isTalkBackActive
-import io.snabble.sdk.ShoppingCart
+import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ViolationNotification
-import io.snabble.sdk.shoppingcart.data.ItemType
+import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.ui.R

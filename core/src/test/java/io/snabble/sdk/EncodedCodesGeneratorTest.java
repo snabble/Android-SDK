@@ -18,6 +18,7 @@ import io.snabble.sdk.coupons.CouponCode;
 import io.snabble.sdk.coupons.CouponType;
 import io.snabble.sdk.encodedcodes.EncodedCodesGenerator;
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
+import io.snabble.sdk.shoppingcart.ShoppingCart;
 
 @RunWith(RobolectricTestRunner.class)
 public class EncodedCodesGeneratorTest extends SnabbleSdkTest {

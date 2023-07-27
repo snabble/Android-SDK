@@ -6,9 +6,9 @@ import org.junit.Test;
 
 import java.util.List;
 
-import io.snabble.sdk.checkout.DefaultCheckoutApi;
 import io.snabble.sdk.checkout.LineItem;
 import io.snabble.sdk.codes.ScannedCode;
+import io.snabble.sdk.shoppingcart.ShoppingCart;
 
 public class ShoppingCartTest extends SnabbleSdkTest {
     private ShoppingCart cart;

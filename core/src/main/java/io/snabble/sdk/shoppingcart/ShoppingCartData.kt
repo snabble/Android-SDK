@@ -1,5 +1,7 @@
-package io.snabble.sdk
+package io.snabble.sdk.shoppingcart
 
+import io.snabble.sdk.Product
+import io.snabble.sdk.ViolationNotification
 import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.utils.GsonHolder
 import java.util.*
@@ -28,6 +30,6 @@ data class ShoppingCartData @JvmOverloads constructor(
 
     fun deepCopy() : ShoppingCartData {
         val json = GsonHolder.get().toJson(this)
-        return GsonHolder.get().fromJson<ShoppingCartData>(json, ShoppingCartData::class.java)
+        return GsonHolder.get().fromJson(json, ShoppingCartData::class.java)
     }
 }

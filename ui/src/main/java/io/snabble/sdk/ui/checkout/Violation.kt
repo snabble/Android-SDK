@@ -3,7 +3,7 @@ package io.snabble.sdk.ui.checkout
 
 import android.content.Context
 import androidx.appcompat.app.AlertDialog
-import io.snabble.sdk.ShoppingCart
+import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ViolationNotification
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.utils.I18nUtils

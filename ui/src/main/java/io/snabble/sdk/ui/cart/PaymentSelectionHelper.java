@@ -22,7 +22,7 @@ import java.util.Set;
 
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.Project;
-import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.shoppingcart.ShoppingCart;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.checkout.PaymentMethodInfo;
 import io.snabble.sdk.googlepay.GooglePayHelper;

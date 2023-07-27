@@ -34,7 +34,7 @@ import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Shop;
-import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.shoppingcart.ShoppingCart;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ViolationNotification;
 import io.snabble.sdk.codes.ScannedCode;

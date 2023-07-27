@@ -1,6 +1,6 @@
 package io.snabble.sdk.shoppingcart.data.listener
 
-import io.snabble.sdk.ShoppingCart
+import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ViolationNotification
 import io.snabble.sdk.shoppingcart.data.Taxation
 

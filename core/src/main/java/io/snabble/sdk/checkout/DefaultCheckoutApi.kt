@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import com.google.gson.JsonObject
 import io.snabble.sdk.*
 import io.snabble.sdk.payment.PaymentCredentials
+import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.shoppingcart.data.cart.BackendCart
 import io.snabble.sdk.utils.*
 import okhttp3.*
@@ -19,7 +20,8 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 class DefaultCheckoutApi(private val project: Project,
-                         private val shoppingCart: ShoppingCart) : CheckoutApi {
+                         private val shoppingCart: ShoppingCart
+) : CheckoutApi {
     private val okHttpClient: OkHttpClient = project.okHttpClient
     private var call: Call? = null
 

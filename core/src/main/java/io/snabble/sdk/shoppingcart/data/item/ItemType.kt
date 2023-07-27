@@ -1,4 +1,4 @@
-package io.snabble.sdk.shoppingcart.data
+package io.snabble.sdk.shoppingcart.data.item
 
 /**
  * Enum describing the type of item
