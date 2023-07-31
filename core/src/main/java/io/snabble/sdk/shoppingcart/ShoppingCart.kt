@@ -584,46 +584,33 @@ class ShoppingCart(
                 val product = cartItem.product
                 val quantity = cartItem.getQuantityMethod()
                 val scannedCode = cartItem.scannedCode
-                var encodingUnit = product?.getEncodingUnit(scannedCode?.templateName, scannedCode?.lookupCode)
-                if (scannedCode?.embeddedUnit != null) {
-                    encodingUnit = scannedCode.embeddedUnit
-                }
-                var weight: Int? = null
-                var units: Int? = null
-                var price: Int? = null
-                var amount = 1
+                val encodingUnit = scannedCode?.embeddedUnit ?: product?.getEncodingUnit(
+                    scannedCode?.templateName,
+                    scannedCode?.lookupCode
+                )
 
-                var selectedScannedCode = product?.primaryCode?.lookupCode ?: scannedCode?.code
+                val units: Int? = if (cartItem.unit == Unit.PIECE) {
+                    cartItem.getEffectiveQuantity(true)
+                } else null
 
-                if (cartItem.unit == Unit.PIECE) {
-                    units = cartItem.getEffectiveQuantity(true)
-                } else if (cartItem.unit == Unit.PRICE) {
-                    price = cartItem.localTotalPrice
-                } else if (cartItem.unit != null) {
-                    weight = cartItem.getEffectiveQuantity(true)
-                } else if (product?.type == Type.UserWeighed) {
-                    weight = quantity
-                } else {
-                    amount = quantity
-                }
+                val price: Int? = if (cartItem.unit == Unit.PRICE) {
+                    cartItem.localTotalPrice
+                } else if (scannedCode?.hasPrice() == true) {
+                    scannedCode.price
+                } else null
 
-                if (price == null && scannedCode?.hasPrice() == true) {
-                    price = scannedCode.price
-                }
-                // reencode user input from scanned code with 0 amount
-                if (cartItem.unit == Unit.PIECE && scannedCode?.embeddedData == 0) {
-                    scannedCode.templateName?.let {
-                        val codeTemplate = project?.getCodeTemplate(it)
-                        if (codeTemplate != null) {
-                            val newCode = codeTemplate.code(scannedCode.lookupCode)
-                                .embed(cartItem.effectiveQuantity)
-                                .buildCode()
-                            if (newCode != null) {
-                                selectedScannedCode = newCode.code
-                            }
-                        }
-                    }
-                }
+                val weight: Int? =
+                    if (cartItem.unit != Unit.PRICE && cartItem.unit != Unit.PIECE && cartItem.unit != null) {
+                        cartItem.getEffectiveQuantity(true)
+                    } else if (product?.type == Type.UserWeighed) {
+                        quantity
+                    } else null
+
+                val amount = if (cartItem.unit == null && product?.type != Type.UserWeighed) {
+                    quantity
+                } else 1
+
+                val selectedScannedCode = getSelectedScannedCode(product, scannedCode, cartItem)
 
                 val item = BackendCartItem(
                     id = cartItem.id,
@@ -659,6 +646,31 @@ class ShoppingCart(
             }
         }
         return items
+    }
+
+    private fun getSelectedScannedCode(
+        product: Product?,
+        scannedCode: ScannedCode?,
+        cartItem: Item
+    ): String? {
+        var selectedScannedCode = product?.primaryCode?.lookupCode ?: scannedCode?.code
+
+        // reencode user input from scanned code with 0 amount
+        if (cartItem.unit == Unit.PIECE && scannedCode?.embeddedData == 0) {
+            scannedCode.templateName?.let {
+                val codeTemplate = project?.getCodeTemplate(it)
+                if (codeTemplate != null) {
+                    val newCode = codeTemplate.code(scannedCode.lookupCode)
+                        .embed(cartItem.effectiveQuantity)
+                        .buildCode()
+                    if (newCode != null) {
+                        selectedScannedCode = newCode.code
+                    }
+                }
+            }
+        }
+
+        return selectedScannedCode
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
