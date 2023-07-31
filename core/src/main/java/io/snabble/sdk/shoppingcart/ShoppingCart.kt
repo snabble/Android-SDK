@@ -1270,10 +1270,12 @@ class ShoppingCart(
                 val lineItem = lineItem
                 if (lineItem != null) {
                     val units = lineItem.units
+                    val unitsIsAtLeastOne = units != null
+                            && units > 1
+
                     if (lineItem.price != 0) {
                         return if (product != null
-                            && units != null
-                            && units > 1
+                            && unitsIsAtLeastOne
                             || unit != Unit.PRICE
                             && (unit != Unit.PIECE || scannedCode?.embeddedData == 0)
                             && effectiveQuantity > 1
