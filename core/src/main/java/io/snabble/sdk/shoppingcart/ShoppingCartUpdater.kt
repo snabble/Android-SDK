@@ -18,9 +18,13 @@ import io.snabble.sdk.checkout.SignedCheckoutInfo
 import io.snabble.sdk.checkout.Violation
 import io.snabble.sdk.codes.ScannedCode.Companion.parseDefault
 import io.snabble.sdk.shoppingcart.data.item.ItemType
-import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.UUID
 import java.util.concurrent.CountDownLatch
 
@@ -40,6 +44,8 @@ internal class ShoppingCartUpdater(
     private var successfulModCount = -1
     private val updatePriceRunnable = Runnable { update(false) }
 
+    val mainScope = CoroutineScope(Dispatchers.Main + Job())
+
     fun update(force: Boolean) {
         Logger.d("Updating prices...")
         if (cart.isEmpty) {
@@ -51,62 +57,59 @@ internal class ShoppingCartUpdater(
         if (modCount == successfulModCount && !force) {
             return
         }
-        Dispatch.mainThread {
-            checkoutApi.createCheckoutInfo(cart.toBackendCart(), object : CheckoutInfoResult {
-                override fun onSuccess(
-                    signedCheckoutInfo: SignedCheckoutInfo,
-                    onlinePrice: Int,
-                    availablePaymentMethods: List<PaymentMethodInfo>
-                ) {
-                    Dispatch.mainThread innerThread@{
 
-                        // ignore when cart was modified mid request
-                        if (cart.modCount != modCount) {
-                            return@innerThread
-                        }
-                        val skus = getToBeReplacedSkus(signedCheckoutInfo)
-                        if (skus.isNotEmpty()) {
-                            Dispatch.background {
-                                val products = getReplacedProducts(skus)
-                                if (products == null) {
-                                    Dispatch.mainThread { onUnknownError() }
-                                } else {
-                                    Dispatch.mainThread { commitCartUpdate(modCount, signedCheckoutInfo, products) }
-                                }
-                            }
+        checkoutApi.createCheckoutInfo(cart.toBackendCart(), object : CheckoutInfoResult {
+            override fun onSuccess(
+                signedCheckoutInfo: SignedCheckoutInfo,
+                onlinePrice: Int,
+                availablePaymentMethods: List<PaymentMethodInfo>
+            ) {
+
+                // ignore when cart was modified mid request
+                if (cart.modCount != modCount) {
+                    return
+                }
+                val skus = getToBeReplacedSkus(signedCheckoutInfo)
+                if (skus.isNotEmpty()) {
+                    mainScope.launch {
+                        val products = withContext(Dispatchers.Default) { getReplacedProducts(skus) }
+                        if (products == null) {
+                            onUnknownError()
                         } else {
-                            Dispatch.mainThread { commitCartUpdate(modCount, signedCheckoutInfo, null) }
+                            commitCartUpdate(modCount, signedCheckoutInfo, products)
                         }
                     }
+                } else {
+                    commitCartUpdate(modCount, signedCheckoutInfo, null)
                 }
+            }
 
-                override fun onNoShopFound() {
-                    error(true)
-                }
+            override fun onNoShopFound() {
+                error(true)
+            }
 
-                override fun onInvalidProducts(products: List<Product>) {
-                    cart.invalidProducts = products
-                    error(true)
-                }
+            override fun onInvalidProducts(products: List<Product>) {
+                cart.invalidProducts = products
+                error(true)
+            }
 
-                override fun onNoAvailablePaymentMethodFound() {
-                    error(true)
-                }
+            override fun onNoAvailablePaymentMethodFound() {
+                error(true)
+            }
 
-                override fun onInvalidDepositReturnVoucher() {
-                    cart.setInvalidDepositReturnVoucher(true)
-                    error(true)
-                }
+            override fun onInvalidDepositReturnVoucher() {
+                cart.setInvalidDepositReturnVoucher(true)
+                error(true)
+            }
 
-                override fun onUnknownError() {
-                    error(false)
-                }
+            override fun onUnknownError() {
+                error(false)
+            }
 
-                override fun onConnectionError() {
-                    error(false)
-                }
-            }, -1)
-        }
+            override fun onConnectionError() {
+                error(false)
+            }
+        }, -1)
     }
 
     private fun error(b: Boolean) {
@@ -298,7 +301,7 @@ internal class ShoppingCartUpdater(
         val products = mutableListOf<Product?>()
         project.productDatabase.findBySkuOnline(sku, object : OnProductAvailableListener {
             override fun onProductAvailable(product: Product, wasOnline: Boolean) {
-                products[0] = product
+                products.add(product)
                 countDownLatch.countDown()
             }
 
@@ -315,7 +318,7 @@ internal class ShoppingCartUpdater(
         } catch (e: InterruptedException) {
             Logger.e(e.message)
         }
-        return products.first()
+        return products.firstOrNull()
     }
 
     fun dispatchUpdate() {
