@@ -25,6 +25,7 @@ import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
+import io.snabble.sdk.utils.Logger
 import java.math.BigDecimal
 import java.util.Locale
 import java.util.UUID
@@ -915,7 +916,8 @@ class ShoppingCart(
              */
             set(value) {
                 if (value != null && value.type != CouponType.MANUAL) {
-                    throw RuntimeException("Only manual coupons can be added") // Todo: Do we want the app to crash?
+                    Logger.e("Only manual coupons can be added")
+                    return
                 }
                 field = value
             }
