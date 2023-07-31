@@ -1,6 +1,5 @@
 package io.snabble.sdk.shoppingcart
 
-import android.util.Log
 import androidx.annotation.RestrictTo
 import io.snabble.sdk.PriceFormatter
 import io.snabble.sdk.Product
@@ -16,12 +15,12 @@ import io.snabble.sdk.checkout.Violation
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.coupons.CouponType
-import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.shoppingcart.data.cart.BackendCart
 import io.snabble.sdk.shoppingcart.data.cart.BackendCartCustomer
 import io.snabble.sdk.shoppingcart.data.cart.BackendCartRequiredInformation
 import io.snabble.sdk.shoppingcart.data.item.BackendCartItem
+import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
@@ -827,6 +826,7 @@ class ShoppingCart(
             }
         }
     }
+
     /**
      * Class describing a shopping cart item
      */
@@ -1070,18 +1070,22 @@ class ShoppingCart(
          * Gets the total price of the items, ignoring the backend response
          */
         val localTotalPrice: Int
-            get() = if (type == ItemType.PRODUCT) {
-                if (unit == Unit.PRICE) {
-                    scannedCode?.embeddedData
+            get() {
+                if (type == ItemType.PRODUCT) {
+                    if (unit == Unit.PRICE) {
+                        scannedCode?.embeddedData?.let {
+                            return it
+                        }
+                    }
+                    return product?.getPriceForQuantity(
+                        effectiveQuantity,
+                        scannedCode,
+                        cart?.project?.roundingMode,
+                        cart?.project?.customerCardId
+                    ) ?: 0
+                } else {
+                    return 0
                 }
-                product?.getPriceForQuantity(
-                    effectiveQuantity,
-                    scannedCode,
-                    cart?.project?.roundingMode,
-                    cart?.project?.customerCardId
-                ) ?: 0
-            } else {
-                0
             }
 
         /**
