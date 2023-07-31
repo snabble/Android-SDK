@@ -13,6 +13,7 @@ import io.snabble.sdk.checkout.LineItemType
 import io.snabble.sdk.checkout.PaymentMethodInfo
 import io.snabble.sdk.checkout.Violation
 import io.snabble.sdk.codes.ScannedCode
+import io.snabble.sdk.codes.templates.CodeTemplate
 import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.coupons.CouponType
 import io.snabble.sdk.shoppingcart.data.Taxation
@@ -324,9 +325,14 @@ class ShoppingCart(
         data.invalidDepositReturnVoucher = false
         data.onlineTotalPrice = null
 
-        data.items.forEach { item ->
+        // use iterator directly instead of for each loop to avoid
+        // ConcurrentModificationException due to modification while looping
+
+        val iterator: MutableIterator<Item> = iterator()
+        while (iterator.hasNext()) {
+            val item = iterator.next()
             if (item.type == ItemType.LINE_ITEM) {
-                data.items.remove(item)
+                iterator.remove()
             } else {
                 item.lineItem = null
                 item.isManualCouponApplied = false
@@ -581,71 +587,97 @@ class ShoppingCart(
         val items: MutableList<BackendCartItem> = mutableListOf()
         forEach { cartItem ->
             if (cartItem?.type == ItemType.PRODUCT) {
-                val product = cartItem.product
-                val quantity = cartItem.getQuantityMethod()
-                val scannedCode = cartItem.scannedCode
-                val encodingUnit = scannedCode?.embeddedUnit ?: product?.getEncodingUnit(
-                    scannedCode?.templateName,
-                    scannedCode?.lookupCode
-                )
-
-                val units: Int? = if (cartItem.unit == Unit.PIECE) {
-                    cartItem.getEffectiveQuantity(true)
-                } else null
-
-                val price: Int? = if (cartItem.unit == Unit.PRICE) {
-                    cartItem.localTotalPrice
-                } else if (scannedCode?.hasPrice() == true) {
-                    scannedCode.price
-                } else null
-
-                val weight: Int? =
-                    if (cartItem.unit != Unit.PRICE && cartItem.unit != Unit.PIECE && cartItem.unit != null) {
-                        cartItem.getEffectiveQuantity(true)
-                    } else if (product?.type == Type.UserWeighed) {
-                        quantity
-                    } else null
-
-                val amount = if (cartItem.unit == null && product?.type != Type.UserWeighed) {
-                    quantity
-                } else 1
-
-                val selectedScannedCode = getSelectedScannedCode(product, scannedCode, cartItem)
-
-                val item = BackendCartItem(
-                    id = cartItem.id,
-                    sku = product?.sku.toString(),
-                    scannedCode = selectedScannedCode,
-                    weightUnit = encodingUnit?.id,
-                    weight = weight,
-                    amount = amount,
-                    units = units,
-                    price = price
-                )
+                val item = createBackendCartItem(cartItem)
 
                 items.add(item)
                 if (cartItem.coupon != null) {
-                    val couponItem = BackendCartItem(
-                        id = UUID.randomUUID().toString(),
-                        refersTo = item.id,
-                        amount = 1,
-                        couponID = cartItem.coupon?.id
-                    )
                     // this item id needs to be unique per item or else the
                     // promotion engine on the backend gets confused
-                    items.add(couponItem)
+                    items.add(
+                        BackendCartItem(
+                            id = UUID.randomUUID().toString(),
+                            refersTo = item.id,
+                            amount = 1,
+                            couponID = cartItem.coupon?.id
+                        )
+                    )
                 }
             } else if (cartItem?.type == ItemType.COUPON) {
-                val item = BackendCartItem(
-                    id = cartItem.backendCouponId,
-                    amount = 1,
-                    scannedCode = cartItem.scannedCode?.code,
-                    couponID = cartItem.coupon?.id
+                items.add(
+                    BackendCartItem(
+                        id = cartItem.backendCouponId,
+                        amount = 1,
+                        scannedCode = cartItem.scannedCode?.code,
+                        couponID = cartItem.coupon?.id
+                    )
                 )
-                items.add(item)
             }
         }
         return items
+    }
+
+    private fun createBackendCartItem(cartItem: Item): BackendCartItem {
+        val product = cartItem.product
+        val quantity = cartItem.getQuantityMethod()
+        val scannedCode = cartItem.scannedCode
+        val encodingUnit = getCurrentEncodingUnit(scannedCode, product)
+
+        return BackendCartItem(
+            id = cartItem.id,
+            sku = product?.sku.toString(),
+            scannedCode = getSelectedScannedCode(product, scannedCode, cartItem),
+            weightUnit = encodingUnit?.id,
+            weight = getCurrentWeight(cartItem, product, quantity),
+            amount = getCurrentAmount(cartItem, product, quantity),
+            units = getCurrentUnit(cartItem),
+            price = getCurrentPrice(cartItem, scannedCode)
+        )
+    }
+
+    private fun getCurrentEncodingUnit(
+        scannedCode: ScannedCode?,
+        product: Product?
+    ) = scannedCode?.embeddedUnit ?: product?.getEncodingUnit(
+        scannedCode?.templateName,
+        scannedCode?.lookupCode
+    )
+
+    private fun getCurrentUnit(cartItem: Item) = if (cartItem.unit == Unit.PIECE) {
+        cartItem.getEffectiveQuantity(true)
+    } else null
+
+    private fun getCurrentPrice(
+        cartItem: Item,
+        scannedCode: ScannedCode?
+    ) =
+        if (cartItem.unit == Unit.PRICE) {
+            cartItem.localTotalPrice
+        } else if (scannedCode?.hasPrice() == true) {
+            scannedCode.price
+        } else {
+            null
+        }
+
+    private fun getCurrentWeight(
+        cartItem: Item,
+        product: Product?,
+        quantity: Int
+    ) = if (cartItem.unit != Unit.PRICE && cartItem.unit != Unit.PIECE && cartItem.unit != null) {
+        cartItem.getEffectiveQuantity(true)
+    } else if (product?.type == Type.UserWeighed) {
+        quantity
+    } else {
+        null
+    }
+
+    private fun getCurrentAmount(
+        cartItem: Item,
+        product: Product?,
+        quantity: Int
+    ) = if (cartItem.unit == null && product?.type != Type.UserWeighed) {
+        quantity
+    } else {
+        1
     }
 
     private fun getSelectedScannedCode(
@@ -657,20 +689,19 @@ class ShoppingCart(
 
         // reencode user input from scanned code with 0 amount
         if (cartItem.unit == Unit.PIECE && scannedCode?.embeddedData == 0) {
-            scannedCode.templateName?.let {
-                val codeTemplate = project?.getCodeTemplate(it)
-                if (codeTemplate != null) {
-                    val newCode = codeTemplate.code(scannedCode.lookupCode)
-                        .embed(cartItem.effectiveQuantity)
-                        .buildCode()
-                    if (newCode != null) {
-                        selectedScannedCode = newCode.code
-                    }
-                }
+            val codeTemplate = getCodeTemplateFor(scannedCode.templateName)
+            val newCode = codeTemplate?.code(scannedCode.lookupCode)?.embed(cartItem.effectiveQuantity)?.buildCode()
+            if (newCode != null){
+                selectedScannedCode = newCode.code
             }
         }
 
         return selectedScannedCode
+    }
+
+    private fun getCodeTemplateFor(templateName: String?): CodeTemplate? {
+        templateName?: return null
+        return project?.getCodeTemplate(templateName)
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
