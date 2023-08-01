@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.squareup.okhttp3.okhttp)
     implementation(libs.squareup.okhttp3.tls)
+    implementation(libs.google.zxing.core)
 
     // for testing
     testImplementation(libs.junit)
