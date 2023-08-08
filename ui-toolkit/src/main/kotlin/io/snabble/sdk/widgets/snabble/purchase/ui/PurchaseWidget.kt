@@ -15,6 +15,7 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -77,7 +78,8 @@ fun Purchases(
     purchaseList: List<Purchase>,
     onAction: OnDynamicAction,
 ) {
-    val isSinglePurchase = purchaseList.size == 1
+    val isSinglePurchase = remember(key1 = purchaseList.size == 1) { mutableStateOf(purchaseList.size == 1) }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
@@ -85,7 +87,7 @@ fun Purchases(
     ) {
         val (title, more, purchases) = createRefs()
         Text(
-            text = if (isSinglePurchase) stringResource(id = R.string.Snabble_DynamicView_lastPurchase) else
+            text = if (isSinglePurchase.value) stringResource(id = R.string.Snabble_DynamicView_lastPurchase) else
                 stringResource(id = R.string.Snabble_DynamicView_lastPurchases),
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onSurface,
@@ -94,15 +96,18 @@ fun Purchases(
             modifier = Modifier
                 .padding(PaddingValues(horizontal = model.padding.start.dp + MaterialTheme.padding.small))
                 .constrainAs(title) {
-                    linkTo(start = parent.start, end = more.start, bias = 0f)
+                    start.linkTo(parent.start)
+                    end.linkTo(more.start)
                     top.linkTo(parent.top)
-                    width = Dimension.preferredWrapContent
+                    bottom.linkTo(purchases.top)
+                    width = Dimension.fillToConstraints
                 }
         )
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .constrainAs(more) {
+                    start.linkTo(title.end)
                     end.linkTo(parent.end)
                     top.linkTo(title.top)
                     bottom.linkTo(title.bottom)
