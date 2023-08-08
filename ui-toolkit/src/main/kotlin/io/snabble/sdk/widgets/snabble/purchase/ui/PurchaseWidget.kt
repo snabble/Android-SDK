@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -76,6 +77,7 @@ fun Purchases(
     purchaseList: List<Purchase>,
     onAction: OnDynamicAction,
 ) {
+    val isSinglePurchase = purchaseList.size == 1
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
@@ -83,7 +85,8 @@ fun Purchases(
     ) {
         val (title, more, purchases) = createRefs()
         Text(
-            text = "Previous purchases",
+            text = if (isSinglePurchase) stringResource(id = R.string.Snabble_DynamicView_lastPurchase) else
+                stringResource(id = R.string.Snabble_DynamicView_lastPurchases),
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
@@ -117,7 +120,7 @@ fun Purchases(
                 }
         ) {
             Text(
-                text = "More",
+                text = stringResource(id = R.string.Snabble_DynamicView_LastPurchases_all),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.inversePrimary,
                 textAlign = TextAlign.Center,
