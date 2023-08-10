@@ -2,7 +2,7 @@ import org.jetbrains.dokka.gradle.AbstractDokkaTask
 import org.jetbrains.dokka.gradle.DokkaTask
 import java.net.URI
 
-@Suppress("DSL_SCOPE_VIOLATION") plugins {
+plugins {
     alias(libs.plugins.benManesVersions)
     alias(libs.plugins.versionCatalogUpdate)
     alias(libs.plugins.dokka)
@@ -121,6 +121,7 @@ fun isNonStable(version: String): Boolean {
     val isStable = stableKeyword || regex.matches(version)
     return isStable.not()
 }
+
 
 tasks.withType<com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask> {
     rejectVersionIf {
