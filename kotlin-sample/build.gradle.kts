@@ -52,6 +52,14 @@ android {
     }
 }
 
+// Workaround to force old version since v1.4.0 requires compile target 34
+configurations.all {
+    resolutionStrategy {
+        force("androidx.emoji2:emoji2-views-helper:1.3.0")
+        force("androidx.emoji2:emoji2:1.3.0")
+    }
+}
+
 snabble {
     production {
         appId = "snabble-sdk-demo-app-oguh3x"
