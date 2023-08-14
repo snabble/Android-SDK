@@ -33,7 +33,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        maven(url = "https://datatrans.jfrog.io/ui/native/mobile-sdk")
+        maven(url = "https://datatrans.jfrog.io/artifactory/mobile-sdk/")
         maven(url = "https://jitpack.io")
     }
 
