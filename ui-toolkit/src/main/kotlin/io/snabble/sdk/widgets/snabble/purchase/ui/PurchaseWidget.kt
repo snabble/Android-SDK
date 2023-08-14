@@ -15,10 +15,13 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -76,14 +79,21 @@ fun Purchases(
     purchaseList: List<Purchase>,
     onAction: OnDynamicAction,
 ) {
+    val isSinglePurchase: Boolean by remember(key1 = purchaseList.size == 1) { mutableStateOf(purchaseList.size == 1) }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = model.padding.bottom.dp)
     ) {
         val (title, more, purchases) = createRefs()
+        val lastPurchasesTitleStringRes = if (isSinglePurchase) {
+            R.string.Snabble_DynamicView_lastPurchase
+        } else {
+            R.string.Snabble_DynamicView_lastPurchases
+        }
         Text(
-            text = "Previous purchases",
+            text = stringResource(id = lastPurchasesTitleStringRes),
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
@@ -91,18 +101,15 @@ fun Purchases(
             modifier = Modifier
                 .padding(PaddingValues(horizontal = model.padding.start.dp + MaterialTheme.padding.small))
                 .constrainAs(title) {
-                    linkTo(start = parent.start, end = more.start, bias = 0f)
-                    top.linkTo(parent.top)
-                    width = Dimension.preferredWrapContent
+                    linkTo(start = parent.start, top = parent.top, end = more.start, bottom = purchases.top)
+                    width = Dimension.fillToConstraints
                 }
         )
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .constrainAs(more) {
-                    end.linkTo(parent.end)
-                    top.linkTo(title.top)
-                    bottom.linkTo(title.bottom)
+                    linkTo(start = title.end, top = title.top, end = parent.end, bottom = title.bottom)
                     height = Dimension.fillToConstraints
                 }
                 .padding(PaddingValues(horizontal = model.padding.start.dp + MaterialTheme.padding.small))
@@ -117,7 +124,7 @@ fun Purchases(
                 }
         ) {
             Text(
-                text = "More",
+                text = stringResource(id = R.string.Snabble_DynamicView_LastPurchases_all),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.inversePrimary,
                 textAlign = TextAlign.Center,
@@ -173,7 +180,12 @@ private fun PurchaseDetail(
                 .fillMaxWidth()
                 .padding(PaddingValues(MaterialTheme.padding.medium))
         ) {
-            val (icon, amount, title, time) = createRefs()
+            val (
+                icon,
+                amount,
+                title,
+                time
+            ) = createRefs()
             Image(
                 painter = painterResource(id = R.drawable.ic_snabble),
                 contentDescription = "",
