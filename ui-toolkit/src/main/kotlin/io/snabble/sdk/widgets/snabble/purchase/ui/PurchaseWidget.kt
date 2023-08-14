@@ -109,10 +109,7 @@ fun Purchases(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .constrainAs(more) {
-                    start.linkTo(title.end)
-                    end.linkTo(parent.end)
-                    top.linkTo(title.top)
-                    bottom.linkTo(title.bottom)
+                    linkTo(start = title.end, top = title.top, end = parent.end, bottom = title.bottom)
                     height = Dimension.fillToConstraints
                 }
                 .padding(PaddingValues(horizontal = model.padding.start.dp + MaterialTheme.padding.small))
