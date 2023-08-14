@@ -101,10 +101,7 @@ fun Purchases(
             modifier = Modifier
                 .padding(PaddingValues(horizontal = model.padding.start.dp + MaterialTheme.padding.small))
                 .constrainAs(title) {
-                    start.linkTo(parent.start)
-                    end.linkTo(more.start)
-                    top.linkTo(parent.top)
-                    bottom.linkTo(purchases.top)
+                    linkTo(start = parent.start, top = parent.top, end = more.start, bottom = purchases.top)
                     width = Dimension.fillToConstraints
                 }
         )
