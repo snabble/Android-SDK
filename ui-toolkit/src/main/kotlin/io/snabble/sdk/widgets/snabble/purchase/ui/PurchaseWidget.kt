@@ -15,6 +15,7 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -78,7 +79,7 @@ fun Purchases(
     purchaseList: List<Purchase>,
     onAction: OnDynamicAction,
 ) {
-    val isSinglePurchase = remember(key1 = purchaseList.size == 1) { mutableStateOf(purchaseList.size == 1) }
+    val isSinglePurchase: Boolean by remember(key1 = purchaseList.size == 1) { mutableStateOf(purchaseList.size == 1) }
 
     ConstraintLayout(
         modifier = Modifier
@@ -86,9 +87,13 @@ fun Purchases(
             .padding(bottom = model.padding.bottom.dp)
     ) {
         val (title, more, purchases) = createRefs()
+        val lastPurchasesTitleStringRes = if (isSinglePurchase) {
+            R.string.Snabble_DynamicView_lastPurchase
+        } else {
+            R.string.Snabble_DynamicView_lastPurchases
+        }
         Text(
-            text = if (isSinglePurchase.value) stringResource(id = R.string.Snabble_DynamicView_lastPurchase) else
-                stringResource(id = R.string.Snabble_DynamicView_lastPurchases),
+            text = stringResource(id = lastPurchasesTitleStringRes),
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
@@ -181,7 +186,12 @@ private fun PurchaseDetail(
                 .fillMaxWidth()
                 .padding(PaddingValues(MaterialTheme.padding.medium))
         ) {
-            val (icon, amount, title, time) = createRefs()
+            val (
+                icon,
+                amount,
+                title,
+                time
+            ) = createRefs()
             Image(
                 painter = painterResource(id = R.drawable.ic_snabble),
                 contentDescription = "",
