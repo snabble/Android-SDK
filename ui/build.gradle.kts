@@ -91,7 +91,7 @@ dependencies {
     implementation(libs.androidx.viewpager2)
     implementation(libs.androidx.webkit)
     implementation(libs.commonsIo)
-    implementation(libs.datatrans.androidSdk)
+//    implementation(libs.datatrans.androidSdk)
     implementation(libs.google.zxing.core)
     implementation(libs.googlePlayServices.wallet)
     implementation(libs.picasso)
