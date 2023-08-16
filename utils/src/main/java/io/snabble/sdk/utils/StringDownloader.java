@@ -15,16 +15,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public abstract class StringDownloader extends Downloader {
     private File storageFile = null;
     private String assetPath;
     private int rawResId;
     private Application context;
-    private final Charset utf8 = Charset.forName("UTF-8");
+    private final Charset utf8 = StandardCharsets.UTF_8;
 
     public StringDownloader(OkHttpClient okHttpClient) {
         super(okHttpClient);
@@ -138,7 +140,8 @@ public abstract class StringDownloader extends Downloader {
     protected void onResponse(Response response) throws IOException {
         Logger.d("Receiving data for %s...", getUrl());
 
-        onDownloadFinished(response.body().string());
+        final ResponseBody body = response.body();
+        onDownloadFinished(body != null ? body.string() : null);
         Logger.d("Received data for %s", getUrl());
     }
 

@@ -104,8 +104,8 @@ dependencies {
     implementation(libs.bundles.camera)
     implementation(libs.bundles.navigation)
 
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.compose)
-    implementation(libs.compose.iconsExtended)
     debugImplementation(libs.bundles.compose.debug)
 
     testImplementation(libs.kotest.assertionsCore)

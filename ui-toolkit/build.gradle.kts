@@ -85,7 +85,8 @@ dependencies {
     implementation(project(":ui"))
 
     implementation(libs.android.material)
-    implementation(libs.androidx.activityCompose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayoutCompose)
     implementation(libs.androidx.core.ktx)

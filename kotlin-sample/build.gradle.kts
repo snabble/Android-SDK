@@ -79,7 +79,6 @@ dependencies {
     // implementation 'io.snabble.sdk:core:{currentVersion}'
     // implementation 'io.snabble.sdk:ui:{currentVersion}'
 
-    implementation(libs.androidx.activityCompose)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.constraintlayoutCompose)
@@ -90,15 +89,16 @@ dependencies {
     implementation(libs.androidx.navigation.fragmentKtx)
     implementation(libs.androidx.navigation.uiKtx)
     implementation(libs.androidx.preferences)
-    implementation(libs.compose.material)
-    implementation(libs.compose.ui)
-    implementation(libs.compose.uiToolingPreview)
-    implementation(libs.compose.uiUtil)
+
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.bundles.compose.app)
+    debugImplementation(libs.bundles.compose.debug)
+
     implementation(libs.jakewhartonProcessPhoenix)
     implementation(libs.kotlin.stdlib)
 
-    debugImplementation(libs.compose.uiTestManifest)
-    debugImplementation(libs.compose.uiTooling)
+    debugImplementation(libs.androidx.compose.uiTestManifest)
+    debugImplementation(libs.androidx.compose.uiTooling)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.test.espressoCore)
