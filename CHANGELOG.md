@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.71.1]
+### Fixed
+* ui-toolkit: Wrong behaviour of the purchase widget (#149)
+
 ## [0.71.0]
 ### Changed
 * Dependency updates and remove obsolete samples (#141)
