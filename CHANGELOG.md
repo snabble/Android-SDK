@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 ### Changed
 ### Removed
 ### Fixed
+
+## [0.71.3]
+### Fixed
 * core: Attempt to fix bug where old checkout processes has been processed
   * The saved checkout is only used if it's related to the current cart
 
