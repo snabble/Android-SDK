@@ -73,7 +73,6 @@ io.snabble.sdk.screens.receipts.usecase
 io.snabble.sdk.screens.shopfinder
 io.snabble.sdk.screens.shopfinder.shoplist
 io.snabble.sdk.screens.shopfinder.utils
-io.snabble.sdk.utils
 io.snabble.sdk.widgets
 io.snabble.sdk.widgets.snabble.devsettings
 io.snabble.sdk.widgets.snabble.devsettings.login.ui
