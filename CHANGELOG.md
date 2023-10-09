@@ -7,6 +7,19 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.71.3]
+### Fixed
+* core: Attempt to fix bug where old checkout processes has been processed
+  * The saved checkout is only used if it's related to the current cart
+
+## [0.71.2]
+### Added
+* ui-toolkit: New icon for empty state of the receipt list (#150)
+
+## [0.71.1]
+### Fixed
+* ui-toolkit: Wrong behaviour of the purchase widget (#149)
+
 ## [0.71.0]
 ### Changed
 * Dependency updates and remove obsolete samples (#141)

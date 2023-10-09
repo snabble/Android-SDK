@@ -1,17 +1,18 @@
 package io.snabble.sdk.checkout
 
-import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Product
+import io.snabble.sdk.coupons.Coupon
+import io.snabble.sdk.events.Events
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
 import java.io.File
-import java.lang.Exception
 
-data class PersistentState (
+data class PersistentState(
     @Transient
     var file: File,
+    var cartId: String? = null,
     var checkoutProcess: CheckoutProcessResponse? = null,
     var selectedPaymentMethod: PaymentMethod? = null,
     var priceToPay: Int = 0,
@@ -22,6 +23,7 @@ data class PersistentState (
     var fulfillmentState: List<Fulfillment>? = null,
     var signedCheckoutInfo: SignedCheckoutInfo? = null
 ) {
+
     fun save() {
         val json = GsonHolder.get().toJson(this)
 
@@ -35,16 +37,20 @@ data class PersistentState (
     }
 
     companion object {
-        fun restore(file: File): PersistentState {
-            return try {
-                val text = file.readText()
-                val persistentState = GsonHolder.get().fromJson(text, PersistentState::class.java)
+
+        fun restore(file: File, cartId: String, projectId: String): PersistentState = try {
+            val persistentState = GsonHolder.get()
+                .fromJson(file.readText(), PersistentState::class.java)
+            if (persistentState.cartId == cartId) {
                 persistentState.file = file
                 persistentState
-            } catch (e: Exception) {
-                Logger.d("read exception [${file.parent}]: $e")
-                PersistentState(file)
+            } else {
+                Events.logErrorEvent(projectId, "Tried to restore a check process w/o a matching cart id.")
+                PersistentState(file, cartId = cartId)
             }
+        } catch (e: Exception) {
+            Logger.d("read exception [${file.parent}]: $e")
+            PersistentState(file, cartId = cartId)
         }
     }
 }

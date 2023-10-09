@@ -26,7 +26,11 @@ class Checkout @JvmOverloads constructor(
     }
 
     private var persistentState: PersistentState =
-        PersistentState.restore(File(project.internalStorageDirectory, "checkout.json"))
+        PersistentState.restore(
+            file = File(project.internalStorageDirectory, "checkout.json"),
+            cartId = shoppingCart.id,
+            projectId = project.id
+        )
 
     /** The current checkout process response from the backend **/
     var checkoutProcess
