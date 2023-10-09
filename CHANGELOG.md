@@ -3,9 +3,19 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
-### Changed
+### Changed 
 ### Removed
 ### Fixed
+
+## [0.71.4]
+### Added
+* utils: Add QR code generator (#154)
+### Changed 
+* ui: Separate payment method meta data from PaymentSelectionHelper into new PaymentMethodMetaData (#154)
+* ui-toolkit: Refactor mapping function in PurchasesRepo to be more concise (#151)
+* core: Add logging extensions to core module (#154)
+### Removed
+* ui-toolkit: Remove logging class (moved to core module) (#154)
 
 ## [0.71.3]
 ### Fixed
