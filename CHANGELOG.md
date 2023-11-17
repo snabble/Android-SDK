@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.71.5]
+### Fixed
+* Fix crash caused by org.apache.commons.io.FileUtils.moveFile w/ API level below 26 (Android Oreo)
+
 ## [0.71.4]
 ### Added
 * utils: Add QR code generator (#154)

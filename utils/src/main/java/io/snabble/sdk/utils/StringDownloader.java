@@ -4,6 +4,10 @@ import android.app.Application;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.os.Build;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -11,9 +15,11 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 
 import okhttp3.OkHttpClient;
@@ -126,7 +132,7 @@ public abstract class StringDownloader extends Downloader {
                 fos.close();
 
                 FileUtils.deleteQuietly(storageFile);
-                FileUtils.moveFile(tempFile, storageFile);
+                moveFileSupport(tempFile, storageFile);
                 Logger.d("Updated saved data:%s", storageFile.getAbsolutePath());
             } catch (IOException e) {
                 Logger.e("Could not update saved data %s", e.toString());
@@ -143,4 +149,42 @@ public abstract class StringDownloader extends Downloader {
     }
 
     protected abstract void onDownloadFinished(String string);
+
+    private void moveFileSupport(final File srcFile, final File destFile) throws IOException {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            FileUtils.moveFile(srcFile, destFile);
+        } else {
+            moveFile(srcFile, destFile);
+        }
+    }
+
+    private void moveFile(@NonNull final File srcFile, @NonNull final File destFile) {
+        try {
+            final boolean isRenamed = srcFile.renameTo(destFile);
+            if (!isRenamed) {
+                copyFile(srcFile, destFile);
+            }
+        } catch (final SecurityException exception) {
+            Logger.d("No write access to either srcFile, destFile or both.");
+        } catch (final NullPointerException exception) {
+            Logger.d("destFile must not be null.");
+        }
+        FileUtils.deleteQuietly(srcFile);
+    }
+
+    private void copyFile(@NonNull final File srcFile, @NonNull final File destFile) {
+        //noinspection resource
+        try (
+                final FileChannel dstChannel = new FileOutputStream(destFile).getChannel();
+                final FileChannel srcChannel = new FileInputStream(srcFile).getChannel()
+        ) {
+            srcChannel.transferTo(0, srcChannel.size(), dstChannel);
+        } catch (final FileNotFoundException exception) {
+            Logger.d("Either srcFile, destFile or both do not exist.");
+        } catch (final SecurityException exception) {
+            Logger.d("No write access to either srcFile, destFile or both.");
+        } catch (final IOException exception) {
+            Logger.e("Could not write srcFile to destFile: %s", exception.toString());
+        }
+    }
 }
