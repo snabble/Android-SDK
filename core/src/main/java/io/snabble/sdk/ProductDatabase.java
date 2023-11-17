@@ -28,6 +28,7 @@ import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Downloader;
+import io.snabble.sdk.utils.FileUtilsSupport;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.StringNormalizer;
 
@@ -696,7 +697,7 @@ public class ProductDatabase {
             File dbFile = application.getDatabasePath(dbName);
 
             if (!dbFile.exists() || application.deleteDatabase(dbFile.getName())) {
-                FileUtils.moveFile(otherDbFile, dbFile);
+                FileUtilsSupport.moveFile(otherDbFile, dbFile);
                 application.deleteDatabase(otherDbFile.getName());
             }
 
