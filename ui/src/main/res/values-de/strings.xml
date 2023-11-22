@@ -86,8 +86,8 @@
     <string name="Snabble.Hints.continueScanning">Weiter scannen</string>
     <string name="Snabble.Hints.title">Hinweis von %s</string>
     <string name="Snabble.InvalidDepositVoucher.errorMsg">Leergutbons können nur einmal eingelöst werden.</string>
-    <string name="Snabble.Keyguard.message">Dadurch stellen wir sicher, dass nur du selbst Zugriff auf dieses Bezahlverfahren hast</string>
-    <string name="Snabble.Keyguard.requireScreenLock">Du musst dein Smartphone mit einer Display-Sperre schützen, um diese Bezahlmethode hinzuzufügen.</string>
+    <string name="Snabble.Keyguard.message">Dadurch stellen wir sicher, dass nur du selbst Zugriff auf diese Zahlungsmethode hast</string>
+    <string name="Snabble.Keyguard.requireScreenLock">Du musst dein Smartphone mit einer Display-Sperre schützen, um diese Zahlungsmethode hinzuzufügen.</string>
     <!-- SECTION: Android KeyStore -->
     <string name="Snabble.Keyguard.title">Bitte entsperre dein Smartphone</string>
     <string name="Snabble.LimitsAlert.checkoutNotAvailable">Ab einem Warenwert von %s ist der Einkauf per App leider nicht mehr möglich.</string>
@@ -105,10 +105,10 @@
     <string name="Snabble.Onboarding.next">Weiter</string>
     <string name="Snabble.Paydirekt.AuthorizationFailed.message">Bitte versuche es später nochmal</string>
     <string name="Snabble.Paydirekt.AuthorizationFailed.title">Autorisierung fehlgeschlagen</string>
-    <string name="Snabble.Paydirekt.deleteAuthorization">Bezahlmethode löschen</string>
+    <string name="Snabble.Paydirekt.deleteAuthorization">Zahlungsmethode löschen</string>
     <string name="Snabble.Paydirekt.gotoWebsite">Zu paydirekt.de</string>
     <string name="Snabble.Paydirekt.payNow">Jetzt mit paydirekt bezahlen</string>
-    <string name="Snabble.Paydirekt.savedAuthorization">Du hast die Snabble-App erfolgreich für paydirekt autorisiert. Um dies rückgängig zu machen, musst du dich bei deinem paydirekt-Konto auf der Webseite anmelden. Möchtest du paydirekt nicht mehr als Bezahlmethode angezeigt bekommen, kannst du sie hier einfach entfernen.</string>
+    <string name="Snabble.Paydirekt.savedAuthorization">Du hast die Snabble-App erfolgreich für paydirekt autorisiert. Um dies rückgängig zu machen, musst du dich bei deinem paydirekt-Konto auf der Webseite anmelden. Möchtest du paydirekt nicht mehr als Zahlungsmethode angezeigt bekommen, kannst du sie hier einfach entfernen.</string>
     <string name="Snabble.Paydirekt.title">paydirekt</string>
     <!-- SECTION: SnabbleAndroid -->
     <string name="Snabble.Payment.aborted">Der Bezahlvorgang wurde abgebrochen</string>
@@ -123,8 +123,8 @@
     <string name="Snabble.Payment.CreditCard.error">Bei der Verarbeitung deiner Kreditkarte ist ein Fehler aufgetreten</string>
     <string name="Snabble.Payment.CreditCard.expireDate">Läuft ab: %s</string>
     <string name="Snabble.Payment.Delete.message">Möchtest Du diese Zahlungsmethode wirklich entfernen?</string>
-    <string name="Snabble.Payment.EmptyState.add">Bezahlverfahren hinzufügen</string>
-    <string name="Snabble.Payment.EmptyState.message">Noch kein Bezahlverfahren hinterlegt.</string>
+    <string name="Snabble.Payment.EmptyState.add">Zahlungsmethode hinzufügen</string>
+    <string name="Snabble.Payment.EmptyState.message">Noch keine Zahlungsmethode hinterlegt.</string>
     <string name="Snabble.Payment.errorStarting">Fehler beim Anlegen des Bezahlprozesses</string>
     <string name="Snabble.Payment.ExternalBilling.add">Hinzufügen</string>
     <string name="Snabble.Payment.ExternalBilling.AlertDialog.add">Hinzufügen</string>
@@ -183,15 +183,15 @@
     <string name="Snabble.PaymentError.msg">Deine Zahlung konnte nicht durchgeführt werden. Bitte zahle an einer normalen Kasse.\n\nEntschuldigung für die Umstände.</string>
     <string name="Snabble.PaymentError.title">Ein Fehler ist aufgetreten</string>
     <string name="Snabble.PaymentError.tryAgain">Nochmal versuchen</string>
-    <string name="Snabble.PaymentMethods.add">Bezahlverfahren hinzufügen</string>
-    <string name="Snabble.PaymentMethods.choose">Welches Bezahlverfahren hinzufügen?</string>
+    <string name="Snabble.PaymentMethods.add">Zahlungsmethode hinzufügen</string>
+    <string name="Snabble.PaymentMethods.choose">Welche Zahlungsmethode hinzufügen?</string>
     <string name="Snabble.PaymentMethods.forAllRetailers">Händlerübergreifend</string>
     <string name="Snabble.PaymentMethods.forSingleRetailer">Für einzelne Händler</string>
     <string name="Snabble.PaymentMethods.NoCodeAlert.biometry">Dein iPhone ist weder durch einen Code noch durch Touch ID/Face ID geschützt. Bitte richte zu deiner Sicherheit zuerst diesen Schutz ein, bevor du deine IBAN oder Kreditkarte eingibst.</string>
     <string name="Snabble.PaymentMethods.NoCodeAlert.noBiometry">Dein iPhone ist nicht durch einen Code geschützt. Bitte richte zu deiner Sicherheit zuerst diesen Schutz ein, bevor du deine IBAN oder Kreditkarte eingibst.</string>
     <string name="Snabble.PaymentMethods.noDeviceCode">Ungeschütztes iPhone</string>
     <!-- ********* iOS Payment Methods ********* -->
-    <string name="Snabble.PaymentMethods.title">Bezahlverfahren</string>
+    <string name="Snabble.PaymentMethods.title">Zahlungsmethoden</string>
     <string name="Snabble.PaymentSelection.addNow">Jetzt hinzufügen</string>
     <string name="Snabble.PaymentSelection.howToPay">Wie möchtest du %s bezahlen?</string>
     <string name="Snabble.PaymentSelection.payNow">Jetzt %s zahlen</string>
@@ -204,7 +204,7 @@
     <string name="Snabble.PaymentStatus.ExitCode.openExitGateTimed">Der Code ist nur kurze Zeit gültig.</string>
     <string name="Snabble.PaymentStatus.ExitCode.title">Ausgangs-Code</string>
     <string name="Snabble.PaymentStatus.Fulfillment.title">Lieferung</string>
-    <string name="Snabble.PaymentStatus.Payment.error">Deine Zahlung konnte nicht durchgeführt werden. Versuche es erneut oder wähle ein anderes Bezahlverfahren.</string>
+    <string name="Snabble.PaymentStatus.Payment.error">Deine Zahlung konnte nicht durchgeführt werden. Versuche es erneut oder wähle eine andere Zahlungsmethode.</string>
     <string name="Snabble.PaymentStatus.Payment.title">Bezahlung</string>
     <string name="Snabble.PaymentStatus.Payment.tryAgain">Erneut versuchen</string>
     <!-- Button to submit the feedback on the checkout screen after a successful checkout. -->
@@ -365,7 +365,7 @@
     <string name="Snabble.Shoppingcart.buyProducts">%1$d Artikel für %2$s kaufen</string>
     <string name="Snabble.Shoppingcart.BuyProducts.now">Jetzt bezahlen</string>
     <string name="Snabble.Shoppingcart.BuyProducts.one">%1$d Artikel für %2$s kaufen</string>
-    <string name="Snabble.Shoppingcart.BuyProducts.selectPaymentMethod">Bezahlverfahren wählen</string>
+    <string name="Snabble.Shoppingcart.BuyProducts.selectPaymentMethod">Zahlungsmethode wählen</string>
     <string name="Snabble.Shoppingcart.coupon">Gutschein</string>
     <string name="Snabble.Shoppingcart.coupons">Gutscheine</string>
     <string name="Snabble.Shoppingcart.deposit">Pfand</string>
