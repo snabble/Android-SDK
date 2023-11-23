@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ## [0.71.7]
 ### Changed
-* Update Strings
+* ui: Change wording from 'Bezahlverfahren' to 'Zahlungsmethode'
 
 ## [0.71.6]
 ### Fixed
