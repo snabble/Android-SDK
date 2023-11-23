@@ -11,7 +11,6 @@ All notable changes to this project will be documented in this file.
 ### Changed
 * Update Strings
 
-
 ## [0.71.6]
 ### Fixed
 * Fix another crash caused by org.apache.commons.io.FileUtils.moveFile
