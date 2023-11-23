@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.71.7]
+### Changed
+* ui: Change wording from 'Bezahlverfahren' to 'Zahlungsmethode'
+
 ## [0.71.6]
 ### Fixed
 * Fix another crash caused by org.apache.commons.io.FileUtils.moveFile
