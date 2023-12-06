@@ -40,6 +40,23 @@ dependencies {
 }
 ```
 
+Because we make use of `org.apache.commons.io` [API desugaring with NIO](https://android-developers.googleblog.com/2023/02/api-desugaring-supporting-android-13-and-java-nio.html) is needed:
+
+```kts
+android {
+    // ...
+    compileOptions {
+        // Flag to enable support for API desugaring.
+        isCoreLibraryDesugaringEnabled = true
+    }
+}
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.0.4")
+    // ...
+}
+```
+
 #### Locally
 
 The library can be installed to the local maven repository using:

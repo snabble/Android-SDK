@@ -3,8 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
-### Changed 
+### Changed
+* Use nio API desugaring instead of the default variant
 ### Removed
+* Obsolete use of API desugaring
+* Remove FileUtils.moveFile fix, now fixed by adding nio API desugaring
 ### Fixed
 
 ## [0.71.7]

@@ -69,7 +69,7 @@ snabble {
 }
 
 dependencies {
-    coreLibraryDesugaring(libs.desugarJdkLibs)
+    coreLibraryDesugaring(libs.desugarJdkLibsNio)
 
     implementation(project(":core"))
     implementation(project(":ui"))
