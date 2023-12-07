@@ -126,7 +126,7 @@ public abstract class StringDownloader extends Downloader {
                 fos.close();
 
                 FileUtils.deleteQuietly(storageFile);
-                FileUtilsSupport.moveFile(tempFile, storageFile);
+                FileUtils.moveFile(tempFile, storageFile);
                 Logger.d("Updated saved data:%s", storageFile.getAbsolutePath());
             } catch (IOException e) {
                 Logger.e("Could not update saved data %s", e.toString());
