@@ -4,11 +4,17 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 ### Added
 ### Changed
-* Use nio API desugaring instead of the default variant
 ### Removed
-* Obsolete use of API desugaring
-* Remove FileUtils.moveFile fix, now fixed by adding nio API desugaring
 ### Fixed
+
+## [0.71.8]
+### Changed
+* Use nio API desugaring instead of the default variant (#159)
+### Removed
+* Obsolete use of API desugaring (#159)
+* Remove FileUtils.moveFile fix, now fixed by adding nio API desugaring (#159)
+### Fixed
+* Add missing CreditCards to validity check and automated removal (#161)
 
 ## [0.71.7]
 ### Changed

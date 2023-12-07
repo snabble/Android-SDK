@@ -790,7 +790,12 @@ public class PaymentCredentials {
      * E.g. on timed out credit cards or expired certificates.
      */
     public boolean validate() {
-        if (type == Type.CREDIT_CARD_PSD2) {
+        final List<PaymentCredentials.Type> typesToValidate = Arrays.asList(
+                Type.CREDIT_CARD_PSD2,
+                Type.PAYONE_CREDITCARD,
+                Type.DATATRANS_CREDITCARD
+        );
+        if (typesToValidate.contains(type)) {
             Date date = new Date(validTo);
             if (date.getTime() < System.currentTimeMillis()) {
                 Logger.errorEvent("removing payment credentials: expired");
