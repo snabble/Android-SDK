@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 * Remove FileUtils.moveFile fix, now fixed by adding nio API desugaring (#159)
 ### Fixed
 * Add missing CreditCards to validity check and automated removal (#161)
+* Add `checkInManager.update()` that's been missing under rare debug circumstances (#162)
 
 ## [0.71.7]
 ### Changed
