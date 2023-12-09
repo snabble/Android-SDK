@@ -143,12 +143,12 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
         }
 
         if (availablePaymentMethods.contains(PaymentMethod.PAYDIREKT)) {
-            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_payment_select_paydirekt,
-                    "Paydirekt",
+            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_payment_giropay,
+                    "GiroPay",
                     getUsableAtText(PaymentMethod.PAYDIREKT), new OneShotClickListener() {
                 @Override
                 public void click() {
-                    PaymentInputViewHelper.openPaymentInputView(requireContext(), PaymentMethod.PAYDIREKT, null);
+                    PaymentInputViewHelper.openPaymentInputView(requireContext(), PaymentMethod.PAYDIREKT, projectId);
                     dismissAllowingStateLoss();
                 }
             }));

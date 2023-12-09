@@ -409,7 +409,7 @@ public class PaymentCredentials {
             return null;
         }
 
-        pc.obfuscatedId = "paydirekt";
+        pc.obfuscatedId = "GiroPay";
 
         PaydirektData paydirektData = new PaydirektData();
         paydirektData.clientID = Snabble.getInstance().getClientId();

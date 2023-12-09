@@ -198,7 +198,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                         entries.add(new Entry(pm, getDrawableForBrand(pm.getBrand()), pm.getObfuscatedId()));
                         break;
                     case PAYDIREKT:
-                        entries.add(new Entry(pm, R.drawable.snabble_ic_payment_select_paydirekt, pm.getObfuscatedId()));
+                        entries.add(new Entry(pm, R.drawable.snabble_ic_payment_giropay, pm.getObfuscatedId()));
                         break;
                     case TEGUT_EMPLOYEE_CARD:
                         entries.add(new Entry(pm, R.drawable.snabble_ic_payment_select_tegut, pm.getObfuscatedId()));

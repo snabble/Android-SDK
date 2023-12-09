@@ -16,7 +16,7 @@ val PaymentMethodDescriptor.icon: Int
         PaymentMethod.TWINT.id -> R.drawable.snabble_ic_payment_select_twint
         PaymentMethod.CUSTOMERCARD_POS.id -> R.drawable.snabble_ic_payment_select_pos
         PaymentMethod.GATEKEEPER_TERMINAL.id -> R.drawable.snabble_ic_payment_select_sco
-        PaymentMethod.PAYDIREKT.id -> R.drawable.snabble_ic_payment_select_paydirekt
+        PaymentMethod.PAYDIREKT.id -> R.drawable.snabble_ic_payment_giropay
         PaymentMethod.PAYONE_SEPA.id -> R.drawable.snabble_ic_payment_select_sepa
         PaymentMethod.GOOGLE_PAY.id -> R.drawable.snabble_ic_payment_select_gpay
         "externalBilling" -> when (acceptedOriginTypes?.first()) {
