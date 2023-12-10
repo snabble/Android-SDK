@@ -3,9 +3,15 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
-### Changed
+### Changed 
 ### Removed
 ### Fixed
+
+## [0.71.9]
+### Changed
+* core/ui : Update icons and description from paydirekt to GiroPay
+* ### Fixed
+* ui: Fixed crash caused by missing project id when calling the PaydirektInputFragment via the PaymentInputViewHelper
 
 ## [0.71.8]
 ### Changed
