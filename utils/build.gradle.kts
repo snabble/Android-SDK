@@ -54,9 +54,8 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring(libs.desugarJdkLibs)
+    coreLibraryDesugaring(libs.desugarJdkLibsNio)
 
-    //noinspection GradleDependency
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
     implementation(libs.commonsIo)
