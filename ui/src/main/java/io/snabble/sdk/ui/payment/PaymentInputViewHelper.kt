@@ -54,8 +54,8 @@ object PaymentInputViewHelper {
                             SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT, args)
                         }
 
-                        PaymentMethod.PAYDIREKT -> {
-                            SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_PAYDIREKT_INPUT)
+                        PaymentMethod.GIROPAY -> {
+                            SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_GIROPAY_INPUT)
                         }
 
                         PaymentMethod.DE_DIRECT_DEBIT -> {

@@ -81,6 +81,13 @@
     <string name="Snabble.DynamicView.Shop.show">Show stores</string>
     <string name="Snabble.DynamicView.StartShopping.button">Start shopping</string>
     <string name="Snabble.edit">Edit</string>
+    <string name="Snabble.Giropay.AuthorizationFailed.message">Please try again later</string>
+    <string name="Snabble.Giropay.AuthorizationFailed.title">Authorization failed</string>
+    <string name="Snabble.Giropay.deleteAuthorization">Delete method</string>
+    <string name="Snabble.Giropay.gotoWebsite">Go to giropay.de</string>
+    <string name="Snabble.Giropay.payNow">Pay now using giropay</string>
+    <string name="Snabble.Giropay.savedAuthorization">You\'ve successfully authorized Snabble for giropay. To remove this authorization, you need to log in to your giropay account. If you do not want to use this payment method anymore, you can remove it here.</string>
+    <string name="Snabble.Giropay.title">giropay</string>
     <string name="Snabble.goToSettings">Go to settings</string>
     <string name="Snabble.Hints.closedBags">Well done! Please make things easy for the cashier and don\'t store your products in closed bags. Thank you!</string>
     <string name="Snabble.Hints.continueScanning">Continue scanning</string>
@@ -103,13 +110,6 @@
     <string name="Snabble.Onboarding.done">Done</string>
     <string name="Snabble.Onboarding.Link.show">Show</string>
     <string name="Snabble.Onboarding.next">Continue</string>
-    <string name="Snabble.Paydirekt.AuthorizationFailed.message">Please try again later</string>
-    <string name="Snabble.Paydirekt.AuthorizationFailed.title">Authorization failed</string>
-    <string name="Snabble.Paydirekt.deleteAuthorization">Delete method</string>
-    <string name="Snabble.Paydirekt.gotoWebsite">Go to paydirekt.de</string>
-    <string name="Snabble.Paydirekt.payNow">Pay now using paydirekt</string>
-    <string name="Snabble.Paydirekt.savedAuthorization">You\'ve successfully authorized Snabble for paydirekt. To remove this authorization, you need to log in to your paydirekt account. If you do not want to use this payment method anymore, you can remove it here.</string>
-    <string name="Snabble.Paydirekt.title">paydirekt</string>
     <!-- SECTION: SnabbleAndroid -->
     <string name="Snabble.Payment.aborted">Payment process was cancelled</string>
     <string name="Snabble.Payment.add">Add payment method</string>
@@ -313,7 +313,6 @@
     <string name="Snabble.SEPA.mandate">SEPA direct debit mandate</string>
     <string name="Snabble.SEPA.payNow">Pay now using SEPA</string>
     <string name="Snabble.SEPA.scoTransferHint">Please enter the name from the card to save it for future payments.</string>
-    <string name="Snabble.Settings">Settings</string>
     <!-- <street and house number> in <ZIP code> <city name> -->
     <string name="Snabble.Shop.Address.accessibility">%1$s in %2$s %3$s</string>
     <string name="Snabble.Shop.Detail.openingHours">Opening hours</string>
