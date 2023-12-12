@@ -1,8 +1,5 @@
 package io.snabble.sdk.payment.data
 
-import androidx.annotation.RestrictTo
-
-@RestrictTo(RestrictTo.Scope.LIBRARY)
 data class GiropayAuthorizationData(
     @JvmField val id: String,
     @JvmField val name: String,
