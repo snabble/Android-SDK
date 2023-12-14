@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
     * PaymentCredentials.fromPaydirekt(...)  changed to PaymentCredentials.fromGiropay(...)
     * PaydirektAuthorizationData changed to GiropayAuthorizationData and is now a data class
     * PaydirektData changed to GiropayData and is now a data class
+    * The UI event for paydirekt changed from SHOW_PAYDIREKT_INPUT to SHOW_GIROPAY_INPUT
 * ### Fixed
 * ui: Fixed crash caused by missing project id when calling the PaydirektInputFragment via the PaymentInputViewHelper
 
