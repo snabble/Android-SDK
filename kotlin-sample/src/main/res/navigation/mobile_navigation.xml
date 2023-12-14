@@ -156,9 +156,9 @@
         android:label="Checkout" />
 
     <fragment
-        android:id="@+id/navigation_paydirekt_input"
-        android:name="io.snabble.sdk.ui.payment.PaydirektInputFragment"
-        android:label="Paydirekt" />
+        android:id="@+id/navigation_giropay_input"
+        android:name="io.snabble.sdk.ui.payment.GiropayInputFragment"
+        android:label="@string/Snabble.Giropay.title" />
     <fragment
         android:id="@+id/navigation_payone_input"
         android:name="io.snabble.sdk.ui.payment.PayoneInputFragment"

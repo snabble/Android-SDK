@@ -85,6 +85,13 @@
     <string name="Snabble.DynamicView.Shop.show">Show stores</string>
     <string name="Snabble.DynamicView.StartShopping.button">Start shopping</string>
     <string name="Snabble.edit">Modifica</string>
+    <string name="Snabble.Giropay.AuthorizationFailed.message">Ti preghiamo di riprovare più tardi</string>
+    <string name="Snabble.Giropay.AuthorizationFailed.title">Autorizzazione non riuscita</string>
+    <string name="Snabble.Giropay.deleteAuthorization">Elimina metodo di pagamento</string>
+    <string name="Snabble.Giropay.gotoWebsite">A giropay.de</string>
+    <string name="Snabble.Giropay.payNow">Paga ora con giropay</string>
+    <string name="Snabble.Giropay.savedAuthorization">L’autorizzazione dell’app Snabble per giropay è avvenuta con successo. Per revocare l’autorizzazione, è necessario accedere al tuo account giropay sul sito web. Se non desideri più che giropay sia visualizzato come metodo di pagamento, è sufficiente rimuoverlo.</string>
+    <string name="Snabble.Giropay.title">giropay</string>
     <string name="Snabble.goToSettings">Alle impostazioni</string>
     <string name="Snabble.Hints.closedBags">Continua così! Agevola il compito del personale di cassa ed evita di mettere direttamente gli articoli in borse chiuse. Grazie!</string>
     <string name="Snabble.Hints.continueScanning">Continua la scansione</string>
@@ -107,13 +114,6 @@
     <string name="Snabble.Onboarding.done">Done</string>
     <string name="Snabble.Onboarding.Link.show">Show</string>
     <string name="Snabble.Onboarding.next">Continue</string>
-    <string name="Snabble.Paydirekt.AuthorizationFailed.message">Ti preghiamo di riprovare più tardi</string>
-    <string name="Snabble.Paydirekt.AuthorizationFailed.title">Autorizzazione non riuscita</string>
-    <string name="Snabble.Paydirekt.deleteAuthorization">Elimina metodo di pagamento</string>
-    <string name="Snabble.Paydirekt.gotoWebsite">A paydirekt.de</string>
-    <string name="Snabble.Paydirekt.payNow">Paga ora con paydirekt</string>
-    <string name="Snabble.Paydirekt.savedAuthorization">L’autorizzazione dell’app Snabble per paydirekt è avvenuta con successo. Per revocare l’autorizzazione, è necessario accedere al tuo account paydirekt sul sito web. Se non desideri più che paydirekt sia visualizzato come metodo di pagamento, è sufficiente rimuoverlo.</string>
-    <string name="Snabble.Paydirekt.title">paydirekt</string>
     <!-- SECTION: SnabbleAndroid -->
     <string name="Snabble.Payment.aborted">Il pagamento è stato interrotto</string>
     <string name="Snabble.Payment.add">Aggiungi modalità di pagamento</string>
@@ -317,7 +317,6 @@
     <string name="Snabble.SEPA.mandate">Ordine di addebito diretto SEPA</string>
     <string name="Snabble.SEPA.payNow">Paga ora con SEPA</string>
     <string name="Snabble.SEPA.scoTransferHint">Inserisci anche il nome indicato sulla carta per poterla salvare direttamente con l’app per i pagamenti.</string>
-    <string name="Snabble.Settings">Impostazioni</string>
     <!-- <street and house number> in <ZIP code> <city name> -->
     <string name="Snabble.Shop.Address.accessibility">%1$s in %2$s %3$s</string>
     <string name="Snabble.Shop.Detail.openingHours">Opening hours</string>

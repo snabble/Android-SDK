@@ -228,7 +228,7 @@ class DefaultCheckoutApi(private val project: Project,
                         cardNumber = paymentCredentials.obfuscatedId,
                     )
                 }
-                PaymentCredentials.Type.PAYDIREKT -> {
+                PaymentCredentials.Type.GIROPAY -> {
                     PaymentInformation(
                         originType = paymentCredentials.type.originType,
                         encryptedOrigin = paymentCredentials.encryptedData,

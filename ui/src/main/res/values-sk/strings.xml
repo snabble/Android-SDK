@@ -89,6 +89,13 @@
     <string name="Snabble.DynamicView.Shop.show">Zobraziť obchody</string>
     <string name="Snabble.DynamicView.StartShopping.button">Teraz nakúpiť tu</string>
     <string name="Snabble.edit">Upraviť</string>
+    <string name="Snabble.Giropay.AuthorizationFailed.message">Skús neskôr znovu, prosím</string>
+    <string name="Snabble.Giropay.AuthorizationFailed.title">Autorizácia sa nepodarila</string>
+    <string name="Snabble.Giropay.deleteAuthorization">Vymazať spôsob platby</string>
+    <string name="Snabble.Giropay.gotoWebsite">Prejsť na giropay.de</string>
+    <string name="Snabble.Giropay.payNow">Teraz zaplatiť prostredníctvom giropay</string>
+    <string name="Snabble.Giropay.savedAuthorization">Autorizácia aplikácie Snabble pre giropay bola úspešná. Ak chceš autorizáciu zrušiť, musíš sa prihlásiť do svojho konta giropay na webovej stránke. Pokiaľ nechceš, aby giropay bol v budúcnosti zobrazovaný ako spôsob platby, tu ho môžeš jednoducho odstrániť.</string>
+    <string name="Snabble.Giropay.title">giropay</string>
     <string name="Snabble.goToSettings">Prejsť na nastavenia</string>
     <string name="Snabble.Hints.closedBags">Len tak ďalej! Prosím, uľahči prácu pokladníkom a nevkladaj svoje produkty priamo do uzavretých tašiek. Ďakujem!</string>
     <string name="Snabble.Hints.continueScanning">Pokračovať v skenovaní</string>
@@ -111,13 +118,6 @@
     <string name="Snabble.Onboarding.done">Hotovo</string>
     <string name="Snabble.Onboarding.Link.show">Prezrieť</string>
     <string name="Snabble.Onboarding.next">Ďalej</string>
-    <string name="Snabble.Paydirekt.AuthorizationFailed.message">Skús neskôr znovu, prosím</string>
-    <string name="Snabble.Paydirekt.AuthorizationFailed.title">Autorizácia sa nepodarila</string>
-    <string name="Snabble.Paydirekt.deleteAuthorization">Vymazať spôsob platby</string>
-    <string name="Snabble.Paydirekt.gotoWebsite">Prejsť na paydirekt.de</string>
-    <string name="Snabble.Paydirekt.payNow">Teraz zaplatiť prostredníctvom paydirekt</string>
-    <string name="Snabble.Paydirekt.savedAuthorization">Autorizácia aplikácie Snabble pre paydirekt bola úspešná. Ak chceš autorizáciu zrušiť, musíš sa prihlásiť do svojho konta paydirekt na webovej stránke. Pokiaľ nechceš, aby paydirekt bol v budúcnosti zobrazovaný ako spôsob platby, tu ho môžeš jednoducho odstrániť.</string>
-    <string name="Snabble.Paydirekt.title">paydirekt</string>
     <!-- SECTION: SnabbleAndroid -->
     <string name="Snabble.Payment.aborted">Platobný proces bol prerušený</string>
     <string name="Snabble.Payment.add">Pridať spôsob platby</string>
@@ -321,7 +321,6 @@
     <string name="Snabble.SEPA.mandate">Mandát na inkaso v SEPA</string>
     <string name="Snabble.SEPA.payNow">SEPA platba teraz</string>
     <string name="Snabble.SEPA.scoTransferHint">Ešte zadaj meno uvedené na karte, aby si ju mohol/mohla uložiť pre platby priamo prostredníctvom aplikácie.</string>
-    <string name="Snabble.Settings">Nastavenia</string>
     <!-- <street and house number> in <ZIP code> <city name> -->
     <string name="Snabble.Shop.Address.accessibility">%1$s v %2$s %3$s</string>
     <string name="Snabble.Shop.Detail.openingHours">Otváracie hodiny</string>

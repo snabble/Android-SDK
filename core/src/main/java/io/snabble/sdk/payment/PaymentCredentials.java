@@ -38,6 +38,8 @@ import io.snabble.sdk.Environment;
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.R;
 import io.snabble.sdk.Snabble;
+import io.snabble.sdk.payment.data.GiropayAuthorizationData;
+import io.snabble.sdk.payment.data.GiropayData;
 import io.snabble.sdk.payment.externalbilling.data.ExternalBillingPaymentCredentials;
 import io.snabble.sdk.payment.payone.sepa.PayoneSepaData;
 import io.snabble.sdk.utils.GsonHolder;
@@ -57,7 +59,7 @@ public class PaymentCredentials {
         @Deprecated
         CREDIT_CARD(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
         CREDIT_CARD_PSD2(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
-        PAYDIREKT(null, false, Collections.singletonList(PaymentMethod.PAYDIREKT)),
+        GIROPAY(null, false, Collections.singletonList(PaymentMethod.GIROPAY)),
         TEGUT_EMPLOYEE_CARD("tegutEmployeeID", false, Collections.singletonList(PaymentMethod.TEGUT_EMPLOYEE_CARD)),
         LEINWEBER_CUSTOMER_ID("leinweberCustomerID", false, Collections.singletonList(PaymentMethod.LEINWEBER_CUSTOMER_ID)),
         DATATRANS("datatransAlias", true, Arrays.asList(PaymentMethod.TWINT, PaymentMethod.POST_FINANCE_CARD)),
@@ -146,12 +148,6 @@ public class PaymentCredentials {
         private String cardType;
     }
 
-    private static class PaydirektData {
-        private String clientID;
-        private String customerAuthorizationURI;
-        private PaydirektAuthorizationData authorizationData;
-    }
-
     private static class DatatransData {
         private String alias;
         private String expiryMonth;
@@ -168,17 +164,6 @@ public class PaymentCredentials {
         private final String pseudoCardPAN;
         private final String name;
         private final String userID;
-    }
-
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
-    public static class PaydirektAuthorizationData {
-        public String id;
-        public String name;
-        public String ipAddress;
-        public String fingerprint;
-        public String redirectUrlAfterSuccess;
-        public String redirectUrlAfterCancellation;
-        public String redirectUrlAfterFailure;
     }
 
     private static class TegutEmployeeCard {
@@ -395,27 +380,28 @@ public class PaymentCredentials {
     /**
      * Encrypts and stores a paydirekt authorization token.
      */
-    public static PaymentCredentials fromPaydirekt(PaydirektAuthorizationData authorizationData, String customerAuthorizationURI) {
+    public static PaymentCredentials fromGiropay(GiropayAuthorizationData authorizationData, String customerAuthorizationURI) {
         if (customerAuthorizationURI == null) {
             return null;
         }
 
         PaymentCredentials pc = new PaymentCredentials();
         pc.generateId();
-        pc.type = Type.PAYDIREKT;
+        pc.type = Type.GIROPAY;
 
         List<X509Certificate> certificates = Snabble.getInstance().getPaymentCertificates();
         if (certificates.size() == 0) {
             return null;
         }
 
-        pc.obfuscatedId = "paydirekt";
+        pc.obfuscatedId = "giropay";
+        GiropayData data = new GiropayData(
+                Snabble.getInstance().getClientId(),
+                customerAuthorizationURI,
+                null
+        );
 
-        PaydirektData paydirektData = new PaydirektData();
-        paydirektData.clientID = Snabble.getInstance().getClientId();
-        paydirektData.customerAuthorizationURI = customerAuthorizationURI;
-
-        String json = GsonHolder.get().toJson(paydirektData, PaydirektData.class);
+        String json = GsonHolder.get().toJson(data, GiropayData.class);
 
         X509Certificate certificate = certificates.get(0);
         pc.rsaEncryptedData = pc.rsaEncrypt(certificate, json.getBytes());
@@ -908,8 +894,8 @@ public class PaymentCredentials {
             return PaymentMethod.TEGUT_EMPLOYEE_CARD;
         } else if (type == Type.LEINWEBER_CUSTOMER_ID) {
             return PaymentMethod.LEINWEBER_CUSTOMER_ID;
-        } else if (type == Type.PAYDIREKT) {
-            return PaymentMethod.PAYDIREKT;
+        } else if (type == Type.GIROPAY) {
+            return PaymentMethod.GIROPAY;
         } else if (type == Type.EXTERNAL_BILLING) {
             return PaymentMethod.EXTERNAL_BILLING;
         } else if (type == Type.CREDIT_CARD_PSD2

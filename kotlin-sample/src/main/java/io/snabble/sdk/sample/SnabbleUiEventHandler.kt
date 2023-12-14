@@ -44,9 +44,9 @@ fun setUpUiEvents(activity: AppCompatActivity, navController: NavController, bot
     }
     SnabbleUI.setUiAction(
         activity,
-        SnabbleUI.Event.SHOW_PAYDIREKT_INPUT
+        SnabbleUI.Event.SHOW_GIROPAY_INPUT
     ) { _, args ->
-        navController.navigate(R.id.navigation_paydirekt_input, args)
+        navController.navigate(R.id.navigation_giropay_input, args)
     }
     SnabbleUI.setUiAction(
         activity,
