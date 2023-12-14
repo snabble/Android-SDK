@@ -162,7 +162,6 @@ public class CheckoutOfflineView extends FrameLayout {
         dialog.getWindow().setGravity(Gravity.BOTTOM);
 
         dialog.findViewById(R.id.ok).setOnClickListener(v -> {
-            project.getCheckout().approveOfflineMethod();
             Telemetry.event(Telemetry.Event.CheckoutFinishByUser);
             dialog.dismiss();
         });
