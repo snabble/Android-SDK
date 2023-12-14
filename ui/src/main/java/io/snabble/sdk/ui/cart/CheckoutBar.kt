@@ -372,6 +372,7 @@ open class CheckoutBar @JvmOverloads constructor(
             CheckoutState.WAIT_FOR_SUPERVISOR,
             CheckoutState.WAIT_FOR_APPROVAL,
             CheckoutState.PAYMENT_APPROVED,
+            CheckoutState.PAYMENT_TRANSFERRED,
             CheckoutState.DENIED_BY_PAYMENT_PROVIDER,
             CheckoutState.DENIED_BY_SUPERVISOR,
             CheckoutState.PAYMENT_PROCESSING -> {
@@ -465,7 +466,6 @@ open class CheckoutBar @JvmOverloads constructor(
                     .show()
                 progressDialog.dismiss()
             }
-
             else -> {
                 Logger.d("Unhandled event in CheckoutBar: $state")
             }

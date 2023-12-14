@@ -577,7 +577,6 @@ class Checkout @JvmOverloads constructor(
 
                 CheckState.TRANSFERRED -> {
                     notifyStateChanged(CheckoutState.PAYMENT_TRANSFERRED)
-                    approveOfflineMethod()
                 }
 
                 CheckState.FAILED -> {
