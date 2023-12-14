@@ -81,6 +81,13 @@
     <string name="Snabble.DynamicView.Shop.show">Üzletek mutatása</string>
     <string name="Snabble.DynamicView.StartShopping.button">Vásárolj be most itt</string>
     <string name="Snabble.edit">Szerkesztés</string>
+    <string name="Snabble.Giropay.AuthorizationFailed.message">Kérlek, próbáld meg később még egyszer</string>
+    <string name="Snabble.Giropay.AuthorizationFailed.title">Nem sikerült az azonosítás</string>
+    <string name="Snabble.Giropay.deleteAuthorization">Fizetési mód törlése</string>
+    <string name="Snabble.Giropay.gotoWebsite">A giropay.de oldalra</string>
+    <string name="Snabble.Giropay.payNow">Fizetés giropay tel</string>
+    <string name="Snabble.Giropay.savedAuthorization">A Snabble alkalmazást sikeresen bejelentetted a giropayre. Visszavonásához a giropay fiókadataiddal be kell jelentkezned a honlapon. Ha nem szeretnéd, hogy a giropay a fizetési lehetőségeid között legyen, akkor itt egyszerűen eltávolíthatod.</string>
+    <string name="Snabble.Giropay.title">giropay</string>
     <string name="Snabble.goToSettings">A beállításokhoz</string>
     <string name="Snabble.Hints.closedBags">Csak így tovább! Kérjük, könnyítsd meg a pénztáros munkáját, és ne csomagold közvetlenül lezárt tasakba a termékedet. Köszönjük!</string>
     <string name="Snabble.Hints.continueScanning">Szkennelés folytatása</string>
@@ -103,13 +110,6 @@
     <string name="Snabble.Onboarding.done">Kész</string>
     <string name="Snabble.Onboarding.Link.show">Megtekintés</string>
     <string name="Snabble.Onboarding.next">Tovább</string>
-    <string name="Snabble.Paydirekt.AuthorizationFailed.message">Kérlek, próbáld meg később még egyszer</string>
-    <string name="Snabble.Paydirekt.AuthorizationFailed.title">Nem sikerült az azonosítás</string>
-    <string name="Snabble.Paydirekt.deleteAuthorization">Fizetési mód törlése</string>
-    <string name="Snabble.Paydirekt.gotoWebsite">A paydirekt.de oldalra</string>
-    <string name="Snabble.Paydirekt.payNow">Fizetés paydirekttel</string>
-    <string name="Snabble.Paydirekt.savedAuthorization">A Snabble alkalmazást sikeresen bejelentetted a paydirektre. Visszavonásához a paydirekt fiókadataiddal be kell jelentkezned a honlapon. Ha nem szeretnéd, hogy a paydirekt a fizetési lehetőségeid között legyen, akkor itt egyszerűen eltávolíthatod.</string>
-    <string name="Snabble.Paydirekt.title">paydirekt</string>
     <!-- SECTION: SnabbleAndroid -->
     <string name="Snabble.Payment.aborted">Megszakadt a fizetési folyamat</string>
     <string name="Snabble.Payment.add">Fizetési mód hozzáadása</string>
@@ -313,7 +313,6 @@
     <string name="Snabble.SEPA.mandate">SEPA terhelési megbízás</string>
     <string name="Snabble.SEPA.payNow">Fizetés SEPA segítségével</string>
     <string name="Snabble.SEPA.scoTransferHint">Add meg a kártyán látható nevet, hogy a fizetések lebonyolításához közvetlenül eltárolásra kerülhessen az alkalmazásban.</string>
-    <string name="Snabble.Settings">Beállítások</string>
     <!-- <street and house number> in <ZIP code> <city name> -->
     <string name="Snabble.Shop.Address.accessibility">%1$s %2$s %3$s-ban</string>
     <string name="Snabble.Shop.Detail.openingHours">Nyitvatartási idők</string>

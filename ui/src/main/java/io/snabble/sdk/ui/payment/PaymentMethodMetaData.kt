@@ -11,7 +11,7 @@ import io.snabble.sdk.PaymentMethod.GATEKEEPER_TERMINAL
 import io.snabble.sdk.PaymentMethod.GOOGLE_PAY
 import io.snabble.sdk.PaymentMethod.LEINWEBER_CUSTOMER_ID
 import io.snabble.sdk.PaymentMethod.MASTERCARD
-import io.snabble.sdk.PaymentMethod.PAYDIREKT
+import io.snabble.sdk.PaymentMethod.GIROPAY
 import io.snabble.sdk.PaymentMethod.PAYONE_SEPA
 import io.snabble.sdk.PaymentMethod.POST_FINANCE_CARD
 import io.snabble.sdk.PaymentMethod.QRCODE_OFFLINE
@@ -20,11 +20,11 @@ import io.snabble.sdk.PaymentMethod.TEGUT_EMPLOYEE_CARD
 import io.snabble.sdk.PaymentMethod.TWINT
 import io.snabble.sdk.PaymentMethod.VISA
 import io.snabble.sdk.ui.R.drawable.ic_snabble_external_billing
+import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_giropay
 import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_amex
 import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_gpay
 import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_leinweber
 import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_mastercard
-import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_paydirekt
 import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_pos
 import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_postfinance
 import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_sco
@@ -32,6 +32,7 @@ import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_sepa
 import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_tegut
 import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_twint
 import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_visa
+import io.snabble.sdk.ui.R.string.Snabble_Giropay_title
 import io.snabble.sdk.ui.R.string.Snabble_Payment_ExternalBilling_title
 import io.snabble.sdk.ui.R.string.Snabble_Payment_payAtCashDesk
 import io.snabble.sdk.ui.R.string.Snabble_Payment_payAtSCO
@@ -48,7 +49,7 @@ class PaymentMethodMetaDataHelper(
         AMEX withMeta ("American Express" to snabble_ic_payment_select_amex),
         TWINT withMeta ("Twint" to snabble_ic_payment_select_twint),
         POST_FINANCE_CARD withMeta ("PostFinance Card" to snabble_ic_payment_select_postfinance),
-        PAYDIREKT withMeta ("Paydirekt" to snabble_ic_payment_select_paydirekt),
+        GIROPAY withMeta (Snabble_Giropay_title.resolved to snabble_ic_payment_giropay),
         PAYONE_SEPA withMeta ("SEPA-Lastschrift" to snabble_ic_payment_select_sepa),
         GATEKEEPER_TERMINAL withMeta (Snabble_Payment_payAtSCO.resolved to snabble_ic_payment_select_sco),
         EXTERNAL_BILLING withMeta (Snabble_Payment_ExternalBilling_title.resolved to ic_snabble_external_billing),

@@ -124,7 +124,7 @@ enum class PaymentMethod(
     ),
 
     @SerializedName("paydirektOneKlick")
-    PAYDIREKT(
+    GIROPAY(
         id = "paydirektOneKlick",
         isOfflineMethod = false,
         isRequiringCredentials = true,

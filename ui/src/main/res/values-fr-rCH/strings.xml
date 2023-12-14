@@ -85,6 +85,13 @@
     <string name="Snabble.DynamicView.Shop.show">Show stores</string>
     <string name="Snabble.DynamicView.StartShopping.button">Start shopping</string>
     <string name="Snabble.edit">Éditer</string>
+    <string name="Snabble.Giropay.AuthorizationFailed.message">Merci de réessayer plus tard</string>
+    <string name="Snabble.Giropay.AuthorizationFailed.title">Échec de l’autorisation</string>
+    <string name="Snabble.Giropay.deleteAuthorization">Supprimer le mode de paiement</string>
+    <string name="Snabble.Giropay.gotoWebsite">Vers giropay.de</string>
+    <string name="Snabble.Giropay.payNow">Payer maintenant avec giropay</string>
+    <string name="Snabble.Giropay.savedAuthorization">Tu as autorisé avec succès l’application Snabble pour giropay. Pour l’annuler, tu devras te connecter à ton compte giropay sur le site Web. Si tu ne souhaites plus que giropay s’affiche comme mode de paiement, tu peux simplement le supprimer ici.</string>
+    <string name="Snabble.Giropay.title">giropay</string>
     <string name="Snabble.goToSettings">Vers les paramètres</string>
     <string name="Snabble.Hints.closedBags">Continue comme ça ! Merci de faciliter la tâche au personnel de caisse et de ne pas emballer tes articles directement dans des sacs fermés. Merci !</string>
     <string name="Snabble.Hints.continueScanning">Continuer à scanner</string>
@@ -107,13 +114,6 @@
     <string name="Snabble.Onboarding.done">Done</string>
     <string name="Snabble.Onboarding.Link.show">Show</string>
     <string name="Snabble.Onboarding.next">Continue</string>
-    <string name="Snabble.Paydirekt.AuthorizationFailed.message">Merci de réessayer plus tard</string>
-    <string name="Snabble.Paydirekt.AuthorizationFailed.title">Échec de l’autorisation</string>
-    <string name="Snabble.Paydirekt.deleteAuthorization">Supprimer le mode de paiement</string>
-    <string name="Snabble.Paydirekt.gotoWebsite">Vers paydirekt.de</string>
-    <string name="Snabble.Paydirekt.payNow">Payer maintenant avec paydirekt</string>
-    <string name="Snabble.Paydirekt.savedAuthorization">Tu as autorisé avec succès l’application Snabble pour paydirekt. Pour l’annuler, tu devras te connecter à ton compte paydirekt sur le site Web. Si tu ne souhaites plus que paydirekt s’affiche comme mode de paiement, tu peux simplement le supprimer ici.</string>
-    <string name="Snabble.Paydirekt.title">paydirekt</string>
     <!-- SECTION: SnabbleAndroid -->
     <string name="Snabble.Payment.aborted">Le processus de paiement a été annulé</string>
     <string name="Snabble.Payment.add">Ajouter une procédure de paiement</string>
@@ -317,7 +317,6 @@
     <string name="Snabble.SEPA.mandate">Mandat de débit SEPA</string>
     <string name="Snabble.SEPA.payNow">Payer maintenant par SEPA</string>
     <string name="Snabble.SEPA.scoTransferHint">Merci de saisir ton nom sur la carte afin de pouvoir l’enregistrer directement à l’aide de l’application pour les paiements.</string>
-    <string name="Snabble.Settings">Paramètres</string>
     <!-- <street and house number> in <ZIP code> <city name> -->
     <string name="Snabble.Shop.Address.accessibility">%1$s in %2$s %3$s</string>
     <string name="Snabble.Shop.Detail.openingHours">Opening hours</string>

@@ -221,7 +221,7 @@ object Snabble {
     /**
      * Url for generating payone web form authentication challenges
      */
-    var paydirektAuthUrl: String? = null
+    var giropayAuthUrl: String? = null
         private set
 
     /**
@@ -525,7 +525,7 @@ object Snabble {
             createAppUserUrl = getUrl(jsonObject, "createAppUser")
             telecashSecretUrl = getUrl(jsonObject, "telecashSecret")
             telecashPreAuthUrl = getUrl(jsonObject, "telecashPreauth")
-            paydirektAuthUrl = getUrl(jsonObject, "paydirektCustomerAuthorization")
+            giropayAuthUrl = getUrl(jsonObject, "paydirektCustomerAuthorization")
             if (jsonObject.has("brands")) {
                 parseBrands(jsonObject)
             }

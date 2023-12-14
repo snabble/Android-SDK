@@ -3,9 +3,21 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
-### Changed
+### Changed 
 ### Removed
 ### Fixed
+
+## [0.72.0]
+### Changed
+* core/ui : Update icons and description from paydirekt to GiroPay
+  * The use of the following functions changed:
+    * PaydirektInputActivity/Fragment/View changed to GirpayInputActivity/Fragment/View
+    * PaymentCredentials.fromPaydirekt(...)  changed to PaymentCredentials.fromGiropay(...)
+    * PaydirektAuthorizationData changed to GiropayAuthorizationData and is now a data class
+    * PaydirektData changed to GiropayData and is now a data class
+    * The UI event for paydirekt changed from SHOW_PAYDIREKT_INPUT to SHOW_GIROPAY_INPUT
+* ### Fixed
+* ui: Fixed crash caused by missing project id when calling the PaydirektInputFragment via the PaymentInputViewHelper
 
 ## [0.71.8]
 ### Changed
