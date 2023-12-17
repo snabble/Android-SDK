@@ -169,10 +169,6 @@ public class PaymentCredentials {
         private String cardNumber;
     }
 
-    private static class LeinweberCustomerId {
-        private String cardNumber;
-    }
-
     private String obfuscatedId;
     // comes from previously saved data on deserialization - was used in encrypt() from old code
     private boolean isKeyStoreEncrypted;
