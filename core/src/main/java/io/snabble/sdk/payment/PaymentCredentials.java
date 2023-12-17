@@ -61,7 +61,6 @@ public class PaymentCredentials {
         CREDIT_CARD_PSD2(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
         GIROPAY(null, false, Collections.singletonList(PaymentMethod.GIROPAY)),
         TEGUT_EMPLOYEE_CARD("tegutEmployeeID", false, Collections.singletonList(PaymentMethod.TEGUT_EMPLOYEE_CARD)),
-        LEINWEBER_CUSTOMER_ID("leinweberCustomerID", false, Collections.singletonList(PaymentMethod.LEINWEBER_CUSTOMER_ID)),
         DATATRANS("datatransAlias", true, Arrays.asList(PaymentMethod.TWINT, PaymentMethod.POST_FINANCE_CARD)),
         DATATRANS_CREDITCARD("datatransCreditCardAlias", true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
         PAYONE_CREDITCARD(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
@@ -560,44 +559,6 @@ public class PaymentCredentials {
     }
 
     /**
-     * Encrypts and stores a leinweber customer id.
-     */
-    public static PaymentCredentials fromLeinweberCustomerId(String obfuscatedId, String cardNumber, String projectId) {
-        if (cardNumber == null || cardNumber.length() != 6) {
-            return null;
-        }
-
-        PaymentCredentials pc = new PaymentCredentials();
-        pc.generateId();
-        pc.type = Type.LEINWEBER_CUSTOMER_ID;
-
-        List<X509Certificate> certificates = Snabble.getInstance().getPaymentCertificates();
-        if (certificates.size() == 0) {
-            return null;
-        }
-
-        pc.obfuscatedId = obfuscatedId;
-
-        X509Certificate certificate = certificates.get(0);
-
-        LeinweberCustomerId data = new LeinweberCustomerId();
-        data.cardNumber = cardNumber;
-        String json = GsonHolder.get().toJson(data, LeinweberCustomerId.class);
-
-        pc.rsaEncryptedData = pc.rsaEncrypt(certificate, json.getBytes());
-        pc.signature = pc.sha256Signature(certificate);
-        pc.brand = Brand.UNKNOWN;
-        pc.appId = Snabble.getInstance().getConfig().appId;
-        pc.projectId = projectId;
-
-        if (pc.rsaEncryptedData == null) {
-            return null;
-        }
-
-        return pc;
-    }
-
-    /**
      * Returns the type of the payment credentials
      */
     public Type getType() {
@@ -892,8 +853,6 @@ public class PaymentCredentials {
             return PaymentMethod.PAYONE_SEPA;
         } else if (type == Type.TEGUT_EMPLOYEE_CARD) {
             return PaymentMethod.TEGUT_EMPLOYEE_CARD;
-        } else if (type == Type.LEINWEBER_CUSTOMER_ID) {
-            return PaymentMethod.LEINWEBER_CUSTOMER_ID;
         } else if (type == Type.GIROPAY) {
             return PaymentMethod.GIROPAY;
         } else if (type == Type.EXTERNAL_BILLING) {

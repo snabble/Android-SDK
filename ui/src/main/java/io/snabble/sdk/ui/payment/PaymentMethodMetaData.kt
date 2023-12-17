@@ -8,10 +8,9 @@ import io.snabble.sdk.PaymentMethod.CUSTOMERCARD_POS
 import io.snabble.sdk.PaymentMethod.DE_DIRECT_DEBIT
 import io.snabble.sdk.PaymentMethod.EXTERNAL_BILLING
 import io.snabble.sdk.PaymentMethod.GATEKEEPER_TERMINAL
-import io.snabble.sdk.PaymentMethod.GOOGLE_PAY
-import io.snabble.sdk.PaymentMethod.LEINWEBER_CUSTOMER_ID
-import io.snabble.sdk.PaymentMethod.MASTERCARD
 import io.snabble.sdk.PaymentMethod.GIROPAY
+import io.snabble.sdk.PaymentMethod.GOOGLE_PAY
+import io.snabble.sdk.PaymentMethod.MASTERCARD
 import io.snabble.sdk.PaymentMethod.PAYONE_SEPA
 import io.snabble.sdk.PaymentMethod.POST_FINANCE_CARD
 import io.snabble.sdk.PaymentMethod.QRCODE_OFFLINE
@@ -23,7 +22,6 @@ import io.snabble.sdk.ui.R.drawable.ic_snabble_external_billing
 import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_giropay
 import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_amex
 import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_gpay
-import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_leinweber
 import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_mastercard
 import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_pos
 import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_postfinance
@@ -54,7 +52,6 @@ class PaymentMethodMetaDataHelper(
         GATEKEEPER_TERMINAL withMeta (Snabble_Payment_payAtSCO.resolved to snabble_ic_payment_select_sco),
         EXTERNAL_BILLING withMeta (Snabble_Payment_ExternalBilling_title.resolved to ic_snabble_external_billing),
         TEGUT_EMPLOYEE_CARD withMeta ("Tegut... Mitarbeiterkarte" to snabble_ic_payment_select_tegut),
-        LEINWEBER_CUSTOMER_ID withMeta ("Leinweber Rechnungskauf" to snabble_ic_payment_select_leinweber),
         CUSTOMERCARD_POS withMeta (Snabble_Payment_payAtCashDesk.resolved to snabble_ic_payment_select_pos),
         QRCODE_POS withMeta (Snabble_Payment_payAtCashDesk.resolved to snabble_ic_payment_select_pos),
         QRCODE_OFFLINE withMeta (Snabble_Payment_payAtCashDesk.resolved to snabble_ic_payment_select_pos),
