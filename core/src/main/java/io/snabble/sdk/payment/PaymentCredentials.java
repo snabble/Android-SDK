@@ -557,11 +557,8 @@ public class PaymentCredentials {
     /**
      * Returns the type of the payment credentials
      */
+    @Nullable
     public Type getType() {
-        if (type == null) { // backwards compatibility
-            return Type.SEPA;
-        }
-
         return type;
     }
 
