@@ -155,9 +155,6 @@ class CheckoutActivity : FragmentActivity() {
                         PaymentMethod.QRCODE_POS -> {
                             R.id.snabble_nav_checkout_pos
                         }
-                        PaymentMethod.QRCODE_OFFLINE -> {
-                            R.id.snabble_nav_checkout_offline
-                        }
                         else -> {
                             R.id.snabble_nav_payment_status
                         }
@@ -190,6 +187,11 @@ class CheckoutActivity : FragmentActivity() {
             CheckoutState.PAYONE_SEPA_MANDATE_REQUIRED -> {
                 R.id.snabble_nav_payment_payone_sepa_mandate
             }
+
+            CheckoutState.PAYMENT_TRANSFERRED -> {
+                R.id.snabble_nav_checkout_offline
+            }
+
             else -> R.id.snabble_nav_payment_status
         }
     }
