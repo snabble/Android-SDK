@@ -96,15 +96,6 @@ enum class PaymentMethod(
         needsAbortConfirmation = true
     ),
 
-    @SerializedName("externalBilling")
-    LEINWEBER_CUSTOMER_ID(
-        id = "externalBilling",
-        isOfflineMethod = false,
-        isRequiringCredentials = true,
-        isShowOnlyIfCredentialsArePresent = true,
-        needsAbortConfirmation = true
-    ),
-
     @SerializedName("customerCardPOS")
     CUSTOMERCARD_POS(
         id = "customerCardPOS",
@@ -204,7 +195,6 @@ enum class PaymentMethod(
                 if (pm.id == id && pm.id == TEGUT_EMPLOYEE_CARD.id) {
                     when (origin[0]) {
                         "tegutEmployeeID" -> return TEGUT_EMPLOYEE_CARD
-                        "leinweberCustomerID" -> return LEINWEBER_CUSTOMER_ID
                         "contactPersonCredentials" -> return EXTERNAL_BILLING
                     }
                 } else if (pm.id == id && pm.id == PAYONE_SEPA.id) {

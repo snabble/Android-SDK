@@ -299,7 +299,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
                 .show()
         } else {
             Snabble.paymentCredentialsStore.add(pc)
-            Telemetry.event(Telemetry.Event.PaymentMethodAdded, pc.type.name)
+            Telemetry.event(Telemetry.Event.PaymentMethodAdded, pc.type?.name)
         }
         finish()
     }

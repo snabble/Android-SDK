@@ -19,9 +19,12 @@ All notable changes to this project will be documented in this file.
     * PaydirektAuthorizationData changed to GiropayAuthorizationData and is now a data class
     * PaydirektData changed to GiropayData and is now a data class
     * The UI event for paydirekt changed from SHOW_PAYDIREKT_INPUT to SHOW_GIROPAY_INPUT
-* ### Fixed
+* core: Paymentcredentials type is now nullable
+### Fixed
 * ui: Fixed crash caused by missing project id when calling the PaydirektInputFragment via the PaymentInputViewHelper
 * ui: Fixed crash caused by npe in the PaymentStatusView
+### Removed
+* core/ui: Removed LEINWEBER_CUSTOMER_ID as payment methods 
 
 ## [0.71.8]
 ### Changed
