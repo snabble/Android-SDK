@@ -120,6 +120,7 @@ enum class CheckState {
     @SerializedName("pending") PENDING,
     @SerializedName("processing")  PROCESSING,
     @SerializedName("successful") SUCCESSFUL,
+    @SerializedName("transferred") TRANSFERRED,
     @SerializedName("failed") FAILED
 }
 

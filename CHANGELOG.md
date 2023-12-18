@@ -8,6 +8,9 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 ## [0.72.0]
+### Added
+* core: Add missing payment state transferred
+  * if the checkout process receives the final state transferred it updates the checkout state with PAYMENT_TRANSFERRED.
 ### Changed
 * core/ui : Update icons and description from paydirekt to GiroPay
   * The use of the following functions changed:
@@ -19,6 +22,7 @@ All notable changes to this project will be documented in this file.
 * core: Paymentcredentials type is now nullable
 ### Fixed
 * ui: Fixed crash caused by missing project id when calling the PaydirektInputFragment via the PaymentInputViewHelper
+* ui: Fixed crash caused by npe in the PaymentStatusView
 ### Removed
 * core/ui: Removed LEINWEBER_CUSTOMER_ID as payment methods 
 
