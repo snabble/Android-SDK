@@ -260,7 +260,7 @@ public class PaymentCredentialsStore {
         if (json != null) {
             try {
                 data = gson.fromJson(json, Data.class);
-                data.credentialsList = Helper.filterValidTypes(data.credentialsList);
+                data.credentialsList = PaymentUtils.filterValidTypes(data.credentialsList);
                 save();
             } catch (Exception e) {
                 Logger.errorEvent("Could not read payment credentials: %s", e.getMessage());
