@@ -21,6 +21,7 @@ io.snabble.sdk.events.data.payload
 io.snabble.sdk.extensions
 io.snabble.sdk.googlepay
 io.snabble.sdk.payment
+io.snabble.sdk.payment.data
 io.snabble.sdk.payment.externalbilling
 io.snabble.sdk.payment.externalbilling.data
 io.snabble.sdk.payment.payone.sepa
