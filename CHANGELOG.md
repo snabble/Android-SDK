@@ -21,6 +21,7 @@ All notable changes to this project will be documented in this file.
     * The UI event for paydirekt changed from SHOW_PAYDIREKT_INPUT to SHOW_GIROPAY_INPUT
 * ### Fixed
 * ui: Fixed crash caused by missing project id when calling the PaydirektInputFragment via the PaymentInputViewHelper
+* ui: Fixed crash caused by npe in the PaymentStatusView
 
 ## [0.71.8]
 ### Changed
