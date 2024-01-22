@@ -235,11 +235,27 @@
     <string name="Snabble.PaymentStatus.Tobacco.message">Zober si svoje cigarety, prosím.</string>
     <string name="Snabble.PaymentStatus.Tobacco.title">Vydávanie cigariet</string>
     <string name="Snabble.Payone.cardNumber">Číslo karty</string>
+    <!-- Disabled country choose hint for the Payone Credit Card Input View -->
+    <string name="Snabble.Payone.chooseCountry">Please select the country</string>
+    <!-- Disabled state choose hint for the Payone Credit Card Input View -->
+    <string name="Snabble.Payone.chooseState">Please select the state</string>
+    <!-- City for the Payone Credit Card Input View -->
+    <string name="Snabble.Payone.city">City</string>
+    <!-- Country for the Payone Credit Card Input View -->
+    <string name="Snabble.Payone.country">Country</string>
     <string name="Snabble.Payone.cvc">Kontrolné číslo (CVC)</string>
+    <!-- Email for the Payone Credit Card Input View -->
+    <string name="Snabble.Payone.email">E-Mail</string>
     <string name="Snabble.Payone.expireMonth">Koniec platnosti – mesiac (MM)</string>
     <string name="Snabble.Payone.expireYear">Koniec platnosti – rok (RRRR)</string>
     <string name="Snabble.Payone.incompleteForm">Vyplň formulár úplne, prosím.</string>
     <string name="Snabble.Payone.lastname">Priezvisko</string>
+    <!-- State for the Payone Credit Card Input View -->
+    <string name="Snabble.Payone.state">State</string>
+    <!-- Street and Housenumber for the Payone Credit Card Input View -->
+    <string name="Snabble.Payone.street">Street</string>
+    <!-- Zip for the Payone Credit Card Input View -->
+    <string name="Snabble.Payone.zip">Zip</string>
     <string name="Snabble.pleaseWait">Čakaj, prosím...</string>
     <string name="Snabble.PostFinanceCard.payNow">Zaplatiť kartou PostFinance teraz</string>
     <string name="Snabble.QRCode.codeXofY">Kód %1$d z %2$d</string>
