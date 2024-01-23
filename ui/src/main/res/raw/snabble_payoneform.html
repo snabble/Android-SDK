@@ -83,11 +83,15 @@ input:focus {
   box-shadow: none;
 }
 .halves {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 1rem;
 }
-.half {
-    flex-grow: 1
+.fifths {
+    display: grid;
+    grid-template-columns: 5fr 1fr;
+    align-items: end;
+    gap: 1rem;
 }
 </style>
 <script type="text/javascript">
@@ -132,52 +136,52 @@ function processResponse(response) {
         response.country,
         response.state,
         response.email
-        )
+    )
 }
 </script>
 <script src="https://secure.pay1.de/client-api/js/v1/payone_hosted.js"></script>
 </head>
 <body>
 <form action="#" method="post">
-    <div class="form-group">
-        <label for="name">{{lastname}}</label>
-        <div class="payone-input-mock">
-            <input
-                    type="text"
-                    id="name" />
+    <div class="form-group fifths">
+        <div class="form-group">
+            <label for="payone-cc-pan">{{cardNumberLabel}}</label>
+            <div class="payone-input-mock payone-input-mock--pan">
+                <!-- Mount element for PAN IFrame. -->
+                <span id="payone-cc-pan"></span>
+            </div>
         </div>
-    </div>
 
-    <div class="form-group">
-        <label for="payone-cc-pan">{{cardNumberLabel}}</label>
-        <div class="payone-input-mock payone-input-mock--pan">
-            <!-- Mount element for PAN IFrame. -->
-            <span id="payone-cc-pan"></span>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label for="payone-cc-cvc">{{cvcLabel}}</label>
-        <div class="payone-input-mock payone-input-mock--cvc">
-            <!-- Mount element for CVC IFrame. -->
-            <span id="payone-cc-cvc"></span>
+        <div class="form-group">
+            <label for="payone-cc-cvc">{{cvcLabel}}</label>
+            <div class="payone-input-mock payone-input-mock--cvc">
+                <!-- Mount element for CVC IFrame. -->
+                <span id="payone-cc-cvc"></span>
+            </div>
         </div>
     </div>
 
     <div class="form-group halves">
-        <div class="half">
+        <div class="form-group">
             <label for="payone-cc-expire-month">{{expireMonthLabel}}</label>
             <div class="payone-input-mock payone-input-mock--expire-month">
                 <!-- Mount element for card expire month IFrame. -->
                 <span id="payone-cc-expire-month"></span>
             </div>
         </div>
-        <div class="half">
+        <div class="form-group">
             <label for="payone-cc-expire-year">{{expireYearLabel}}</label>
             <div class="payone-input-mock payone-input-mock--expire-year">
                 <!-- Mount element for card expire year IFrame. -->
                 <span id="payone-cc-expire-year"></span>
             </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="name">{{name}}</label>
+        <div class="payone-input-mock">
+            <input type="text" id="name" />
         </div>
     </div>
 
@@ -207,7 +211,7 @@ function processResponse(response) {
         <label for="country">{{country}}</label>
         <div class="payone-input-mock">
             <select id="countrySelect" name="country" class="form-control">
-                <option disabled>{{choose_country}}</option>
+                <option disabled>{{countryHint}}</option>
             </select>
         </div>
     </div>
@@ -298,7 +302,6 @@ PayoneAutoCcDetection.prototype._creditCardCheckCallback = function (response) {
             let country = document.getElementById('countrySelect').value;
             let state = document.getElementById('stateSelect').value;
             let email = document.getElementById('email').value;
-            console.log("Card details: " + street + ", " + zip + ", " + city + ", " + country + ", " + state + ", " + email)
             processResponse({
                 pseudoCardPan: response.pseudocardpan,
                 truncatedCardPan: response.truncatedcardpan,
@@ -325,8 +328,24 @@ PayoneAutoCcDetection.prototype._creditCardCheckCallback = function (response) {
 
 PayoneAutoCcDetection.prototype.performCreditCardCheck = function () {
     console.log("performCheck");
-    var name = document.getElementById('name').value
-    if (this._hostedIframe.isComplete() && name != "") {
+    let name = document.getElementById('name').value;
+    let street = document.getElementById('street').value;
+    let zip = document.getElementById('zip').value;
+    let city = document.getElementById('city').value;
+    let countrySelect = document.getElementById('countrySelect');
+    let stateSelect = document.getElementById('stateSelect');
+    let email = document.getElementById('email').value;
+    let stateNeeded = !(stateSelect.getAttribute('disabled'))
+    console.log("foo: " + stateNeeded + ", state index: <" + stateSelect.selectedIndex + ">")
+    if (this._hostedIframe.isComplete() &&
+        name != "" &&
+        street != "" &&
+        zip != "" &&
+        city != "" &&
+        countrySelect.selectedIndex > 0 &&
+        (stateNeeded ? stateSelect.selectedIndex > 0 : true) &&
+        email != ""
+    ) {
         console.log("complete!");
         this._hostedIframe.creditCardCheck(this._creditCardCheckCallbackName);
     }
@@ -403,6 +422,7 @@ autoCcDetection.setInitialCardType("{{supportedCardType}}");
 // Country and State (subdivision) support //
 /////////////////////////////////////////////
 
+// Source: https://docs.payone.com/pages/releaseview.action?pageId=1213959
 const countries = [
     { code: "AF", label: "Afghanistan" },
     { code: "AL", label: "Albania" },
@@ -647,6 +667,7 @@ const countries = [
     { code: "ZW", label: "Zimbabwe" },
 ];
 
+// Source: https://docs.payone.com/pages/releaseview.action?pageId=1213957
 const subdivisions = {
     US: [
         { code: "AL", label: "Alabama" },
@@ -1060,7 +1081,7 @@ function handleCountrySelect(countryCode) {
     if (!subdivisions[countryCode]) return
 
     const option = document.createElement('option')
-    option.textContent = '{{choose_state}}'
+    option.textContent = '{{stateHint}}'
     option.setAttribute('disabled', '')
     stateSelect.appendChild(option)
 
@@ -1085,7 +1106,9 @@ function countryOptions() {
 
     select.addEventListener('change', function() { handleCountrySelect(this.value); });
 
-    select.selectedIndex = countries.findIndex(country => country.code == 'DE') + 1
+    let localeCountryCode = '{{localeCountryCode}}'
+    select.selectedIndex = countries.findIndex(country => country.code == localeCountryCode) + 1
+    handleCountrySelect(localeCountryCode);
 }
 countryOptions();
 </script>

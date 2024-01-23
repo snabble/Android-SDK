@@ -470,6 +470,7 @@ public class PaymentCredentials {
     /**
      * Encrypts and stores a payone pseudo card pan.
      */
+    @Nullable
     public static PaymentCredentials fromPayone(String pseudocardpan,
                                                 String truncatedcardpan,
                                                 PaymentCredentials.Brand brand,

@@ -227,14 +227,12 @@
     <string name="Snabble.PaymentStatus.Tobacco.message">Vedd ki a cigarettáidat</string>
     <string name="Snabble.PaymentStatus.Tobacco.title">Cigaretta kiadása</string>
     <string name="Snabble.Payone.cardNumber">Kártyaszám</string>
-    <!-- Disabled country choose hint for the Payone Credit Card Input View -->
-    <string name="Snabble.Payone.chooseCountry">Please select the country</string>
-    <!-- Disabled state choose hint for the Payone Credit Card Input View -->
-    <string name="Snabble.Payone.chooseState">Please select the state</string>
     <!-- City for the Payone Credit Card Input View -->
     <string name="Snabble.Payone.city">City</string>
     <!-- Country for the Payone Credit Card Input View -->
     <string name="Snabble.Payone.country">Country</string>
+    <!-- Disabled country choose hint for the Payone Credit Card Input View -->
+    <string name="Snabble.Payone.countryHint">Please select the country</string>
     <string name="Snabble.Payone.cvc">Ellenőrző szám (CVC)</string>
     <!-- Email for the Payone Credit Card Input View -->
     <string name="Snabble.Payone.email">E-Mail</string>
@@ -244,6 +242,8 @@
     <string name="Snabble.Payone.lastname">Vezetéknév</string>
     <!-- State for the Payone Credit Card Input View -->
     <string name="Snabble.Payone.state">State</string>
+    <!-- Disabled state choose hint for the Payone Credit Card Input View -->
+    <string name="Snabble.Payone.stateHint">Please select the state</string>
     <!-- Street and Housenumber for the Payone Credit Card Input View -->
     <string name="Snabble.Payone.street">Street</string>
     <!-- Zip for the Payone Credit Card Input View -->
