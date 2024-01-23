@@ -295,13 +295,13 @@ PayoneAutoCcDetection.prototype._handleUnsupportedCardType = function () {
 PayoneAutoCcDetection.prototype._creditCardCheckCallback = function (response) {
     switch (response.status) {
         case 'VALID':
-            let name = document.getElementById('name').value;
-            let street = document.getElementById('street').value;
-            let zip = document.getElementById('zip').value;
-            let city = document.getElementById('city').value;
-            let country = document.getElementById('countrySelect').value;
-            let state = document.getElementById('stateSelect').value;
-            let email = document.getElementById('email').value;
+            const name = document.getElementById('name').value;
+            const street = document.getElementById('street').value;
+            const zip = document.getElementById('zip').value;
+            const city = document.getElementById('city').value;
+            const country = document.getElementById('countrySelect').value;
+            const state = document.getElementById('stateSelect').value;
+            const email = document.getElementById('email').value;
             processResponse({
                 pseudoCardPan: response.pseudocardpan,
                 truncatedCardPan: response.truncatedcardpan,
@@ -328,14 +328,14 @@ PayoneAutoCcDetection.prototype._creditCardCheckCallback = function (response) {
 
 PayoneAutoCcDetection.prototype.performCreditCardCheck = function () {
     console.log("performCheck");
-    let name = document.getElementById('name').value;
-    let street = document.getElementById('street').value;
-    let zip = document.getElementById('zip').value;
-    let city = document.getElementById('city').value;
-    let countrySelect = document.getElementById('countrySelect');
-    let stateSelect = document.getElementById('stateSelect');
-    let email = document.getElementById('email').value;
-    let stateNeeded = stateSelect.getAttribute('disabled')
+    const name = document.getElementById('name').value;
+    const street = document.getElementById('street').value;
+    const zip = document.getElementById('zip').value;
+    const city = document.getElementById('city').value;
+    const countrySelect = document.getElementById('countrySelect');
+    const stateSelect = document.getElementById('stateSelect');
+    const email = document.getElementById('email').value;
+    const stateNeeded = stateSelect.getAttribute('disabled')
     if (this._hostedIframe.isComplete() &&
         name != "" &&
         street != "" &&
@@ -1105,7 +1105,7 @@ function countryOptions() {
 
     select.addEventListener('change', function() { handleCountrySelect(this.value); });
 
-    let localeCountryCode = '{{localeCountryCode}}'
+    const localeCountryCode = '{{localeCountryCode}}'
     select.selectedIndex = countries.findIndex(country => country.code == localeCountryCode) + 1
     handleCountrySelect(localeCountryCode);
 }
