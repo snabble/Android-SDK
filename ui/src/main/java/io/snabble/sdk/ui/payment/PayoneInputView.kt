@@ -4,7 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.util.AttributeSet
-import android.webkit.*
+import android.webkit.CookieManager
+import android.webkit.JavascriptInterface
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -41,7 +46,7 @@ import java.io.IOException
 import java.math.BigDecimal
 import java.nio.charset.Charset
 import java.text.NumberFormat
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.CancellationException
 
 class PayoneInputView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) :
@@ -238,8 +243,19 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
     fun Any.toJsonRequest(): RequestBody =
         GsonHolder.get().toJson(this).toRequestBody("application/json".toMediaTypeOrNull())
 
-    private fun authenticate(creditCardInfo: CreditCardInfo) {
-        val req = Payone.PreAuthRequest(creditCardInfo.pseudocardpan, creditCardInfo.lastname)
+    private fun authenticate(card: CreditCardInfo) {
+        val req = Payone.PreAuthRequest(
+            pseudoCardPAN = card.pseudoCardPan,
+            lastname = card.name,
+            email = card.email,
+            address= Payone.PreAuthRequest.Address(
+                street = card.address.street,
+                zip = card.address.zip,
+                city = card.address.city,
+                country = card.address.country,
+                state = card.address.state,
+            )
+        )
         val link = tokenizationData.links["preAuth"]
         if (link?.href != null) {
             val request = Request.Builder()
@@ -287,18 +303,18 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
 
     private fun save(info: CreditCardInfo) {
         creditCardInfo = null
-        val ccBrand = when (info.cardtype) {
+        val ccBrand = when (info.cardType) {
             "V" -> PaymentCredentials.Brand.VISA
             "M" -> PaymentCredentials.Brand.MASTERCARD
             "A" -> PaymentCredentials.Brand.AMEX
             else -> PaymentCredentials.Brand.UNKNOWN
         }
         val pc = PaymentCredentials.fromPayone(
-            info.pseudocardpan,
-            info.truncatedcardpan,
+            info.pseudoCardPan,
+            info.truncatedCardPan,
             ccBrand,
-            info.cardexpiredate,
-            info.lastname,
+            info.cardExpiryDate,
+            info.name,
             info.userId,
             project.id
         )
@@ -339,31 +355,57 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
     }
 
     private data class CreditCardInfo(
-        val pseudocardpan: String,
-        val truncatedcardpan: String,
-        val cardtype: String,
-        val cardexpiredate: String,
-        val lastname: String,
-        var userId: String? = null,
-    )
+        var userId: String? = null, // TODO: var?
+        val pseudoCardPan: String,
+        val truncatedCardPan: String,
+        val cardType: String,
+        val cardExpiryDate: String,
+        val name: String,
+        val email: String,
+        val address: Address
+    ) {
+
+        data class Address(
+            val street: String,
+            val zip: String,
+            val city: String,
+            val country: String,
+            val state: String? = null,
+        )
+    }
 
     @Keep
     private inner class JsInterface {
 
         @JavascriptInterface
         fun saveCard(
-            pseudocardpan: String?,
-            truncatedcardpan: String?,
-            cardtype: String?,
-            cardexpiredate: String?,
-            lastname: String?
+            pseudoCardPan: String?,
+            truncatedCardPan: String?,
+            cardType: String?,
+            cardExpireDate: String?,
+            name: String?,
+            street: String?,
+            zip: String?,
+            city: String?,
+            country: String?,
+            state: String?,
+            email: String?,
         ) {
             CreditCardInfo(
-                pseudocardpan = requireNotNull(pseudocardpan),
-                truncatedcardpan = requireNotNull(truncatedcardpan),
-                cardtype = requireNotNull(cardtype),
-                cardexpiredate = requireNotNull(cardexpiredate),
-                lastname = requireNotNull(lastname),
+                pseudoCardPan = requireNotNull(pseudoCardPan),
+                truncatedCardPan = requireNotNull(truncatedCardPan),
+                cardType = requireNotNull(cardType),
+                cardExpiryDate = requireNotNull(cardExpireDate),
+                name = requireNotNull(name),
+
+                email = email ?: "",
+                address = CreditCardInfo.Address(
+                    street = street ?: "",
+                    zip = zip ?: "",
+                    city = city ?: "",
+                    country = country ?: "",
+                    state = state?.ifEmpty { null },
+                )
             ).let { cardInfo ->
                 creditCardInfo = cardInfo
                 if (isActivityResumed) {

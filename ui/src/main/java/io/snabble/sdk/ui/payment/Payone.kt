@@ -40,10 +40,22 @@ object Payone {
         val href: String?
     ) : Parcelable
 
+    // TODO: Add missing @Serialiazble Annotations!
     data class PreAuthRequest(
         val pseudoCardPAN: String,
         val lastname: String,
-    )
+        val email: String,
+        val address: Address
+    ) {
+
+        data class Address(
+            val street: String,
+            val zip: String,
+            val city: String,
+            val country: String,
+            val state: String?,
+        )
+    }
 
     data class PreAuthResponse(
         val status: AuthStatus,

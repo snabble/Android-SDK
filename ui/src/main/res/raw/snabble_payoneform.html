@@ -119,13 +119,20 @@ window.postMessage = function(a,b) {
 }
 
 function processResponse(response) {
-    snabble.log("processResponse for " + response.lastname)
+    snabble.log("processResponse for " + response.name)
     snabble.saveCard(
-        response.pseudocardpan,
-        response.truncatedcardpan,
-        response.cardtype,
-        response.cardexpiredate,
-        response.lastname)
+        response.pseudoCardPan,
+        response.truncatedCardPan,
+        response.cardType,
+        response.cardExpiryDate,
+        response.name,
+        response.street,
+        response.zip,
+        response.city,
+        response.country,
+        response.state,
+        response.email
+        )
 }
 </script>
 <script src="https://secure.pay1.de/client-api/js/v1/payone_hosted.js"></script>
@@ -133,9 +140,11 @@ function processResponse(response) {
 <body>
 <form action="#" method="post">
     <div class="form-group">
-        <label for="lastname">{{lastname}}</label>
+        <label for="name">{{lastname}}</label>
         <div class="payone-input-mock">
-            <input type="text" id="lastname"/>
+            <input
+                    type="text"
+                    id="name" />
         </div>
     </div>
 
@@ -213,7 +222,7 @@ function processResponse(response) {
     <div class="form-group">
         <label for="email">{{email}}</label>
         <div class="payone-input-mock">
-            <input type="text" id="email" />
+            <input type="email" id="email" />
         </div>
     </div>
 
@@ -282,14 +291,26 @@ PayoneAutoCcDetection.prototype._handleUnsupportedCardType = function () {
 PayoneAutoCcDetection.prototype._creditCardCheckCallback = function (response) {
     switch (response.status) {
         case 'VALID':
-            console.log('Success! Credit card check was valid.');
-            var lastname = document.getElementById('lastname').value;
+            let name = document.getElementById('name').value;
+            let street = document.getElementById('street').value;
+            let zip = document.getElementById('zip').value;
+            let city = document.getElementById('city').value;
+            let country = document.getElementById('countrySelect').value;
+            let state = document.getElementById('stateSelect').value;
+            let email = document.getElementById('email').value;
+            console.log("Card details: " + street + ", " + zip + ", " + city + ", " + country + ", " + state + ", " + email)
             processResponse({
-                pseudocardpan: response.pseudocardpan,
-                truncatedcardpan: response.truncatedcardpan,
-                cardtype: response.cardtype,
-                cardexpiredate: response.cardexpiredate,
-                lastname
+                pseudoCardPan: response.pseudocardpan,
+                truncatedCardPan: response.truncatedcardpan,
+                cardType: response.cardtype,
+                cardExpiryDate: response.cardexpiredate,
+                name: name,
+                street: street,
+                zip: zip,
+                city: city,
+                country: country,
+                state: state,
+                email: email
             });
             break;
         case 'INVALID':
@@ -304,7 +325,7 @@ PayoneAutoCcDetection.prototype._creditCardCheckCallback = function (response) {
 
 PayoneAutoCcDetection.prototype.performCreditCardCheck = function () {
     console.log("performCheck");
-    var name = document.getElementById('lastname').value
+    var name = document.getElementById('name').value
     if (this._hostedIframe.isComplete() && name != "") {
         console.log("complete!");
         this._hostedIframe.creditCardCheck(this._creditCardCheckCallbackName);
