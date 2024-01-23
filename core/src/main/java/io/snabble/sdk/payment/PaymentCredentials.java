@@ -6,6 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.InputStream;
 import java.security.cert.CertPath;
 import java.security.cert.CertPathValidator;
@@ -154,15 +156,63 @@ public class PaymentCredentials {
     }
 
     private static class PayoneData {
-        PayoneData(String pseudoCardPAN, String name, String userID) {
-            this.pseudoCardPAN = pseudoCardPAN;
-            this.name = name;
-            this.userID = userID;
-        }
 
         private final String pseudoCardPAN;
         private final String name;
         private final String userID;
+
+        @SerializedName("email")
+        private final String email;
+
+        @SerializedName("address")
+        private final Address address;
+
+        PayoneData(
+                String pseudoCardPAN,
+                String name,
+                final String email,
+                final String street,
+                final String zip,
+                final String city,
+                final String country,
+                final String state,
+                String userID
+        ) {
+            this.pseudoCardPAN = pseudoCardPAN;
+            this.name = name;
+            this.email = email;
+            this.address = new Address(street, zip, city, country, state);
+            this.userID = userID;
+        }
+
+
+        private static class Address {
+
+            @SerializedName("street")
+            final String street;
+            @SerializedName("zip")
+            final String zip;
+            @SerializedName("city")
+            final String city;
+            @SerializedName("country")
+            final String country;
+            @SerializedName("state")
+            final String state;
+
+            private Address(
+                    final String street,
+                    final String zip,
+                    final String city,
+                    final String country,
+                    final String state
+            ) {
+                this.street = street;
+                this.zip = zip;
+                this.city = city;
+                this.country = country;
+                this.state = state;
+            }
+        }
     }
 
     private static class TegutEmployeeCard {
@@ -471,13 +521,21 @@ public class PaymentCredentials {
      * Encrypts and stores a payone pseudo card pan.
      */
     @Nullable
-    public static PaymentCredentials fromPayone(String pseudocardpan,
-                                                String truncatedcardpan,
-                                                PaymentCredentials.Brand brand,
-                                                String cardexpiredate,
-                                                String lastname,
-                                                String userId,
-                                                String projectId) {
+    public static PaymentCredentials fromPayone(
+            String pseudocardpan,
+            String truncatedcardpan,
+            PaymentCredentials.Brand brand,
+            String cardexpiredate,
+            String lastname,
+            final String street,
+            final String zip,
+            final String city,
+            final String country,
+            final String state,
+            final String email,
+            String userId,
+            String projectId
+    ) {
         if (pseudocardpan == null) {
             return null;
         }
@@ -496,7 +554,17 @@ public class PaymentCredentials {
             return null;
         }
 
-        PayoneData payoneData = new PayoneData(pseudocardpan, lastname, userId);
+        final PayoneData payoneData = new PayoneData(
+                pseudocardpan,
+                lastname,
+                email,
+                street,
+                zip,
+                city,
+                country,
+                state,
+                userId
+        );
 
         String json = GsonHolder.get().toJson(payoneData, PayoneData.class);
 

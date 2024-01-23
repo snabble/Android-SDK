@@ -305,6 +305,12 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             ccBrand,
             info.cardExpiryDate,
             info.name,
+            info.address.street,
+            info.address.zip,
+            info.address.city,
+            info.address.country,
+            info.address.state,
+            info.email,
             info.userId,
             project.id
         )

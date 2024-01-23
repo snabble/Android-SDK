@@ -335,8 +335,7 @@ PayoneAutoCcDetection.prototype.performCreditCardCheck = function () {
     let countrySelect = document.getElementById('countrySelect');
     let stateSelect = document.getElementById('stateSelect');
     let email = document.getElementById('email').value;
-    let stateNeeded = !(stateSelect.getAttribute('disabled'))
-    console.log("foo: " + stateNeeded + ", state index: <" + stateSelect.selectedIndex + ">")
+    let stateNeeded = stateSelect.getAttribute('disabled')
     if (this._hostedIframe.isComplete() &&
         name != "" &&
         street != "" &&
@@ -1082,7 +1081,7 @@ function handleCountrySelect(countryCode) {
 
     const option = document.createElement('option')
     option.textContent = '{{stateHint}}'
-    option.setAttribute('disabled', '')
+    option.disabled = true
     stateSelect.appendChild(option)
 
     subdivisions[countryCode].forEach(state => {
