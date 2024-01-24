@@ -6,8 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.io.InputStream;
 import java.security.cert.CertPath;
 import java.security.cert.CertPathValidator;
@@ -463,25 +461,21 @@ public class PaymentCredentials {
      */
     @Nullable
     public static PaymentCredentials fromPayone(
-            String pseudocardpan,
-            String truncatedcardpan,
-            PaymentCredentials.Brand brand,
-            String cardexpiredate,
-            String lastname,
-            final String street,
-            final String zip,
-            final String city,
-            final String country,
-            final String state,
-            final String email,
-            String userId,
-            String projectId
+            @NonNull final String pseudoCardPan,
+            @NonNull final String truncatedCardPan,
+            @NonNull final PaymentCredentials.Brand brand,
+            @NonNull final String cardExpiryDate,
+            @NonNull final String lastname,
+            @NonNull final String street,
+            @NonNull final String zip,
+            @NonNull final String city,
+            @NonNull final String country,
+            @Nullable final String state,
+            @NonNull final String email,
+            @Nullable final String userId,
+            @NonNull final String projectId
     ) {
-        if (pseudocardpan == null) {
-            return null;
-        }
-
-        PaymentCredentials pc = new PaymentCredentials();
+        final PaymentCredentials pc = new PaymentCredentials();
         pc.generateId();
         if (brand == Brand.MASTERCARD || brand == Brand.AMEX || brand == Brand.VISA) {
             pc.type = Type.PAYONE_CREDITCARD;
@@ -490,13 +484,13 @@ public class PaymentCredentials {
         }
         pc.projectId = projectId;
 
-        List<X509Certificate> certificates = Snabble.getInstance().getPaymentCertificates();
-        if (certificates.size() == 0) {
+        final List<X509Certificate> certificates = Snabble.getInstance().getPaymentCertificates();
+        if (certificates == null || certificates.isEmpty()) {
             return null;
         }
 
         final PayoneData payoneData = new PayoneData(
-                pseudocardpan,
+                pseudoCardPan,
                 lastname,
                 email,
                 street,
@@ -507,15 +501,15 @@ public class PaymentCredentials {
                 userId
         );
 
-        String json = GsonHolder.get().toJson(payoneData, PayoneData.class);
+        final String json = GsonHolder.get().toJson(payoneData, PayoneData.class);
 
-        X509Certificate certificate = certificates.get(0);
+        final X509Certificate certificate = certificates.get(0);
         pc.rsaEncryptedData = pc.rsaEncrypt(certificate, json.getBytes());
         pc.signature = pc.sha256Signature(certificate);
         pc.appId = Snabble.getInstance().getConfig().appId;
         pc.brand = brand;
-        pc.obfuscatedId = truncatedcardpan;
-        pc.validTo = parseValidTo("yyMM", cardexpiredate);
+        pc.obfuscatedId = truncatedCardPan;
+        pc.validTo = parseValidTo("yyMM", cardExpiryDate);
 
         if (pc.rsaEncryptedData == null) {
             return null;

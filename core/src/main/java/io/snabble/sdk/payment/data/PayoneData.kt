@@ -15,7 +15,7 @@ internal class PayoneData internal constructor(
     city: String,
     country: String,
     state: String?,
-    @SerializedName("userID") private val userId: String
+    @SerializedName("userID") private val userId: String?
 ) {
 
     @SerializedName("address")
