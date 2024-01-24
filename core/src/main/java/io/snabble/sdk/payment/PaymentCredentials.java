@@ -42,6 +42,7 @@ import io.snabble.sdk.R;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.data.GiropayAuthorizationData;
 import io.snabble.sdk.payment.data.GiropayData;
+import io.snabble.sdk.payment.data.PayoneData;
 import io.snabble.sdk.payment.externalbilling.data.ExternalBillingPaymentCredentials;
 import io.snabble.sdk.payment.payone.sepa.PayoneSepaData;
 import io.snabble.sdk.utils.GsonHolder;
@@ -153,66 +154,6 @@ public class PaymentCredentials {
         private String alias;
         private String expiryMonth;
         private String expiryYear;
-    }
-
-    private static class PayoneData {
-
-        private final String pseudoCardPAN;
-        private final String name;
-        private final String userID;
-
-        @SerializedName("email")
-        private final String email;
-
-        @SerializedName("address")
-        private final Address address;
-
-        PayoneData(
-                String pseudoCardPAN,
-                String name,
-                final String email,
-                final String street,
-                final String zip,
-                final String city,
-                final String country,
-                final String state,
-                String userID
-        ) {
-            this.pseudoCardPAN = pseudoCardPAN;
-            this.name = name;
-            this.email = email;
-            this.address = new Address(street, zip, city, country, state);
-            this.userID = userID;
-        }
-
-
-        private static class Address {
-
-            @SerializedName("street")
-            final String street;
-            @SerializedName("zip")
-            final String zip;
-            @SerializedName("city")
-            final String city;
-            @SerializedName("country")
-            final String country;
-            @SerializedName("state")
-            final String state;
-
-            private Address(
-                    final String street,
-                    final String zip,
-                    final String city,
-                    final String country,
-                    final String state
-            ) {
-                this.street = street;
-                this.zip = zip;
-                this.city = city;
-                this.country = country;
-                this.state = state;
-            }
-        }
     }
 
     private static class TegutEmployeeCard {
