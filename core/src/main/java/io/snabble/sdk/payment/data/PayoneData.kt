@@ -14,7 +14,7 @@ internal class PayoneData internal constructor(
     zip: String,
     city: String,
     country: String,
-    state: String,
+    state: String?,
     @SerializedName("userID") private val userId: String
 ) {
 
@@ -30,6 +30,6 @@ internal class PayoneData internal constructor(
         @SerializedName("zip") val zip: String,
         @SerializedName("city") val city: String,
         @SerializedName("country") val country: String,
-        @SerializedName("state") val state: String
+        @SerializedName("state") val state: String?
     )
 }
