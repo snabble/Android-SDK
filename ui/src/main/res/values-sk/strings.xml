@@ -241,7 +241,7 @@
     <string name="Snabble.Payone.country">Country</string>
     <!-- Disabled country choose hint for the Payone Credit Card Input View -->
     <string name="Snabble.Payone.countryHint">Please select the country</string>
-    <string name="Snabble.Payone.cvc">Kontrolné číslo (CVC)</string>
+    <string name="Snabble.Payone.cvc">CVC</string>
     <!-- Email for the Payone Credit Card Input View -->
     <string name="Snabble.Payone.email">E-Mail</string>
     <string name="Snabble.Payone.expireMonth">Koniec platnosti – mesiac (MM)</string>
