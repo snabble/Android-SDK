@@ -189,7 +189,11 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             val language = Locale.getDefault().language
                 .anyOfTheseOfFirst(fallback = "en", "de", "fr", "it", "es", "pt", "nl")
 
-            val localeCountryCode = ConfigurationCompat.getLocales(Resources.getSystem().configuration).get(0)?.country ?: ""
+            val localeCountryCode: String = ConfigurationCompat
+                .getLocales(Resources.getSystem().configuration)
+                .get(0)
+                ?.country
+                ?: ""
             val htmlForm = IOUtils
                 .toString(
                     resources.openRawResource(R.raw.snabble_payoneform),
