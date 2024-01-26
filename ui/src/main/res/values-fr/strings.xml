@@ -231,11 +231,27 @@
     <string name="Snabble.PaymentStatus.Tobacco.message">Veuillez prendre vos cigarettes.</string>
     <string name="Snabble.PaymentStatus.Tobacco.title">Distribution des cigarettes</string>
     <string name="Snabble.Payone.cardNumber">Numéro de carte</string>
-    <string name="Snabble.Payone.cvc">Numéro de contrôle (CVC)</string>
+    <!-- City for the Payone Credit Card Input View -->
+    <string name="Snabble.Payone.city">City</string>
+    <!-- Country for the Payone Credit Card Input View -->
+    <string name="Snabble.Payone.country">Country</string>
+    <!-- Disabled country choose hint for the Payone Credit Card Input View -->
+    <string name="Snabble.Payone.countryHint">Please select the country</string>
+    <string name="Snabble.Payone.cvc">CVC</string>
+    <!-- Email for the Payone Credit Card Input View -->
+    <string name="Snabble.Payone.email">E-Mail</string>
     <string name="Snabble.Payone.expireMonth">Mois d\'échéance (MM)</string>
     <string name="Snabble.Payone.expireYear">Année d\'échéance (JJJJ)</string>
     <string name="Snabble.Payone.incompleteForm">Remplir le formulaire dans son intégralité.</string>
     <string name="Snabble.Payone.lastname">Nom</string>
+    <!-- State for the Payone Credit Card Input View -->
+    <string name="Snabble.Payone.state">State</string>
+    <!-- Disabled state choose hint for the Payone Credit Card Input View -->
+    <string name="Snabble.Payone.stateHint">Please select the state</string>
+    <!-- Street and Housenumber for the Payone Credit Card Input View -->
+    <string name="Snabble.Payone.street">Street</string>
+    <!-- Zip for the Payone Credit Card Input View -->
+    <string name="Snabble.Payone.zip">Zip</string>
     <string name="Snabble.pleaseWait">Veuillez patienter...</string>
     <string name="Snabble.PostFinanceCard.payNow">Payer maintenant avec la PostFinance Card</string>
     <string name="Snabble.QRCode.codeXofY">Code %1$d sur %2$d</string>

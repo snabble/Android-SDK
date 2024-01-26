@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
+* Address and email input fields for credit cards via PAYONE
+
 ### Changed 
 ### Removed
 ### Fixed
