@@ -362,7 +362,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             pseudoCardPan: String?,
             truncatedCardPan: String?,
             cardType: String?,
-            cardExpireDate: String?,
+            cardExpiryDate: String?,
             name: String?,
             street: String?,
             zip: String?,
@@ -371,12 +371,22 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             state: String?,
             email: String?,
         ) {
+            if (pseudoCardPan == null ||
+                truncatedCardPan == null ||
+                cardType == null ||
+                cardExpiryDate == null ||
+                name == null
+            ) {
+                Dispatch.mainThread { finishWithError("Process error.") }
+                return
+            }
+
             CreditCardInfo(
-                pseudoCardPan = requireNotNull(pseudoCardPan),
-                truncatedCardPan = requireNotNull(truncatedCardPan),
-                cardType = requireNotNull(cardType),
-                cardExpiryDate = requireNotNull(cardExpireDate),
-                name = requireNotNull(name),
+                pseudoCardPan = pseudoCardPan,
+                truncatedCardPan = truncatedCardPan,
+                cardType = cardType,
+                cardExpiryDate = cardExpiryDate,
+                name = name,
 
                 email = email ?: "",
                 address = CreditCardInfo.Address(
@@ -392,11 +402,6 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
                     Dispatch.mainThread { authenticate(cardInfo) }
                 }
             }
-        }
-
-        @JavascriptInterface
-        fun fail(failReason: String?) {
-            Dispatch.mainThread { finishWithError(failReason) }
         }
 
         @JavascriptInterface
