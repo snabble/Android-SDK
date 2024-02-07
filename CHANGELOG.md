@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 ### Added
 ### Changed
+* ui: Re-enable Giropay integration (#169)
+
 ### Removed
 ### Fixed
 

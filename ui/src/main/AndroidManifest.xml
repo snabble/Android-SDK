@@ -8,6 +8,11 @@
 
     <uses-permission android:name="android.permission.VIBRATE" />
 
+    <queries>
+        <package android:name="com.gimb.paydirekt.app" />
+        <package android:name="com.gimb.paydirekt.app.sandbox" />
+    </queries>
+
     <application>
         <activity
             android:name=".checkout.CheckoutActivity"
