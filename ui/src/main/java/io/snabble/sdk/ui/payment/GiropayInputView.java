@@ -130,11 +130,11 @@ public class GiropayInputView extends FrameLayout {
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 final Uri uri = request.getUrl();
                 final Environment environment = Snabble.getInstance().getEnvironment();
-                if (isPaydirektAppLinkUrl(uri, environment)) {
-                    final Intent paydirektAppLinkIntent = new Intent(Intent.ACTION_VIEW);
-                    paydirektAppLinkIntent.setData(request.getUrl());
-                    if (isPaydirektAppAvailable(paydirektAppLinkIntent, view.getContext(), environment)) {
-                        view.getContext().startActivity(paydirektAppLinkIntent);
+                if (isGiropayAppLinkUrl(uri, environment)) {
+                    final Intent giropayAppLinkIntent = new Intent(Intent.ACTION_VIEW);
+                    giropayAppLinkIntent.setData(request.getUrl());
+                    if (isGiropayAppAvailable(giropayAppLinkIntent, view.getContext(), environment)) {
+                        view.getContext().startActivity(giropayAppLinkIntent);
                         return true;
                     }
                 } else if (uri != null) {
@@ -230,15 +230,15 @@ public class GiropayInputView extends FrameLayout {
                 });
     }
 
-    private boolean isPaydirektAppLinkUrl(@Nullable final Uri uri, @Nullable Environment environment) {
+    private boolean isGiropayAppLinkUrl(@Nullable final Uri uri, @Nullable Environment environment) {
         if (uri != null && uri.getHost() != null) {
-            return uri.getHost().startsWith(getPaydirektAppLinkUrlHost(environment));
+            return uri.getHost().startsWith(getGiropayAppLinkUrlHost(environment));
         }
         return false;
     }
 
     @NonNull
-    private String getPaydirektAppLinkUrlHost(@Nullable final Environment environment) {
+    private String getGiropayAppLinkUrlHost(@Nullable final Environment environment) {
         if (environment == Environment.PRODUCTION) {
             return "app.paydirekt.de";
         } else {
@@ -246,14 +246,14 @@ public class GiropayInputView extends FrameLayout {
         }
     }
 
-    private boolean isPaydirektAppAvailable(
+    private boolean isGiropayAppAvailable(
             @NonNull final Intent intent,
             @NonNull final Context context,
             @Nullable final Environment environment
     ) {
         @SuppressLint("QueryPermissionsNeeded") // <queries> has to be added to AndroidManifest.xml on app side
         final List<ResolveInfo> intentInfo = context.getPackageManager().queryIntentActivities(intent, 0);
-        final String appPackageName = getPaydirektAppPackage(environment);
+        final String appPackageName = getGiropayAppPackage(environment);
         for (final ResolveInfo info : intentInfo) {
             if (info.activityInfo.packageName.contains(appPackageName)) {
                 return true;
@@ -263,7 +263,7 @@ public class GiropayInputView extends FrameLayout {
     }
 
     @NonNull
-    private String getPaydirektAppPackage(final @Nullable Environment environment) {
+    private String getGiropayAppPackage(final @Nullable Environment environment) {
         if (environment == Environment.PRODUCTION) {
             return "com.gimb.paydirekt.app";
         } else {
