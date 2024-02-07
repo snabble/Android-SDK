@@ -251,7 +251,6 @@ public class GiropayInputView extends FrameLayout {
             @NonNull final Context context,
             @Nullable final Environment environment
     ) {
-        @SuppressLint("QueryPermissionsNeeded") // <queries> has to be added to AndroidManifest.xml on app side
         final List<ResolveInfo> intentInfo = context.getPackageManager().queryIntentActivities(intent, 0);
         final String appPackageName = getGiropayAppPackage(environment);
         for (final ResolveInfo info : intentInfo) {
