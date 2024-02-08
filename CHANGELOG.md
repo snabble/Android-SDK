@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 ## [0.72.2]
 ### Changed
 * core: Explicitly enable buildConfig (#171)
+* kotlin-sample: Explicitly enable buildConfig (#171)
 * ui: Re-enable Giropay integration (#169)
 * ui-toolkit: Explicitly enable buildConfig (#171)
 * utils: Explicitly enable buildConfig (#171)
