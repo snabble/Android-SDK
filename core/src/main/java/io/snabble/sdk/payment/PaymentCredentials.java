@@ -364,7 +364,10 @@ public class PaymentCredentials {
     /**
      * Encrypts and stores a paydirekt authorization token.
      */
-    public static PaymentCredentials fromGiropay(GiropayAuthorizationData authorizationData, String customerAuthorizationURI) {
+    public static PaymentCredentials fromGiropay(
+            GiropayAuthorizationData authorizationData,
+            String customerAuthorizationURI,
+            @Nullable String projectId) {
         if (customerAuthorizationURI == null) {
             return null;
         }
@@ -372,6 +375,7 @@ public class PaymentCredentials {
         PaymentCredentials pc = new PaymentCredentials();
         pc.generateId();
         pc.type = Type.GIROPAY;
+        pc.projectId = projectId;
 
         List<X509Certificate> certificates = Snabble.getInstance().getPaymentCertificates();
         if (certificates.size() == 0) {
