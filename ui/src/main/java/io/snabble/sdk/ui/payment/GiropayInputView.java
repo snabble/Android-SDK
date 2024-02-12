@@ -185,7 +185,7 @@ public class GiropayInputView extends FrameLayout {
     }
 
     private void load() {
-        @Nullable  final Project project = Snabble.getInstance().getCheckedInProject().getValue();
+        @Nullable final Project project = Snabble.getInstance().getCheckedInProject().getValue();
         if (project != null) projectId = project.getId();
 
         String url = Snabble.getInstance().getGiropayAuthUrl();

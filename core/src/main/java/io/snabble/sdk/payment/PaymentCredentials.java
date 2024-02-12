@@ -362,13 +362,15 @@ public class PaymentCredentials {
     }
 
     /**
-     * Encrypts and stores a paydirekt authorization token.
+     * Encrypts and stores a Giropay authorization token.
      */
+    @Nullable
     public static PaymentCredentials fromGiropay(
             GiropayAuthorizationData authorizationData,
             String customerAuthorizationURI,
-            @Nullable String projectId) {
-        if (customerAuthorizationURI == null) {
+            String projectId) {
+
+        if (customerAuthorizationURI == null || projectId == null) {
             return null;
         }
 
