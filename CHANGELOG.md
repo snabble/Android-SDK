@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.72.3]
+### Fixed
+* core, ui: Bind Giropay to its project (#172)
+
 ## [0.72.2]
 ### Changed
 * core: Explicitly enable buildConfig (#171)

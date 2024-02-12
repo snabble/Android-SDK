@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import io.snabble.sdk.Environment;
+import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.payment.data.GiropayAuthorizationData;
@@ -77,6 +78,7 @@ public class GiropayInputView extends FrameLayout {
     private static final String CANCELLED_URL = "snabble-paydirekt://cancelled";
     private static final String FAILURE_URL = "snabble-paydirekt://failure";
 
+    private String projectId;
     private boolean acceptedKeyguard;
     private WebView webView;
     private OkHttpClient okHttpClient;
@@ -183,6 +185,9 @@ public class GiropayInputView extends FrameLayout {
     }
 
     private void load() {
+        @Nullable final Project project = Snabble.getInstance().getCheckedInProject().getValue();
+        if (project != null) projectId = project.getId();
+
         String url = Snabble.getInstance().getGiropayAuthUrl();
         if (url == null) {
             finishWithError();
@@ -289,7 +294,11 @@ public class GiropayInputView extends FrameLayout {
     }
 
     private void save() {
-        final PaymentCredentials pc = PaymentCredentials.fromGiropay(authorizationData, authorizationResult.getAuthorizationLink());
+        final PaymentCredentials pc = PaymentCredentials.fromGiropay(
+                authorizationData,
+                authorizationResult.getAuthorizationLink(),
+                projectId
+        );
 
         if (pc == null) {
             Toast.makeText(getContext(), "Could not verify payment credentials", Toast.LENGTH_LONG)
