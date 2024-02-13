@@ -243,7 +243,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
         if (parcels == null) return null;
 
         final List<T> list = new ArrayList<>(parcels.length);
-        for (Parcelable parcel : parcels) {
+        for (final Parcelable parcel : parcels) {
             if (parcel.getClass() == clazz) {
                 list.add(((T) parcel));
             }
