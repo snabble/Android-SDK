@@ -1,5 +1,7 @@
 package io.snabble.sdk
 
+import android.os.Parcel
+import android.os.Parcelable
 import androidx.annotation.Nullable
 import com.google.gson.annotations.SerializedName
 
@@ -31,7 +33,7 @@ enum class PaymentMethod(
      * Declares if the payment method can only be aborted with a confirmation by the backend
      */
     val needsAbortConfirmation: Boolean,
-) {
+) : Parcelable {
 
     @SerializedName("qrCodePOS")
     QRCODE_POS(
@@ -168,7 +170,17 @@ enum class PaymentMethod(
         needsAbortConfirmation = true
     );
 
+    override fun describeContents(): Int = 0
+
+    override fun writeToParcel(dest: Parcel, flags: Int) = dest.writeInt(ordinal)
+
     companion object {
+
+        @JvmField
+        val CREATOR = object : Parcelable.Creator<PaymentMethod> {
+            override fun createFromParcel(parcel: Parcel) = PaymentMethod.values()[parcel.readInt()]
+            override fun newArray(size: Int) = arrayOfNulls<PaymentMethod>(size)
+        }
 
         /**
          * Converts a payment method from its string representation.
