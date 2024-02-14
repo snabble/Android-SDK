@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.72.4] 
+### Added
+* core, io: Option to limit payment methods offered to add (#173)
+
 ## [0.72.3]
 ### Fixed
 * core, ui: Bind Giropay to its project (#172)
