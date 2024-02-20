@@ -8,6 +8,14 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 * ui: Avoid npe caused by `isEmpty()` check on a null shopping cart
 
+## [0.72.4] 
+### Added
+* core, io: Option to limit payment methods offered to add (#173)
+
+## [0.72.3]
+### Fixed
+* core, ui: Bind Giropay to its project (#172)
+
 ## [0.72.2]
 ### Changed
 * core: Explicitly enable buildConfig (#171)
