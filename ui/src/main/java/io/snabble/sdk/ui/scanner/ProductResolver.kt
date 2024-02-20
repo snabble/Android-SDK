@@ -1,6 +1,5 @@
 package io.snabble.sdk.ui.scanner
 
-import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.view.KeyEvent
@@ -9,7 +8,6 @@ import io.snabble.sdk.Unit
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.codes.gs1.GS1Code
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.scanner.ProductResolver.*
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.DelayedProgressDialog
@@ -283,7 +281,7 @@ class ProductResolver private constructor(private val context: Context, private 
 
         if (product != null && scannedCode != null) {
             if (handleProductFlags(product, scannedCode)) {
-                val model = ProductConfirmationDialog.ViewModel(context, SnabbleUI.project, product, scannedCode)
+                val model = ProductConfirmationDialog.ViewModel(context, project, product, scannedCode)
                 productDialogViewModel = model
                 productConfirmationDialog?.show(UIUtils.getHostFragmentActivity(context), model)
             }
@@ -459,9 +457,9 @@ class ProductResolver private constructor(private val context: Context, private 
      * @param context The context for the product resolver
      * @param project The optional project of the product resolver, by default the current project will be used
      */
-    class Builder @JvmOverloads constructor(
+    class Builder(
         context: Context,
-        private val project: Project = requireNotNull(Snabble.checkedInProject.value)
+        private val project: Project
     ) {
         private val productResolver = ProductResolver(context, project)
         private var factory = ProductConfirmationDialog.Factory {
