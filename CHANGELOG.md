@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 ### Removed
 ### Fixed
+ui: change project reference in `ProductResolver.kt` to get rid of IllegalArgumentException
 
 ## [0.72.4] 
 ### Added
