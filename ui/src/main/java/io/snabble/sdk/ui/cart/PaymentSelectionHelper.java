@@ -22,6 +22,7 @@ import java.util.Set;
 
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.Project;
+import io.snabble.sdk.Shop;
 import io.snabble.sdk.ShoppingCart;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.checkout.PaymentMethodInfo;
@@ -415,8 +416,9 @@ public class PaymentSelectionHelper {
     }
 
     public boolean shouldShowPayButton() {
-        boolean onlinePaymentAvailable = cart.getAvailablePaymentMethods() != null && !cart.getAvailablePaymentMethods().isEmpty();
-        return cart.getTotalPrice() >= 0 && (onlinePaymentAvailable || selectedEntry.getValue() != null);
+        final ShoppingCart shoppingCart = cart;
+        boolean onlinePaymentAvailable = shoppingCart.getAvailablePaymentMethods() != null && !shoppingCart.getAvailablePaymentMethods().isEmpty();
+        return shoppingCart.getTotalPrice() >= 0 && (onlinePaymentAvailable || selectedEntry.getValue() != null);
     }
 
     public boolean shouldShowGooglePayButton() {
