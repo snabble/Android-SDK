@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 ### Added
 ### Changed
+ui: the `ProductResolver.Builder` now requires a project as constructor param, since the default value has been removed
 ### Removed
 ### Fixed
 ui: change project reference in `ProductResolver.kt` to get rid of IllegalArgumentException
