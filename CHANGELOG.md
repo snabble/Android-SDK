@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 ### Removed
 ### Fixed
+core: handle `SQLiteDatabaseLockedException` to fix app crash when updating the database
 
 ## [0.72.4] 
 ### Added
