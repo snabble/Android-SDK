@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 ### Removed
 ### Fixed
+* ui: Avoid npe caused by `isEmpty()` check on a null shopping cart
 
 ## [0.72.4] 
 ### Added
