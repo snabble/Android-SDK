@@ -179,7 +179,7 @@ public class SelfScanningView extends FrameLayout {
     }
 
     public void lookupAndShowProduct(List<ScannedCode> scannedCodes, BarcodeFormat barcodeFormat) {
-        new ProductResolver.Builder(getContext())
+        new ProductResolver.Builder(getContext(), project)
                 .setCodes(scannedCodes)
                 .setBarcodeFormat(barcodeFormat)
                 .setOnShowListener(this::pauseBarcodeScanner)
