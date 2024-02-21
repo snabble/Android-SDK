@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 * ui: The `ProductResolver.Builder` now requires a project as constructor param, since the default value has been removed
 ### Removed
 ### Fixed
+* core: Handle `SQLiteDatabaseLockedException` to fix app crash when updating the database
 * ui: Avoid npe caused by `isEmpty()` check on a null shopping cart
 * ui: Change project reference in `ProductResolver.kt` to get rid of IllegalArgumentException
 
