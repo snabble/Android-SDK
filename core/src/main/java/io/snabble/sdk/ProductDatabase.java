@@ -339,7 +339,7 @@ public class ProductDatabase {
             tempDb = SQLiteDatabase.openOrCreateDatabase(tempDbFile, null);
         } catch (SQLiteCantOpenDatabaseException e) {
             project.logErrorEvent("Could not open or create db: %s", e.getMessage());
-            throw new IOException();
+            throw new IOException("Could not open or create db", e);
         }
 
         Scanner scanner = new Scanner(inputStream, "UTF-8");
