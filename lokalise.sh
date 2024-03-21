@@ -11,7 +11,8 @@ function lokalise {
         file download \
         --format xml \
         --unzip-to $2 \
-        --include-description false \
+        --export-empty-as skip \
+        --include-description=false \
         $@
 }
 
