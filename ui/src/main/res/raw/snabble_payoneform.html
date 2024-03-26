@@ -1109,6 +1109,27 @@ function countryOptions() {
     handleCountrySelect(localeCountryCode);
 }
 countryOptions();
+
+function prefillForm() {
+    const data = JSON.parse(snabble.prefillData())
+    document.getElementById('name').value = data.name || ''
+    document.getElementById('street').value = data.street || ''
+    document.getElementById('zip').value = data.zip || ''
+    document.getElementById('city').value = data.city || ''
+    document.getElementById('email').value = data.email || ''
+
+    if (typeof data.countryCode !== 'undefined') {
+        const countrySelect = document.getElementById('countrySelect')
+        countrySelect.selectedIndex = countries.findIndex(country => country.code == data.countryCode) + 1
+        handleCountrySelect(data.countryCode);
+
+        if (typeof data.stateCode !== 'undefined') {
+            const selectState = document.getElementById('stateSelect')
+            selectState.selectedIndex = subdivisions[data.countryCode].findIndex(state => state.code == data.stateCode) + 1
+        }
+    }
+}
+prefillForm()
 </script>
 </body>
 </html>
