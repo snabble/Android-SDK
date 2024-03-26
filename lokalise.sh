@@ -17,7 +17,7 @@ function lokalise {
 }
 
 # ui
-lokalise 3931709465f04f20a1bc18.55914019 ui/src/main/res --exclude-tags Onboarding,Shop,Scanner
+lokalise 3931709465f04f20a1bc18.55914019 ui/src/main/res 
 
 # ui-toolkit
 lokalise 3931709465f04f20a1bc18.55914019 ui-toolkit/src/main/res --include-tags Onboarding,Shop,Scanner

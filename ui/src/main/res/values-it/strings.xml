@@ -138,6 +138,8 @@
   <string name="Snabble.QRCode.showThisCode">Mostra questo codice alla cassa</string>
   <string name="Snabble.QRCode.title">Pagare alla cassa</string>
   <string name="Snabble.QRCode.total">Somma totale: </string>
+  <string name="Snabble.Receipt.errorDownload">Non è stato possibile scaricare la ricevuta</string>
+  <string name="Snabble.Receipt.pdfReaderUnavailable">Non è stata trovata un’applicazione per leggere i PDF</string>
   <string name="Snabble.Receipts.loading">(in caricamento)</string>
   <string name="Snabble.Receipts.noReceipts">Non hai ancora fatto acquisti con Snabble</string>
   <string name="Snabble.Receipts.oClock">Orario</string>
@@ -183,6 +185,8 @@
   <string name="Snabble.Scanner.unknownBarcode">Purtroppo non sono disponibili informazioni di prezzo per questo prodotto.</string>
   <string name="Snabble.Scanner.updateCart">Aggiorna carrello</string>
   <string name="Snabble.ShoppingCart.title">Carrello</string>
+  <string name="Snabble.ShoppingList.AddItem.viaScan">Scansiona prodotti</string>
+  <string name="Snabble.ShoppingList.AddItem.viaVoice">Detta prodotti</string>
   <string name="Snabble.ShoppingList.CreateList.title">Crea nuova lista della spesa</string>
   <string name="Snabble.ShoppingList.EditList.delete">Cancella</string>
   <string name="Snabble.ShoppingList.EditList.save">Salva</string>
