@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.text.InputFilter
 import android.view.ViewGroup.LayoutParams
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -15,7 +16,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputLayout
 import io.snabble.sdk.ui.R
 
-class SubjectAlertDialog(context: Context) : Dialog(context) {
+class SubjectAlertDialog(context: Context, private val maxSubjectLength: Int = -1) : Dialog(context) {
 
     private var subjectMessageClickListener: SubjectMessageClickListener? = null
     private var skipClick: SubjectClickListener? = null
@@ -40,6 +41,8 @@ class SubjectAlertDialog(context: Context) : Dialog(context) {
         editTextField.addTextChangedListener {
             add.isEnabled = it?.isNotEmpty() == true
         }
+
+        editTextField.filters = arrayOf(InputFilter.LengthFilter(if (maxSubjectLength > 0) maxSubjectLength else 150))
 
         add.setOnClickListener {
             subjectMessageClickListener?.onClick(input.editText?.text.toString())

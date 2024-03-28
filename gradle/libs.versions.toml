@@ -2,13 +2,13 @@
 compileSdk = "33"
 targetSdk = "32"
 minSdk = "21"
-gradlePlugin = "8.1.4"
+gradlePlugin = "8.2.2"
 desugarVersion = "1.1.5"
 okhttpVersion = "4.10.0"
 # @pin always, manually updated to ensure overall dependency support
-kotlin = "1.8.22"
+kotlin = "1.9.23"
 # @pin always, manually updated to ensure overall dependency support
-compose-compiler = "1.4.8"
+compose-compiler = "1.5.11"
 navigation = "2.6.0"
 # @pin
 compose_version = "1.2.1"
