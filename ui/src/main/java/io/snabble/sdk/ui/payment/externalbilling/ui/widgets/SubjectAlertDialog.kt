@@ -16,7 +16,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputLayout
 import io.snabble.sdk.ui.R
 
-class SubjectAlertDialog(context: Context, private val maxSubjectLength: Int = -1) : Dialog(context) {
+class SubjectAlertDialog(context: Context, private val maxSubjectLength: Int? = null) : Dialog(context) {
 
     private var subjectMessageClickListener: SubjectMessageClickListener? = null
     private var skipClick: SubjectClickListener? = null
@@ -42,7 +42,7 @@ class SubjectAlertDialog(context: Context, private val maxSubjectLength: Int = -
             add.isEnabled = it?.isNotEmpty() == true
         }
 
-        editTextField.filters = arrayOf(InputFilter.LengthFilter(if (maxSubjectLength > 0) maxSubjectLength else 150))
+        editTextField.filters = arrayOf(InputFilter.LengthFilter(maxSubjectLength ?: 150))
 
         add.setOnClickListener {
             subjectMessageClickListener?.onClick(input.editText?.text.toString())

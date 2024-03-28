@@ -474,7 +474,7 @@ open class CheckoutBar @JvmOverloads constructor(
         }
     }
 
-    private fun getMaxSubjectLength(): Int = Snabble.checkedInProject.value
+    private fun getMaxSubjectLength(): Int? = Snabble.checkedInProject.value
         ?.id
         ?.let { id ->
             Snabble.customProperties
@@ -485,7 +485,6 @@ open class CheckoutBar @JvmOverloads constructor(
                 ?.toString()
                 ?.toInt()
         }
-        ?: -1
 }
 
 fun interface CheckoutPreconditionHandler {
