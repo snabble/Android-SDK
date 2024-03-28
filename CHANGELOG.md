@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 * ui/ui-toolkit: i18n using the Lokalise
 * Autofill support for PAYONE credit card forms
+* core/ui: Add support for project specific custom properties
+  * Make the external billing subject text max length configurable
 ### Changed
 ### Removed
 * ui: Remove phrase for i18n
