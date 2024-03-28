@@ -33,7 +33,7 @@ object PaymentInputViewHelper {
                 if (useDatatrans && paymentMethod != null) {
                     Datatrans.registerCard(activity, project, paymentMethod)
                 } else if (usePayone && paymentMethod != null) {
-                    Payone.registerCard(activity, project, paymentMethod)
+                    Payone.registerCard(activity, project, paymentMethod, Snabble.formPrefillData)
                 } else {
                     when (paymentMethod) {
                         PaymentMethod.VISA -> {
