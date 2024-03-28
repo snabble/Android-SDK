@@ -178,6 +178,11 @@
   <string name="Snabble.Scanner.torchButton">Lumière</string>
   <string name="Snabble.Scanner.unknownBarcode">Aucune information de prix n’est malheureusement disponible pour ce produit.</string>
   <string name="Snabble.Scanner.updateCart">Actualiser le panier</string>
+  <plurals name="Snabble.Shop.Finder.storeCount">
+    <item quantity="zero">No stores</item>
+    <item quantity="one">%d succursale</item>
+    <item quantity="other">%d succursales</item>
+  </plurals>
   <string name="Snabble.ShoppingCart.title">Panier</string>
   <string name="Snabble.ShoppingList.CreateList.title">Créer une nouvelle liste d’achats</string>
   <string name="Snabble.ShoppingList.EditList.delete">Effacer</string>
@@ -198,7 +203,6 @@
   <string name="Snabble.ShoppingList.notFound">Produit inconnu</string>
   <string name="Snabble.ShoppingList.searchHint">Chercher ou saisir directement</string>
   <string name="Snabble.ShoppingList.title">Liste d’achats</string>
-  <string name="Snabble.ShoppingList.updateQuantity">Update quantity</string>
   <string name="Snabble.ShoppingLists.title">Listes d’achats</string>
   <string name="Snabble.Shoppingcart.EmptyState.description">Ton panier est vide. Scanne les codes-barres des articles que tu souhaites acheter.</string>
   <string name="Snabble.Shoppingcart.EmptyState.restartButtonTitle">Commencer un nouvel achat</string>
