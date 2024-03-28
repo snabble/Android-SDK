@@ -21,6 +21,7 @@ import io.snabble.sdk.customization.IsMergeable
 import io.snabble.sdk.events.Events
 import io.snabble.sdk.extensions.getPackageInfoCompat
 import io.snabble.sdk.payment.PaymentCredentialsStore
+import io.snabble.sdk.payment.data.FormPrefillData
 import io.snabble.sdk.utils.*
 import okhttp3.OkHttpClient
 import java.io.ByteArrayInputStream
@@ -312,6 +313,11 @@ object Snabble {
      * Set to take control over [ShoppingCart.Item.isMergeable] default behavior.
      */
     var isMergeable: IsMergeable? = null
+
+    /**
+     * Set to have PAYONE forms prefilled with the given data.
+     */
+    var formPrefillData: FormPrefillData? = null
 
     /**
      * Setup the snabble SDK.

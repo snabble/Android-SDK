@@ -27,6 +27,7 @@ import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.payment.PaymentCredentials
+import io.snabble.sdk.payment.data.FormPrefillData
 import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
@@ -62,6 +63,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
     private lateinit var project: Project
     private lateinit var tokenizationData: PayoneTokenizationData
     private lateinit var threeDHint: TextView
+    private var formPrefillData: FormPrefillData? = null
     private var lastPreAuthResponse: Payone.PreAuthResponse? = null
     private var polling = LazyWorker.createLifeCycleAwareJob(context) {
         lastPreAuthResponse?.links?.get("preAuthStatus")?.href?.let { statusUrl ->
@@ -169,11 +171,13 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
     fun load(
         projectId: String,
         paymentType: PaymentMethod,
-        tokenizationData: PayoneTokenizationData
+        tokenizationData: PayoneTokenizationData,
+        formPrefillData: FormPrefillData?
     ) {
         this.project = Snabble.projects.first { it.id == projectId }
         this.paymentType = paymentType
         this.tokenizationData = tokenizationData
+        this.formPrefillData = formPrefillData
         inflateView()
     }
 
@@ -418,6 +422,9 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         fun log(message: String?) {
             Logger.d(message)
         }
+
+        @JavascriptInterface
+        fun prefillData(): String = GsonHolder.get().toJson(formPrefillData)
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
@@ -469,6 +476,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         const val ARG_PROJECT_ID = "projectId"
         const val ARG_PAYMENT_TYPE = "paymentType"
         const val ARG_TOKEN_DATA = "tokenData"
+        const val ARG_FORM_PREFILL_DATA = "formPrefillData"
     }
 }
 
