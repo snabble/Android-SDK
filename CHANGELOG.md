@@ -3,11 +3,40 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
-### Changed 
+* ui/ui-toolkit: i18n using the Lokalise
+### Changed
+* ui: The `ProductResolver.Builder` now requires a project as constructor param, since the default value has been removed
 ### Removed
+* ui: Remove phrase for i18n
 ### Fixed
+* core: Handle `SQLiteDatabaseLockedException` to fix app crash when updating the database
+* ui: Avoid npe caused by `isEmpty()` check on a null shopping cart
+* ui: Change project reference in `ProductResolver.kt` to get rid of IllegalArgumentException
+
+## [0.72.4] 
+### Added
+* core, io: Option to limit payment methods offered to add (#173)
+
+## [0.72.3]
+### Fixed
+* core, ui: Bind Giropay to its project (#172)
+
+## [0.72.2]
+### Changed
+* core: Explicitly enable buildConfig (#171)
+* kotlin-sample: Explicitly enable buildConfig (#171)
+* ui: Re-enable Giropay integration (#169)
+* ui-toolkit: Explicitly enable buildConfig (#171)
+* utils: Explicitly enable buildConfig (#171)
+
+## [0.72.1]
+### Added
+* Address and email input fields for credit cards via PAYONE
 
 ## [0.72.0]
+### Added
+* core: Add missing payment state transferred
+  * if the checkout process receives the final state transferred it updates the checkout state with PAYMENT_TRANSFERRED.
 ### Changed
 * core/ui : Update icons and description from paydirekt to GiroPay
   * The use of the following functions changed:
@@ -16,8 +45,12 @@ All notable changes to this project will be documented in this file.
     * PaydirektAuthorizationData changed to GiropayAuthorizationData and is now a data class
     * PaydirektData changed to GiropayData and is now a data class
     * The UI event for paydirekt changed from SHOW_PAYDIREKT_INPUT to SHOW_GIROPAY_INPUT
-* ### Fixed
+* core: Paymentcredentials type is now nullable
+### Fixed
 * ui: Fixed crash caused by missing project id when calling the PaydirektInputFragment via the PaymentInputViewHelper
+* ui: Fixed crash caused by npe in the PaymentStatusView
+### Removed
+* core/ui: Removed LEINWEBER_CUSTOMER_ID as payment methods 
 
 ## [0.71.8]
 ### Changed

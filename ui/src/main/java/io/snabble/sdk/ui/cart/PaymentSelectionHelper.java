@@ -415,8 +415,9 @@ public class PaymentSelectionHelper {
     }
 
     public boolean shouldShowPayButton() {
-        boolean onlinePaymentAvailable = cart.getAvailablePaymentMethods() != null && !cart.getAvailablePaymentMethods().isEmpty();
-        return cart.getTotalPrice() >= 0 && (onlinePaymentAvailable || selectedEntry.getValue() != null);
+        final ShoppingCart shoppingCart = cart;
+        boolean onlinePaymentAvailable = shoppingCart.getAvailablePaymentMethods() != null && !shoppingCart.getAvailablePaymentMethods().isEmpty();
+        return shoppingCart.getTotalPrice() >= 0 && (onlinePaymentAvailable || selectedEntry.getValue() != null);
     }
 
     public boolean shouldShowGooglePayButton() {

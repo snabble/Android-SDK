@@ -123,4 +123,10 @@ enum class CheckoutState {
      * SEPA mandate for PAYONE is needed
      */
     PAYONE_SEPA_MANDATE_REQUIRED,
+
+    /**
+     * The process was transferred to a payment system. The outcome of the processing
+     * will not be communicated
+     */
+    PAYMENT_TRANSFERRED,
 }

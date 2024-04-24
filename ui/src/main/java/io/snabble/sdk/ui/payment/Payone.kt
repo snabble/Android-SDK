@@ -4,11 +4,13 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
+import com.google.gson.annotations.SerializedName
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.ui.payment.creditcard.data.CreditCardInfo
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.Logger
 import io.snabble.sdk.utils.SimpleJsonCallback
@@ -41,9 +43,20 @@ object Payone {
     ) : Parcelable
 
     data class PreAuthRequest(
-        val pseudoCardPAN: String,
-        val lastname: String,
-    )
+        @SerializedName("pseudoCardPAN") val pseudoCardPan: String,
+        @SerializedName("lastName") val name: String,
+        @SerializedName("email") val email: String,
+        @SerializedName("address") val address: Address
+    ) {
+
+        data class Address(
+            @SerializedName("street") val street: String,
+            @SerializedName("zip") val zip: String,
+            @SerializedName("city") val city: String,
+            @SerializedName("country") val country: String,
+            @SerializedName("state") val state: String?,
+        )
+    }
 
     data class PreAuthResponse(
         val status: AuthStatus,

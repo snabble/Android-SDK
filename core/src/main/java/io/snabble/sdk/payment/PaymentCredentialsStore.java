@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import io.snabble.sdk.Environment;
 import io.snabble.sdk.PaymentMethod;
@@ -260,6 +261,11 @@ public class PaymentCredentialsStore {
         if (json != null) {
             try {
                 data = gson.fromJson(json, Data.class);
+                // Filter only known types
+                data.credentialsList = data.credentialsList.stream()
+                        .filter(paymentCredentials -> paymentCredentials.getType() != null)
+                        .collect(Collectors.toList());
+                save();
             } catch (Exception e) {
                 Logger.errorEvent("Could not read payment credentials: %s", e.getMessage());
             }

@@ -1,41 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
-    <string name="Snabble.Onboarding.Deeplink.accessibility">open %s</string>
-    <string name="Snabble.Onboarding.done">Done</string>
-    <string name="Snabble.Onboarding.Link.show">Show</string>
-    <string name="Snabble.Onboarding.next">Continue</string>
-    <!-- Text to be displayed in scanner if the app is not checked into a shop. -->
-    <string name="Snabble.Scanner.notCheckedIn">Visit a store to use the scanner.</string>
-    <!-- <street and house number> in <ZIP code> <city name> -->
-    <string name="Snabble.Shop.Address.accessibility">%1$s in %2$s %3$s</string>
-    <string name="Snabble.Shop.Detail.openingHours">Opening hours</string>
-    <string name="Snabble.Shop.Detail.Phonenumber.accessibility">Phonenumber %s</string>
-    <string name="Snabble.Shop.Detail.shopNow">Start shopping</string>
-    <string name="Snabble.Shop.Detail.startNavigation">Do you like to start navigation?</string>
-    <string name="Snabble.Shop.Detail.title">Details</string>
-    <string name="Snabble.Shop.Details.contractingParty">Contracting Party</string>
-    <string name="Snabble.Shop.Details.friday">Friday</string>
-    <string name="Snabble.Shop.Details.MapDisabled.actionTitle">Activate</string>
-    <string name="Snabble.Shop.Details.MapDisabled.title">You have disabled the use of %s.</string>
-    <string name="Snabble.Shop.Details.monday">Monday</string>
-    <string name="Snabble.Shop.Details.saturday">Saturday</string>
-    <string name="Snabble.Shop.Details.StartCall.accessibility">Call</string>
-    <string name="Snabble.Shop.Details.sunday">Sunday</string>
-    <string name="Snabble.Shop.Details.thursday">Thursday</string>
-    <string name="Snabble.Shop.Details.tuesday">Tuesday</string>
-    <string name="Snabble.Shop.Details.wednesday">Wednesday</string>
-    <string name="Snabble.Shop.Distance.accessibility">In %s</string>
-    <plurals name="Snabble.Shop.Finder.storeCount">
-        <item quantity="many">%d filiali</item>
-        <item quantity="one">%d filiale</item>
-        <item quantity="other">%d filiali</item>
-        <item quantity="zero">No stores</item>
-    </plurals>
-    <string name="Snabble.Shop.Finder.title">Shop</string>
-    <string name="Snabble.Shop.Finder.youarehere">You are here</string>
-    <string name="Snabble.Shop.List.Colapse.accessibility">collapse</string>
-    <string name="Snabble.Shop.List.EventShopColapsed.accessibility">%s collapsed</string>
-    <string name="Snabble.Shop.List.EventShopExpanded.accessibility">%s expanded</string>
-    <string name="Snabble.Shop.List.Expand.accessibility">expand</string>
-    <string name="Snabble.Shop.List.ShowDetails.accessibility">Show shop details</string>
+  <string name="Snabble.Onboarding.Deeplink.accessibility"></string>
+  <string name="Snabble.Onboarding.Link.show"></string>
+  <string name="Snabble.Onboarding.done"></string>
+  <string name="Snabble.Onboarding.next"></string>
+  <string name="Snabble.Scanner.notCheckedIn">Visit a store to use the scanner.</string>
+  <string name="Snabble.Shop.Address.accessibility">%1$s in %2$s %3$s</string>
+  <string name="Snabble.Shop.Detail.Phonenumber.accessibility"></string>
+  <string name="Snabble.Shop.Detail.openingHours"></string>
+  <string name="Snabble.Shop.Detail.shopNow"></string>
+  <string name="Snabble.Shop.Detail.startNavigation"></string>
+  <string name="Snabble.Shop.Detail.title"></string>
+  <string name="Snabble.Shop.Details.MapDisabled.actionTitle"></string>
+  <string name="Snabble.Shop.Details.MapDisabled.title"></string>
+  <string name="Snabble.Shop.Details.StartCall.accessibility"></string>
+  <string name="Snabble.Shop.Details.contractingParty"></string>
+  <string name="Snabble.Shop.Details.friday"></string>
+  <string name="Snabble.Shop.Details.monday"></string>
+  <string name="Snabble.Shop.Details.saturday"></string>
+  <string name="Snabble.Shop.Details.sunday"></string>
+  <string name="Snabble.Shop.Details.thursday"></string>
+  <string name="Snabble.Shop.Details.tuesday"></string>
+  <string name="Snabble.Shop.Details.wednesday"></string>
+  <string name="Snabble.Shop.Distance.accessibility"></string>
+  <plurals name="Snabble.Shop.Finder.storeCount">
+    <item quantity="zero">No stores</item>
+    <item quantity="one">%d filiale</item>
+    <item quantity="other">%d filiali</item>
+  </plurals>
+  <string name="Snabble.Shop.Finder.title"></string>
+  <string name="Snabble.Shop.Finder.youarehere"></string>
+  <string name="Snabble.Shop.List.Colapse.accessibility"></string>
+  <string name="Snabble.Shop.List.EventShopColapsed.accessibility"></string>
+  <string name="Snabble.Shop.List.EventShopExpanded.accessibility"></string>
+  <string name="Snabble.Shop.List.Expand.accessibility"></string>
+  <string name="Snabble.Shop.List.ShowDetails.accessibility"></string>
 </resources>
