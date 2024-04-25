@@ -3,11 +3,23 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
-* ui/ui-toolkit: i18n using the Lokalise
 ### Changed
-* ui: The `ProductResolver.Builder` now requires a project as constructor param, since the default value has been removed
+### Removed
+### Fixed
+
+## [0.73.0]
+### Added
+* ui/ui-toolkit: i18n using the Lokalise
+* Autofill support for PAYONE credit card forms
+* core/ui: Add support for project specific custom properties
+  * Make the external billing subject text max length configurable
+  * BREAKING CHANGE in ui module due to restricted API usage the unused SnackbarPushUpBehavior has been removed
 ### Removed
 * ui: Remove phrase for i18n
+
+## [0.72.5]
+### Changed
+* ui: The `ProductResolver.Builder` now requires a project as constructor param, since the default value has been removed
 ### Fixed
 * core: Handle `SQLiteDatabaseLockedException` to fix app crash when updating the database
 * ui: Avoid npe caused by `isEmpty()` check on a null shopping cart
