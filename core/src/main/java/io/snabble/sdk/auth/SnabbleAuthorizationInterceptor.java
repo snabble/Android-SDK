@@ -1,8 +1,5 @@
 package io.snabble.sdk.auth;
 
-import static io.snabble.sdk.auth.UserAgentKt.getHeaderFields;
-import static io.snabble.sdk.auth.UserAgentKt.getUserAgentHeader;
-
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
@@ -32,8 +29,6 @@ public class SnabbleAuthorizationInterceptor implements Interceptor {
 
         if (url.startsWith(Snabble.getInstance().getEndpointBaseUrl())) {
             Token token = tokenRegistry.getToken(project);
-            getUserAgentHeader(Snabble.getInstance().getApplication());
-            getHeaderFields(Snabble.getInstance().getApplication());
 
             if (token != null) {
                 request = request.newBuilder()
