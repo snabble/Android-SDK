@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
+* core: add new and update existing user agent headers
 ### Changed
 ### Removed
 ### Fixed
