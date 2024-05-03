@@ -911,16 +911,6 @@ class ShoppingCart(
          * Gets the user associated coupon of this item
          */
         var coupon: Coupon? = null
-            /**
-             * Associate a user applied coupon with this item. E.g. manual price reductions.
-             */
-            set(value) {
-                if (value != null && value.type != CouponType.MANUAL) {
-                    Logger.e("Only manual coupons can be added")
-                    return
-                }
-                field = value
-            }
 
         // The local generated UUID of a coupon which which will be used by the backend
         var backendCouponId: String? = null
@@ -972,6 +962,22 @@ class ShoppingCart(
             id = UUID.randomUUID().toString()
             this.cart = cart
             this.lineItem = lineItem
+        }
+
+        /**
+         * Associate a user applied coupon with this item. E.g. manual price reductions.
+         */
+        fun setCouponMethod(coupon: Coupon?) {
+            if (coupon == null) {
+                this.coupon = null;
+                return;
+            }
+
+            if (coupon.type != CouponType.MANUAL) {
+                throw RuntimeException("Only manual coupons can be added");
+            }
+
+            this.coupon = coupon;
         }
 
         /**
