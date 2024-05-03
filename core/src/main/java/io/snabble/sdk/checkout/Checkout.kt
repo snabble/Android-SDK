@@ -352,7 +352,7 @@ class Checkout @JvmOverloads constructor(
             selectedPaymentMethod = paymentMethod
             notifyStateChanged(CheckoutState.VERIFYING_PAYMENT_METHOD)
             checkoutApi.createPaymentProcess(
-                id = shoppingCart.uUID!!,
+                id = shoppingCart.uUID,
                 signedCheckoutInfo = signedCheckoutInfo,
                 paymentMethod = paymentMethod,
                 processedOffline = false,
