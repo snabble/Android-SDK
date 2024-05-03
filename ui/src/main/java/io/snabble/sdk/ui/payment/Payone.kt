@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.widget.Toast
 import androidx.fragment.app.FragmentActivity
+import com.google.gson.annotations.SerializedName
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.payment.data.FormPrefillData
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.utils.Dispatch
@@ -41,9 +43,20 @@ object Payone {
     ) : Parcelable
 
     data class PreAuthRequest(
-        val pseudoCardPAN: String,
-        val lastname: String,
-    )
+        @SerializedName("pseudoCardPAN") val pseudoCardPan: String,
+        @SerializedName("lastName") val name: String,
+        @SerializedName("email") val email: String,
+        @SerializedName("address") val address: Address
+    ) {
+
+        data class Address(
+            @SerializedName("street") val street: String,
+            @SerializedName("zip") val zip: String,
+            @SerializedName("city") val city: String,
+            @SerializedName("country") val country: String,
+            @SerializedName("state") val state: String?,
+        )
+    }
 
     data class PreAuthResponse(
         val status: AuthStatus,
@@ -59,7 +72,8 @@ object Payone {
     fun registerCard(
         activity: FragmentActivity,
         project: Project,
-        paymentMethod: PaymentMethod
+        paymentMethod: PaymentMethod,
+        formPrefillData: FormPrefillData?
     ) {
         val descriptor = project.paymentMethodDescriptors.find { it.paymentMethod == paymentMethod }
         if (descriptor == null) {
@@ -94,6 +108,7 @@ object Payone {
                     args.putString(PayoneInputView.ARG_PROJECT_ID, project.id)
                     args.putSerializable(PayoneInputView.ARG_PAYMENT_TYPE, paymentMethod)
                     args.putParcelable(PayoneInputView.ARG_TOKEN_DATA, response)
+                    args.putParcelable(PayoneInputView.ARG_FORM_PREFILL_DATA, formPrefillData)
                     Dispatch.mainThread {
                         SnabbleUI.executeAction(activity, SnabbleUI.Event.SHOW_PAYONE_INPUT, args)
                     }

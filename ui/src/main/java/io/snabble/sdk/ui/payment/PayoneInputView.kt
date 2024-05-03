@@ -3,13 +3,20 @@ package io.snabble.sdk.ui.payment
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.ApplicationInfo
+import android.content.res.Resources
 import android.util.AttributeSet
-import android.webkit.*
+import android.webkit.CookieManager
+import android.webkit.JavascriptInterface
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.FrameLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.Keep
+import androidx.core.os.ConfigurationCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
@@ -20,6 +27,7 @@ import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.payment.PaymentCredentials
+import io.snabble.sdk.payment.data.FormPrefillData
 import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
@@ -41,7 +49,7 @@ import java.io.IOException
 import java.math.BigDecimal
 import java.nio.charset.Charset
 import java.text.NumberFormat
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.CancellationException
 
 class PayoneInputView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) :
@@ -55,6 +63,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
     private lateinit var project: Project
     private lateinit var tokenizationData: PayoneTokenizationData
     private lateinit var threeDHint: TextView
+    private var formPrefillData: FormPrefillData? = null
     private var lastPreAuthResponse: Payone.PreAuthResponse? = null
     private var polling = LazyWorker.createLifeCycleAwareJob(context) {
         lastPreAuthResponse?.links?.get("preAuthStatus")?.href?.let { statusUrl ->
@@ -162,11 +171,13 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
     fun load(
         projectId: String,
         paymentType: PaymentMethod,
-        tokenizationData: PayoneTokenizationData
+        tokenizationData: PayoneTokenizationData,
+        formPrefillData: FormPrefillData?
     ) {
         this.project = Snabble.projects.first { it.id == projectId }
         this.paymentType = paymentType
         this.tokenizationData = tokenizationData
+        this.formPrefillData = formPrefillData
         inflateView()
     }
 
@@ -182,6 +193,11 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             val language = Locale.getDefault().language
                 .anyOfTheseOfFirst(fallback = "en", "de", "fr", "it", "es", "pt", "nl")
 
+            val localeCountryCode: String = ConfigurationCompat
+                .getLocales(Resources.getSystem().configuration)
+                .get(0)
+                ?.country
+                ?: ""
             val htmlForm = IOUtils
                 .toString(
                     resources.openRawResource(R.raw.snabble_payoneform),
@@ -194,13 +210,22 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
                 .replace("{{mode}}", if (tokenizationData.isTesting) "test" else "live")
                 .replace("{{language}}", language)
                 .replace("{{supportedCardType}}", ccType)
-                .replace("{{lastname}}", context.getString(R.string.Snabble_Payone_lastname))
+                .replace("{{name}}", context.getString(R.string.Snabble_Payone_lastname))
                 .replace("{{cardNumberLabel}}", context.getString(R.string.Snabble_Payone_cardNumber))
                 .replace("{{cvcLabel}}", context.getString(R.string.Snabble_Payone_cvc))
                 .replace("{{expireMonthLabel}}", context.getString(R.string.Snabble_Payone_expireMonth))
                 .replace("{{expireYearLabel}}", context.getString(R.string.Snabble_Payone_expireYear))
+                .replace("{{street}}", context.getString(R.string.Snabble_Payone_street))
+                .replace("{{zip}}", context.getString(R.string.Snabble_Payone_zip))
+                .replace("{{city}}", context.getString(R.string.Snabble_Payone_city))
+                .replace("{{country}}", context.getString(R.string.Snabble_Payone_country))
+                .replace("{{countryHint}}", context.getString(R.string.Snabble_Payone_countryHint))
+                .replace("{{state}}", context.getString(R.string.Snabble_Payone_state))
+                .replace("{{stateHint}}", context.getString(R.string.Snabble_Payone_stateHint))
+                .replace("{{email}}", context.getString(R.string.Snabble_Payone_email))
                 .replace("{{saveButtonLabel}}", context.getString(R.string.Snabble_save))
                 .replace("{{incompleteForm}}", context.getString(R.string.Snabble_Payone_incompleteForm))
+                .replace("{{localeCountryCode}}", localeCountryCode)
             // URL is required for an origin check
             webView.loadDataWithBaseURL(
                 "https://snabble.io",
@@ -227,16 +252,13 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         }
     }
 
-    fun Any.toJsonRequest(): RequestBody =
-        GsonHolder.get().toJson(this).toRequestBody("application/json".toMediaTypeOrNull())
-
-    private fun authenticate(creditCardInfo: CreditCardInfo) {
-        val req = Payone.PreAuthRequest(creditCardInfo.pseudocardpan, creditCardInfo.lastname)
+    private fun authenticate(card: CreditCardInfo) {
+        val preAuthBody = card.createPreAuthBody()
         val link = tokenizationData.links["preAuth"]
         if (link?.href != null) {
             val request = Request.Builder()
                 .url(Snabble.absoluteUrl(Snabble.absoluteUrl(link.href)))
-                .post(req.toJsonRequest())
+                .post(preAuthBody.toJsonRequest())
                 .build()
 
             project.okHttpClient.newCall(request).enqueue(object :
@@ -279,18 +301,24 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
 
     private fun save(info: CreditCardInfo) {
         creditCardInfo = null
-        val ccBrand = when (info.cardtype) {
+        val ccBrand = when (info.cardType) {
             "V" -> PaymentCredentials.Brand.VISA
             "M" -> PaymentCredentials.Brand.MASTERCARD
             "A" -> PaymentCredentials.Brand.AMEX
             else -> PaymentCredentials.Brand.UNKNOWN
         }
-        val pc = PaymentCredentials.fromPayone(
-            info.pseudocardpan,
-            info.truncatedcardpan,
+        val pc: PaymentCredentials? = PaymentCredentials.fromPayone(
+            info.pseudoCardPan,
+            info.truncatedCardPan,
             ccBrand,
-            info.cardexpiredate,
-            info.lastname,
+            info.cardExpiryDate,
+            info.name,
+            info.address.street,
+            info.address.zip,
+            info.address.city,
+            info.address.country,
+            info.address.state,
+            info.email,
             info.userId,
             project.id
         )
@@ -299,7 +327,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
                 .show()
         } else {
             Snabble.paymentCredentialsStore.add(pc)
-            Telemetry.event(Telemetry.Event.PaymentMethodAdded, pc.type.name)
+            Telemetry.event(Telemetry.Event.PaymentMethodAdded, pc.type?.name)
         }
         finish()
     }
@@ -330,43 +358,54 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         UIUtils.getHostFragmentActivity(context)?.lifecycle?.removeObserver(this)
     }
 
-    private data class CreditCardInfo(
-        val pseudocardpan: String,
-        val truncatedcardpan: String,
-        val cardtype: String,
-        val cardexpiredate: String,
-        val lastname: String,
-        var userId: String? = null,
-    )
-
     @Keep
     private inner class JsInterface {
 
         @JavascriptInterface
         fun saveCard(
-            pseudocardpan: String?,
-            truncatedcardpan: String?,
-            cardtype: String?,
-            cardexpiredate: String?,
-            lastname: String?
+            pseudoCardPan: String?,
+            truncatedCardPan: String?,
+            cardType: String?,
+            cardExpiryDate: String?,
+            name: String?,
+            street: String?,
+            zip: String?,
+            city: String?,
+            country: String?,
+            state: String?,
+            email: String?,
         ) {
+            if (pseudoCardPan == null ||
+                truncatedCardPan == null ||
+                cardType == null ||
+                cardExpiryDate == null ||
+                name == null
+            ) {
+                Dispatch.mainThread { finishWithError("Process error.") }
+                return
+            }
+
             CreditCardInfo(
-                pseudocardpan = requireNotNull(pseudocardpan),
-                truncatedcardpan = requireNotNull(truncatedcardpan),
-                cardtype = requireNotNull(cardtype),
-                cardexpiredate = requireNotNull(cardexpiredate),
-                lastname = requireNotNull(lastname),
+                pseudoCardPan = pseudoCardPan,
+                truncatedCardPan = truncatedCardPan,
+                cardType = cardType,
+                cardExpiryDate = cardExpiryDate,
+                name = name,
+
+                email = email ?: "",
+                address = CreditCardInfo.Address(
+                    street = street ?: "",
+                    zip = zip ?: "",
+                    city = city ?: "",
+                    country = country ?: "",
+                    state = state?.ifEmpty { null },
+                )
             ).let { cardInfo ->
                 creditCardInfo = cardInfo
                 if (isActivityResumed) {
                     Dispatch.mainThread { authenticate(cardInfo) }
                 }
             }
-        }
-
-        @JavascriptInterface
-        fun fail(failReason: String?) {
-            Dispatch.mainThread { finishWithError(failReason) }
         }
 
         @JavascriptInterface
@@ -383,13 +422,9 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         fun log(message: String?) {
             Logger.d(message)
         }
-    }
 
-    companion object {
-
-        const val ARG_PROJECT_ID = "projectId"
-        const val ARG_PAYMENT_TYPE = "paymentType"
-        const val ARG_TOKEN_DATA = "tokenData"
+        @JavascriptInterface
+        fun prefillData(): String = GsonHolder.get().toJson(formPrefillData)
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
@@ -402,7 +437,51 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             else -> Unit
         }
     }
+
+    private data class CreditCardInfo(
+        var userId: String? = null,
+        val pseudoCardPan: String,
+        val truncatedCardPan: String,
+        val cardType: String,
+        val cardExpiryDate: String,
+        val name: String,
+        val email: String,
+        val address: Address
+    ) {
+
+        data class Address(
+            val street: String,
+            val zip: String,
+            val city: String,
+            val country: String,
+            val state: String? = null,
+        )
+
+        fun createPreAuthBody() = Payone.PreAuthRequest(
+            pseudoCardPan = pseudoCardPan,
+            name = name,
+            email = email,
+            address = Payone.PreAuthRequest.Address(
+                street = address.street,
+                zip = address.zip,
+                city = address.city,
+                country = address.country,
+                state = address.state,
+            )
+        )
+    }
+
+    companion object {
+
+        const val ARG_PROJECT_ID = "projectId"
+        const val ARG_PAYMENT_TYPE = "paymentType"
+        const val ARG_TOKEN_DATA = "tokenData"
+        const val ARG_FORM_PREFILL_DATA = "formPrefillData"
+    }
 }
 
 private fun <T> T.anyOfTheseOfFirst(fallback: T, vararg options: T): T =
     options.firstOrNull { this == it } ?: fallback
+
+private fun Any.toJsonRequest(): RequestBody =
+    GsonHolder.get().toJson(this).toRequestBody("application/json".toMediaTypeOrNull())

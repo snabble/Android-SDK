@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -19,12 +21,18 @@ import android.widget.Toast;
 
 import androidx.activity.ComponentActivity;
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import io.snabble.sdk.Environment;
+import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.PaymentCredentials;
+import io.snabble.sdk.payment.data.GiropayAuthorizationData;
 import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -40,7 +48,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
-public class PaydirektInputView extends FrameLayout {
+public class GiropayInputView extends FrameLayout {
     private static class Href {
         public String href;
     }
@@ -70,12 +78,13 @@ public class PaydirektInputView extends FrameLayout {
     private static final String CANCELLED_URL = "snabble-paydirekt://cancelled";
     private static final String FAILURE_URL = "snabble-paydirekt://failure";
 
+    private String projectId;
     private boolean acceptedKeyguard;
     private WebView webView;
     private OkHttpClient okHttpClient;
     private ProgressBar progressBar;
     private AuthorizationResult authorizationResult;
-    private PaymentCredentials.PaydirektAuthorizationData authorizationData;
+    private GiropayAuthorizationData authorizationData;
 
     private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
         @Override
@@ -88,24 +97,24 @@ public class PaydirektInputView extends FrameLayout {
         }
     };
 
-    public PaydirektInputView(Context context) {
+    public GiropayInputView(Context context) {
         super(context);
         inflateView();
     }
 
-    public PaydirektInputView(Context context, AttributeSet attrs) {
+    public GiropayInputView(Context context, AttributeSet attrs) {
         super(context, attrs);
         inflateView();
     }
 
-    public PaydirektInputView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public GiropayInputView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         inflateView();
     }
 
     @SuppressLint({"InlinedApi", "SetJavaScriptEnabled", "AddJavascriptInterface"})
     private void inflateView() {
-        inflate(getContext(), R.layout.snabble_view_paydirekt, this);
+        inflate(getContext(), R.layout.snabble_view_giropay, this);
 
         okHttpClient = Snabble.getInstance().getProjects().get(0).getOkHttpClient();
 
@@ -121,10 +130,18 @@ public class PaydirektInputView extends FrameLayout {
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                Uri uri = request.getUrl();
-                if (uri != null) {
-                    String url = uri.toString();
-                    Logger.d("shouldOverrideUrlLoading " + url);
+                final Uri uri = request.getUrl();
+                final Environment environment = Snabble.getInstance().getEnvironment();
+                if (isGiropayAppLinkUrl(uri, environment)) {
+                    final Intent giropayAppLinkIntent = new Intent(Intent.ACTION_VIEW);
+                    giropayAppLinkIntent.setData(request.getUrl());
+                    if (isGiropayAppAvailable(giropayAppLinkIntent, view.getContext(), environment)) {
+                        view.getContext().startActivity(giropayAppLinkIntent);
+                        return true;
+                    }
+                } else if (uri != null) {
+                    final String url = uri.toString();
+                    Logger.d("shouldOverrideUrlLoading: <" + url + ">");
 
                     switch (url) {
                         case SUCCESS_URL:
@@ -168,20 +185,24 @@ public class PaydirektInputView extends FrameLayout {
     }
 
     private void load() {
-        String url = Snabble.getInstance().getPaydirektAuthUrl();
+        @Nullable final Project project = Snabble.getInstance().getCheckedInProject().getValue();
+        if (project != null) projectId = project.getId();
+
+        String url = Snabble.getInstance().getGiropayAuthUrl();
         if (url == null) {
             finishWithError();
             return;
         }
 
-        authorizationData = new PaymentCredentials.PaydirektAuthorizationData();
-        authorizationData.id = UUID.randomUUID().toString();
-        authorizationData.name = Build.MODEL;
-        authorizationData.fingerprint = "167-671";
-        authorizationData.ipAddress = "127.0.0.1";
-        authorizationData.redirectUrlAfterSuccess = SUCCESS_URL;
-        authorizationData.redirectUrlAfterCancellation = CANCELLED_URL;
-        authorizationData.redirectUrlAfterFailure = FAILURE_URL;
+        authorizationData = new GiropayAuthorizationData(
+                UUID.randomUUID().toString(),
+                Build.MODEL,
+                "127.0.0.1",
+                "167-671",
+                SUCCESS_URL,
+                CANCELLED_URL,
+                FAILURE_URL
+        );
 
         String json = GsonHolder.get().toJson(authorizationData);
         RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
@@ -214,6 +235,46 @@ public class PaydirektInputView extends FrameLayout {
                 });
     }
 
+    private boolean isGiropayAppLinkUrl(@Nullable final Uri uri, @Nullable Environment environment) {
+        if (uri != null && uri.getHost() != null) {
+            return uri.getHost().startsWith(getGiropayAppLinkUrlHost(environment));
+        }
+        return false;
+    }
+
+    @NonNull
+    private String getGiropayAppLinkUrlHost(@Nullable final Environment environment) {
+        if (environment == Environment.PRODUCTION) {
+            return "app.paydirekt.de";
+        } else {
+            return "app.sandbox.paydirekt.de";
+        }
+    }
+
+    private boolean isGiropayAppAvailable(
+            @NonNull final Intent intent,
+            @NonNull final Context context,
+            @Nullable final Environment environment
+    ) {
+        final List<ResolveInfo> intentInfo = context.getPackageManager().queryIntentActivities(intent, 0);
+        final String appPackageName = getGiropayAppPackage(environment);
+        for (final ResolveInfo info : intentInfo) {
+            if (info.activityInfo.packageName.contains(appPackageName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @NonNull
+    private String getGiropayAppPackage(final @Nullable Environment environment) {
+        if (environment == Environment.PRODUCTION) {
+            return "com.gimb.paydirekt.app";
+        } else {
+            return "com.gimb.paydirekt.app.sandbox";
+        }
+    }
+
     private void authenticateAndSave() {
         Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
             @Override
@@ -233,7 +294,11 @@ public class PaydirektInputView extends FrameLayout {
     }
 
     private void save() {
-        final PaymentCredentials pc = PaymentCredentials.fromPaydirekt(authorizationData, authorizationResult.getAuthorizationLink());
+        final PaymentCredentials pc = PaymentCredentials.fromGiropay(
+                authorizationData,
+                authorizationResult.getAuthorizationLink(),
+                projectId
+        );
 
         if (pc == null) {
             Toast.makeText(getContext(), "Could not verify payment credentials", Toast.LENGTH_LONG)
@@ -259,8 +324,8 @@ public class PaydirektInputView extends FrameLayout {
         Logger.d("finishWithError");
 
         Toast.makeText(getContext(),
-                R.string.Snabble_Paydirekt_AuthorizationFailed_title,
-                Toast.LENGTH_LONG)
+                        R.string.Snabble_Giropay_AuthorizationFailed_title,
+                        Toast.LENGTH_LONG)
                 .show();
 
         finish();

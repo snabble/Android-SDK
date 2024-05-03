@@ -40,8 +40,9 @@ class ExternalBillingViewModel : ViewModel() {
                             "$idDescriptor: $username",
                         )
                         val success = repo.addPaymentCredentials(paymentCredentials)
-                        if (success && paymentCredentials != null) {
-                            trackCredentialType(paymentCredentials.type.name)
+                        val type = paymentCredentials?.type
+                        if (success && type != null) {
+                            trackCredentialType(type.name)
                         }
                     }
                     _uiState.tryEmit(Success)

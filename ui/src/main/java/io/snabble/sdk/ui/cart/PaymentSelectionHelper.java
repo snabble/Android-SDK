@@ -10,14 +10,14 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import io.snabble.sdk.PaymentMethod;
@@ -31,6 +31,7 @@ import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener;
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener;
 import io.snabble.sdk.ui.R;
+import io.snabble.sdk.ui.payment.PaymentMethodMetaDataHelper;
 import io.snabble.sdk.utils.GsonHolder;
 
 public class PaymentSelectionHelper {
@@ -43,16 +44,12 @@ public class PaymentSelectionHelper {
     public static class Entry implements Serializable {
         String text;
         String hint;
-        transient int iconResId;
+        public transient int iconResId;
         public PaymentCredentials paymentCredentials;
         public PaymentMethod paymentMethod;
         boolean isAvailable;
         boolean isAdded = true;
     }
-
-    private final Map<PaymentMethod, Integer> icons = new HashMap<>();
-    private final Map<PaymentMethod, String> names = new HashMap<>();
-    private final List<PaymentMethod> paymentMethodsSortPriority = new ArrayList<>();
 
     private final Application application;
     private final MutableLiveData<Entry> selectedEntry;
@@ -65,6 +62,9 @@ public class PaymentSelectionHelper {
     private PaymentCredentials lastAddedPaymentCredentials;
     private boolean googlePayIsReady = false;
 
+    @NotNull
+    private PaymentMethodMetaDataHelper metaDataHelper;
+
     private final ShoppingCartListener shoppingCartListener =
             new SimpleShoppingCartListener() {
                 @Override
@@ -76,56 +76,7 @@ public class PaymentSelectionHelper {
     private PaymentSelectionHelper() {
         application = Snabble.getInstance().getApplication();
 
-        icons.put(PaymentMethod.DE_DIRECT_DEBIT, R.drawable.snabble_ic_payment_select_sepa);
-        icons.put(PaymentMethod.VISA, R.drawable.snabble_ic_payment_select_visa);
-        icons.put(PaymentMethod.MASTERCARD, R.drawable.snabble_ic_payment_select_mastercard);
-        icons.put(PaymentMethod.AMEX, R.drawable.snabble_ic_payment_select_amex);
-        icons.put(PaymentMethod.PAYDIREKT, R.drawable.snabble_ic_payment_select_paydirekt);
-        icons.put(PaymentMethod.TEGUT_EMPLOYEE_CARD, R.drawable.snabble_ic_payment_select_tegut);
-        icons.put(PaymentMethod.LEINWEBER_CUSTOMER_ID, R.drawable.snabble_ic_payment_select_leinweber);
-        icons.put(PaymentMethod.CUSTOMERCARD_POS, R.drawable.snabble_ic_payment_select_pos);
-        icons.put(PaymentMethod.GATEKEEPER_TERMINAL, R.drawable.snabble_ic_payment_select_sco);
-        icons.put(PaymentMethod.QRCODE_POS, R.drawable.snabble_ic_payment_select_pos);
-        icons.put(PaymentMethod.QRCODE_OFFLINE, R.drawable.snabble_ic_payment_select_pos);
-        icons.put(PaymentMethod.POST_FINANCE_CARD, R.drawable.snabble_ic_payment_select_postfinance);
-        icons.put(PaymentMethod.TWINT, R.drawable.snabble_ic_payment_select_twint);
-        icons.put(PaymentMethod.GOOGLE_PAY, R.drawable.snabble_ic_payment_select_gpay);
-        icons.put(PaymentMethod.PAYONE_SEPA, R.drawable.snabble_ic_payment_select_sepa);
-        icons.put(PaymentMethod.EXTERNAL_BILLING, R.drawable.ic_snabble_external_billing);
-
-        names.put(PaymentMethod.DE_DIRECT_DEBIT, "SEPA-Lastschrift");
-        names.put(PaymentMethod.VISA, "VISA");
-        names.put(PaymentMethod.MASTERCARD, "Mastercard");
-        names.put(PaymentMethod.AMEX, "American Express");
-        names.put(PaymentMethod.PAYDIREKT, "Paydirekt");
-        names.put(PaymentMethod.TEGUT_EMPLOYEE_CARD, "Tegut... Mitarbeiterkarte");
-        names.put(PaymentMethod.LEINWEBER_CUSTOMER_ID, "Leinweber Rechnungskauf");
-        names.put(PaymentMethod.GATEKEEPER_TERMINAL, application.getString(R.string.Snabble_Payment_payAtSCO));
-        names.put(PaymentMethod.QRCODE_POS, application.getString(R.string.Snabble_Payment_payAtCashDesk));
-        names.put(PaymentMethod.CUSTOMERCARD_POS, application.getString(R.string.Snabble_Payment_payAtCashDesk));
-        names.put(PaymentMethod.QRCODE_OFFLINE, application.getString(R.string.Snabble_Payment_payAtCashDesk));
-        names.put(PaymentMethod.POST_FINANCE_CARD, "PostFinance Card");
-        names.put(PaymentMethod.TWINT, "Twint");
-        names.put(PaymentMethod.GOOGLE_PAY, "Google Pay");
-        names.put(PaymentMethod.PAYONE_SEPA, "SEPA-Lastschrift");
-        names.put(PaymentMethod.EXTERNAL_BILLING, application.getString(R.string.Snabble_Payment_ExternalBilling_title));
-
-        paymentMethodsSortPriority.add(PaymentMethod.GOOGLE_PAY);
-        paymentMethodsSortPriority.add(PaymentMethod.DE_DIRECT_DEBIT);
-        paymentMethodsSortPriority.add(PaymentMethod.VISA);
-        paymentMethodsSortPriority.add(PaymentMethod.MASTERCARD);
-        paymentMethodsSortPriority.add(PaymentMethod.AMEX);
-        paymentMethodsSortPriority.add(PaymentMethod.TWINT);
-        paymentMethodsSortPriority.add(PaymentMethod.POST_FINANCE_CARD);
-        paymentMethodsSortPriority.add(PaymentMethod.PAYDIREKT);
-        paymentMethodsSortPriority.add(PaymentMethod.PAYONE_SEPA);
-        paymentMethodsSortPriority.add(PaymentMethod.GATEKEEPER_TERMINAL);
-        paymentMethodsSortPriority.add(PaymentMethod.EXTERNAL_BILLING);
-        paymentMethodsSortPriority.add(PaymentMethod.TEGUT_EMPLOYEE_CARD);
-        paymentMethodsSortPriority.add(PaymentMethod.LEINWEBER_CUSTOMER_ID);
-        paymentMethodsSortPriority.add(PaymentMethod.CUSTOMERCARD_POS);
-        paymentMethodsSortPriority.add(PaymentMethod.QRCODE_POS);
-        paymentMethodsSortPriority.add(PaymentMethod.QRCODE_OFFLINE);
+        metaDataHelper = new PaymentMethodMetaDataHelper(application);
 
         selectedEntry = new MutableLiveData<>();
 
@@ -187,7 +138,7 @@ public class PaymentSelectionHelper {
             Entry lastEntry = null;
             if (last != null) {
                 lastEntry = GsonHolder.get().fromJson(last, Entry.class);
-                Integer iconResId = icons.get(lastEntry.paymentMethod);
+                Integer iconResId = metaDataHelper.iconFor(lastEntry.paymentMethod);
                 if (iconResId != null) {
                     lastEntry.iconResId = iconResId;
                 }
@@ -294,11 +245,11 @@ public class PaymentSelectionHelper {
             for (PaymentMethod paymentMethod : projectPaymentMethods) {
                 if (paymentMethod.isOfflineMethod()) {
                     final Entry e = new Entry();
-                    e.text = names.get(paymentMethod);
+                    e.text = metaDataHelper.labelFor(paymentMethod);
                     e.paymentMethod = paymentMethod;
                     e.isAvailable = true;
 
-                    Integer iconResId = icons.get(paymentMethod);
+                    Integer iconResId = metaDataHelper.iconFor(paymentMethod);
                     if (iconResId != null) {
                         e.iconResId = iconResId;
                         entries.add(e);
@@ -340,7 +291,7 @@ public class PaymentSelectionHelper {
                 continue;
             }
 
-            e.text = names.get(e.paymentMethod);
+            e.text = metaDataHelper.labelFor(e.paymentMethod);
             e.paymentCredentials = pc;
 
             if (availablePaymentMethodsList.contains(e.paymentMethod)) {
@@ -358,7 +309,7 @@ public class PaymentSelectionHelper {
                 continue;
             }
 
-            Integer iconResId = icons.get(e.paymentMethod);
+            Integer iconResId = metaDataHelper.iconFor(e.paymentMethod);
             if (iconResId != null) {
                 e.iconResId = iconResId;
                 entries.add(e);
@@ -385,7 +336,7 @@ public class PaymentSelectionHelper {
 
             final Entry e = new Entry();
 
-            e.text = names.get(pm);
+            e.text = metaDataHelper.labelFor(pm);
             e.paymentMethod = pm;
             e.isAvailable = true;
             e.isAdded = !pm.isRequiringCredentials();
@@ -394,7 +345,7 @@ public class PaymentSelectionHelper {
                 e.hint = application.getString(R.string.Snabble_Shoppingcart_noPaymentData);
             }
 
-            Integer iconResId = icons.get(pm);
+            Integer iconResId = metaDataHelper.iconFor(pm);
             if (iconResId != null) {
                 e.iconResId = iconResId;
                 entries.add(e);
@@ -402,8 +353,8 @@ public class PaymentSelectionHelper {
         }
 
         Collections.sort(entries, (o1, o2) -> {
-            int p1 = paymentMethodsSortPriority.indexOf(o1.paymentMethod);
-            int p2 = paymentMethodsSortPriority.indexOf(o2.paymentMethod);
+            int p1 = metaDataHelper.indexOf(o1.paymentMethod);
+            int p2 = metaDataHelper.indexOf(o2.paymentMethod);
 
             return Integer.compare(p1, p2);
         });
@@ -466,8 +417,9 @@ public class PaymentSelectionHelper {
     }
 
     public boolean shouldShowPayButton() {
-        boolean onlinePaymentAvailable = cart.getAvailablePaymentMethods() != null && !cart.getAvailablePaymentMethods().isEmpty();
-        return cart.getTotalPrice() >= 0 && (onlinePaymentAvailable || selectedEntry.getValue() != null);
+        final ShoppingCart shoppingCart = cart;
+        boolean onlinePaymentAvailable = shoppingCart.getAvailablePaymentMethods() != null && !shoppingCart.getAvailablePaymentMethods().isEmpty();
+        return shoppingCart.getTotalPrice() >= 0 && (onlinePaymentAvailable || selectedEntry.getValue() != null);
     }
 
     public boolean shouldShowGooglePayButton() {

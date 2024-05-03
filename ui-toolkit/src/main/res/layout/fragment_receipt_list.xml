@@ -27,18 +27,33 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <TextView
+    <LinearLayout
         android:id="@+id/empty_state"
-        style="@style/TextAppearance.MaterialComponents.Body1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_margin="16dp"
-        android:drawablePadding="32dp"
-        android:text="@string/Snabble.Receipts.noReceipts"
+        android:orientation="vertical"
         android:visibility="gone"
-        app:drawableTint="@color/primary"
-        app:drawableTopCompat="@drawable/ic_receipt"
-        tools:visibility="visible" />
+        tools:visibility="visible">
+
+        <ImageView
+            android:layout_width="86dp"
+            android:layout_height="93dp"
+            android:layout_gravity="center_horizontal"
+            android:contentDescription="@string/Snabble.Receipts.title"
+            android:src="@drawable/snabble_receipts"
+            app:tint="@color/primary"
+            tools:visibility="visible" />
+
+        <TextView
+            style="@style/TextAppearance.MaterialComponents.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="16dp"
+            android:drawablePadding="32dp"
+            android:text="@string/Snabble.Receipts.noReceipts"
+            tools:visibility="visible" />
+    </LinearLayout>
 
 </FrameLayout>

@@ -2,17 +2,12 @@ package io.snabble.sdk
 
 import android.app.Application
 import androidx.annotation.RestrictTo
-import okhttp3.OkHttpClient
-import io.snabble.sdk.OkHttpLogger
-import io.snabble.sdk.Snabble
-import io.snabble.sdk.UserAgentInterceptor
-import io.snabble.sdk.OkHttpClientFactory
+import io.snabble.sdk.auth.useragent.UserAgentInterceptor
 import io.snabble.sdk.utils.LetsEncryptCertHelper
 import io.snabble.sdk.utils.Logger
 import okhttp3.Cache
 import okhttp3.CertificatePinner
-import okhttp3.Request
-import okhttp3.logging.HttpLoggingInterceptor
+import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)

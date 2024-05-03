@@ -40,7 +40,7 @@ object SnabbleUI {
         SHOW_PAYONE_SEPA,
         SHOW_CREDIT_CARD_INPUT,
         SHOW_PAYONE_INPUT,
-        SHOW_PAYDIREKT_INPUT,
+        SHOW_GIROPAY_INPUT,
         SHOW_EXTERNAL_BILLING,
         SHOW_SHOPPING_CART,
         SHOW_PAYMENT_CREDENTIALS_LIST,
@@ -149,8 +149,8 @@ object SnabbleUI {
 
                 SHOW_PAYONE_INPUT -> startActivity(context, PayoneInputActivity::class.java, args, canGoBack = false)
 
-                SHOW_PAYDIREKT_INPUT ->
-                    startActivity(context, PaydirektInputActivity::class.java, args, canGoBack = false)
+                SHOW_GIROPAY_INPUT ->
+                    startActivity(context, GiropayInputActivity::class.java, args, canGoBack = false)
 
                 SHOW_SHOPPING_CART -> startActivity(context, ShoppingCartActivity::class.java, args)
 

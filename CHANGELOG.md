@@ -3,9 +3,112 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
+* core: add new and update existing user agent headers
 ### Changed
 ### Removed
 ### Fixed
+
+## [0.73.0]
+### Added
+* ui/ui-toolkit: i18n using the Lokalise
+* Autofill support for PAYONE credit card forms
+* core/ui: Add support for project specific custom properties
+  * Make the external billing subject text max length configurable
+  * BREAKING CHANGE in ui module due to restricted API usage the unused SnackbarPushUpBehavior has been removed
+### Removed
+* ui: Remove phrase for i18n
+
+## [0.72.5]
+### Changed
+* ui: The `ProductResolver.Builder` now requires a project as constructor param, since the default value has been removed
+### Fixed
+* core: Handle `SQLiteDatabaseLockedException` to fix app crash when updating the database
+* ui: Avoid npe caused by `isEmpty()` check on a null shopping cart
+* ui: Change project reference in `ProductResolver.kt` to get rid of IllegalArgumentException
+
+## [0.72.4] 
+### Added
+* core, io: Option to limit payment methods offered to add (#173)
+
+## [0.72.3]
+### Fixed
+* core, ui: Bind Giropay to its project (#172)
+
+## [0.72.2]
+### Changed
+* core: Explicitly enable buildConfig (#171)
+* kotlin-sample: Explicitly enable buildConfig (#171)
+* ui: Re-enable Giropay integration (#169)
+* ui-toolkit: Explicitly enable buildConfig (#171)
+* utils: Explicitly enable buildConfig (#171)
+
+## [0.72.1]
+### Added
+* Address and email input fields for credit cards via PAYONE
+
+## [0.72.0]
+### Added
+* core: Add missing payment state transferred
+  * if the checkout process receives the final state transferred it updates the checkout state with PAYMENT_TRANSFERRED.
+### Changed
+* core/ui : Update icons and description from paydirekt to GiroPay
+  * The use of the following functions changed:
+    * PaydirektInputActivity/Fragment/View changed to GirpayInputActivity/Fragment/View
+    * PaymentCredentials.fromPaydirekt(...)  changed to PaymentCredentials.fromGiropay(...)
+    * PaydirektAuthorizationData changed to GiropayAuthorizationData and is now a data class
+    * PaydirektData changed to GiropayData and is now a data class
+    * The UI event for paydirekt changed from SHOW_PAYDIREKT_INPUT to SHOW_GIROPAY_INPUT
+* core: Paymentcredentials type is now nullable
+### Fixed
+* ui: Fixed crash caused by missing project id when calling the PaydirektInputFragment via the PaymentInputViewHelper
+* ui: Fixed crash caused by npe in the PaymentStatusView
+### Removed
+* core/ui: Removed LEINWEBER_CUSTOMER_ID as payment methods 
+
+## [0.71.8]
+### Changed
+* Use nio API desugaring instead of the default variant (#159)
+### Removed
+* Obsolete use of API desugaring (#159)
+* Remove FileUtils.moveFile fix, now fixed by adding nio API desugaring (#159)
+### Fixed
+* Add missing CreditCards to validity check and automated removal (#161)
+* Add `checkInManager.update()` that's been missing under rare debug circumstances (#162)
+
+## [0.71.7]
+### Changed
+* ui: Change wording from 'Bezahlverfahren' to 'Zahlungsmethode'
+
+## [0.71.6]
+### Fixed
+* Fix another crash caused by org.apache.commons.io.FileUtils.moveFile
+
+## [0.71.5]
+### Fixed
+* Fix crash caused by org.apache.commons.io.FileUtils.moveFile w/ API level below 26 (Android Oreo)
+
+## [0.71.4]
+### Added
+* utils: Add QR code generator (#154)
+### Changed 
+* ui: Separate payment method meta data from PaymentSelectionHelper into new PaymentMethodMetaData (#154)
+* ui-toolkit: Refactor mapping function in PurchasesRepo to be more concise (#151)
+* core: Add logging extensions to core module (#154)
+### Removed
+* ui-toolkit: Remove logging class (moved to core module) (#154)
+
+## [0.71.3]
+### Fixed
+* core: Attempt to fix bug where old checkout processes has been processed
+  * The saved checkout is only used if it's related to the current cart
+
+## [0.71.2]
+### Added
+* ui-toolkit: New icon for empty state of the receipt list (#150)
+
+## [0.71.1]
+### Fixed
+* ui-toolkit: Wrong behaviour of the purchase widget (#149)
 
 ## [0.71.0]
 ### Changed

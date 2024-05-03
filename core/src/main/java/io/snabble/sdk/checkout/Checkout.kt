@@ -27,7 +27,11 @@ class Checkout @JvmOverloads constructor(
     }
 
     private var persistentState: PersistentState =
-        PersistentState.restore(File(project.internalStorageDirectory, "checkout.json"))
+        PersistentState.restore(
+            file = File(project.internalStorageDirectory, "checkout.json"),
+            cartId = shoppingCart.id,
+            projectId = project.id
+        )
 
     /** The current checkout process response from the backend **/
     var checkoutProcess
@@ -414,7 +418,7 @@ class Checkout @JvmOverloads constructor(
     private fun hasAnyFulfillmentAllocationFailed(): Boolean {
         return checkoutProcess?.fulfillments?.any {
             it.state == FulfillmentState.ALLOCATION_FAILED
-                    || it.state == FulfillmentState.ALLOCATION_TIMED_OUT
+                || it.state == FulfillmentState.ALLOCATION_TIMED_OUT
         } ?: false
     }
 
@@ -497,7 +501,7 @@ class Checkout @JvmOverloads constructor(
                 return true
             }
 
-            if (state.value == CheckoutState.VERIFYING_PAYMENT_METHOD) {
+            if (state.value == CheckoutState.VERIFYING_PAYMENT_METHOD && checkoutProcess.paymentState != CheckState.TRANSFERRED) {
                 when (checkoutProcess.routingTarget) {
                     RoutingTarget.SUPERVISOR -> {
                         notifyStateChanged(CheckoutState.WAIT_FOR_SUPERVISOR)
@@ -570,6 +574,10 @@ class Checkout @JvmOverloads constructor(
                         notifyFulfillmentUpdate()
                         areAllFulfillmentsClosed()
                     }
+                }
+
+                CheckState.TRANSFERRED -> {
+                    notifyStateChanged(CheckoutState.PAYMENT_TRANSFERRED)
                 }
 
                 CheckState.FAILED -> {

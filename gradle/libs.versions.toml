@@ -2,13 +2,13 @@
 compileSdk = "33"
 targetSdk = "32"
 minSdk = "21"
-gradlePlugin = "8.0.2"
+gradlePlugin = "8.2.2"
 desugarVersion = "1.1.5"
 okhttpVersion = "4.10.0"
 # @pin always, manually updated to ensure overall dependency support
-kotlin = "1.8.22"
+kotlin = "1.9.23"
 # @pin always, manually updated to ensure overall dependency support
-compose-compiler = "1.4.8"
+compose-compiler = "1.5.11"
 navigation = "2.6.0"
 # @pin
 compose_version = "1.2.1"
@@ -71,8 +71,7 @@ compose-uiViewBinding = { module = "androidx.compose.ui:ui-viewbinding", version
 compose-iconsExtended = { module = "androidx.compose.material:material-icons-extended", version.ref = "androidx-compose-material" }
 commonsIo = "commons-io:commons-io:2.5"
 datatrans-androidSdk = "ch.datatrans:android-sdk:3.2.0"
-# @pin until a newer version been tested successfully: https://developer.android.com/studio/write/java8-support#library-desugaring-versions
-desugarJdkLibs = "com.android.tools:desugar_jdk_libs:1.1.5"
+desugarJdkLibsNio = "com.android.tools:desugar_jdk_libs_nio:2.0.4"
 googlePlayServices-maps = "com.google.android.gms:play-services-maps:18.1.0"
 googlePlayServices-wallet = "com.google.android.gms:play-services-wallet:19.2.0"
 google-mlkit-barcodeScanning = "com.google.mlkit:barcode-scanning:17.1.0"

@@ -51,18 +51,22 @@ android {
         )
         jvmTarget = "17"
     }
+
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
-    coreLibraryDesugaring(libs.desugarJdkLibs)
+    coreLibraryDesugaring(libs.desugarJdkLibsNio)
 
-    //noinspection GradleDependency
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
     implementation(libs.commonsIo)
     implementation(libs.gson)
     implementation(libs.squareup.okhttp3.okhttp)
     implementation(libs.squareup.okhttp3.tls)
+    implementation(libs.google.zxing.core)
 
     // for testing
     testImplementation(libs.junit)

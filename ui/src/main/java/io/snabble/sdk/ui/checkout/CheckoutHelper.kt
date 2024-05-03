@@ -27,5 +27,6 @@ val CheckoutState.isCheckoutState: Boolean
         CheckoutState.DENIED_BY_SUPERVISOR,
         CheckoutState.PAYMENT_ABORT_FAILED,
         CheckoutState.PAYMENT_PROCESSING_ERROR,
+        CheckoutState.PAYMENT_TRANSFERRED,
         CheckoutState.PAYONE_SEPA_MANDATE_REQUIRED -> true
     }
