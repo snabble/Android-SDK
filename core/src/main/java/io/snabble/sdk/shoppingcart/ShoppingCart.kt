@@ -25,11 +25,9 @@ import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
-import io.snabble.sdk.utils.Logger
 import java.math.BigDecimal
 import java.util.Locale
 import java.util.UUID
-import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.time.Duration.Companion.minutes
 
 /**
@@ -43,7 +41,7 @@ class ShoppingCart(
     private var oldData: ShoppingCartData? = ShoppingCartData()
 
     @Transient
-    private val listeners: MutableList<ShoppingCartListener>? = CopyOnWriteArrayList()
+    private val listeners: MutableList<ShoppingCartListener>? = mutableListOf()
 
     @Transient
     private var updater: ShoppingCartUpdater? = null
@@ -124,7 +122,18 @@ class ShoppingCart(
         checkLimits()
         notifyItemAdded(this, item)
 
-        // sort coupons to bottom
+        sortCouponsToBottom()
+
+        if (update) {
+            data.addCount++
+            data.modCount++
+            generateNewUUID()
+            invalidateOnlinePrices()
+            updatePrices(true)
+        }
+    }
+
+    private fun sortCouponsToBottom() {
         data.items.sortWith(Comparator { o1: Item, o2: Item ->
             val t1 = o1.type
             val t2 = o2.type
@@ -136,14 +145,6 @@ class ShoppingCart(
                 return@Comparator 0
             }
         })
-
-        if (update) {
-            data.addCount++
-            data.modCount++
-            generateNewUUID()
-            invalidateOnlinePrices()
-            updatePrices(true)
-        }
     }
 
     private fun insertIfMergeable(item: Item, index: Int, update: Boolean): Boolean {
@@ -332,11 +333,13 @@ class ShoppingCart(
         val iterator: MutableIterator<Item> = iterator()
         while (iterator.hasNext()) {
             val item = iterator.next()
-            if (item.type == ItemType.LINE_ITEM) {
-                iterator.remove()
-            } else {
-                item.lineItem = null
-                item.isManualCouponApplied = false
+            when (item.type) {
+                ItemType.LINE_ITEM -> iterator.remove()
+
+                else -> {
+                    item.lineItem = null
+                    item.isManualCouponApplied = false
+                }
             }
         }
 
@@ -587,31 +590,37 @@ class ShoppingCart(
     private fun backendCartItems(): MutableList<BackendCartItem> {
         val items: MutableList<BackendCartItem> = mutableListOf()
         forEach { cartItem ->
-            if (cartItem?.type == ItemType.PRODUCT) {
-                val item = createBackendCartItem(cartItem)
+            when (cartItem?.type) {
+                ItemType.PRODUCT -> {
+                    val item = createBackendCartItem(cartItem)
 
-                items.add(item)
-                if (cartItem.coupon != null) {
-                    // this item id needs to be unique per item or else the
-                    // promotion engine on the backend gets confused
+                    items.add(item)
+                    if (cartItem.coupon != null) {
+                        // this item id needs to be unique per item or else the
+                        // promotion engine on the backend gets confused
+                        items.add(
+                            BackendCartItem(
+                                id = UUID.randomUUID().toString(),
+                                refersTo = item.id,
+                                amount = 1,
+                                couponID = cartItem.coupon?.id
+                            )
+                        )
+                    }
+                }
+
+                ItemType.COUPON -> {
                     items.add(
                         BackendCartItem(
-                            id = UUID.randomUUID().toString(),
-                            refersTo = item.id,
+                            id = cartItem.backendCouponId,
                             amount = 1,
+                            scannedCode = cartItem.scannedCode?.code,
                             couponID = cartItem.coupon?.id
                         )
                     )
                 }
-            } else if (cartItem?.type == ItemType.COUPON) {
-                items.add(
-                    BackendCartItem(
-                        id = cartItem.backendCouponId,
-                        amount = 1,
-                        scannedCode = cartItem.scannedCode?.code,
-                        couponID = cartItem.coupon?.id
-                    )
-                )
+
+                else -> return@forEach
             }
         }
         return items
@@ -643,42 +652,41 @@ class ShoppingCart(
         scannedCode?.lookupCode
     )
 
-    private fun getCurrentUnit(cartItem: Item) = if (cartItem.unit == Unit.PIECE) {
-        cartItem.getEffectiveQuantity(true)
-    } else null
+    private fun getCurrentUnit(cartItem: Item) = when (cartItem.unit) {
+        Unit.PIECE -> cartItem.getEffectiveQuantity(true)
+        else -> null
+    }
 
     private fun getCurrentPrice(
         cartItem: Item,
         scannedCode: ScannedCode?
     ) =
-        if (cartItem.unit == Unit.PRICE) {
-            cartItem.localTotalPrice
-        } else if (scannedCode?.hasPrice() == true) {
-            scannedCode.price
-        } else {
-            null
+        when {
+            cartItem.unit == Unit.PRICE -> cartItem.localTotalPrice
+            scannedCode?.hasPrice() == true -> scannedCode.price
+            else -> null
+
         }
 
     private fun getCurrentWeight(
         cartItem: Item,
         product: Product?,
         quantity: Int
-    ) = if (cartItem.unit != Unit.PRICE && cartItem.unit != Unit.PIECE && cartItem.unit != null) {
-        cartItem.getEffectiveQuantity(true)
-    } else if (product?.type == Type.UserWeighed) {
-        quantity
-    } else {
-        null
+    ) = when {
+        cartItem.unit != Unit.PRICE && cartItem.unit != Unit.PIECE && cartItem.unit != null ->
+            cartItem.getEffectiveQuantity(true)
+
+        product?.type == Type.UserWeighed -> quantity
+        else -> null
     }
 
     private fun getCurrentAmount(
         cartItem: Item,
         product: Product?,
         quantity: Int
-    ) = if (cartItem.unit == null && product?.type != Type.UserWeighed) {
-        quantity
-    } else {
-        1
+    ) = when {
+        cartItem.unit == null && product?.type != Type.UserWeighed -> quantity
+        else -> 1
     }
 
     private fun getSelectedScannedCode(
@@ -692,7 +700,7 @@ class ShoppingCart(
         if (cartItem.unit == Unit.PIECE && scannedCode?.embeddedData == 0) {
             val codeTemplate = getCodeTemplateFor(scannedCode.templateName)
             val newCode = codeTemplate?.code(scannedCode.lookupCode)?.embed(cartItem.effectiveQuantity)?.buildCode()
-            if (newCode != null){
+            if (newCode != null) {
                 selectedScannedCode = newCode.code
             }
         }
@@ -701,7 +709,7 @@ class ShoppingCart(
     }
 
     private fun getCodeTemplateFor(templateName: String?): CodeTemplate? {
-        templateName?: return null
+        templateName ?: return null
         return project?.getCodeTemplate(templateName)
     }
 
@@ -709,10 +717,8 @@ class ShoppingCart(
     fun resolveViolations(violations: List<Violation>) {
         violations.forEach { violation ->
             data.items.reversed().forEach { item ->
-                if (item.coupon == null
-                    || item.backendCouponId == null
-                    || item.backendCouponId != violation.refersTo
-                ) return
+                if (item.coupon == null || item.backendCouponId == null || item.backendCouponId != violation.refersTo) return
+
                 data.items.remove(item)
                 data.modCount++
                 val foundViolation = data.violationNotifications.any { it.refersTo == violation.refersTo }
@@ -932,8 +938,9 @@ class ShoppingCart(
                 quantity = 0
             } else {
                 product.scannableCodes.forEach { code: Product.Code? ->
-                    if (code != null
+                    if (code?.template != null
                         && code.template == scannedCode.templateName
+                        && code.lookupCode != null
                         && code.lookupCode == scannedCode.lookupCode
                     ) {
                         quantity = code.specifiedQuantity
@@ -989,10 +996,9 @@ class ShoppingCart(
 
         fun getEffectiveQuantity(ignoreLineItem: Boolean): Int {
             val scannedCode = scannedCode
-            return if (scannedCode != null && scannedCode.hasEmbeddedData() && scannedCode.embeddedData != 0) {
-                scannedCode.embeddedData
-            } else {
-                getQuantityMethod(ignoreLineItem)
+            return when {
+                scannedCode != null && scannedCode.hasEmbeddedData() && scannedCode.embeddedData != 0 -> scannedCode.embeddedData
+                else -> getQuantityMethod(ignoreLineItem)
             }
         }
 
@@ -1008,9 +1014,10 @@ class ShoppingCart(
          */
         fun getQuantityMethod(ignoreLineItem: Boolean): Int {
             val lineItem = lineItem
-            return if (lineItem != null && !ignoreLineItem) {
-                lineItem.weight ?: lineItem.units ?: lineItem.amount
-            } else quantity
+            return when {
+                lineItem != null && !ignoreLineItem -> lineItem.weight ?: lineItem.units ?: lineItem.amount
+                else -> quantity
+            }
         }
 
         /**
@@ -1042,36 +1049,44 @@ class ShoppingCart(
         /**
          * Returns the [ItemType] of the cart item
          */
+        /**
+         * Returns the [ItemType] of the cart item
+         */
         val type: ItemType?
-            get() {
-                if (product != null) {
-                    return ItemType.PRODUCT
-                } else if (coupon != null) {
-                    return ItemType.COUPON
-                } else if (lineItem != null) {
-                    return ItemType.LINE_ITEM
-                }
-                return null
+            get() = when {
+                product != null -> ItemType.PRODUCT
+
+                coupon != null -> ItemType.COUPON
+
+                lineItem != null -> ItemType.LINE_ITEM
+
+                else -> null
             }
 
         /**
          * Returns true if the item is editable by the user
          */
+        /**
+         * Returns true if the item is editable by the user
+         */
         val isEditable: Boolean
-            get() = if (coupon != null && coupon?.type != CouponType.MANUAL) {
-                false
-            } else isEditableInDialog
+            get() = when {
+                coupon != null && coupon?.type != CouponType.MANUAL -> false
+                else -> isEditableInDialog
+            }
 
         /**
          * Returns true if the item is editable by the user while scanning
          */
         val isEditableInDialog: Boolean
-            get() = if (lineItem != null) {
-                (lineItem?.type == LineItemType.DEFAULT
-                        && (scannedCode?.hasEmbeddedData() == false || scannedCode?.embeddedData == 0))
-            } else {
-                (scannedCode?.hasEmbeddedData() == false || scannedCode?.embeddedData == 0)
-                        && product?.getPrice(cart?.project?.customerCardId) != 0
+            get() = when {
+                lineItem != null -> (lineItem?.type == LineItemType.DEFAULT &&
+                        (scannedCode?.hasEmbeddedData() == false ||
+                                scannedCode?.embeddedData == 0))
+
+                else -> (scannedCode?.hasEmbeddedData() == false ||
+                        scannedCode?.embeddedData == 0) &&
+                        product?.getPrice(cart?.project?.customerCardId) != 0
             }
 
         /**
@@ -1184,10 +1199,9 @@ class ShoppingCart(
          * Gets the displayed name of the product
          */
         val displayName: String?
-            get() = if (lineItem != null) {
-                lineItem?.name
-            } else {
-                if (type == ItemType.COUPON) {
+            get() = when {
+                lineItem != null -> lineItem?.name
+                else -> if (type == ItemType.COUPON) {
                     coupon?.name
                 } else {
                     product?.name
@@ -1206,7 +1220,7 @@ class ShoppingCart(
                     return lineItem?.amount.toString()
                 }
                 val embeddedData = scannedCode?.embeddedData ?: 0
-                if ((unit == Unit.PRICE || unit == Unit.PIECE) && embeddedData > 0) {
+                if (unit == Unit.PRICE || (unit == Unit.PIECE && embeddedData > 0)) {
                     val units = lineItem?.units ?: 1
                     return units.toString()
                 }
@@ -1227,26 +1241,24 @@ class ShoppingCart(
         val fullPriceText: String?
             get() {
                 priceText ?: return null
-                val quantityText = quantityText
-                return if (quantityText == "1") {
-                    this.priceText
-                } else {
-                    quantityText + " " + this.priceText
+                return when (val quantityText = quantityText) {
+                    "1" -> this.priceText
+                    else -> quantityText + " " + this.priceText
                 }
             }
 
         private val reducedPriceText: String?
-            get() = if (lineItem?.priceModifiers?.isNotEmpty() == true) {
-                cart?.priceFormatter?.format(totalPrice, true)
-            } else null
+            get() = when {
+                lineItem?.priceModifiers?.isNotEmpty() == true -> cart?.priceFormatter?.format(totalPrice, true)
+                else -> null
+            }
 
         private val extendedPriceText: String?
             get() {
                 val reducedPriceText = reducedPriceText
-                return if (reducedPriceText != null) {
-                    this.reducedPriceText
-                } else {
-                    product?.let { product ->
+                return when {
+                    reducedPriceText != null -> this.reducedPriceText
+                    else -> product?.let { product ->
                         lineItem?.let {
                             String.format(
                                 Locale.getDefault(),
@@ -1276,15 +1288,14 @@ class ShoppingCart(
                 val lineItem = lineItem
                 if (lineItem != null) {
                     val units = lineItem.units
-                    val unitsIsAtLeastOne = units != null
-                            && units > 1
+                    val unitsIsAtLeastOne = units != null && units > 1
 
                     if (lineItem.price != 0) {
                         return if (product != null
                             && unitsIsAtLeastOne
-                            || unit != Unit.PRICE
-                            && (unit != Unit.PIECE || scannedCode?.embeddedData == 0)
-                            && effectiveQuantity > 1
+                            || (unit != Unit.PRICE
+                                    && (unit != Unit.PIECE || scannedCode?.embeddedData == 0)
+                                    && effectiveQuantity > 1)
                         ) {
                             extendedPriceText
                         } else {
@@ -1300,9 +1311,7 @@ class ShoppingCart(
                 if (product.getPrice(cart?.project?.customerCardId) > 0 || scannedCode?.hasEmbeddedData() == true) {
                     val unit = unit
                     val unitList = listOf(Unit.PRICE, Unit.PIECE)
-                    return if (unitList.contains(unit)
-                        && !(scannedCode?.hasEmbeddedData() == true && scannedCode?.embeddedData == 0)
-                    ) {
+                    return if (unit in unitList && !(scannedCode?.hasEmbeddedData() == true && scannedCode?.embeddedData == 0)) {
                         cart?.priceFormatter?.format(totalPrice)
                     } else if (effectiveQuantity <= 1) {
                         cart?.priceFormatter?.format(product)
