@@ -72,7 +72,7 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring(libs.desugarJdkLibs)
+    coreLibraryDesugaring(libs.desugarJdkLibsNio)
 
     implementation(project(":utils"))
     api(project(":core"))

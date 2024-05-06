@@ -30,7 +30,7 @@ internal class PurchasesRepositoryImpl(
                 override fun success(receiptInfos: Array<ReceiptInfo>?) {
                     if (!continuation.isActive) return
 
-                    val purchases: List<Purchase> = receiptInfos.mapToPurchases(count)
+                    val purchases: List<Purchase> = receiptInfos?.mapToPurchases(count) ?: emptyList()
                     continuation.resume(purchases)
                 }
 
@@ -41,10 +41,8 @@ internal class PurchasesRepositoryImpl(
         }
     }
 
-    private fun Array<ReceiptInfo>?.mapToPurchases(count: Int): List<Purchase> {
-        val receiptInfoList = this?.toList() ?: emptyList()
-        return receiptInfoList
-            .slice(0 until receiptInfoList.size.coerceAtMost(count))
+    private fun Array<ReceiptInfo>.mapToPurchases(count: Int): List<Purchase> =
+        this.filter { it.pdfUrl != null }
+            .slice(0 until size.coerceAtMost(count))
             .map { it.toPurchase(timeFormatter) }
-    }
 }

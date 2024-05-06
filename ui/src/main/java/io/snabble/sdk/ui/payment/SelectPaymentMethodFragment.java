@@ -1,6 +1,7 @@
 package io.snabble.sdk.ui.payment;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.Project;
@@ -27,10 +29,14 @@ import io.snabble.sdk.ui.utils.OneShotClickListener;
 
 public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
     public static final String ARG_PROJECT_ID = "projectId";
+    public static final String ARG_SUPPORTED_METHODS = "supportedMethods";
 
     private List<Entry> entries;
     private Set<PaymentMethod> paymentMethods;
     private String projectId;
+
+    @Nullable
+    private List<PaymentMethod> supportedMethods;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,6 +45,7 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
         Bundle args = getArguments();
         if (args != null) {
             projectId = args.getString(ARG_PROJECT_ID, null);
+            supportedMethods = convertToList(args.getParcelableArray(ARG_SUPPORTED_METHODS), PaymentMethod.class);
         }
     }
 
@@ -51,7 +58,11 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
         Set<PaymentMethod> availablePaymentMethods = new HashSet<>();
         for (Project project : Snabble.getInstance().getProjects()) {
             if (project.getId().equals(projectId)) {
-                availablePaymentMethods.addAll(project.getAvailablePaymentMethods());
+                final List<PaymentMethod> methods = project.getAvailablePaymentMethods()
+                        .stream()
+                        .filter(this::isSupportedMethod)
+                        .collect(Collectors.toList());
+                availablePaymentMethods.addAll(methods);
             }
         }
 
@@ -142,13 +153,13 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
             }));
         }
 
-        if (availablePaymentMethods.contains(PaymentMethod.PAYDIREKT)) {
-            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_payment_select_paydirekt,
-                    "Paydirekt",
-                    getUsableAtText(PaymentMethod.PAYDIREKT), new OneShotClickListener() {
+        if (availablePaymentMethods.contains(PaymentMethod.GIROPAY)) {
+            entries.add(new SelectPaymentMethodFragment.Entry(R.drawable.snabble_ic_payment_giropay,
+                    getString(R.string.Snabble_Giropay_title),
+                    getUsableAtText(PaymentMethod.GIROPAY), new OneShotClickListener() {
                 @Override
                 public void click() {
-                    PaymentInputViewHelper.openPaymentInputView(requireContext(), PaymentMethod.PAYDIREKT, null);
+                    PaymentInputViewHelper.openPaymentInputView(requireContext(), PaymentMethod.GIROPAY, projectId);
                     dismissAllowingStateLoss();
                 }
             }));
@@ -188,6 +199,13 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
         return v;
     }
 
+    private boolean isSupportedMethod(@NonNull final PaymentMethod method) {
+        if (supportedMethods != null) {
+            return supportedMethods.contains(method);
+        }
+        return true;
+    }
+
     private String getUsableAtText(PaymentMethod... paymentMethods) {
         List<Project> projects = Snabble.getInstance().getProjects();
         if (projects.size() == 1) {
@@ -217,6 +235,20 @@ public class SelectPaymentMethodFragment extends BottomSheetDialogFragment {
         }
 
         return getResources().getString(R.string.Snabble_Payment_usableAt, sb.toString());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nullable
+    private <T> List<T> convertToList(final Parcelable[] parcels, final Class<T> clazz) {
+        if (parcels == null) return null;
+
+        final List<T> list = new ArrayList<>(parcels.length);
+        for (final Parcelable parcel : parcels) {
+            if (parcel.getClass() == clazz) {
+                list.add(((T) parcel));
+            }
+        }
+        return list;
     }
 
     private static class Entry {

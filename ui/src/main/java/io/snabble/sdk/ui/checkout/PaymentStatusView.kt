@@ -10,7 +10,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.webkit.URLUtil
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ProgressBar
+import android.widget.RadioButton
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
@@ -19,7 +26,13 @@ import androidx.lifecycle.LifecycleOwner
 import com.airbnb.lottie.LottieAnimationView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputLayout
-import io.snabble.sdk.*
+import io.snabble.sdk.BarcodeFormat
+import io.snabble.sdk.FulfillmentState
+import io.snabble.sdk.PaymentMethod
+import io.snabble.sdk.Project
+import io.snabble.sdk.ReceiptInfo
+import io.snabble.sdk.Receipts
+import io.snabble.sdk.Snabble
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.checkout.Fulfillment
@@ -73,8 +86,8 @@ class PaymentStatusView @JvmOverloads constructor(
     private var fulfillmentContainer = findViewById<LinearLayout>(R.id.fulfillment_container)
 
     private var isStopped: Boolean = false
-    private lateinit var project: Project
-    private lateinit var checkout: Checkout
+    private var project: Project? = null
+    private var checkout: Checkout? = null
 
     private val backPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
@@ -94,12 +107,12 @@ class PaymentStatusView @JvmOverloads constructor(
         clipChildren = false
 
         if (!isInEditMode) {
-            project = requireNotNull(Snabble.checkedInProject.value)
-            checkout = project.checkout
+            project = Snabble.checkedInProject.value
+            checkout = project?.checkout
 
             Snabble.checkedInProject.observeView(this) {
-                project = requireNotNull(it)
-                checkout = project.checkout
+                project = it
+                checkout = project?.checkout
             }
 
             update()
@@ -107,6 +120,7 @@ class PaymentStatusView @JvmOverloads constructor(
     }
 
     private fun update() {
+        val project = project ?: return
         paymentOriginCandidateHelper = PaymentOriginCandidateHelper(project)
         paymentOriginCandidateHelper.addPaymentOriginCandidateAvailableListener(this)
 
@@ -116,24 +130,22 @@ class PaymentStatusView @JvmOverloads constructor(
 
             if (state == CheckoutState.PAYMENT_APPROVED) {
                 ignoreStateChanges = true
-                checkout.reset()
+                checkout?.reset()
                 requireFragmentActivity().finish()
 
-                if (state == CheckoutState.PAYMENT_APPROVED) {
-                    executeUiAction(SnabbleUI.Event.SHOW_CHECKOUT_DONE)
-                }
+                executeUiAction(SnabbleUI.Event.SHOW_CHECKOUT_DONE)
 
                 project.coupons.update()
             } else {
-                checkout.abort()
+                checkout?.abort()
             }
         }
 
-        checkout.state.observeView(this) {
+        checkout?.state?.observeView(this) {
             onStateChanged(it)
         }
 
-        checkout.fulfillmentState.observeView(this) {
+        checkout?.fulfillmentState?.observeView(this) {
             onFulfillmentStateChanged(it)
         }
 
@@ -175,7 +187,7 @@ class PaymentStatusView @JvmOverloads constructor(
     }
 
     private fun createAddIbanIntent() =
-        if (project.paymentMethodDescriptors.any { it.paymentMethod == PaymentMethod.PAYONE_SEPA }) {
+        if (project?.paymentMethodDescriptors?.any { it.paymentMethod == PaymentMethod.PAYONE_SEPA } == true) {
             PayoneSepaActivity.newIntent(context, paymentOriginCandidate)
         } else {
             SEPACardInputActivity.newIntent(context, paymentOriginCandidate)
@@ -207,7 +219,7 @@ class PaymentStatusView @JvmOverloads constructor(
     }
 
     private fun sendRating(rating: String) {
-        project.events.analytics("rating", rating, ratingMessage ?: "")
+        project?.events?.analytics("rating", rating, ratingMessage ?: "")
         Telemetry.event(Telemetry.Event.Rating, rating)
         ratingTitle.setText(R.string.Snabble_PaymentStatus_Ratings_thanksForFeedback)
         ratingLayoutGroup.isVisible = false
@@ -249,16 +261,16 @@ class PaymentStatusView @JvmOverloads constructor(
                 successAnimation.playAnimation()
                 progress.isVisible = false
                 payment.state = PaymentStatusItemView.State.SUCCESS
-                val checkoutProcess = checkout.checkoutProcess
+                val checkoutProcess = checkout?.checkoutProcess
                 if (checkoutProcess?.orderId != null) {
-                    startPollingForReceipts(checkout.checkoutProcess?.orderId)
+                    startPollingForReceipts(checkout?.checkoutProcess?.orderId)
                 } else {
                     receipt.state = PaymentStatusItemView.State.NOT_EXECUTED
                 }
                 back.text = resources.getString(R.string.Snabble_PaymentStatus_close)
                 backPressedCallback.isEnabled = false
                 ratingCardLayout.isVisible = true
-                paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkout.checkoutProcess)
+                paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkout?.checkoutProcess)
             }
 
             CheckoutState.PAYMENT_PROCESSING_ERROR -> {
@@ -287,16 +299,16 @@ class PaymentStatusView @JvmOverloads constructor(
             }
 
             CheckoutState.REQUEST_PAYMENT_AUTHORIZATION_TOKEN -> {
-                val price = checkout.verifiedOnlinePrice
+                val price = checkout?.verifiedOnlinePrice ?: -1
                 if (price != -1) {
-                    val googlePayHelper = project.googlePayHelper
+                    val googlePayHelper = project?.googlePayHelper
                     if (googlePayHelper != null) {
                         googlePayHelper.requestPayment(price)
                     } else {
-                        checkout.abort()
+                        checkout?.abort()
                     }
                 } else {
-                    checkout.abort()
+                    checkout?.abort()
                 }
             }
 
@@ -307,7 +319,7 @@ class PaymentStatusView @JvmOverloads constructor(
     }
 
     private fun checkForExitToken() {
-        checkout.checkoutProcess?.exitToken?.let {
+        checkout?.checkoutProcess?.exitToken?.let {
             if (it.value != null && it.format != null) {
                 val format = BarcodeFormat.parse(it.format)
                 if (format != null) {
@@ -336,7 +348,7 @@ class PaymentStatusView @JvmOverloads constructor(
         payment.state = PaymentStatusItemView.State.FAILED
         payment.setText(resources.getString(R.string.Snabble_PaymentStatus_Payment_error))
         payment.setAction(resources.getString(R.string.Snabble_PaymentStatus_Payment_tryAgain)) {
-            project.shoppingCart.generateNewUUID()
+            project?.shoppingCart?.generateNewUUID()
             requireFragmentActivity().finish()
         }
         title.text = resources.getString(R.string.Snabble_PaymentStatus_Title_error)
@@ -354,8 +366,8 @@ class PaymentStatusView @JvmOverloads constructor(
         }
 
         paymentOriginCandidateHelper.addPaymentOriginCandidateAvailableListener(this)
-        if (checkout.state.value == CheckoutState.PAYMENT_APPROVED) {
-            paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkout.checkoutProcess)
+        if (checkout?.state?.value == CheckoutState.PAYMENT_APPROVED) {
+            paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkout?.checkoutProcess)
         }
     }
 
@@ -367,7 +379,7 @@ class PaymentStatusView @JvmOverloads constructor(
     override fun onStart(owner: LifecycleOwner) {
         startPollingForPaymentOriginCandidate()
 
-        onStateChanged(checkout.state.value)
+        onStateChanged(checkout?.state?.value)
         isStopped = false
     }
 

@@ -17,10 +17,13 @@ import com.google.gson.JsonObject
 import io.snabble.sdk.auth.TokenRegistry
 import io.snabble.sdk.checkin.CheckInLocationManager
 import io.snabble.sdk.checkin.CheckInManager
+import io.snabble.sdk.config.CustomProperty
+import io.snabble.sdk.config.ProjectId
 import io.snabble.sdk.customization.IsMergeable
 import io.snabble.sdk.events.Events
 import io.snabble.sdk.extensions.getPackageInfoCompat
 import io.snabble.sdk.payment.PaymentCredentialsStore
+import io.snabble.sdk.payment.data.FormPrefillData
 import io.snabble.sdk.utils.*
 import okhttp3.OkHttpClient
 import java.io.ByteArrayInputStream
@@ -221,7 +224,7 @@ object Snabble {
     /**
      * Url for generating payone web form authentication challenges
      */
-    var paydirektAuthUrl: String? = null
+    var giropayAuthUrl: String? = null
         private set
 
     /**
@@ -312,6 +315,19 @@ object Snabble {
      * Set to take control over [ShoppingCart.Item.isMergeable] default behavior.
      */
     var isMergeable: IsMergeable? = null
+
+    /**
+     * Set to have PAYONE forms prefilled with the given data.
+     */
+    var formPrefillData: FormPrefillData? = null
+
+    /**
+     * Set [CustomProperty]'s to override the default behavior.
+     *
+     * Every [CustomProperty] has to be explicitly defined and implemented beforehand
+     * to be applicable for the given project.
+     */
+    val customProperties: MutableMap<Pair<CustomProperty, ProjectId>, Any> = mutableMapOf()
 
     /**
      * Setup the snabble SDK.
@@ -525,7 +541,7 @@ object Snabble {
             createAppUserUrl = getUrl(jsonObject, "createAppUser")
             telecashSecretUrl = getUrl(jsonObject, "telecashSecret")
             telecashPreAuthUrl = getUrl(jsonObject, "telecashPreauth")
-            paydirektAuthUrl = getUrl(jsonObject, "paydirektCustomerAuthorization")
+            giropayAuthUrl = getUrl(jsonObject, "paydirektCustomerAuthorization")
             if (jsonObject.has("brands")) {
                 parseBrands(jsonObject)
             }

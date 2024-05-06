@@ -562,6 +562,7 @@ class Project internal constructor(jsonObject: JsonObject) {
                     override fun success(jsonObject: JsonObject) {
                         jsonObject["shops"]?.let {
                             shops = Shop.fromJson(it).toList()
+                            Snabble.checkInManager.update()
                         }
 
                         done?.run()

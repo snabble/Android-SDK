@@ -28,6 +28,8 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.Snabble.instance
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.checkout.CheckoutState
+import io.snabble.sdk.config.ExternalBillingSubjectLength
+import io.snabble.sdk.config.ProjectId
 import io.snabble.sdk.extensions.getApplicationInfoCompat
 import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
@@ -322,7 +324,7 @@ open class CheckoutBar @JvmOverloads constructor(
                     if (entry.paymentMethod == PaymentMethod.TEGUT_EMPLOYEE_CARD) {
                         project.checkout.pay(entry.paymentMethod, entry.paymentCredentials)
                     } else if (entry.paymentMethod == PaymentMethod.EXTERNAL_BILLING) {
-                        SubjectAlertDialog(context)
+                        SubjectAlertDialog(context, maxSubjectLength = getMaxSubjectLength())
                             .addMessageClickListener { message ->
                                 entry.paymentCredentials.additionalData["subject"] = message
                                 project.checkout.pay(entry.paymentMethod, entry.paymentCredentials)
@@ -374,6 +376,7 @@ open class CheckoutBar @JvmOverloads constructor(
             CheckoutState.WAIT_FOR_SUPERVISOR,
             CheckoutState.WAIT_FOR_APPROVAL,
             CheckoutState.PAYMENT_APPROVED,
+            CheckoutState.PAYMENT_TRANSFERRED,
             CheckoutState.DENIED_BY_PAYMENT_PROVIDER,
             CheckoutState.DENIED_BY_SUPERVISOR,
             CheckoutState.PAYMENT_PROCESSING -> {
@@ -467,12 +470,23 @@ open class CheckoutBar @JvmOverloads constructor(
                     .show()
                 progressDialog.dismiss()
             }
-
             else -> {
                 Logger.d("Unhandled event in CheckoutBar: $state")
             }
         }
     }
+
+    private fun getMaxSubjectLength(): Int? = Snabble.checkedInProject.value
+        ?.id
+        ?.let { id ->
+            Snabble.customProperties
+                .getOrDefault(
+                    ExternalBillingSubjectLength to ProjectId(id),
+                    defaultValue = null
+                )
+                ?.toString()
+                ?.toInt()
+        }
 }
 
 fun interface CheckoutPreconditionHandler {

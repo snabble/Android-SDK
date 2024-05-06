@@ -38,6 +38,9 @@ import io.snabble.sdk.Environment;
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.R;
 import io.snabble.sdk.Snabble;
+import io.snabble.sdk.payment.data.GiropayAuthorizationData;
+import io.snabble.sdk.payment.data.GiropayData;
+import io.snabble.sdk.payment.data.PayoneData;
 import io.snabble.sdk.payment.externalbilling.data.ExternalBillingPaymentCredentials;
 import io.snabble.sdk.payment.payone.sepa.PayoneSepaData;
 import io.snabble.sdk.utils.GsonHolder;
@@ -57,9 +60,8 @@ public class PaymentCredentials {
         @Deprecated
         CREDIT_CARD(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
         CREDIT_CARD_PSD2(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
-        PAYDIREKT(null, false, Collections.singletonList(PaymentMethod.PAYDIREKT)),
+        GIROPAY(null, false, Collections.singletonList(PaymentMethod.GIROPAY)),
         TEGUT_EMPLOYEE_CARD("tegutEmployeeID", false, Collections.singletonList(PaymentMethod.TEGUT_EMPLOYEE_CARD)),
-        LEINWEBER_CUSTOMER_ID("leinweberCustomerID", false, Collections.singletonList(PaymentMethod.LEINWEBER_CUSTOMER_ID)),
         DATATRANS("datatransAlias", true, Arrays.asList(PaymentMethod.TWINT, PaymentMethod.POST_FINANCE_CARD)),
         DATATRANS_CREDITCARD("datatransCreditCardAlias", true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
         PAYONE_CREDITCARD(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
@@ -146,46 +148,13 @@ public class PaymentCredentials {
         private String cardType;
     }
 
-    private static class PaydirektData {
-        private String clientID;
-        private String customerAuthorizationURI;
-        private PaydirektAuthorizationData authorizationData;
-    }
-
     private static class DatatransData {
         private String alias;
         private String expiryMonth;
         private String expiryYear;
     }
 
-    private static class PayoneData {
-        PayoneData(String pseudoCardPAN, String name, String userID) {
-            this.pseudoCardPAN = pseudoCardPAN;
-            this.name = name;
-            this.userID = userID;
-        }
-
-        private final String pseudoCardPAN;
-        private final String name;
-        private final String userID;
-    }
-
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
-    public static class PaydirektAuthorizationData {
-        public String id;
-        public String name;
-        public String ipAddress;
-        public String fingerprint;
-        public String redirectUrlAfterSuccess;
-        public String redirectUrlAfterCancellation;
-        public String redirectUrlAfterFailure;
-    }
-
     private static class TegutEmployeeCard {
-        private String cardNumber;
-    }
-
-    private static class LeinweberCustomerId {
         private String cardNumber;
     }
 
@@ -393,29 +362,36 @@ public class PaymentCredentials {
     }
 
     /**
-     * Encrypts and stores a paydirekt authorization token.
+     * Encrypts and stores a Giropay authorization token.
      */
-    public static PaymentCredentials fromPaydirekt(PaydirektAuthorizationData authorizationData, String customerAuthorizationURI) {
-        if (customerAuthorizationURI == null) {
+    @Nullable
+    public static PaymentCredentials fromGiropay(
+            GiropayAuthorizationData authorizationData,
+            String customerAuthorizationURI,
+            String projectId) {
+
+        if (customerAuthorizationURI == null || projectId == null) {
             return null;
         }
 
         PaymentCredentials pc = new PaymentCredentials();
         pc.generateId();
-        pc.type = Type.PAYDIREKT;
+        pc.type = Type.GIROPAY;
+        pc.projectId = projectId;
 
         List<X509Certificate> certificates = Snabble.getInstance().getPaymentCertificates();
         if (certificates.size() == 0) {
             return null;
         }
 
-        pc.obfuscatedId = "paydirekt";
+        pc.obfuscatedId = "giropay";
+        GiropayData data = new GiropayData(
+                Snabble.getInstance().getClientId(),
+                customerAuthorizationURI,
+                null
+        );
 
-        PaydirektData paydirektData = new PaydirektData();
-        paydirektData.clientID = Snabble.getInstance().getClientId();
-        paydirektData.customerAuthorizationURI = customerAuthorizationURI;
-
-        String json = GsonHolder.get().toJson(paydirektData, PaydirektData.class);
+        String json = GsonHolder.get().toJson(data, GiropayData.class);
 
         X509Certificate certificate = certificates.get(0);
         pc.rsaEncryptedData = pc.rsaEncrypt(certificate, json.getBytes());
@@ -489,18 +465,23 @@ public class PaymentCredentials {
     /**
      * Encrypts and stores a payone pseudo card pan.
      */
-    public static PaymentCredentials fromPayone(String pseudocardpan,
-                                                String truncatedcardpan,
-                                                PaymentCredentials.Brand brand,
-                                                String cardexpiredate,
-                                                String lastname,
-                                                String userId,
-                                                String projectId) {
-        if (pseudocardpan == null) {
-            return null;
-        }
-
-        PaymentCredentials pc = new PaymentCredentials();
+    @Nullable
+    public static PaymentCredentials fromPayone(
+            @NonNull final String pseudoCardPan,
+            @NonNull final String truncatedCardPan,
+            @NonNull final PaymentCredentials.Brand brand,
+            @NonNull final String cardExpiryDate,
+            @NonNull final String lastname,
+            @NonNull final String street,
+            @NonNull final String zip,
+            @NonNull final String city,
+            @NonNull final String country,
+            @Nullable final String state,
+            @NonNull final String email,
+            @Nullable final String userId,
+            @NonNull final String projectId
+    ) {
+        final PaymentCredentials pc = new PaymentCredentials();
         pc.generateId();
         if (brand == Brand.MASTERCARD || brand == Brand.AMEX || brand == Brand.VISA) {
             pc.type = Type.PAYONE_CREDITCARD;
@@ -509,22 +490,32 @@ public class PaymentCredentials {
         }
         pc.projectId = projectId;
 
-        List<X509Certificate> certificates = Snabble.getInstance().getPaymentCertificates();
-        if (certificates.size() == 0) {
+        final List<X509Certificate> certificates = Snabble.getInstance().getPaymentCertificates();
+        if (certificates == null || certificates.isEmpty()) {
             return null;
         }
 
-        PayoneData payoneData = new PayoneData(pseudocardpan, lastname, userId);
+        final PayoneData payoneData = new PayoneData(
+                pseudoCardPan,
+                lastname,
+                email,
+                street,
+                zip,
+                city,
+                country,
+                state,
+                userId
+        );
 
-        String json = GsonHolder.get().toJson(payoneData, PayoneData.class);
+        final String json = GsonHolder.get().toJson(payoneData, PayoneData.class);
 
-        X509Certificate certificate = certificates.get(0);
+        final X509Certificate certificate = certificates.get(0);
         pc.rsaEncryptedData = pc.rsaEncrypt(certificate, json.getBytes());
         pc.signature = pc.sha256Signature(certificate);
         pc.appId = Snabble.getInstance().getConfig().appId;
         pc.brand = brand;
-        pc.obfuscatedId = truncatedcardpan;
-        pc.validTo = parseValidTo("yyMM", cardexpiredate);
+        pc.obfuscatedId = truncatedCardPan;
+        pc.validTo = parseValidTo("yyMM", cardExpiryDate);
 
         if (pc.rsaEncryptedData == null) {
             return null;
@@ -574,51 +565,10 @@ public class PaymentCredentials {
     }
 
     /**
-     * Encrypts and stores a leinweber customer id.
-     */
-    public static PaymentCredentials fromLeinweberCustomerId(String obfuscatedId, String cardNumber, String projectId) {
-        if (cardNumber == null || cardNumber.length() != 6) {
-            return null;
-        }
-
-        PaymentCredentials pc = new PaymentCredentials();
-        pc.generateId();
-        pc.type = Type.LEINWEBER_CUSTOMER_ID;
-
-        List<X509Certificate> certificates = Snabble.getInstance().getPaymentCertificates();
-        if (certificates.size() == 0) {
-            return null;
-        }
-
-        pc.obfuscatedId = obfuscatedId;
-
-        X509Certificate certificate = certificates.get(0);
-
-        LeinweberCustomerId data = new LeinweberCustomerId();
-        data.cardNumber = cardNumber;
-        String json = GsonHolder.get().toJson(data, LeinweberCustomerId.class);
-
-        pc.rsaEncryptedData = pc.rsaEncrypt(certificate, json.getBytes());
-        pc.signature = pc.sha256Signature(certificate);
-        pc.brand = Brand.UNKNOWN;
-        pc.appId = Snabble.getInstance().getConfig().appId;
-        pc.projectId = projectId;
-
-        if (pc.rsaEncryptedData == null) {
-            return null;
-        }
-
-        return pc;
-    }
-
-    /**
      * Returns the type of the payment credentials
      */
+    @Nullable
     public Type getType() {
-        if (type == null) { // backwards compatibility
-            return Type.SEPA;
-        }
-
         return type;
     }
 
@@ -790,7 +740,12 @@ public class PaymentCredentials {
      * E.g. on timed out credit cards or expired certificates.
      */
     public boolean validate() {
-        if (type == Type.CREDIT_CARD_PSD2) {
+        final List<PaymentCredentials.Type> typesToValidate = Arrays.asList(
+                Type.CREDIT_CARD_PSD2,
+                Type.PAYONE_CREDITCARD,
+                Type.DATATRANS_CREDITCARD
+        );
+        if (typesToValidate.contains(type)) {
             Date date = new Date(validTo);
             if (date.getTime() < System.currentTimeMillis()) {
                 Logger.errorEvent("removing payment credentials: expired");
@@ -901,10 +856,8 @@ public class PaymentCredentials {
             return PaymentMethod.PAYONE_SEPA;
         } else if (type == Type.TEGUT_EMPLOYEE_CARD) {
             return PaymentMethod.TEGUT_EMPLOYEE_CARD;
-        } else if (type == Type.LEINWEBER_CUSTOMER_ID) {
-            return PaymentMethod.LEINWEBER_CUSTOMER_ID;
-        } else if (type == Type.PAYDIREKT) {
-            return PaymentMethod.PAYDIREKT;
+        } else if (type == Type.GIROPAY) {
+            return PaymentMethod.GIROPAY;
         } else if (type == Type.EXTERNAL_BILLING) {
             return PaymentMethod.EXTERNAL_BILLING;
         } else if (type == Type.CREDIT_CARD_PSD2

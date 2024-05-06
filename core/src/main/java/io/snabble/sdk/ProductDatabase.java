@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteCantOpenDatabaseException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.CancellationSignal;
@@ -333,8 +334,14 @@ public class ProductDatabase {
             project.logErrorEvent("Could not copy db to temp file: %s", e.getMessage());
             throw e;
         }
+        final SQLiteDatabase tempDb;
 
-        SQLiteDatabase tempDb = SQLiteDatabase.openOrCreateDatabase(tempDbFile, null);
+        try {
+            tempDb = SQLiteDatabase.openOrCreateDatabase(tempDbFile, null);
+        } catch (SQLiteCantOpenDatabaseException e) {
+            project.logErrorEvent("Could not open or create db: %s", e.getMessage());
+            throw new IOException("Could not open or create db", e);
+        }
 
         Scanner scanner = new Scanner(inputStream, "UTF-8");
 
@@ -532,9 +539,9 @@ public class ProductDatabase {
      * <p>
      * While updating, the database can still be queried for data, after the update completes calls to the database
      * return the updated data.
-     *
+     * <p>
      * Note that database updates are usually very cheap and do not transmit data that is already on your device.
-     *
+     * <p>
      * If the database is not present or schematic changes are done that can not be resolved via a delta update
      * a full update is needed.
      */
@@ -550,9 +557,9 @@ public class ProductDatabase {
      * <p>
      * While updating, the database can still be queried for data, after the update completes calls to the database
      * return the updated data.
-     *
+     * <p>
      * Note that database updates are usually very cheap and do not transmit data that is already on your device.
-     *
+     * <p>
      * If the database is not present or schematic changes are done that can not be resolved via a delta update
      * a full update is needed.
      *
@@ -571,9 +578,9 @@ public class ProductDatabase {
      * <p>
      * While updating, the database can still be queried for data, after the update completes calls to the database
      * return the updated data.
-     *
+     * <p>
      * Note that database updates are usually very cheap and do not transmit data that is already on your device.
-     *
+     * <p>
      * If the database is not present or schematic changes are done that can not be resolved via a delta update
      * a full update is needed.
      *
@@ -850,7 +857,7 @@ public class ProductDatabase {
                 String[] split = isPrimaryStr.split(SEPARATOR, -1);
                 if (split.length > 0) {
                     codeIsPrimaryCode = new boolean[split.length];
-                    for (int i=0; i<split.length; i++) {
+                    for (int i = 0; i < split.length; i++) {
                         if (split[i].equals("1")) {
                             codeIsPrimaryCode[i] = true;
                         } else {
@@ -865,7 +872,7 @@ public class ProductDatabase {
                 String[] split = specifiedQuantities.split(SEPARATOR, -1);
                 if (split.length > 0) {
                     codeSpecifiedQuantities = new int[split.length];
-                    for (int i=0; i<split.length; i++) {
+                    for (int i = 0; i < split.length; i++) {
                         try {
                             int value = Integer.parseInt(split[i]);
                             codeSpecifiedQuantities[i] = value;
@@ -962,7 +969,7 @@ public class ProductDatabase {
 
         Shop shop = Snabble.getInstance().getCheckedInShop();
 
-        if(!queryPrice(builder, sku, shop)) {
+        if (!queryPrice(builder, sku, shop)) {
             queryPrice(builder, sku, null);
         }
 
@@ -1046,7 +1053,7 @@ public class ProductDatabase {
                 "p.weighing," +
                 "(SELECT group_concat(s.code, \"" + SEPARATOR + "\") FROM scannableCodes s WHERE s.sku = p.sku)," +
                 "p.subtitle" +
-                ",p.saleRestriction"+
+                ",p.saleRestriction" +
                 ",p.saleStop" +
                 ",p.notForSale" +
                 ",(SELECT group_concat(ifnull(s.transmissionCode, \"\"), \"" + SEPARATOR + "\") FROM scannableCodes s WHERE s.sku = p.sku)" +
@@ -1081,7 +1088,7 @@ public class ProductDatabase {
 
     /**
      * Return true if the database was updated recently and can be used to display accurate prices.
-     *
+     * <p>
      * {@link Config#maxProductDatabaseAge} can be used to set the time window the product database
      * is considered up to date.
      */
@@ -1433,7 +1440,7 @@ public class ProductDatabase {
 
         String query = productSqlString("", sb.toString(), true) + " LIMIT 100";
 
-        return rawQuery(query, new String[]{ searchString + "*", searchString + "*" }, cancellationSignal);
+        return rawQuery(query, new String[]{searchString + "*", searchString + "*"}, cancellationSignal);
     }
 
     private void notifyOnDatabaseUpdated() {

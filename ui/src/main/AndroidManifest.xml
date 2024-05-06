@@ -8,6 +8,11 @@
 
     <uses-permission android:name="android.permission.VIBRATE" />
 
+    <queries>
+        <package android:name="com.gimb.paydirekt.app" />
+        <package android:name="com.gimb.paydirekt.app.sandbox" />
+    </queries>
+
     <application>
         <activity
             android:name=".checkout.CheckoutActivity"
@@ -36,7 +41,7 @@
             android:name=".payment.externalbilling.ExternalBillingActivity"
             android:exported="false" />
         <activity
-            android:name=".payment.PaydirektInputActivity"
+            android:name=".payment.GiropayInputActivity"
             android:exported="false" />
         <activity
             android:name=".payment.PaymentCredentialsListActivity"

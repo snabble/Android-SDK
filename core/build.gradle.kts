@@ -54,6 +54,10 @@ android {
         jvmTarget = "17"
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     testOptions {
         unitTests {
             isIncludeAndroidResources = true
@@ -62,7 +66,7 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring(libs.desugarJdkLibs)
+    coreLibraryDesugaring(libs.desugarJdkLibsNio)
 
     implementation(project(":utils"))
 

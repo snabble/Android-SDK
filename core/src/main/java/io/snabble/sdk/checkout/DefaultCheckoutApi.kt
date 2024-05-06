@@ -217,22 +217,22 @@ class DefaultCheckoutApi(private val project: Project,
             paymentInformation = when (paymentCredentials?.type) {
                 PaymentCredentials.Type.EXTERNAL_BILLING -> {
                     PaymentInformation(
-                        originType = paymentCredentials.type.originType,
+                        originType = paymentCredentials.type?.originType,
                         encryptedOrigin = paymentCredentials.encryptedData,
                         subject = paymentCredentials.additionalData["subject"]
                     )
                 }
                 PaymentCredentials.Type.CREDIT_CARD_PSD2 -> {
                     PaymentInformation(
-                        originType = paymentCredentials.type.originType,
+                        originType = paymentCredentials.type?.originType,
                         encryptedOrigin = paymentCredentials.encryptedData,
                         validUntil = SimpleDateFormat("yyyy/MM/dd").format(Date(paymentCredentials.validTo)),
                         cardNumber = paymentCredentials.obfuscatedId,
                     )
                 }
-                PaymentCredentials.Type.PAYDIREKT -> {
+                PaymentCredentials.Type.GIROPAY -> {
                     PaymentInformation(
-                        originType = paymentCredentials.type.originType,
+                        originType = paymentCredentials.type?.originType,
                         encryptedOrigin = paymentCredentials.encryptedData,
                         deviceID = paymentCredentials.additionalData["deviceID"],
                         deviceName = paymentCredentials.additionalData["deviceName"],
@@ -243,7 +243,7 @@ class DefaultCheckoutApi(private val project: Project,
                 null -> null
                 else -> {
                     PaymentInformation(
-                        originType = paymentCredentials.type.originType,
+                        originType = paymentCredentials.type?.originType,
                         encryptedOrigin = paymentCredentials.encryptedData
                     )
                 }

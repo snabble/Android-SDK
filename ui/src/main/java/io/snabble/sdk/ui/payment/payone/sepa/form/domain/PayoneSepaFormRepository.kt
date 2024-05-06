@@ -21,7 +21,10 @@ class PayoneSepaFormRepositoryImpl(
         val paymentCredentials = PaymentCredentials.fromPayoneSepa(data) ?: return false
 
         snabble.paymentCredentialsStore.add(paymentCredentials)
-        trackCredentialType(paymentCredentials.type.name)
+        val type = paymentCredentials.type
+        if (type != null) {
+            trackCredentialType(type.name)
+        }
         return true
     }
 

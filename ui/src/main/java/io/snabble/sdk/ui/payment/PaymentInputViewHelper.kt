@@ -33,7 +33,7 @@ object PaymentInputViewHelper {
                 if (useDatatrans && paymentMethod != null) {
                     Datatrans.registerCard(activity, project, paymentMethod)
                 } else if (usePayone && paymentMethod != null) {
-                    Payone.registerCard(activity, project, paymentMethod)
+                    Payone.registerCard(activity, project, paymentMethod, Snabble.formPrefillData)
                 } else {
                     when (paymentMethod) {
                         PaymentMethod.VISA -> {
@@ -54,8 +54,8 @@ object PaymentInputViewHelper {
                             SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT, args)
                         }
 
-                        PaymentMethod.PAYDIREKT -> {
-                            SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_PAYDIREKT_INPUT)
+                        PaymentMethod.GIROPAY -> {
+                            SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_GIROPAY_INPUT)
                         }
 
                         PaymentMethod.DE_DIRECT_DEBIT -> {
