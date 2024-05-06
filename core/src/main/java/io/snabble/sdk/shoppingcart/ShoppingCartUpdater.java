@@ -1,8 +1,10 @@
-package io.snabble.sdk;
+package io.snabble.sdk.shoppingcart;
 
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
+
+import androidx.annotation.NonNull;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -15,15 +17,20 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
+import io.snabble.sdk.OnProductAvailableListener;
+import io.snabble.sdk.Product;
+import io.snabble.sdk.Project;
 import io.snabble.sdk.checkout.CheckoutInfo;
 import io.snabble.sdk.checkout.CheckoutInfoResult;
 import io.snabble.sdk.checkout.DefaultCheckoutApi;
 import io.snabble.sdk.checkout.LineItem;
 import io.snabble.sdk.checkout.LineItemType;
 import io.snabble.sdk.checkout.PaymentMethodInfo;
+import io.snabble.sdk.checkout.Price;
 import io.snabble.sdk.checkout.SignedCheckoutInfo;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.coupons.Coupon;
+import io.snabble.sdk.shoppingcart.data.item.ItemType;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.GsonHolder;
 import io.snabble.sdk.utils.Logger;
@@ -68,7 +75,7 @@ class ShoppingCartUpdater {
 
         Dispatch.mainThread(() -> checkoutApi.createCheckoutInfo(cart.toBackendCart(), new CheckoutInfoResult() {
             @Override
-            public void onSuccess(final SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, List<PaymentMethodInfo> availablePaymentMethods) {
+            public void onSuccess(@NonNull final SignedCheckoutInfo signedCheckoutInfo, int onlinePrice, @NonNull List<PaymentMethodInfo> availablePaymentMethods) {
                 Dispatch.mainThread(() -> {
                     // ignore when cart was modified mid request
                     if (cart.getModCount() != modCount) {
@@ -99,13 +106,13 @@ class ShoppingCartUpdater {
 
             @Override
             public void onInvalidProducts(@NotNull List<? extends Product> products) {
-                cart.setInvalidProducts((List<Product>) products);
+                cart.setInvalidProducts(products);
                 error(true);
             }
 
             @Override
             public void onNoAvailablePaymentMethodFound() {
-               error(true);
+                error(true);
             }
 
             @Override
@@ -147,14 +154,12 @@ class ShoppingCartUpdater {
                 cart.resolveViolations(checkoutInfo.getViolations());
             }
 
-            Set<String> referrerIds = new HashSet<>();
             Set<String> requiredIds = new HashSet<>();
 
-            for (int i=0; i<cart.size(); i++) {
+            for (int i = 0; i < cart.size(); i++) {
                 ShoppingCart.Item item = cart.get(i);
-                if (item.getType() != ShoppingCart.ItemType.COUPON) {
+                if (item.getType() != ItemType.COUPON) {
                     requiredIds.add(item.getId());
-                    referrerIds.add(item.getId());
                 }
             }
 
@@ -164,7 +169,7 @@ class ShoppingCartUpdater {
 
             // error out when items are missing
             if (requiredIds.size() > 0) {
-                Logger.e("Missing products in price update: " + requiredIds.toString());
+                Logger.e("Missing products in price update: " + requiredIds);
                 error(false);
                 return;
             }
@@ -175,7 +180,8 @@ class ShoppingCartUpdater {
                 ShoppingCart.Item item = cart.getByItemId(lineItem.getId());
 
                 if (item != null) {
-                    if (!item.getProduct().getSku().equals(lineItem.getSku())) {
+                    final Product itemProduct = item.getProduct();
+                    if (itemProduct != null && !itemProduct.getSku().equals(lineItem.getSku())) {
                         if (products == null) {
                             error(false);
                             return;
@@ -212,7 +218,7 @@ class ShoppingCartUpdater {
                         if (lineItem.getType() == LineItemType.COUPON) {
                             ShoppingCart.Item refersTo = cart.getByItemId(lineItem.getRefersTo());
                             if (refersTo != null) {
-                                refersTo.setManualCouponApplied(lineItem.getRedeemed());
+                                refersTo.isManualCouponApplied = lineItem.getRedeemed();
                                 discounts += refersTo.getModifiedPrice();
                             }
                         }
@@ -230,10 +236,13 @@ class ShoppingCartUpdater {
                 cart.insert(cart.newItem(lineItem), cart.size(), false);
             }
 
-            if (project.isDisplayingNetPrice()) {
-                cart.setOnlineTotalPrice(checkoutInfo.getPrice().getNetPrice());
-            } else {
-                cart.setOnlineTotalPrice(checkoutInfo.getPrice().getPrice());
+            final Price price = checkoutInfo.getPrice();
+            if (price != null) {
+                if (project.isDisplayingNetPrice()) {
+                    cart.setOnlineTotalPrice(price.getNetPrice());
+                } else {
+                    cart.setOnlineTotalPrice(price.getPrice());
+                }
             }
 
             successfulModCount = modCount;
@@ -255,7 +264,7 @@ class ShoppingCartUpdater {
 
     private LineItem getLineItem(CheckoutInfo checkoutInfo, String id) {
         for (LineItem lineItem : checkoutInfo.getLineItems()) {
-            if (lineItem.getId().equals(id)) {
+            if (lineItem.getId() != null && lineItem.getId().equals(id)) {
                 return lineItem;
             }
         }
@@ -270,7 +279,7 @@ class ShoppingCartUpdater {
         for (LineItem lineItem : checkoutInfo.getLineItems()) {
             ShoppingCart.Item item = cart.getByItemId(lineItem.getId());
 
-            if (item != null) {
+            if (item != null && item.getProduct() != null) {
                 if (!item.getProduct().getSku().equals(lineItem.getSku())) {
                     skus.add(lineItem.getSku());
                 }
@@ -301,7 +310,7 @@ class ShoppingCartUpdater {
 
         project.getProductDatabase().findBySkuOnline(sku, new OnProductAvailableListener() {
             @Override
-            public void onProductAvailable(Product p, boolean wasOnline) {
+            public void onProductAvailable(@NonNull Product p, boolean wasOnline) {
                 product[0] = p;
                 countDownLatch.countDown();
             }

@@ -32,10 +32,13 @@ import java.util.List;
 import io.snabble.sdk.PriceFormatter;
 import io.snabble.sdk.Product;
 import io.snabble.sdk.Project;
-import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.shoppingcart.ShoppingCart;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.ViolationNotification;
+import io.snabble.sdk.shoppingcart.data.item.ItemType;
+import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener;
+import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener;
 import io.snabble.sdk.ui.GestureHandler;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
@@ -65,7 +68,7 @@ public class ShoppingCartView extends FrameLayout {
     private Project project;
     private boolean isRegistered;
 
-    private final ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.SimpleShoppingCartListener() {
+    private final ShoppingCartListener shoppingCartListener = new SimpleShoppingCartListener() {
 
         @Override
         public void onChanged(ShoppingCart cart) {
@@ -302,7 +305,7 @@ public class ShoppingCartView extends FrameLayout {
 
         for (int i = 0; i < cart.size(); i++) {
             ShoppingCart.Item item = cart.get(i);
-            if (item.getType() != ShoppingCart.ItemType.PRODUCT) continue;
+            if (item.getType() != ItemType.PRODUCT) continue;
 
             Product product = item.getProduct();
             String url = product.getImageUrl();
@@ -395,7 +398,7 @@ public class ShoppingCartView extends FrameLayout {
         for (int i = 0; i < cart.size(); i++) {
             ShoppingCart.Item item = cart.get(i);
 
-            if (item.getType() == ShoppingCart.ItemType.LINE_ITEM) {
+            if (item.getType() == ItemType.LINE_ITEM) {
                 if (item.isDiscount()) {
                     SimpleRow row = new SimpleRow();
                     row.item = item;
@@ -411,17 +414,17 @@ public class ShoppingCartView extends FrameLayout {
                     row.text = resources.getString(R.string.Snabble_Shoppingcart_giveaway);
                     rows.add(row);
                 }
-            } else if (item.getType() == ShoppingCart.ItemType.COUPON) {
+            } else if (item.getType() == ItemType.COUPON) {
                 SimpleRow row = new SimpleRow();
                 row.item = item;
                 row.title = resources.getString(R.string.Snabble_Shoppingcart_coupon);
                 row.text = item.getDisplayName();
                 row.isDismissible = true;
                 rows.add(row);
-            } else if (item.getType() == ShoppingCart.ItemType.PRODUCT) {
+            } else if (item.getType() == ItemType.PRODUCT) {
                 final ProductRow row = new ProductRow();
                 final Product product = item.getProduct();
-                final int quantity = item.getQuantity();
+                final int quantity = item.getQuantityMethod();
 
                 if (product != null) {
                     row.subtitle = sanitize(product.getSubtitle());
@@ -435,7 +438,7 @@ public class ShoppingCartView extends FrameLayout {
                 row.quantityText = sanitize(item.getQuantityText());
                 row.editable = item.isEditable();
                 row.isDismissible = true;
-                row.manualDiscountApplied = item.isManualCouponApplied();
+                row.manualDiscountApplied = item.isManualCouponApplied;
                 row.item = item;
                 rows.add(row);
             }
@@ -630,7 +633,7 @@ public class ShoppingCartView extends FrameLayout {
 
             for (int i = 0; i < cart.size(); i++) {
                 ShoppingCart.Item item = cart.get(i);
-                if (item.getType() != ShoppingCart.ItemType.PRODUCT) continue;
+                if (item.getType() != ItemType.PRODUCT) continue;
 
                 Product product = item.getProduct();
                 String url = product.getImageUrl();

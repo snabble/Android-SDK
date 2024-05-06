@@ -14,10 +14,10 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
-import io.snabble.sdk.ShoppingCart
-import io.snabble.sdk.ShoppingCart.ShoppingCartListener
-import io.snabble.sdk.ShoppingCart.SimpleShoppingCartListener
+import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
+import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
 import io.snabble.sdk.ui.GestureHandler
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.ShoppingCartView
@@ -157,7 +157,7 @@ class CombinedScannerFragment : SelfScanningFragment() {
     }
 
     private val shoppingCartListener: ShoppingCartListener = object : SimpleShoppingCartListener() {
-        override fun onChanged(list: ShoppingCart) {
+        override fun onChanged(list: ShoppingCart?) {
             scanHint?.dismiss()
         }
     }

@@ -18,6 +18,7 @@ import io.snabble.sdk.coupons.CouponCode;
 import io.snabble.sdk.coupons.CouponType;
 import io.snabble.sdk.encodedcodes.EncodedCodesGenerator;
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions;
+import io.snabble.sdk.shoppingcart.ShoppingCart;
 
 @RunWith(RobolectricTestRunner.class)
 public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
@@ -455,7 +456,7 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
         Assert.assertEquals("snabble;1;1\n7;4008400301020", codes.get(0));
 
         ShoppingCart cart = project.getShoppingCart();
-        cart.get(0).setManualCouponApplied(true);
+        cart.get(0).isManualCouponApplied = true;
         generator.add(project.getShoppingCart());
 
         codes = generator.generate();
@@ -487,7 +488,7 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
         Assert.assertEquals("snabble;1;1\n7;4008400301020\n1;FINAL_CODE", codes.get(0));
 
         ShoppingCart cart = project.getShoppingCart();
-        cart.get(0).setManualCouponApplied(true);
+        cart.get(0).isManualCouponApplied = true;
         generator.add(project.getShoppingCart());
 
         codes = generator.generate();

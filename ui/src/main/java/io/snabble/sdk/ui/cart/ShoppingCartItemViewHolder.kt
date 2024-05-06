@@ -20,7 +20,7 @@ import com.squareup.picasso.Picasso
 import io.snabble.accessibility.accessibility
 import io.snabble.accessibility.orderViewsForAccessibility
 import io.snabble.sdk.Product
-import io.snabble.sdk.ShoppingCart
+import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.ShoppingCartView.ProductRow
@@ -116,22 +116,22 @@ class ShoppingCartItemViewHolder internal constructor(
             undoHelper.removeAndShowUndoSnackbar(bindingAdapterPosition, row.item)
         }
         plus.setOnClickListener {
-            row.item.quantity++
+            row.item.setQuantityMethod(row.item.getQuantityMethod().inc())
 
-            updateMinusButtonIcon(row.item.quantity)
+            updateMinusButtonIcon(row.item.getQuantityMethod())
 
             Telemetry.event(Telemetry.Event.CartAmountChanged, row.item.product)
         }
 
-        updateMinusButtonIcon(row.item.quantity)
+        updateMinusButtonIcon(row.item.getQuantityMethod())
 
         minus.setOnClickListener {
             val p = bindingAdapterPosition
-            val newQuantity = row.item.quantity - 1
+            val newQuantity = row.item.getQuantityMethod() - 1
             if (newQuantity <= 0) {
                 undoHelper.removeAndShowUndoSnackbar(p, row.item)
             } else {
-                row.item.quantity = newQuantity
+                row.item.setQuantityMethod(newQuantity)
                 Telemetry.event(Telemetry.Event.CartAmountChanged, row.item.product)
             }
 
@@ -139,7 +139,7 @@ class ShoppingCartItemViewHolder internal constructor(
         }
 
         quantityEditApply.setOneShotClickListener {
-            row.item.quantity = quantityEditValue
+            row.item.setQuantityMethod(quantityEditValue)
             hideInput()
             Telemetry.event(Telemetry.Event.CartAmountChanged, row.item.product)
         }
