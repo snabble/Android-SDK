@@ -938,10 +938,10 @@ class ShoppingCart(
                 quantity = 0
             } else {
                 product.scannableCodes.forEach { code: Product.Code? ->
-                    if (code?.template != null
-                        && code.template == scannedCode.templateName
-                        && code.lookupCode != null
-                        && code.lookupCode == scannedCode.lookupCode
+                    if (code?.template != null &&
+                        code.template == scannedCode.templateName &&
+                        code.lookupCode != null &&
+                        code.lookupCode == scannedCode.lookupCode
                     ) {
                         quantity = code.specifiedQuantity
                         if (!code.isPrimary && code.specifiedQuantity > 1) {
