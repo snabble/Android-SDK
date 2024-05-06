@@ -70,17 +70,17 @@ internal class ShoppingCartUpdater(
                     return
                 }
                 val skus = getToBeReplacedSkus(signedCheckoutInfo)
-                if (skus.isNotEmpty()) {
-                    mainScope.launch {
+                mainScope.launch {
+                    if (skus.isNotEmpty()) {
                         val products = withContext(Dispatchers.Default) { getReplacedProducts(skus) }
                         if (products == null) {
                             onUnknownError()
                         } else {
                             commitCartUpdate(modCount, signedCheckoutInfo, products)
                         }
+                    } else {
+                        commitCartUpdate(modCount, signedCheckoutInfo, null)
                     }
-                } else {
-                    commitCartUpdate(modCount, signedCheckoutInfo, null)
                 }
             }
 
@@ -129,7 +129,7 @@ internal class ShoppingCartUpdater(
         cart.invalidateOnlinePrices()
         val (price, lineItems, violations) = destructorCheckoutInfo(signedCheckoutInfo) ?: return error(false)
 
-        addViolations(violations)
+        resolveViolations(violations)
 
         if (!cartItemMatch(lineItems)) return
 
@@ -197,7 +197,7 @@ internal class ShoppingCartUpdater(
         return 0
     }
 
-    private fun addViolations(violations: List<Violation>) {
+    private fun resolveViolations(violations: List<Violation>) {
         if (violations.isNotEmpty()) {
             cart.resolveViolations(violations)
         }
@@ -259,7 +259,7 @@ internal class ShoppingCartUpdater(
         val idsAreMatching = requiredIds.containsAll(receivedIds)
 
         // error out when items are missing
-        if (idsAreMatching) {
+        if (!idsAreMatching) {
             Logger.e("Missing products in price update: $requiredIds")
             error(false)
             return false
@@ -267,12 +267,13 @@ internal class ShoppingCartUpdater(
         return true
     }
 
-    private fun isCardModified(modCount: Int): Boolean {
-        if (cart.modCount != modCount) {
+    private fun isCardModified(modCount: Int): Boolean = when {
+        cart.modCount != modCount -> {
             error(false)
-            return true
+            true
         }
-        return false
+
+        else -> false
     }
 
     private fun getToBeReplacedSkus(signedCheckoutInfo: SignedCheckoutInfo): List<String?> {
