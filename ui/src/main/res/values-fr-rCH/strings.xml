@@ -26,6 +26,7 @@
   <string name="Snabble.Coupon.activate">Activer</string>
   <string name="Snabble.Coupon.activated">Activé</string>
   <string name="Snabble.Coupon.countdown">Le coupon expire dans %s minutes</string>
+  <string name="Snabble.Coupon.deactivate">Désactiver</string>
   <string name="Snabble.Coupon.expired">Ce coupon est expiré</string>
   <string name="Snabble.Coupon.explanation">Ton coupon est maintenant activé pour toi. Merci de scanner le produit dans le shop et de le placer dans ton panier pour profiter des avantages du coupon.</string>
   <string name="Snabble.Coupon.validIndefinitely">valid indefinitely</string>
