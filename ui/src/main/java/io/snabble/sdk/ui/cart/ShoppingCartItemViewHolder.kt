@@ -20,8 +20,8 @@ import com.squareup.picasso.Picasso
 import io.snabble.accessibility.accessibility
 import io.snabble.accessibility.orderViewsForAccessibility
 import io.snabble.sdk.Product
-import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.ShoppingCartView.ProductRow
 import io.snabble.sdk.ui.telemetry.Telemetry
@@ -72,10 +72,12 @@ class ShoppingCartItemViewHolder internal constructor(
         priceTextView.setTextOrHide(row.priceText)
         quantityTextView.setTextOrHide(row.quantityText)
         row.quantityText?.let {
-            quantityTextView.contentDescription = res.getString(R.string.Snabble_Shoppingcart_Accessibility_descriptionQuantity, it)
+            quantityTextView.contentDescription =
+                res.getString(R.string.Snabble_Shoppingcart_Accessibility_descriptionQuantity, it)
         }
         row.priceText?.let {
-            priceTextView.contentDescription = res.getString(R.string.Snabble_Shoppingcart_Accessibility_descriptionForPrice, it)
+            priceTextView.contentDescription =
+                res.getString(R.string.Snabble_Shoppingcart_Accessibility_descriptionForPrice, it)
         }
         if (row.imageUrl != null) {
             image.visibility = View.VISIBLE
@@ -84,20 +86,22 @@ class ShoppingCartItemViewHolder internal constructor(
             image.isVisible = hasAnyImages
             image.setImageBitmap(null)
         }
-        val hasCoupon = row.item.coupon != null
-        val isAgeRestricted = row.item.product?.saleRestriction?.isAgeRestriction ?: false
+        val hasCoupon = row.item?.coupon != null
+        val isAgeRestricted = row.item?.product?.saleRestriction?.isAgeRestriction ?: false
         redLabel.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#ff0000"))
         redLabel.isVisible = hasCoupon || isAgeRestricted
         if (hasCoupon) {
             if (!row.manualDiscountApplied) {
                 redLabel.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#999999"))
-                redLabel.contentDescription = res.getString(R.string.Snabble_Shoppingcart_Accessibility_descriptionWithoutDiscount)
+                redLabel.contentDescription =
+                    res.getString(R.string.Snabble_Shoppingcart_Accessibility_descriptionWithoutDiscount)
             } else {
-                redLabel.contentDescription = res.getString(R.string.Snabble_Shoppingcart_Accessibility_descriptionWithDiscount)
+                redLabel.contentDescription =
+                    res.getString(R.string.Snabble_Shoppingcart_Accessibility_descriptionWithDiscount)
             }
             redLabel.text = "%"
         } else {
-            val age = row.item.product?.saleRestriction?.value ?: 0
+            val age = row.item?.product?.saleRestriction?.value ?: 0
             if (age > 0) {
                 redLabel.text = age.toString()
             } else {
@@ -110,38 +114,45 @@ class ShoppingCartItemViewHolder internal constructor(
             encodingDisplayValue = encodingUnit.displayValue
         }
         quantityAnnotation.text = encodingDisplayValue
-        controlsDefault.isVisible = row.editable && row.item.product?.type != Product.Type.UserWeighed
-        controlsUserWeighed.isVisible = row.editable && row.item.product?.type == Product.Type.UserWeighed
+        controlsDefault.isVisible = row.editable && row.item?.product?.type != Product.Type.UserWeighed
+        controlsUserWeighed.isVisible = row.editable && row.item?.product?.type == Product.Type.UserWeighed
         controlsUserWeighedDelete.setOnClickListener {
             undoHelper.removeAndShowUndoSnackbar(bindingAdapterPosition, row.item)
         }
         plus.setOnClickListener {
-            row.item.setQuantityMethod(row.item.getQuantityMethod().inc())
+            row.item?.let { item ->
 
-            updateMinusButtonIcon(row.item.getQuantityMethod())
+                row.item?.setQuantityMethod(item.getQuantityMethod().inc())
 
-            Telemetry.event(Telemetry.Event.CartAmountChanged, row.item.product)
+                updateMinusButtonIcon(item.getQuantityMethod())
+
+                Telemetry.event(Telemetry.Event.CartAmountChanged, item.product)
+            }
         }
-
-        updateMinusButtonIcon(row.item.getQuantityMethod())
+        row.item?.let {
+            updateMinusButtonIcon(it.getQuantityMethod())
+        }
 
         minus.setOnClickListener {
             val p = bindingAdapterPosition
-            val newQuantity = row.item.getQuantityMethod() - 1
-            if (newQuantity <= 0) {
-                undoHelper.removeAndShowUndoSnackbar(p, row.item)
-            } else {
-                row.item.setQuantityMethod(newQuantity)
-                Telemetry.event(Telemetry.Event.CartAmountChanged, row.item.product)
-            }
+            row.item?.let { item ->
 
-            updateMinusButtonIcon(newQuantity)
+                val newQuantity = item.getQuantityMethod() - 1
+                if (newQuantity <= 0) {
+                    undoHelper.removeAndShowUndoSnackbar(p, item)
+                } else {
+                    item.setQuantityMethod(newQuantity)
+                    Telemetry.event(Telemetry.Event.CartAmountChanged, item.product)
+                }
+
+                updateMinusButtonIcon(newQuantity)
+            }
         }
 
         quantityEditApply.setOneShotClickListener {
-            row.item.setQuantityMethod(quantityEditValue)
+            row.item?.setQuantityMethod(quantityEditValue)
             hideInput()
-            Telemetry.event(Telemetry.Event.CartAmountChanged, row.item.product)
+            Telemetry.event(Telemetry.Event.CartAmountChanged, row.item?.product)
         }
         quantityEdit.setText(row.quantity.toString())
         itemView.isFocusable = true
