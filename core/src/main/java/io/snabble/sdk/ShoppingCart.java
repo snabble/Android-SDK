@@ -154,6 +154,24 @@ public class ShoppingCart implements Iterable<ShoppingCart.Item> {
         add(newItem(coupon, null));
     }
 
+    public boolean isCouponApplied(Coupon coupon) {
+        for (Item item : this) {
+            if (item.coupon.getId().equals(coupon.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void removeCoupon(Coupon coupon) {
+        for (int i = 0; i < size(); i++) {
+            if (get(i).coupon.getId().equals(coupon.getId())) {
+                remove(i);
+                break;
+            }
+        }
+    }
+
     /**
      * Adds coupons with a scanned code to it, you can use this function to quickly
      * add PRINTED coupons
