@@ -7,11 +7,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import io.snabble.sdk.coupons.CouponType
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.coupons.Coupon
+import io.snabble.sdk.coupons.CouponType
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.utils.loadImage
 import io.snabble.sdk.ui.utils.parcelableExtra
@@ -19,6 +18,7 @@ import io.snabble.sdk.ui.utils.setTextOrHide
 
 open class CouponDetailFragment : Fragment() {
     companion object {
+
         const val ARG_COUPON = "coupon"
 
         fun createCouponDetailFragment(coupon: CouponItem) = CouponDetailFragment().apply {
@@ -75,35 +75,51 @@ open class CouponDetailFragment : Fragment() {
             expire.setTextOrHide(item.buildExpireString(resources))
 
             val sdkCoupon = project.coupons.filter(CouponType.DIGITAL).firstOrNull { it.id == coupon.id }
-            if (sdkCoupon == null) {
-                activateCoupon.setText(R.string.Snabble_Coupons_expired)
-                activateCoupon.isEnabled = false
-            } else {
-                project.shoppingCart.let { cart ->
-                    for (i in 0 until cart.size()) {
-                        val cartCoupon = cart.get(i).coupon
-                        if (cartCoupon != null) {
-                            if (cartCoupon.id == sdkCoupon.id) {
-                                markAsApplied()
-                                break
-                            }
-                        }
-                    }
+            when {
+                sdkCoupon == null -> {
+                    activateCoupon.setText(R.string.Snabble_Coupons_expired)
+                    activateCoupon.isEnabled = false
                 }
-                activateCoupon.setOnClickListener {
-                    onRedeem(sdkCoupon)
+
+                isCouponActive(sdkCoupon) -> {
+                    markAsApplied()
+                }
+
+                else -> {
+                    markAsUsable()
                 }
             }
         }
     }
 
-    protected open fun onRedeem(sdkCoupon: io.snabble.sdk.coupons.Coupon) {
+    private fun isCouponActive(coupon: Coupon) = project.shoppingCart.isCouponApplied(coupon)
+
+    private fun removeCoupon(coupon: Coupon) {
+        project.shoppingCart.removeCoupon(coupon)
+        markAsUsable()
+    }
+
+    protected open fun onRedeem(sdkCoupon: Coupon) {
         project.shoppingCart.addCoupon(sdkCoupon)
         markAsApplied()
     }
 
     protected fun markAsApplied() {
-        activateCoupon.isVisible = false
-        appliedCoupon.isVisible = true
+        activateCoupon.text = "Deactivate"
+        activateCoupon.setOnClickListener {
+            item.coupon?.let {
+                removeCoupon(it)
+            }
+
+        }
+    }
+
+    private fun markAsUsable() {
+        activateCoupon.setText(R.string.Snabble_Coupon_activate)
+        activateCoupon.setOnClickListener {
+            item.coupon?.let {
+                onRedeem(it)
+            }
+        }
     }
 }
