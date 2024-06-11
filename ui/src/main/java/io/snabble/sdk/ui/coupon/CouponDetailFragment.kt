@@ -105,7 +105,7 @@ open class CouponDetailFragment : Fragment() {
     }
 
     protected fun markAsApplied() {
-        activateCoupon.text = "Deactivate"
+        activateCoupon.setText(R.string.Snabble_Coupon_deactivate)
         activateCoupon.setOnClickListener {
             item.coupon?.let {
                 removeCoupon(it)
