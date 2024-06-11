@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.scanner
+package io.snabble.sdk.ui.scanner.combined
 
 import android.content.Context
 import android.graphics.Rect
@@ -15,20 +15,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import io.snabble.accessibility.accessibility
 import io.snabble.accessibility.isTalkBackActive
-import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ViolationNotification
-import io.snabble.sdk.shoppingcart.data.item.ItemType
+import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.shoppingcart.data.Taxation
+import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.CheckoutBar
 import io.snabble.sdk.ui.cart.ShoppingCartView
 import io.snabble.sdk.ui.utils.behavior
 
-
 class ScannerBottomSheetView @JvmOverloads constructor(
-        context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr), ShoppingCartListener {
+
     val checkout: CheckoutBar
     val recyclerView: RecyclerView
     val onItemsChangedListener: MutableList<(cart: ShoppingCart) -> Unit> = mutableListOf()
@@ -44,10 +44,10 @@ class ScannerBottomSheetView @JvmOverloads constructor(
 
     val peekHeight: Int
         get() = if (cart?.isRestorable == true || cart?.isEmpty == false) {
-                    checkout.height
-                } else {
-                    checkout.priceHeight
-                }
+            checkout.height
+        } else {
+            checkout.priceHeight
+        }
 
     init {
         LayoutInflater.from(context).inflate(R.layout.snabble_view_cart, this)
@@ -69,7 +69,8 @@ class ScannerBottomSheetView @JvmOverloads constructor(
             onInitializeAccessibilityNodeInfo { info ->
                 val rowsCount = recyclerView.adapter?.itemCount ?: 0
                 val selectionMode = AccessibilityNodeInfoCompat.CollectionInfoCompat.SELECTION_MODE_NONE
-                val collectionInfo = AccessibilityNodeInfoCompat.CollectionInfoCompat.obtain(rowsCount, 1, false, selectionMode)
+                val collectionInfo =
+                    AccessibilityNodeInfoCompat.CollectionInfoCompat.obtain(rowsCount, 1, false, selectionMode)
                 info.setCollectionInfo(collectionInfo)
             }
         }
@@ -99,7 +100,7 @@ class ScannerBottomSheetView @JvmOverloads constructor(
                                 // make sure that you can always see the element before and after the current one
                                 if (pos == layoutManager.findFirstCompletelyVisibleItemPosition() && pos > 0) {
                                     recyclerView.smoothScrollToPosition(pos - 1)
-                                } else if(pos == layoutManager.findLastCompletelyVisibleItemPosition() && pos < recyclerView.adapter!!.itemCount) {
+                                } else if (pos == layoutManager.findLastCompletelyVisibleItemPosition() && pos < recyclerView.adapter!!.itemCount) {
                                     recyclerView.smoothScrollToPosition(pos + 1)
                                 }
                             }

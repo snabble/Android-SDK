@@ -86,7 +86,7 @@
 
         <fragment
             android:id="@+id/navigation_combinedScanner"
-            android:name="io.snabble.sdk.ui.scanner.CombinedScannerFragment"
+            android:name="io.snabble.sdk.ui.scanner.combined.CombinedScannerFragment"
             android:label="@string/scanner">
             <argument
                 android:name="showProductCode"
