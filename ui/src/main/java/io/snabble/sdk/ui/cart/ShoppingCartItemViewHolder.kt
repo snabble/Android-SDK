@@ -23,7 +23,7 @@ import io.snabble.sdk.Product
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.cart.ShoppingCartView.ProductRow
+import io.snabble.sdk.ui.cart.shoppingcart.row.ProductRow
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.InputFilterMinMax
 import io.snabble.sdk.ui.utils.setOneShotClickListener

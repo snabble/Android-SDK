@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.cart
+package io.snabble.sdk.ui.cart.shoppingcart
 
 import android.app.Activity
 import android.app.Application
@@ -11,11 +11,9 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,24 +22,25 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import io.snabble.sdk.Product
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble.instance
-import io.snabble.sdk.Unit
 import io.snabble.sdk.ViolationNotification
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
 import io.snabble.sdk.ui.GestureHandler
-import io.snabble.sdk.ui.GestureHandler.DismissibleAdapter
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.SnabbleUI.executeAction
+import io.snabble.sdk.ui.cart.PaymentSelectionHelper
+import io.snabble.sdk.ui.cart.ShoppingCartItemViewHolder
+import io.snabble.sdk.ui.cart.shoppingcart.adapter.ShoppingCartAdapter
+import io.snabble.sdk.ui.cart.shoppingcart.row.ProductRow
+import io.snabble.sdk.ui.cart.shoppingcart.row.Row
+import io.snabble.sdk.ui.cart.shoppingcart.row.SimpleRow
 import io.snabble.sdk.ui.checkout.showNotificationOnce
-import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.I18nUtils.getIdentifier
-import io.snabble.sdk.ui.utils.SnackbarUtils.make
 import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.ui.utils.observeView
-import io.snabble.sdk.utils.Logger
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks
 
 class ShoppingCartView : FrameLayout {
@@ -189,8 +188,7 @@ class ShoppingCartView : FrameLayout {
         restore = findViewById(R.id.restore)
         restore?.setOnClickListener { cart?.restore() }
 
-        PaymentSelectionHelper
-            .getInstance()
+        PaymentSelectionHelper.getInstance()
             .selectedEntry
             .observe((UIUtils.getHostActivity(getContext()) as FragmentActivity)) { update() }
 
@@ -369,104 +367,6 @@ class ShoppingCartView : FrameLayout {
         }
     }
 
-    abstract class Row {
-
-        var item: ShoppingCart.Item? = null
-        var isDismissible: Boolean = false
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (other == null || javaClass != other.javaClass) return false
-
-            val row = other as Row
-
-            if (isDismissible != row.isDismissible) return false
-            return if (item != null) item == row.item else row.item == null
-        }
-
-        override fun hashCode(): Int {
-            var result = if (item != null) item.hashCode() else 0
-            result = 31 * result + (if (isDismissible) 1 else 0)
-            return result
-        }
-    }
-
-    class ProductRow : Row() {
-
-        var name: String? = null
-        var subtitle: String? = null
-        var imageUrl: String? = null
-        var encodingUnit: Unit? = null
-        var priceText: String? = null
-        var quantityText: String? = null
-        var quantity: Int = 0
-        var editable: Boolean = false
-        var manualDiscountApplied: Boolean = false
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (other == null || javaClass != other.javaClass) return false
-            if (!super.equals(other)) return false
-
-            val that = other as ProductRow
-
-            if (quantity != that.quantity) return false
-            if (editable != that.editable) return false
-            if (manualDiscountApplied != that.manualDiscountApplied) return false
-            if (if (name != null) name != that.name else that.name != null) return false
-            if (if (subtitle != null) subtitle != that.subtitle else that.subtitle != null) return false
-            if (if (imageUrl != null) imageUrl != that.imageUrl else that.imageUrl != null) return false
-            if (encodingUnit != that.encodingUnit) return false
-            if (if (priceText != null) priceText != that.priceText else that.priceText != null) return false
-            return if (quantityText != null) quantityText == that.quantityText else that.quantityText == null
-        }
-
-        override fun hashCode(): Int {
-            var result = super.hashCode()
-            result = 31 * result + (if (name != null) name.hashCode() else 0)
-            result = 31 * result + (if (subtitle != null) subtitle.hashCode() else 0)
-            result = 31 * result + (if (imageUrl != null) imageUrl.hashCode() else 0)
-            result = 31 * result + (if (encodingUnit != null) encodingUnit.hashCode() else 0)
-            result = 31 * result + (if (priceText != null) priceText.hashCode() else 0)
-            result = 31 * result + (if (quantityText != null) quantityText.hashCode() else 0)
-            result = 31 * result + quantity
-            result = 31 * result + (if (editable) 1 else 0)
-            result = 31 * result + (if (manualDiscountApplied) 1 else 0)
-            return result
-        }
-    }
-
-    class SimpleRow : Row() {
-
-        var text: String? = null
-        var title: String? = null
-
-        @DrawableRes
-        var imageResId: Int = 0
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (other == null || javaClass != other.javaClass) return false
-            if (!super.equals(other)) return false
-
-            val simpleRow = other as SimpleRow
-
-            if (imageResId != simpleRow.imageResId) return false
-            if (if (item != null) item != simpleRow.item else simpleRow.item != null) return false
-            if (if (text != null) text != simpleRow.text else simpleRow.text != null) return false
-            return if (title != null) title == simpleRow.title else simpleRow.title == null
-        }
-
-        override fun hashCode(): Int {
-            var result = super.hashCode()
-            result = 31 * result + (if (item != null) item.hashCode() else 0)
-            result = 31 * result + (if (text != null) text.hashCode() else 0)
-            result = 31 * result + (if (title != null) title.hashCode() else 0)
-            result = 31 * result + imageResId
-            return result
-        }
-    }
-
     class SimpleViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         var title: TextView = itemView.findViewById(R.id.title)
@@ -483,136 +383,6 @@ class ShoppingCartView : FrameLayout {
             } else {
                 image.visibility = GONE
             }
-        }
-    }
-
-    class ShoppingCartAdapter(private val parentView: View?, private val cart: ShoppingCart?) :
-        RecyclerView.Adapter<RecyclerView.ViewHolder>(), UndoHelper, DismissibleAdapter {
-
-        private var list = emptyList<Row>()
-        private val context: Context? = parentView?.context
-        private var hasAnyImages = false
-
-        override fun getItemViewType(position: Int): Int {
-            if (getItem(position) is SimpleRow) {
-                return TYPE_SIMPLE
-            }
-
-            return TYPE_PRODUCT
-        }
-
-        override fun isDismissible(position: Int): Boolean {
-            return getItem(position).isDismissible
-        }
-
-        override fun getItemCount(): Int {
-            return list.size
-        }
-
-        // for fetching the data from outside of this view
-        fun fetchFrom(cart: ShoppingCart) {
-            hasAnyImages = cart.any { !it?.product?.imageUrl.isNullOrEmpty() }
-            context?.let {
-                submitList(buildRows(it.resources, cart), hasAnyImages)
-            }
-        }
-
-        fun submitList(newList: List<Row>, hasAnyImages: Boolean) {
-            this.hasAnyImages = hasAnyImages
-            val diffResult = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-                override fun getOldListSize(): Int {
-                    return list.size
-                }
-
-                override fun getNewListSize(): Int {
-                    return newList.size
-                }
-
-                override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                    val oldRow = list[oldItemPosition]
-                    val newRow = newList[newItemPosition]
-
-                    if (oldRow.item == null || newRow.item == null) {
-                        return false
-                    }
-
-                    return oldRow.item == newRow.item
-                }
-
-                override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                    val oldRow = list[oldItemPosition]
-                    val newRow = newList[newItemPosition]
-
-                    return oldRow == newRow
-                }
-            })
-
-            list = newList
-            diffResult.dispatchUpdatesTo(this)
-        }
-
-        fun getItem(position: Int): Row {
-            return list[position]
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            if (viewType == TYPE_SIMPLE) {
-                val v = inflate(context, R.layout.snabble_item_shoppingcart_simple, null)
-                v.layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
-                return SimpleViewHolder(v)
-            } else {
-                val v = inflate(context, R.layout.snabble_item_shoppingcart_product, null)
-                v.layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
-                return ShoppingCartItemViewHolder(v, this)
-            }
-        }
-
-        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-            val type = getItemViewType(position)
-
-            if (type == TYPE_PRODUCT) {
-                val viewHolder = holder as ShoppingCartItemViewHolder
-                viewHolder.bindTo((getItem(position) as ProductRow), hasAnyImages)
-            } else {
-                val viewHolder = holder as SimpleViewHolder
-                viewHolder.update(getItem(position) as SimpleRow, hasAnyImages)
-            }
-        }
-
-        override fun removeAndShowUndoSnackbar(adapterPosition: Int, item: ShoppingCart.Item) {
-            if (adapterPosition == -1) {
-                Logger.d("Invalid adapter position, ignoring")
-                return
-            }
-            val cart = cart ?: return
-            cart.remove(adapterPosition)
-            Telemetry.event(Telemetry.Event.DeletedFromCart, item.product)
-            parentView?.let {
-
-                val snackbar = make(
-                    parentView,
-                    R.string.Snabble_Shoppingcart_articleRemoved, UIUtils.SNACKBAR_LENGTH_VERY_LONG
-                )
-                snackbar.setAction(R.string.Snabble_undo) { v: View? ->
-                    cart.insert(item, adapterPosition)
-                    fetchFrom(cart)
-                    Telemetry.event(Telemetry.Event.UndoDeleteFromCart, item.product)
-                }
-                snackbar.show()
-            }
-            fetchFrom(cart)
-        }
-
-        companion object {
-
-            private const val TYPE_PRODUCT = 0
-            private const val TYPE_SIMPLE = 1
         }
     }
 
