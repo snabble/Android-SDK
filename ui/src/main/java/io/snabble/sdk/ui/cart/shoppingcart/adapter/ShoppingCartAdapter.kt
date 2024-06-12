@@ -11,8 +11,9 @@ import io.snabble.sdk.ui.GestureHandler.DismissibleAdapter
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.UndoHelper
 import io.snabble.sdk.ui.cart.shoppingcart.ShoppingCartView.Companion.buildRows
-import io.snabble.sdk.ui.cart.shoppingcart.row.Row
-import io.snabble.sdk.ui.cart.shoppingcart.row.SimpleRow
+import io.snabble.sdk.ui.cart.shoppingcart.row.new.ProductRow
+import io.snabble.sdk.ui.cart.shoppingcart.row.new.Row
+import io.snabble.sdk.ui.cart.shoppingcart.row.new.SimpleRow
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.SnackbarUtils.make
 import io.snabble.sdk.ui.utils.UIUtils
@@ -107,21 +108,14 @@ class ShoppingCartAdapter(private val parentView: View?, private val cart: Shopp
     }
 
     override fun onBindViewHolder(holder: LineItemViewHolder, position: Int) {
+        val type = getItemViewType(position)
 
-        holder.bind(SimpleRow())
+        if (type == TYPE_PRODUCT) {
+            holder.bind((getItem(position) as ProductRow), hasAnyImages)
+        } else {
+            holder.bind((getItem(position) as SimpleRow), hasAnyImages)
+        }
     }
-
-//        override fun onBindViewHolder(holder: LineItemViewHolder, position: Int) {
-//            val type = getItemViewType(position)
-//
-//            if (type == TYPE_PRODUCT) {
-//                val viewHolder = holder as ShoppingCartItemViewHolder
-//                viewHolder.bindTo((getItem(position) as ProductRow), hasAnyImages)
-//            } else {
-//                val viewHolder = holder as SimpleViewHolder
-//                viewHolder.update(getItem(position) as SimpleRow, hasAnyImages)
-//            }
-//        }
 
     override fun removeAndShowUndoSnackbar(adapterPosition: Int, item: ShoppingCart.Item) {
         if (adapterPosition == -1) {

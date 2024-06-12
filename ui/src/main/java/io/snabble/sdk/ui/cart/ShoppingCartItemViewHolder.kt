@@ -17,13 +17,11 @@ import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.squareup.picasso.Picasso
-import io.snabble.accessibility.accessibility
 import io.snabble.accessibility.orderViewsForAccessibility
 import io.snabble.sdk.Product
-import io.snabble.sdk.Snabble
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.cart.shoppingcart.row.ProductRow
+import io.snabble.sdk.ui.cart.shoppingcart.row.new.ProductRow
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.InputFilterMinMax
 import io.snabble.sdk.ui.utils.setOneShotClickListener
@@ -58,16 +56,16 @@ class ShoppingCartItemViewHolder internal constructor(
     @SuppressLint("SetTextI18n")
     fun bindTo(row: ProductRow, hasAnyImages: Boolean) {
         val res = itemView.resources
-        itemView.accessibility {
-            if (isTalkBackActive) {
-                setLongClickAction(R.string.Snabble_Shoppingcart_Accessibility_actionDelete) {
-                    Snabble.checkedInProject.value?.shoppingCart?.remove(bindingAdapterPosition)
-                }
-            }
-            onInitializeAccessibilityNodeInfo { info ->
-                info.text = res.getString(R.string.Snabble_Shoppingcart_Accessibility_contextInCart)
-            }
-        }
+//        itemView.accessibility {
+//            if (isTalkBackActive) {
+//                setLongClickAction(R.string.Snabble_Shoppingcart_Accessibility_actionDelete) {
+//                    Snabble.checkedInProject.value?.shoppingCart?.remove(bindingAdapterPosition)
+//                }
+//            }
+//            onInitializeAccessibilityNodeInfo { info ->
+//                info.text = res.getString(R.string.Snabble_Shoppingcart_Accessibility_contextInCart)
+//            }
+//        }
         name.setTextOrHide(row.name)
         priceTextView.setTextOrHide(row.priceText)
         quantityTextView.setTextOrHide(row.quantityText)
