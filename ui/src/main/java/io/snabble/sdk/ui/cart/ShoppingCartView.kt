@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.res.Resources
 import android.util.AttributeSet
 import android.view.View
-import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -22,7 +21,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import io.snabble.sdk.Product
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble.instance
@@ -50,12 +48,12 @@ class ShoppingCartView : FrameLayout {
 
     private var rootView: View? = null
     private lateinit var recyclerView: RecyclerView
-    private lateinit var recyclerViewAdapter: ShoppingCartAdapter
+    private var recyclerViewAdapter: ShoppingCartAdapter? = null
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
-    private lateinit var cart: ShoppingCart
+    private var cart: ShoppingCart? = null
     private var emptyState: ViewGroup? = null
-    private lateinit var restore: View
-    private lateinit var scanProducts: TextView
+    private var restore: View? = null
+    private var scanProducts: TextView? = null
     private var hasAnyImages = false
     private var lastInvalidProducts: List<Product>? = null
     private var alertDialog: AlertDialog? = null
@@ -65,67 +63,70 @@ class ShoppingCartView : FrameLayout {
     private var isRegistered = false
 
     private val shoppingCartListener: ShoppingCartListener = object : SimpleShoppingCartListener() {
-        override fun onChanged(cart: ShoppingCart?) {
-            swipeRefreshLayout!!.isRefreshing = false
+        override fun onChanged(list: ShoppingCart?) {
+            swipeRefreshLayout.isRefreshing = false
             submitList()
             update()
         }
 
         override fun onCheckoutLimitReached(list: ShoppingCart?) {
-            if (alertDialog != null) {
-                alertDialog!!.dismiss()
+            alertDialog?.dismiss()
+
+            project?.let {
+
+                val message = resources.getString(
+                    R.string.Snabble_LimitsAlert_checkoutNotAvailable,
+                    it.priceFormatter.format(it.maxCheckoutLimit)
+                )
+
+                alertDialog = AlertDialog.Builder(context)
+                    .setTitle(R.string.Snabble_LimitsAlert_title)
+                    .setMessage(message)
+                    .setPositiveButton(R.string.Snabble_ok, null)
+                    .create()
+                alertDialog?.show()
             }
-
-            val message = resources.getString(
-                R.string.Snabble_LimitsAlert_checkoutNotAvailable,
-                project!!.priceFormatter.format(project!!.maxCheckoutLimit)
-            )
-
-            alertDialog = AlertDialog.Builder(context)
-                .setTitle(R.string.Snabble_LimitsAlert_title)
-                .setMessage(message)
-                .setPositiveButton(R.string.Snabble_ok, null)
-                .create()
-            alertDialog!!.show()
         }
 
         override fun onOnlinePaymentLimitReached(list: ShoppingCart?) {
-            if (alertDialog != null) {
-                alertDialog!!.dismiss()
+            alertDialog?.dismiss()
+            project?.let {
+
+                val message = resources.getString(
+                    R.string.Snabble_LimitsAlert_notAllMethodsAvailable,
+                    it.priceFormatter.format(it.maxOnlinePaymentLimit)
+                )
+
+                alertDialog = AlertDialog.Builder(context)
+                    .setTitle(R.string.Snabble_LimitsAlert_title)
+                    .setMessage(message)
+                    .setPositiveButton(R.string.Snabble_ok, null)
+                    .create()
+                alertDialog?.show()
             }
-
-            val message = resources.getString(
-                R.string.Snabble_LimitsAlert_notAllMethodsAvailable,
-                project!!.priceFormatter.format(project!!.maxOnlinePaymentLimit)
-            )
-
-            alertDialog = AlertDialog.Builder(context)
-                .setTitle(R.string.Snabble_LimitsAlert_title)
-                .setMessage(message)
-                .setPositiveButton(R.string.Snabble_ok, null)
-                .create()
-            alertDialog!!.show()
         }
 
         override fun onViolationDetected(violations: List<ViolationNotification?>) {
-            violations.showNotificationOnce(context, cart)
+            cart?.let {
+                violations.showNotificationOnce(context, it)
+            }
         }
     }
 
     constructor(context: Context) : super(context) {
-        inflateView(context, null)
+        inflateView(context)
     }
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-        inflateView(context, attrs)
+        inflateView(context)
     }
 
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-        inflateView(context, attrs)
+        inflateView(context)
     }
 
-    private fun inflateView(context: Context, attrs: AttributeSet?) {
-        inflate(getContext(), R.layout.snabble_view_shopping_cart, this)
+    private fun inflateView(context: Context) {
+        inflate(context, R.layout.snabble_view_shopping_cart, this)
 
         rootView = findViewById(R.id.root)
 
@@ -145,15 +146,14 @@ class ShoppingCartView : FrameLayout {
 
     private fun initViewState(p: Project) {
         if (p != project) {
-            rootView!!.visibility = VISIBLE
+            rootView?.visibility = VISIBLE
             unregisterListeners()
             project = p
 
-            if (cart != null) {
-                cart!!.removeListener(shoppingCartListener)
-            }
+            cart?.removeListener(shoppingCartListener)
 
-            cart = project!!.shoppingCart
+
+            cart = project?.shoppingCart
             resetViewState(context)
             registerListeners()
         }
@@ -171,33 +171,28 @@ class ShoppingCartView : FrameLayout {
         recyclerView.setItemAnimator(itemAnimator)
 
         val itemDecoration = DividerItemDecoration(
-            recyclerView.getContext(),
+            recyclerView.context,
             layoutManager.orientation
         )
         recyclerView.addItemDecoration(itemDecoration)
 
         swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout)
-        swipeRefreshLayout.setOnRefreshListener(OnRefreshListener { cart!!.updatePrices(false) })
+        swipeRefreshLayout.setOnRefreshListener { cart?.updatePrices(false) }
 
         emptyState = findViewById(R.id.empty_state)
 
         paymentContainer = findViewById(R.id.bottom_payment_container)
 
         scanProducts = findViewById(R.id.scan_products)
-        scanProducts.setOnClickListener(OnClickListener { view: View? ->
-            executeAction(
-                context,
-                SnabbleUI.Event.SHOW_SCANNER
-            )
-        })
+        scanProducts?.setOnClickListener { executeAction(context, SnabbleUI.Event.SHOW_SCANNER) }
 
         restore = findViewById(R.id.restore)
-        restore.setOnClickListener(OnClickListener { v: View? -> cart!!.restore() })
+        restore?.setOnClickListener { cart?.restore() }
 
         PaymentSelectionHelper
             .getInstance()
             .selectedEntry
-            .observe((UIUtils.getHostActivity(getContext()) as FragmentActivity)) { entry: PaymentSelectionHelper.Entry? -> update() }
+            .observe((UIUtils.getHostActivity(getContext()) as FragmentActivity)) { update() }
 
         createItemTouchHelper(context.resources)
         submitList()
@@ -212,8 +207,10 @@ class ShoppingCartView : FrameLayout {
                 }
 
                 val pos = viewHolder.bindingAdapterPosition
-                val item = cart!![pos]
-                recyclerViewAdapter!!.removeAndShowUndoSnackbar(pos, item)
+                val item = cart?.get(pos)
+                item?.let {
+                    recyclerViewAdapter?.removeAndShowUndoSnackbar(pos, item)
+                }
             }
         }
         val itemTouchHelper = ItemTouchHelper(gestureHandler)
@@ -222,20 +219,20 @@ class ShoppingCartView : FrameLayout {
     }
 
     private fun updateEmptyState() {
-        if (cart!!.size() > 0) {
-            paymentContainer!!.visibility = VISIBLE
-            emptyState!!.visibility = GONE
+        if (cart?.isEmpty != true) {
+            paymentContainer?.visibility = VISIBLE
+            emptyState?.visibility = GONE
         } else {
-            paymentContainer!!.visibility = GONE
-            emptyState!!.visibility = VISIBLE
+            paymentContainer?.visibility = GONE
+            emptyState?.visibility = VISIBLE
         }
 
-        if (cart!!.isRestorable) {
-            restore!!.visibility = VISIBLE
-            scanProducts!!.setText(R.string.Snabble_Shoppingcart_EmptyState_restartButtonTitle)
+        if (cart?.isRestorable == true) {
+            restore?.visibility = VISIBLE
+            scanProducts?.setText(R.string.Snabble_Shoppingcart_EmptyState_restartButtonTitle)
         } else {
-            restore!!.visibility = GONE
-            scanProducts!!.setText(R.string.Snabble_Shoppingcart_EmptyState_buttonTitle)
+            restore?.visibility = GONE
+            scanProducts?.setText(R.string.Snabble_Shoppingcart_EmptyState_buttonTitle)
         }
     }
 
@@ -249,9 +246,9 @@ class ShoppingCartView : FrameLayout {
     }
 
     private fun checkSaleStop() {
-        val invalidProducts = cart!!.invalidProducts
+        val invalidProducts = cart?.invalidProducts
 
-        if (invalidProducts!!.size > 0 && invalidProducts != lastInvalidProducts) {
+        if (invalidProducts?.isNotEmpty() == true && invalidProducts != lastInvalidProducts) {
             val res = resources
             val sb = StringBuilder()
             if (invalidProducts.size == 1) {
@@ -262,7 +259,7 @@ class ShoppingCartView : FrameLayout {
 
             sb.append("\n\n")
 
-            for (product in invalidProducts) {
+            invalidProducts.forEach { product ->
                 if (product.subtitle != null) {
                     sb.append(product.subtitle)
                     sb.append(" ")
@@ -284,7 +281,7 @@ class ShoppingCartView : FrameLayout {
     }
 
     private fun checkDepositReturnVoucher() {
-        if (cart!!.hasInvalidDepositReturnVoucher() && !hasAlreadyShownInvalidDeposit) {
+        if (cart?.hasInvalidDepositReturnVoucher() == true && !hasAlreadyShownInvalidDeposit) {
             AlertDialog.Builder(context)
                 .setCancelable(false)
                 .setTitle(getIdentifier(resources, R.string.Snabble_SaleStop_ErrorMsg_title))
@@ -298,19 +295,7 @@ class ShoppingCartView : FrameLayout {
     private fun scanForImages() {
         val lastHasAnyImages = hasAnyImages
 
-        hasAnyImages = false
-
-        for (i in 0 until cart!!.size()) {
-            val item = cart!![i]
-            if (item.type != ItemType.PRODUCT) continue
-
-            val product = item.product
-            val url = product!!.imageUrl
-            if (url != null && url.length > 0) {
-                hasAnyImages = true
-                break
-            }
-        }
+        hasAnyImages = cart?.any { !it?.product?.imageUrl.isNullOrEmpty() } == true
 
         if (hasAnyImages != lastHasAnyImages) {
             submitList()
@@ -321,7 +306,7 @@ class ShoppingCartView : FrameLayout {
     private fun registerListeners() {
         if (!isRegistered && project != null) {
             isRegistered = true
-            cart!!.addListener(shoppingCartListener)
+            cart?.addListener(shoppingCartListener)
             submitList()
             update()
         }
@@ -330,7 +315,7 @@ class ShoppingCartView : FrameLayout {
     private fun unregisterListeners() {
         if (isRegistered) {
             isRegistered = false
-            cart!!.removeListener(shoppingCartListener)
+            cart?.removeListener(shoppingCartListener)
         }
     }
 
@@ -363,7 +348,7 @@ class ShoppingCartView : FrameLayout {
 
     private val activityLifecycleCallbacks: ActivityLifecycleCallbacks = object : SimpleActivityLifecycleCallbacks() {
         override fun onActivityStarted(activity: Activity) {
-            if (UIUtils.getHostActivity(context) === activity) {
+            if (UIUtils.getHostActivity(context) == activity) {
                 registerListeners()
 
                 submitList()
@@ -372,15 +357,15 @@ class ShoppingCartView : FrameLayout {
         }
 
         override fun onActivityStopped(activity: Activity) {
-            if (UIUtils.getHostActivity(context) === activity) {
+            if (UIUtils.getHostActivity(context) == activity) {
                 unregisterListeners()
             }
         }
     }
 
     private fun submitList() {
-        if (recyclerViewAdapter != null) {
-            recyclerViewAdapter!!.submitList(buildRows(resources, cart), hasAnyImages)
+        cart?.let {
+            recyclerViewAdapter?.submitList(buildRows(resources, it), hasAnyImages)
         }
     }
 
@@ -389,11 +374,11 @@ class ShoppingCartView : FrameLayout {
         var item: ShoppingCart.Item? = null
         var isDismissible: Boolean = false
 
-        override fun equals(o: Any?): Boolean {
-            if (this === o) return true
-            if (o == null || javaClass != o.javaClass) return false
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other == null || javaClass != other.javaClass) return false
 
-            val row = o as Row
+            val row = other as Row
 
             if (isDismissible != row.isDismissible) return false
             return if (item != null) item == row.item else row.item == null
@@ -418,12 +403,12 @@ class ShoppingCartView : FrameLayout {
         var editable: Boolean = false
         var manualDiscountApplied: Boolean = false
 
-        override fun equals(o: Any?): Boolean {
-            if (this === o) return true
-            if (o == null || javaClass != o.javaClass) return false
-            if (!super.equals(o)) return false
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other == null || javaClass != other.javaClass) return false
+            if (!super.equals(other)) return false
 
-            val that = o as ProductRow
+            val that = other as ProductRow
 
             if (quantity != that.quantity) return false
             if (editable != that.editable) return false
@@ -459,12 +444,12 @@ class ShoppingCartView : FrameLayout {
         @DrawableRes
         var imageResId: Int = 0
 
-        override fun equals(o: Any?): Boolean {
-            if (this === o) return true
-            if (o == null || javaClass != o.javaClass) return false
-            if (!super.equals(o)) return false
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other == null || javaClass != other.javaClass) return false
+            if (!super.equals(other)) return false
 
-            val simpleRow = o as SimpleRow
+            val simpleRow = other as SimpleRow
 
             if (imageResId != simpleRow.imageResId) return false
             if (if (item != null) item != simpleRow.item else simpleRow.item != null) return false
@@ -485,13 +470,8 @@ class ShoppingCartView : FrameLayout {
     class SimpleViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         var title: TextView = itemView.findViewById(R.id.title)
-        var text: TextView
-        var image: ImageView
-
-        init {
-            text = itemView.findViewById(R.id.text)
-            image = itemView.findViewById(R.id.helper_image)
-        }
+        var text: TextView = itemView.findViewById(R.id.text)
+        var image: ImageView = itemView.findViewById(R.id.helper_image)
 
         fun update(row: SimpleRow, hasAnyImages: Boolean) {
             title.text = row.title
@@ -510,7 +490,7 @@ class ShoppingCartView : FrameLayout {
         RecyclerView.Adapter<RecyclerView.ViewHolder>(), UndoHelper, DismissibleAdapter {
 
         private var list = emptyList<Row>()
-        private val context: Context = parentView!!.context
+        private val context: Context? = parentView?.context
         private var hasAnyImages = false
 
         override fun getItemViewType(position: Int): Int {
@@ -530,22 +510,11 @@ class ShoppingCartView : FrameLayout {
         }
 
         // for fetching the data from outside of this view
-        fun fetchFrom(cart: ShoppingCart?) {
-            hasAnyImages = false
-
-            for (i in 0 until cart!!.size()) {
-                val item = cart[i]
-                if (item.type != ItemType.PRODUCT) continue
-
-                val product = item.product
-                val url = product!!.imageUrl
-                if (url != null && url.length > 0) {
-                    hasAnyImages = true
-                    break
-                }
+        fun fetchFrom(cart: ShoppingCart) {
+            hasAnyImages = cart.any { !it?.product?.imageUrl.isNullOrEmpty() }
+            context?.let {
+                submitList(buildRows(it.resources, cart), hasAnyImages)
             }
-
-            submitList(buildRows(context.resources, cart), hasAnyImages)
         }
 
         fun submitList(newList: List<Row>, hasAnyImages: Boolean) {
@@ -621,20 +590,22 @@ class ShoppingCartView : FrameLayout {
                 Logger.d("Invalid adapter position, ignoring")
                 return
             }
-
-            cart!!.remove(adapterPosition)
+            val cart = cart ?: return
+            cart.remove(adapterPosition)
             Telemetry.event(Telemetry.Event.DeletedFromCart, item.product)
+            parentView?.let {
 
-            val snackbar = make(
-                parentView!!,
-                R.string.Snabble_Shoppingcart_articleRemoved, UIUtils.SNACKBAR_LENGTH_VERY_LONG
-            )
-            snackbar.setAction(R.string.Snabble_undo) { v: View? ->
-                cart.insert(item, adapterPosition)
-                fetchFrom(cart)
-                Telemetry.event(Telemetry.Event.UndoDeleteFromCart, item.product)
+                val snackbar = make(
+                    parentView,
+                    R.string.Snabble_Shoppingcart_articleRemoved, UIUtils.SNACKBAR_LENGTH_VERY_LONG
+                )
+                snackbar.setAction(R.string.Snabble_undo) { v: View? ->
+                    cart.insert(item, adapterPosition)
+                    fetchFrom(cart)
+                    Telemetry.event(Telemetry.Event.UndoDeleteFromCart, item.product)
+                }
+                snackbar.show()
             }
-            snackbar.show()
             fetchFrom(cart)
         }
 
@@ -648,19 +619,16 @@ class ShoppingCartView : FrameLayout {
     companion object {
 
         private fun sanitize(input: String?): String? {
-            if (input != null && input == "") return null
+            if (input != null && input.isBlank()) return null
             return input
         }
 
-        fun buildRows(resources: Resources, cart: ShoppingCart?): List<Row> {
+        fun buildRows(resources: Resources, cart: ShoppingCart): List<Row> {
             val rows: MutableList<Row> = ArrayList(
-                cart!!.size() + 1
+                cart.size() + 1
             )
-
-            for (i in 0 until cart.size()) {
-                val item = cart[i]
-
-                if (item.type == ItemType.LINE_ITEM) {
+            cart.forEach { item: ShoppingCart.Item? ->
+                if (item?.type == ItemType.LINE_ITEM) {
                     if (item.isDiscount) {
                         val row = SimpleRow()
                         row.item = item
@@ -676,14 +644,14 @@ class ShoppingCartView : FrameLayout {
                         row.text = resources.getString(R.string.Snabble_Shoppingcart_giveaway)
                         rows.add(row)
                     }
-                } else if (item.type == ItemType.COUPON) {
+                } else if (item?.type == ItemType.COUPON) {
                     val row = SimpleRow()
                     row.item = item
                     row.title = resources.getString(R.string.Snabble_Shoppingcart_coupon)
                     row.text = item.displayName
                     row.isDismissible = true
                     rows.add(row)
-                } else if (item.type == ItemType.PRODUCT) {
+                } else if (item?.type == ItemType.PRODUCT) {
                     val row = ProductRow()
                     val product = item.product
                     val quantity = item.getQuantityMethod()
@@ -709,10 +677,10 @@ class ShoppingCartView : FrameLayout {
             val cartTotal = cart.totalDepositPrice
             if (cartTotal > 0) {
                 val row = SimpleRow()
-                val priceFormatter = instance.checkedInProject.getValue()!!.priceFormatter
+                val priceFormatter = instance.checkedInProject.getValue()?.priceFormatter
                 row.title = resources.getString(R.string.Snabble_Shoppingcart_deposit)
                 row.imageResId = R.drawable.snabble_ic_deposit
-                row.text = priceFormatter.format(cartTotal)
+                row.text = priceFormatter?.format(cartTotal)
                 rows.add(row)
             }
 
