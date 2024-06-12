@@ -45,7 +45,7 @@
         </LinearLayout>
     </ScrollView>
 
-    <io.snabble.sdk.ui.scanner.ScannerBottomSheetView
+    <io.snabble.sdk.ui.scanner.combined.ScannerBottomSheetView
         android:id="@+id/cart"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
