@@ -256,7 +256,7 @@ internal class ShoppingCartUpdater(
         val requiredIds = cart.filter { it?.type != ItemType.COUPON }.map { it?.id }
         val receivedIds = lineItems.map { it.id }
 
-        val idsAreMatching = requiredIds.containsAll(receivedIds)
+        val idsAreMatching = receivedIds.containsAll(requiredIds)
 
         // error out when items are missing
         if (!idsAreMatching) {
