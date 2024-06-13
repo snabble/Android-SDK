@@ -497,7 +497,6 @@ class ShoppingCartView : FrameLayout {
             if (getItem(position) is SimpleRow) {
                 return TYPE_SIMPLE
             }
-
             return TYPE_PRODUCT
         }
 
