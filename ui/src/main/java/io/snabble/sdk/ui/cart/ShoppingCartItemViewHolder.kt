@@ -147,31 +147,31 @@ class ShoppingCartItemViewHolder internal constructor(
             }
         }
 
-        quantityEditApply.setOneShotClickListener {
-            row.item?.setQuantityMethod(quantityEditValue)
-            hideInput()
-            Telemetry.event(Telemetry.Event.CartAmountChanged, row.item?.product)
-        }
-        quantityEdit.setText(row.quantity.toString())
+//        quantityEditApply.setOneShotClickListener {
+//            row.item?.setQuantityMethod(quantityEditValue)
+//            hideInput()
+//            Telemetry.event(Telemetry.Event.CartAmountChanged, row.item?.product)
+//        }
+//        quantityEdit.setText(row.quantity.toString())
         itemView.isFocusable = true
         itemView.isFocusableInTouchMode = true
         if (bindingAdapterPosition == 0) {
             itemView.requestFocus()
         }
-        updateQuantityEditApplyVisibility(row.quantity)
-        quantityEdit.addTextChangedListener(onTextChanged = { _, _, _, _ ->
-            updateQuantityEditApplyVisibility(row.quantity)
-        })
-        quantityEdit.setOnEditorActionListener { _, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_DONE
-                || (event.action == KeyEvent.ACTION_DOWN
-                        && event.keyCode == KeyEvent.KEYCODE_ENTER)
-            ) {
-                quantityEditApply.callOnClick()
-                return@setOnEditorActionListener true
-            }
-            false
-        }
+//        updateQuantityEditApplyVisibility(row.quantity)
+//        quantityEdit.addTextChangedListener(onTextChanged = { _, _, _, _ ->
+//            updateQuantityEditApplyVisibility(row.quantity)
+//        })
+//        quantityEdit.setOnEditorActionListener { _, actionId, event ->
+//            if (actionId == EditorInfo.IME_ACTION_DONE
+//                || (event.action == KeyEvent.ACTION_DOWN
+//                        && event.keyCode == KeyEvent.KEYCODE_ENTER)
+//            ) {
+//                quantityEditApply.callOnClick()
+//                return@setOnEditorActionListener true
+//            }
+//            false
+//        }
         quantityEdit.filters = arrayOf(InputFilterMinMax(0, ShoppingCart.MAX_QUANTITY))
     }
 

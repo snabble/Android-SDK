@@ -89,7 +89,7 @@ class ShoppingCartAdapter(private val parentView: View?, private val cart: Shopp
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LineItemViewHolder {
-        return LineItemViewHolder(ComposeView(parent.context))
+        return LineItemViewHolder(ComposeView(parent.context), undoHelper = this)
 //            if (viewType == TYPE_SIMPLE) {
 //        val v = inflate(context, R.layout.snabble_item_shoppingcart_simple, null)
 //                v.layoutParams = ViewGroup.LayoutParams(
