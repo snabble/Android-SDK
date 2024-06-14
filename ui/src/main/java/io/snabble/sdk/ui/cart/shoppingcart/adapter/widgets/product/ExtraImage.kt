@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets
+package io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.product
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun AgeRstriction(hasCoupon: Boolean, isAgeRestricted: Boolean, age: Long, isManualApplied: Boolean) {
+fun ExtraImage(hasCoupon: Boolean, isAgeRestricted: Boolean, age: Long, isManualApplied: Boolean) {
     if (hasCoupon || (isAgeRestricted && age > 0)) {
         Box(
             modifier = Modifier

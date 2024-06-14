@@ -367,25 +367,6 @@ class ShoppingCartView : FrameLayout {
         }
     }
 
-    class SimpleViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-        var title: TextView = itemView.findViewById(R.id.title)
-        var text: TextView = itemView.findViewById(R.id.text)
-        var image: ImageView = itemView.findViewById(R.id.helper_image)
-
-        fun update(row: SimpleRow, hasAnyImages: Boolean) {
-            title.text = row.title
-            text.text = row.text
-            image.setImageResource(row.imageResId)
-
-            if (hasAnyImages) {
-                image.visibility = VISIBLE
-            } else {
-                image.visibility = GONE
-            }
-        }
-    }
-
     companion object {
 
         private fun sanitize(input: String?): String? {

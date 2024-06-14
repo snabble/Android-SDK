@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets
+package io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.product
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -13,7 +13,7 @@ import io.snabble.sdk.ui.cart.shoppingcart.row.ProductRow
 
 @Composable
 @OptIn(ExperimentalGlideComposeApi::class)
-fun ImageWidget(row: ProductRow, hasAnyImages: Boolean) {
+fun ItemImage(row: ProductRow, hasAnyImages: Boolean) {
     if (row.imageUrl != null) {
         GlideImage(
             modifier = Modifier

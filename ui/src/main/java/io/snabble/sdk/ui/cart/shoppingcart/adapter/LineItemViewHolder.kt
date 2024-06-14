@@ -13,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
@@ -27,11 +26,12 @@ import androidx.recyclerview.widget.RecyclerView
 import io.snabble.sdk.Product
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.UndoHelper
-import io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.AgeRstriction
-import io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.ImageWidget
-import io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.PriceDescription
-import io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.QuantityWidget
-import io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.UserWeighed
+import io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.product.ExtraImage
+import io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.product.ItemImage
+import io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.product.PriceDescription
+import io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.product.QuantityField
+import io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.product.UserWeighedField
+import io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.simple.ItemDesciption
 import io.snabble.sdk.ui.cart.shoppingcart.row.ProductRow
 import io.snabble.sdk.ui.cart.shoppingcart.row.SimpleRow
 import io.snabble.sdk.ui.telemetry.Telemetry
@@ -46,6 +46,7 @@ class LineItemViewHolder(private val composeView: ComposeView, private val undoH
         val age = row.item?.product?.saleRestriction?.value ?: 0
         val encodingUnit = row.encodingUnit
         val encodingUnitDisplayName = encodingUnit?.displayValue ?: "g"
+
         composeView.setContent {
             ThemeWrapper {
                 Row(
@@ -55,12 +56,12 @@ class LineItemViewHolder(private val composeView: ComposeView, private val undoH
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    ImageWidget(row, hasAnyImages)
-                    AgeRstriction(hasCoupon, isAgeRestricted, age, row.manualDiscountApplied)
+                    ItemImage(row, hasAnyImages)
+                    ExtraImage(hasCoupon, isAgeRestricted, age, row.manualDiscountApplied)
                     PriceDescription(row)
                     Spacer(modifier = Modifier.weight(1f))
                     if (row.editable && row.item?.product?.type != Product.Type.UserWeighed) {
-                        QuantityWidget(row, onQuantityChanged = {
+                        QuantityField(row, onQuantityChanged = {
                             if (it <= 0) {
                                 undoHelper.removeAndShowUndoSnackbar(bindingAdapterPosition, row.item)
                             } else {
@@ -70,7 +71,7 @@ class LineItemViewHolder(private val composeView: ComposeView, private val undoH
                         })
                     }
                     if (row.editable && row.item?.product?.type == Product.Type.UserWeighed) {
-                        UserWeighed(
+                        UserWeighedField(
                             row.quantity.toString(),
                             encodingUnitDisplayName,
                             onQuantityChanged = {
@@ -91,6 +92,7 @@ class LineItemViewHolder(private val composeView: ComposeView, private val undoH
 
     fun bind(row: SimpleRow, hasAnyImages: Boolean) {
         val imageResId = if (row.imageResId == 0) R.drawable.snabble_ic_deposit else row.imageResId
+
         composeView.setContent {
             ThemeWrapper {
                 Row(
@@ -108,51 +110,8 @@ class LineItemViewHolder(private val composeView: ComposeView, private val undoH
                         )
                     }
                     ItemDesciption(title = row.title, price = row.text)
-
                 }
             }
         }
     }
-}
-
-@Composable
-fun ItemDesciption(
-    modifier: Modifier = Modifier,
-    title: String?,
-    price: String?
-) {
-    Column(modifier = modifier) {
-        title?.let {
-            Text(text = title, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
-        }
-        price?.let {
-            Text(text = price, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
-        }
-    }
-}
-
-class TextFieldManager constructor(
-    private val focusManager: FocusManager,
-    private val keyboardController: SoftwareKeyboardController?,
-) {
-
-    fun clearFocusAndHideKeyboard() {
-        focusManager.clearFocus()
-        keyboardController?.hide()
-    }
-
-    fun moveFocusToNext() {
-        focusManager.moveFocus(FocusDirection.Next)
-    }
-
-    fun clearFocus() {
-        focusManager.clearFocus()
-    }
-}
-
-@Composable
-fun rememberTextFieldManager(): TextFieldManager {
-    val focusManager = LocalFocusManager.current
-    val keyboardController = LocalSoftwareKeyboardController.current
-    return TextFieldManager(focusManager, keyboardController)
 }

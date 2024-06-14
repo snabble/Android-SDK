@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets
+package io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.product
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -19,12 +19,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import io.snabble.sdk.extensions.xx
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.shoppingcart.row.ProductRow
 
 @Composable
-fun QuantityWidget(
+fun QuantityField(
     row: ProductRow,
     onQuantityChanged: (Int) -> Unit
 ) {
@@ -48,7 +47,12 @@ fun QuantityWidget(
                         }
                     }) {
                     Icon(
-                        painter = painterResource(id = if (row.item?.quantity.xx() == 1) R.drawable.snabble_ic_delete else R.drawable.snabble_ic_minus),
+                        painter = painterResource(
+                            id = when (row.item?.quantity) {
+                                1 -> R.drawable.snabble_ic_delete
+                                else -> R.drawable.snabble_ic_minus
+                            }
+                        ),
                         contentDescription = stringResource(
                             id = R.string.Snabble_Shoppingcart_Accessibility_decreaseQuantity
                         ),

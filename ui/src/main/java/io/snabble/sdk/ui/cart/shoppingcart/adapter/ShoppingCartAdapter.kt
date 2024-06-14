@@ -88,32 +88,15 @@ class ShoppingCartAdapter(private val parentView: View?, private val cart: Shopp
         return list[position]
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LineItemViewHolder {
-        return LineItemViewHolder(ComposeView(parent.context), undoHelper = this)
-//            if (viewType == TYPE_SIMPLE) {
-//        val v = inflate(context, R.layout.snabble_item_shoppingcart_simple, null)
-//                v.layoutParams = ViewGroup.LayoutParams(
-//                    ViewGroup.LayoutParams.MATCH_PARENT,
-//                    ViewGroup.LayoutParams.WRAP_CONTENT
-//                )
-//                return SimpleViewHolder(v)
-//            } else {
-//                val v = inflate(context, R.layout.snabble_item_shoppingcart_product, null)
-//                v.layoutParams = ViewGroup.LayoutParams(
-//                    ViewGroup.LayoutParams.MATCH_PARENT,
-//                    ViewGroup.LayoutParams.WRAP_CONTENT
-//                )
-//                return ShoppingCartItemViewHolder(v, this)
-//            }
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LineItemViewHolder =
+        LineItemViewHolder(ComposeView(parent.context), undoHelper = this)
 
     override fun onBindViewHolder(holder: LineItemViewHolder, position: Int) {
         val type = getItemViewType(position)
-
-        if (type == TYPE_PRODUCT) {
-            holder.bind((getItem(position) as ProductRow), hasAnyImages)
-        } else {
-            holder.bind((getItem(position) as SimpleRow), hasAnyImages)
+        val item = getItem(position)
+        when (type) {
+            TYPE_PRODUCT -> holder.bind(item as ProductRow, hasAnyImages)
+            TYPE_SIMPLE -> holder.bind(item as SimpleRow, hasAnyImages)
         }
     }
 

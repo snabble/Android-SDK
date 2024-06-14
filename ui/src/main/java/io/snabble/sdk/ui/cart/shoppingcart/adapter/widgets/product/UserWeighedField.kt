@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets
+package io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.product
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -34,24 +34,20 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.cart.shoppingcart.adapter.rememberTextFieldManager
+import io.snabble.sdk.ui.cart.shoppingcart.adapter.utils.rememberTextFieldManager
 
 @Composable
-fun UserWeighed(
+fun UserWeighedField(
     weight: String,
     quantityAnnotation: String,
     onQuantityChanged: (Int) -> Unit,
     onDeleteWeighed: () -> Unit
 ) {
-    var value by remember {
-        mutableStateOf(TextFieldValue(weight))
-    }
-
-    var showApplyButton by remember {
-        mutableStateOf(false)
-    }
+    var value by remember { mutableStateOf(TextFieldValue(weight)) }
+    var showApplyButton by remember { mutableStateOf(false) }
 
     val textFieldManager = rememberTextFieldManager()
+
     if (weight.toInt() > 0) {
         Row(
             modifier = Modifier.widthIn(min = 88.dp),
