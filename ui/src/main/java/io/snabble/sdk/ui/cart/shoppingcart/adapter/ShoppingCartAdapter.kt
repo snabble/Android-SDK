@@ -11,9 +11,9 @@ import io.snabble.sdk.ui.GestureHandler.DismissibleAdapter
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.UndoHelper
 import io.snabble.sdk.ui.cart.shoppingcart.ShoppingCartView.Companion.buildRows
-import io.snabble.sdk.ui.cart.shoppingcart.row.new.ProductRow
-import io.snabble.sdk.ui.cart.shoppingcart.row.new.Row
-import io.snabble.sdk.ui.cart.shoppingcart.row.new.SimpleRow
+import io.snabble.sdk.ui.cart.shoppingcart.row.ProductRow
+import io.snabble.sdk.ui.cart.shoppingcart.row.Row
+import io.snabble.sdk.ui.cart.shoppingcart.row.SimpleRow
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.SnackbarUtils.make
 import io.snabble.sdk.ui.utils.UIUtils

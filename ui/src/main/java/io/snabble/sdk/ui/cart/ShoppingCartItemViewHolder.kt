@@ -4,16 +4,13 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.view.KeyEvent
 import android.view.View
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
-import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.squareup.picasso.Picasso
@@ -21,10 +18,9 @@ import io.snabble.accessibility.orderViewsForAccessibility
 import io.snabble.sdk.Product
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.cart.shoppingcart.row.new.ProductRow
+import io.snabble.sdk.ui.cart.shoppingcart.row.ProductRow
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.InputFilterMinMax
-import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.ui.utils.setTextOrHide
 
 class ShoppingCartItemViewHolder internal constructor(

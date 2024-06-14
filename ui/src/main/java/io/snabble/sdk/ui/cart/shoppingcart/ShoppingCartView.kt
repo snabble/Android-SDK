@@ -34,9 +34,9 @@ import io.snabble.sdk.ui.SnabbleUI.executeAction
 import io.snabble.sdk.ui.cart.PaymentSelectionHelper
 import io.snabble.sdk.ui.cart.ShoppingCartItemViewHolder
 import io.snabble.sdk.ui.cart.shoppingcart.adapter.ShoppingCartAdapter
-import io.snabble.sdk.ui.cart.shoppingcart.row.new.ProductRow
-import io.snabble.sdk.ui.cart.shoppingcart.row.new.Row
-import io.snabble.sdk.ui.cart.shoppingcart.row.new.SimpleRow
+import io.snabble.sdk.ui.cart.shoppingcart.row.ProductRow
+import io.snabble.sdk.ui.cart.shoppingcart.row.Row
+import io.snabble.sdk.ui.cart.shoppingcart.row.SimpleRow
 import io.snabble.sdk.ui.checkout.showNotificationOnce
 import io.snabble.sdk.ui.utils.I18nUtils.getIdentifier
 import io.snabble.sdk.ui.utils.UIUtils

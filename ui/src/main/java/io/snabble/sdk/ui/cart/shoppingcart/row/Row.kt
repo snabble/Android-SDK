@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.cart.shoppingcart.row.new
+package io.snabble.sdk.ui.cart.shoppingcart.row
 
 import androidx.annotation.DrawableRes
 import io.snabble.sdk.Unit
