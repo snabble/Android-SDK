@@ -37,6 +37,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -46,12 +48,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import io.snabble.sdk.Product
+import io.snabble.sdk.extensions.xx
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.UndoHelper
@@ -64,26 +68,34 @@ class LineItemViewHolder(private val composeView: ComposeView, private val undoH
     RecyclerView.ViewHolder(composeView) {
 
     fun bind(row: ProductRow, hasAnyImages: Boolean) {
-        val hasCoupon = row.item?.coupon != null
+        val hasCoupon = (row.item?.coupon != null)
         val isAgeRestricted = row.item?.product?.saleRestriction?.isAgeRestriction ?: false
         val age = row.item?.product?.saleRestriction?.value ?: 0
         val encodingUnit = row.encodingUnit
         val encodingUnitDisplayName = encodingUnit?.displayValue ?: "g"
         composeView.setContent {
             ThemeWrapper {
-
                 Row(
                     modifier = Modifier
-                        .padding(vertical = 16.dp, horizontal = 8.dp)
+                        .padding(vertical = 16.dp, horizontal = 16.dp)
                         .heightIn(min = 48.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     ImageWidget(row, hasAnyImages)
-                    AgeRstriction(hasCoupon, isAgeRestricted, age)
+                    AgeRstriction(hasCoupon, isAgeRestricted, age, row.manualDiscountApplied)
                     PriceDescription(row)
                     Spacer(modifier = Modifier.weight(1f))
-//                QuantityWidget(row)
+                    if (row.editable && row.item?.product?.type != Product.Type.UserWeighed) {
+                        QuantityWidget(row, onQuantityChanged = {
+                            if (it <= 0) {
+                                undoHelper.removeAndShowUndoSnackbar(bindingAdapterPosition, row.item)
+                            } else {
+                                row.item?.setQuantityMethod(it)
+                                Telemetry.event(Telemetry.Event.CartAmountChanged, row.item?.product)
+                            }
+                        })
+                    }
                     if (row.editable && row.item?.product?.type == Product.Type.UserWeighed) {
                         UserWeighed(
                             row.quantity.toString(),
@@ -142,7 +154,7 @@ class LineItemViewHolder(private val composeView: ComposeView, private val undoH
                     )
                 }
                 OutlinedTextField(
-                    modifier = Modifier.width(96.dp),
+                    modifier = Modifier.width(80.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedContainerColor = MaterialTheme.colorScheme.surface,
                         unfocusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -168,7 +180,7 @@ class LineItemViewHolder(private val composeView: ComposeView, private val undoH
                         textFieldManager.clearFocusAndHideKeyboard()
                     }),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number),
-                    textStyle = MaterialTheme.typography.bodySmall
+                    textStyle = MaterialTheme.typography.bodyMedium
                 )
                 Text(text = quantityAnnotation, style = MaterialTheme.typography.bodyMedium)
                 if (showApplyButton) {
@@ -204,13 +216,20 @@ class LineItemViewHolder(private val composeView: ComposeView, private val undoH
     }
 
     @Composable
-    private fun AgeRstriction(hasCoupon: Boolean, isAgeRestricted: Boolean, age: Long) {
+    private fun AgeRstriction(hasCoupon: Boolean, isAgeRestricted: Boolean, age: Long, isManualApplied: Boolean) {
         if (hasCoupon || (isAgeRestricted && age > 0)) {
-            Text(
-                modifier = Modifier.background(Color.Red),
-                text = if (hasCoupon) "%" else age.toString(),
-                color = Color.White
-            )
+            Box(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .size(20.dp)
+                    .background(if (!isManualApplied) Color(0xFF999999) else Color.Red)
+            ) {
+                Text(
+                    modifier = Modifier.background(Color.Red),
+                    text = if (hasCoupon) "%" else age.toString(),
+                    color = Color.White
+                )
+            }
         }
     }
 
@@ -233,7 +252,11 @@ class LineItemViewHolder(private val composeView: ComposeView, private val undoH
     }
 
     @Composable
-    private fun QuantityWidget(row: ProductRow) {
+    private fun QuantityWidget(
+        row: ProductRow,
+        onQuantityChanged: (Int) -> Unit
+    ) {
+
         row.quantityText?.let {
             Box(modifier = Modifier.fillMaxHeight()) {
                 Row(
@@ -243,9 +266,17 @@ class LineItemViewHolder(private val composeView: ComposeView, private val undoH
                 ) {
                     OutlinedIconButton(
                         modifier = Modifier.size(36.dp),
-                        onClick = { /*TODO*/ }) {
+                        border = BorderStroke(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.33f)
+                        ),
+                        onClick = {
+                            row.item?.let {
+                                onQuantityChanged(it.getQuantityMethod() - 1)
+                            }
+                        }) {
                         Icon(
-                            painter = painterResource(id = R.drawable.snabble_ic_minus),
+                            painter = painterResource(id = if (row.item?.quantity.xx() == 1) R.drawable.snabble_ic_delete else R.drawable.snabble_ic_minus),
                             contentDescription = stringResource(
                                 id = R.string.Snabble_Shoppingcart_Accessibility_decreaseQuantity
                             ),
@@ -255,11 +286,20 @@ class LineItemViewHolder(private val composeView: ComposeView, private val undoH
                     Text(
                         modifier = Modifier.widthIn(min = 36.dp),
                         text = it,
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center
                     )
                     OutlinedIconButton(
                         modifier = Modifier.size(36.dp),
-                        onClick = { /*TODO*/ }) {
+                        border = BorderStroke(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.33f)
+                        ),
+                        onClick = {
+                            row.item?.let {
+                                onQuantityChanged(it.getQuantityMethod() + 1)
+                            }
+                        }) {
                         Icon(
                             painter = painterResource(id = R.drawable.snabble_ic_add),
                             contentDescription = stringResource(
@@ -297,17 +337,26 @@ class LineItemViewHolder(private val composeView: ComposeView, private val undoH
     }
 
     fun bind(row: SimpleRow, hasAnyImages: Boolean) {
+        val imageResId = if (row.imageResId == 0) R.drawable.snabble_ic_deposit else row.imageResId
         composeView.setContent {
-            Row {
-                if (hasAnyImages) {
-                    Image(
-                        modifier = Modifier.size(48.dp),
-                        painter = painterResource(id = row.imageResId),
-                        contentDescription = row.title
-                    )
-                }
-                ItemDesciption(title = row.title, price = row.text)
+            ThemeWrapper {
+                Row(
+                    Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    if (hasAnyImages) {
+                        Image(
+                            modifier = Modifier.size(44.dp),
+                            painter = painterResource(id = imageResId),
+                            contentDescription = row.title,
+                            contentScale = ContentScale.Fit,
+                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                        )
+                    }
+                    ItemDesciption(title = row.title, price = row.text)
 
+                }
             }
         }
     }
