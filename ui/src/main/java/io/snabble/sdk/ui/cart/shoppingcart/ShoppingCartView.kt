@@ -9,7 +9,6 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
@@ -32,7 +31,7 @@ import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.SnabbleUI.executeAction
 import io.snabble.sdk.ui.cart.PaymentSelectionHelper
-import io.snabble.sdk.ui.cart.ShoppingCartItemViewHolder
+import io.snabble.sdk.ui.cart.shoppingcart.adapter.LineItemViewHolder
 import io.snabble.sdk.ui.cart.shoppingcart.adapter.ShoppingCartAdapter
 import io.snabble.sdk.ui.cart.shoppingcart.row.ProductRow
 import io.snabble.sdk.ui.cart.shoppingcart.row.Row
@@ -200,10 +199,6 @@ class ShoppingCartView : FrameLayout {
     private fun createItemTouchHelper(resources: Resources) {
         val gestureHandler: GestureHandler<Void?> = object : GestureHandler<Void?>(resources) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                if (viewHolder is ShoppingCartItemViewHolder) {
-                    viewHolder.hideInput()
-                }
-
                 val pos = viewHolder.bindingAdapterPosition
                 val item = cart?.get(pos)
                 item?.let {
