@@ -24,12 +24,15 @@ import io.snabble.sdk.ui.cart.shoppingcart.row.ProductRow
 
 @Composable
 fun QuantityField(
+    modifier: Modifier = Modifier,
     row: ProductRow,
     onQuantityChanged: (Int) -> Unit
 ) {
 
     row.quantityText?.let {
-        Box(modifier = Modifier.fillMaxHeight()) {
+        Box(modifier = Modifier
+            .fillMaxHeight()
+            .then(modifier)) {
             Row(
                 modifier = Modifier.height(38.dp),
                 verticalAlignment = Alignment.CenterVertically,

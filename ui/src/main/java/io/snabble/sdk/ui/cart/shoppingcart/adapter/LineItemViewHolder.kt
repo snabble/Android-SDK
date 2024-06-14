@@ -2,24 +2,18 @@ package io.snabble.sdk.ui.cart.shoppingcart.adapter
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.recyclerview.widget.RecyclerView
@@ -56,12 +50,13 @@ class LineItemViewHolder(private val composeView: ComposeView, private val undoH
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    ItemImage(row, hasAnyImages)
-                    ExtraImage(hasCoupon, isAgeRestricted, age, row.manualDiscountApplied)
-                    PriceDescription(row)
-                    Spacer(modifier = Modifier.weight(1f))
+                    Box(modifier = Modifier.wrapContentSize()) {
+                        ItemImage(row, hasAnyImages)
+                        ExtraImage(hasCoupon, isAgeRestricted, age, row.manualDiscountApplied)
+                    }
+                    PriceDescription(modifier = Modifier.weight(1f), row)
                     if (row.editable && row.item?.product?.type != Product.Type.UserWeighed) {
-                        QuantityField(row, onQuantityChanged = {
+                        QuantityField(modifier = Modifier, row, onQuantityChanged = {
                             if (it <= 0) {
                                 undoHelper.removeAndShowUndoSnackbar(bindingAdapterPosition, row.item)
                             } else {
