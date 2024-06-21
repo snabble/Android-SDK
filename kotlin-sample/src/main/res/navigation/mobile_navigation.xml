@@ -190,4 +190,9 @@
         app:popUpTo="@id/navigation_scanner"
         app:popUpToInclusive="true" />
 
+    <fragment
+        android:id="@+id/navigation_coupon"
+        android:label="@string/Snabble.Coupons.title"
+        android:name="io.snabble.sdk.sample.CouponFragment" />
+
 </navigation>
