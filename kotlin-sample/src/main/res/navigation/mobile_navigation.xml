@@ -194,5 +194,9 @@
         android:id="@+id/navigation_coupon"
         android:label="@string/Snabble.Coupons.title"
         android:name="io.snabble.sdk.sample.CouponFragment" />
+    <fragment
+        android:id="@+id/fragment_coupon"
+        android:label="@string/Snabble.Coupons.title"
+        android:name="io.snabble.sdk.ui.coupon.CouponDetailFragment" />
 
 </navigation>
