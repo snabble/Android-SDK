@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -18,7 +19,8 @@ fun ExtraImage(hasCoupon: Boolean, isAgeRestricted: Boolean, age: Long, isManual
             modifier = Modifier
                 .clip(CircleShape)
                 .size(20.dp)
-                .background(if (!isManualApplied) Color(0xFF999999) else Color.Red)
+                .background(if (!isManualApplied) Color(0xFF999999) else Color.Red),
+            contentAlignment = Alignment.Center
         ) {
             Text(
                 modifier = Modifier.background(Color.Red),
