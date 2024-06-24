@@ -1,6 +1,6 @@
 [versions]
 compileSdk = "34"
-targetSdk = "32"
+targetSdk = "33"
 minSdk = "21"
 gradlePlugin = "8.4.0"
 desugarVersion = "1.1.5"
