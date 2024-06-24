@@ -22,7 +22,7 @@ import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.CheckoutBar
-import io.snabble.sdk.ui.cart.ShoppingCartView
+import io.snabble.sdk.ui.cart.shoppingcart.adapter.ShoppingCartAdapter
 import io.snabble.sdk.ui.utils.behavior
 
 class ScannerBottomSheetView @JvmOverloads constructor(
@@ -33,7 +33,7 @@ class ScannerBottomSheetView @JvmOverloads constructor(
     val recyclerView: RecyclerView
     val onItemsChangedListener: MutableList<(cart: ShoppingCart) -> Unit> = mutableListOf()
 
-    var shoppingCartAdapter: ShoppingCartView.ShoppingCartAdapter? = null
+    var shoppingCartAdapter: ShoppingCartAdapter? = null
         set(value) {
             field = value
             cart?.let {

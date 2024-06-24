@@ -9,6 +9,7 @@ import androidx.appcompat.app.AlertDialog
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.cart.shoppingcart.ShoppingCartView
 
 open class ShoppingCartFragment : BaseFragment(R.layout.snabble_fragment_shoppingcart) {
     var shoppingCartView: ShoppingCartView? = null
