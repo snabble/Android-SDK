@@ -44,7 +44,7 @@ class CouponFragment : Fragment() {
                     when (it) {
                         is ShowCoupon -> {
                             findNavController().navigate(
-                                R.id.fragment_coupon,
+                                R.id.fragment_coupon_details,
                                 bundleOf(CouponDetailActivity.ARG_COUPON to it.couponItem)
                             )
                             couponViewModel.eventHandled()

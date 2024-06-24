@@ -240,7 +240,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_home,
                 R.id.navigation_scanner,
                 R.id.navigation_shops,
-                R.id.navigation_coupon
+                R.id.fragment_coupon
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)

@@ -33,7 +33,7 @@ fun CouponScreen(couponViewModel: CouponViewModel) {
                     .fillMaxWidth()
                     .height(intrinsicSize = IntrinsicSize.Max)
                     .background(color = Color.Transparent)
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 coupons.forEach { couponItem ->
