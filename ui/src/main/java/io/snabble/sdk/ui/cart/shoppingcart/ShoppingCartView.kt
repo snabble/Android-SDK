@@ -33,10 +33,10 @@ import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.SnabbleUI.executeAction
 import io.snabble.sdk.ui.cart.PaymentSelectionHelper
 import io.snabble.sdk.ui.cart.shoppingcart.adapter.ShoppingCartAdapter
-import io.snabble.sdk.ui.cart.shoppingcart.row.SimpleRow
 import io.snabble.sdk.ui.cart.shoppingcart.row.Discount
 import io.snabble.sdk.ui.cart.shoppingcart.row.ProductRow
 import io.snabble.sdk.ui.cart.shoppingcart.row.Row
+import io.snabble.sdk.ui.cart.shoppingcart.row.SimpleRow
 import io.snabble.sdk.ui.checkout.showNotificationOnce
 import io.snabble.sdk.ui.utils.I18nUtils.getIdentifier
 import io.snabble.sdk.ui.utils.UIUtils
@@ -391,11 +391,22 @@ class ShoppingCartView : FrameLayout {
                         }
                         val name = item.displayName ?: return@forEach
                         val discount = item.totalPriceText ?: return@forEach
+                        val value = item.totalPrice
 
                         rows.firstOrNull { it.item?.id == item.lineItem?.refersTo }?.let {
                             rows.remove(it)
                             val product = it as ProductRow
-                            rows.add(product.copy(discounts = it.discounts.plusElement(Discount(name, discount))))
+                            rows.add(
+                                product.copy(
+                                    discounts = it.discounts.plusElement(
+                                        Discount(
+                                            name,
+                                            discount,
+                                            value
+                                        )
+                                    )
+                                )
+                            )
                         }
                     } else if (item.isGiveaway) {
                         val row = SimpleRow(
@@ -405,11 +416,17 @@ class ShoppingCartView : FrameLayout {
                             name = resources.getString(R.string.Snabble_Shoppingcart_giveaway)
                         )
                         rows.add(row)
-                    }else if ((item.lineItem?.type == LineItemType.DEPOSIT)) {
+                    } else if ((item.lineItem?.type == LineItemType.DEPOSIT)) {
                         rows.firstOrNull { it.item?.id == item.lineItem?.refersTo }?.let {
                             rows.remove(it)
                             val product = it as ProductRow
-                            rows.add(product.copy(depositPrice = item.totalPriceText, depositText = item.displayName))
+                            rows.add(
+                                product.copy(
+                                    depositPriceText = item.totalPriceText,
+                                    depositText = item.displayName,
+                                    depositPrice = item.totalPrice
+                                )
+                            )
                         }
                     }
                 } else if (item?.type == ItemType.PRODUCT) {
@@ -433,8 +450,6 @@ class ShoppingCartView : FrameLayout {
                     rows.add(row)
                 }
             }
-
-
 
 //            val cartTotal = cart.totalDepositPrice
 //            if (cartTotal > 0) {

@@ -8,8 +8,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import io.snabble.sdk.PriceFormatter
+import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.cart.shoppingcart.row.ProductRow
 
 @Composable
@@ -19,6 +22,7 @@ fun PriceDescription(modifier: Modifier = Modifier, row: ProductRow) {
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
     ) {
+
         row.name?.let {
             Text(
                 text = it,
@@ -26,6 +30,14 @@ fun PriceDescription(modifier: Modifier = Modifier, row: ProductRow) {
                 softWrap = true,
                 maxLines = 2,
                 style = MaterialTheme.typography.bodyLarge
+            )
+        }
+        row.depositPriceText?.let {
+            Text(
+                text = "${row.totalPrice(PriceFormatter(Snabble.projects.first()))}",
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = Bold,
             )
         }
         Row {
@@ -37,7 +49,7 @@ fun PriceDescription(modifier: Modifier = Modifier, row: ProductRow) {
             }
             row.depositPrice?.let {
                 Text(
-                    text = " + ${row.depositPrice} ${row.depositText}",
+                    text = " + ${row.depositPriceText} ${row.depositText}",
                     style = MaterialTheme.typography.bodySmall
                 )
             }
