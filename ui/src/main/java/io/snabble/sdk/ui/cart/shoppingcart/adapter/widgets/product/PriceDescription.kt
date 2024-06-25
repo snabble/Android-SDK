@@ -2,6 +2,7 @@ package io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.product
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,11 +28,19 @@ fun PriceDescription(modifier: Modifier = Modifier, row: ProductRow) {
                 style = MaterialTheme.typography.bodyLarge
             )
         }
-        row.priceText?.let {
-            Text(
-                text = it,
-                style = MaterialTheme.typography.bodySmall
-            )
+        Row {
+            row.priceText?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+            row.depositPrice?.let {
+                Text(
+                    text = " + ${row.depositPrice} ${row.depositText}",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         }
     }
 }
