@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.product
+package io.snabble.sdk.ui.cart.shoppingcart.product.widget
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -20,16 +20,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.cart.shoppingcart.row.ProductRow
+import io.snabble.sdk.ui.cart.shoppingcart.ProductItem
 
 @Composable
 fun QuantityField(
     modifier: Modifier = Modifier,
-    row: ProductRow,
+    item: ProductItem,
     onQuantityChanged: (Int) -> Unit
 ) {
 
-    row.quantityText?.let {
+    item.quantityText?.let {
         Box(modifier = Modifier
             .fillMaxHeight()
             .then(modifier)) {
@@ -45,13 +45,13 @@ fun QuantityField(
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.33f)
                     ),
                     onClick = {
-                        row.item?.let {
+                        item.item?.let {
                             onQuantityChanged(it.getQuantityMethod() - 1)
                         }
                     }) {
                     Icon(
                         painter = painterResource(
-                            id = when (row.item?.quantity) {
+                            id = when (item.item?.quantity) {
                                 1 -> R.drawable.snabble_ic_delete
                                 else -> R.drawable.snabble_ic_minus
                             }
@@ -75,7 +75,7 @@ fun QuantityField(
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.33f)
                     ),
                     onClick = {
-                        row.item?.let {
+                        item.item?.let {
                             onQuantityChanged(it.getQuantityMethod() + 1)
                         }
                     }) {

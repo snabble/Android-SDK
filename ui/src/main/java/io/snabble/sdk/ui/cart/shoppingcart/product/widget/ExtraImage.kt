@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.product
+package io.snabble.sdk.ui.cart.shoppingcart.product.widget
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

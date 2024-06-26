@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.product
+package io.snabble.sdk.ui.cart.shoppingcart.product.widget
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -9,11 +9,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import io.snabble.sdk.ui.cart.shoppingcart.row.ProductRow
+import io.snabble.sdk.ui.cart.shoppingcart.ProductItem
 
 @Composable
 @OptIn(ExperimentalGlideComposeApi::class)
-fun ItemImage(row: ProductRow, hasAnyImages: Boolean) {
+fun ItemImage(row: ProductItem, hasAnyImages: Boolean) {
     if (row.imageUrl != null) {
         GlideImage(
             modifier = Modifier

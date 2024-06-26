@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.product
+package io.snabble.sdk.ui.cart.shoppingcart.product.widget
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,17 +13,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.PriceFormatter
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.ui.cart.shoppingcart.row.ProductRow
+import io.snabble.sdk.ui.cart.shoppingcart.ProductItem
 
 @Composable
-fun PriceDescription(modifier: Modifier = Modifier, row: ProductRow) {
+fun PriceDescription(modifier: Modifier = Modifier, item: ProductItem) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterVertically)
     ) {
 
-        row.name?.let {
+        item.name?.let {
             Text(
                 text = it,
                 overflow = TextOverflow.Ellipsis,
@@ -32,24 +32,24 @@ fun PriceDescription(modifier: Modifier = Modifier, row: ProductRow) {
                 style = MaterialTheme.typography.bodyLarge
             )
         }
-        row.depositPriceText?.let {
+        item.deposit?.depositPriceText?.let {
             Text(
-                text = "${row.totalPrice(PriceFormatter(Snabble.projects.first()))}",
+                text = "${item.totalPrice(PriceFormatter(Snabble.projects.first()))}",
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.bodySmall,
                 fontWeight = Bold,
             )
         }
         Row {
-            row.priceText?.let {
+            item.priceText?.let {
                 Text(
                     text = it,
                     style = MaterialTheme.typography.bodySmall
                 )
             }
-            row.depositPrice?.let {
+            item.deposit?.depositPrice?.let {
                 Text(
-                    text = " + ${row.depositPriceText} ${row.depositText}",
+                    text = " + ${item.deposit.depositPriceText} ${item.deposit.depositText}",
                     style = MaterialTheme.typography.bodySmall
                 )
             }
