@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.cart.shoppingcart
+package io.snabble.sdk.ui.cart.deprecated
 
 import android.app.Activity
 import android.app.Application
@@ -11,12 +11,8 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.FragmentActivity
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import io.snabble.sdk.Product
 import io.snabble.sdk.Project
@@ -27,18 +23,19 @@ import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
-import io.snabble.sdk.ui.GestureHandler
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.SnabbleUI.executeAction
 import io.snabble.sdk.ui.cart.PaymentSelectionHelper
-import io.snabble.sdk.ui.cart.shoppingcart.adapter.ShoppingCartAdapter
+import io.snabble.sdk.ui.cart.shoppingcart.ShoppingCartScreen
 import io.snabble.sdk.ui.cart.shoppingcart.row.Discount
 import io.snabble.sdk.ui.cart.shoppingcart.row.ProductRow
 import io.snabble.sdk.ui.cart.shoppingcart.row.Row
 import io.snabble.sdk.ui.cart.shoppingcart.row.SimpleRow
 import io.snabble.sdk.ui.checkout.showNotificationOnce
+import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.I18nUtils.getIdentifier
+import io.snabble.sdk.ui.utils.SnackbarUtils.make
 import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.ui.utils.observeView
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks
@@ -46,9 +43,8 @@ import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks
 class ShoppingCartView : FrameLayout {
 
     private var rootView: View? = null
-    private lateinit var recyclerView: RecyclerView
-    private var recyclerViewAdapter: ShoppingCartAdapter? = null
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var composeView: ComposeView
     private var cart: ShoppingCart? = null
     private var emptyState: ViewGroup? = null
     private var restore: View? = null
@@ -64,7 +60,6 @@ class ShoppingCartView : FrameLayout {
     private val shoppingCartListener: ShoppingCartListener = object : SimpleShoppingCartListener() {
         override fun onChanged(list: ShoppingCart?) {
             swipeRefreshLayout.isRefreshing = false
-            submitList()
             update()
         }
 
@@ -159,21 +154,20 @@ class ShoppingCartView : FrameLayout {
     }
 
     private fun resetViewState(context: Context) {
-        recyclerView = findViewById(R.id.recycler_view)
-        recyclerViewAdapter = ShoppingCartAdapter(recyclerView, cart)
-        recyclerView.setAdapter(recyclerViewAdapter)
+        composeView = findViewById(R.id.compose_card_container)
 
-        val layoutManager = LinearLayoutManager(context)
-        recyclerView.setLayoutManager(layoutManager)
-        val itemAnimator = DefaultItemAnimator()
-        itemAnimator.supportsChangeAnimations = false
-        recyclerView.setItemAnimator(itemAnimator)
-
-        val itemDecoration = DividerItemDecoration(
-            recyclerView.context,
-            layoutManager.orientation
-        )
-        recyclerView.addItemDecoration(itemDecoration)
+        composeView.setContent {
+            ShoppingCartScreen(
+                onItemDeleted = { item, index ->
+                    make(this, R.string.Snabble_Shoppingcart_articleRemoved, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
+                        .setAction(R.string.Snabble_undo) {
+                            cart?.insert(item, index)
+                            Telemetry.event(Telemetry.Event.UndoDeleteFromCart, item.product)
+                        }
+                        .show()
+                }
+            )
+        }
 
         swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout)
         swipeRefreshLayout.setOnRefreshListener { cart?.updatePrices(false) }
@@ -192,24 +186,7 @@ class ShoppingCartView : FrameLayout {
             .selectedEntry
             .observe((UIUtils.getHostActivity(getContext()) as FragmentActivity)) { update() }
 
-        createItemTouchHelper(context.resources)
-        submitList()
         update()
-    }
-
-    private fun createItemTouchHelper(resources: Resources) {
-        val gestureHandler: GestureHandler<Void?> = object : GestureHandler<Void?>(resources) {
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val pos = viewHolder.bindingAdapterPosition
-                val item = cart?.get(pos)
-                item?.let {
-                    recyclerViewAdapter?.removeAndShowUndoSnackbar(pos, item)
-                }
-            }
-        }
-        val itemTouchHelper = ItemTouchHelper(gestureHandler)
-        gestureHandler.setItemTouchHelper(itemTouchHelper)
-        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
     private fun updateEmptyState() {
@@ -292,7 +269,6 @@ class ShoppingCartView : FrameLayout {
         hasAnyImages = cart?.any { !it?.product?.imageUrl.isNullOrEmpty() } == true
 
         if (hasAnyImages != lastHasAnyImages) {
-            submitList()
             update()
         }
     }
@@ -301,7 +277,6 @@ class ShoppingCartView : FrameLayout {
         if (!isRegistered && project != null) {
             isRegistered = true
             cart?.addListener(shoppingCartListener)
-            submitList()
             update()
         }
     }
@@ -336,7 +311,6 @@ class ShoppingCartView : FrameLayout {
     override fun onWindowFocusChanged(hasWindowFocus: Boolean) {
         super.onWindowFocusChanged(hasWindowFocus)
 
-        submitList()
         update()
     }
 
@@ -345,7 +319,6 @@ class ShoppingCartView : FrameLayout {
             if (UIUtils.getHostActivity(context) == activity) {
                 registerListeners()
 
-                submitList()
                 update()
             }
         }
@@ -354,12 +327,6 @@ class ShoppingCartView : FrameLayout {
             if (UIUtils.getHostActivity(context) == activity) {
                 unregisterListeners()
             }
-        }
-    }
-
-    private fun submitList() {
-        cart?.let {
-            recyclerViewAdapter?.submitList(buildRows(resources, it), hasAnyImages)
         }
     }
 
