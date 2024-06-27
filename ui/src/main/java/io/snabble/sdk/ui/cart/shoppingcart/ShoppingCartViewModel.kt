@@ -71,9 +71,6 @@ class ShoppingCartViewModel : ViewModel() {
         val cartDiscount = cart.filter { it?.isDiscount == true && it.lineItem?.discountType == "cart" }.filterNotNull()
         cartItems.addCartDiscount(cartDiscount)
 
-        val giveAway = cart.filter { it?.isGiveaway == true }.filterNotNull()
-        cartItems.addGiveAway(giveAway)
-
         _uiState.update {
             it.copy(
                 items = cartItems.xx("new items"),
@@ -142,17 +139,6 @@ class ShoppingCartViewModel : ViewModel() {
             }
 
         }
-
-    private fun MutableList<CartItem>.addGiveAway(giveAway: List<ShoppingCart.Item>) = giveAway.forEach { item ->
-        val name = item.displayName ?: return@forEach
-        add(
-            GiveAwayItem(
-                item = item,
-                title = name,
-            )
-        )
-
-    }
 
     private fun MutableList<CartItem>.addCartDiscount(cartDiscount: List<ShoppingCart.Item>) =
         cartDiscount.forEach { item ->

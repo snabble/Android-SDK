@@ -54,14 +54,6 @@ fun ShoppingCartScreen(
                     )
                     HorizontalDivider()
                 }
-
-                is GiveAwayItem -> {
-                    GiveAwayWidget(
-                        modifier = Modifier.fillMaxWidth(),
-                        item = cartItem
-                    )
-                    HorizontalDivider()
-                }
             }
         }
     }
