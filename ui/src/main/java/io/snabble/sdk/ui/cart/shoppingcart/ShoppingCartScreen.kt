@@ -11,8 +11,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.CartDiscountWidget
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.model.CartDiscountItem
-import io.snabble.sdk.ui.cart.shoppingcart.giveaway.GiveAwayWidget
-import io.snabble.sdk.ui.cart.shoppingcart.giveaway.model.GiveAwayItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.ProductItemWidget
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.ProductItem
 

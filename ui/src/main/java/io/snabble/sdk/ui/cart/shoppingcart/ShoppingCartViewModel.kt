@@ -9,7 +9,6 @@ import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.model.CartDiscountItem
-import io.snabble.sdk.ui.cart.shoppingcart.giveaway.model.GiveAwayItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DepositItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DiscountItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.ProductItem
