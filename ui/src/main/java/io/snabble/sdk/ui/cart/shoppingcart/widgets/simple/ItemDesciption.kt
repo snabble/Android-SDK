@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.simple
+package io.snabble.sdk.ui.cart.shoppingcart.widgets.simple
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme

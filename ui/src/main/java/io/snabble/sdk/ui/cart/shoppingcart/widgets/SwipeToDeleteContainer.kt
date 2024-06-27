@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets
+package io.snabble.sdk.ui.cart.shoppingcart.widgets
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background

@@ -34,7 +34,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.cart.shoppingcart.adapter.utils.rememberTextFieldManager
+import io.snabble.sdk.ui.cart.shoppingcart.utils.rememberTextFieldManager
 
 @Composable
 fun UserWeighedField(

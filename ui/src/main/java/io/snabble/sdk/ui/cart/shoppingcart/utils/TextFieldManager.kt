@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.cart.shoppingcart.adapter.utils
+package io.snabble.sdk.ui.cart.shoppingcart.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.focus.FocusManager
