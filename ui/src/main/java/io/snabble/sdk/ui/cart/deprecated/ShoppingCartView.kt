@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.Application
 import android.app.Application.ActivityLifecycleCallbacks
 import android.content.Context
-import android.content.res.Resources
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
@@ -18,9 +17,7 @@ import io.snabble.sdk.Product
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble.instance
 import io.snabble.sdk.ViolationNotification
-import io.snabble.sdk.checkout.LineItemType
 import io.snabble.sdk.shoppingcart.ShoppingCart
-import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
 import io.snabble.sdk.ui.R
@@ -28,10 +25,6 @@ import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.SnabbleUI.executeAction
 import io.snabble.sdk.ui.cart.PaymentSelectionHelper
 import io.snabble.sdk.ui.cart.shoppingcart.ShoppingCartScreen
-import io.snabble.sdk.ui.cart.shoppingcart.row.Discount
-import io.snabble.sdk.ui.cart.shoppingcart.row.ProductRow
-import io.snabble.sdk.ui.cart.shoppingcart.row.Row
-import io.snabble.sdk.ui.cart.shoppingcart.row.SimpleRow
 import io.snabble.sdk.ui.checkout.showNotificationOnce
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.I18nUtils.getIdentifier
@@ -327,109 +320,6 @@ class ShoppingCartView : FrameLayout {
             if (UIUtils.getHostActivity(context) == activity) {
                 unregisterListeners()
             }
-        }
-    }
-
-    companion object {
-
-        private fun sanitize(input: String?): String? {
-            if (input != null && input.isBlank()) return null
-            return input
-        }
-
-        fun buildRows(resources: Resources, cart: ShoppingCart): List<Row> {
-            val rows: MutableList<Row> = ArrayList(
-                cart.size() + 1
-            )
-
-            cart.forEach { item: ShoppingCart.Item? ->
-                if (item?.type == ItemType.LINE_ITEM) {
-                    if (item.isDiscount || item.type == ItemType.COUPON) {
-                        if ((item.lineItem?.let { it }?.discountType == "cart")) {
-                            val row = SimpleRow(
-                                item = item,
-                                title = resources.getString(R.string.Snabble_Shoppingcart_discounts),
-                                imageResId = R.drawable.snabble_ic_percent,
-                                discount = sanitize(item.priceText),
-                                name = sanitize(item.displayName)
-                            )
-                            rows.add(row)
-                            return@forEach
-                        }
-                        val name = item.displayName ?: return@forEach
-                        val discount = item.totalPriceText ?: return@forEach
-                        val value = item.totalPrice
-
-                        rows.firstOrNull { it.item?.id == item.lineItem?.refersTo }?.let {
-                            rows.remove(it)
-                            val product = it as ProductRow
-                            rows.add(
-                                product.copy(
-                                    discounts = it.discounts.plusElement(
-                                        Discount(
-                                            name,
-                                            discount,
-                                            value
-                                        )
-                                    )
-                                )
-                            )
-                        }
-                    } else if (item.isGiveaway) {
-                        val row = SimpleRow(
-                            item = item,
-                            title = item.displayName,
-                            imageResId = R.drawable.snabble_ic_gift,
-                            name = resources.getString(R.string.Snabble_Shoppingcart_giveaway)
-                        )
-                        rows.add(row)
-                    } else if ((item.lineItem?.type == LineItemType.DEPOSIT)) {
-                        rows.firstOrNull { it.item?.id == item.lineItem?.refersTo }?.let {
-                            rows.remove(it)
-                            val product = it as ProductRow
-                            rows.add(
-                                product.copy(
-                                    depositPriceText = item.totalPriceText,
-                                    depositText = item.displayName,
-                                    depositPrice = item.totalPrice
-                                )
-                            )
-                        }
-                    }
-                } else if (item?.type == ItemType.PRODUCT) {
-                    val product = item.product
-                    val quantity = item.getQuantityMethod()
-
-                    val row = ProductRow(
-                        subtitle = sanitize(product?.subtitle),
-                        imageUrl = sanitize(product?.imageUrl),
-                        name = sanitize(item.displayName),
-                        encodingUnit = item.unit,
-                        priceText = sanitize(item.totalPriceText),
-                        quantity = quantity,
-                        quantityText = sanitize(item.quantityText),
-                        editable = item.isEditable,
-                        isDismissible = true,
-                        manualDiscountApplied = item.isManualCouponApplied,
-                        item = item,
-                    )
-
-                    rows.add(row)
-                }
-            }
-
-//            val cartTotal = cart.totalDepositPrice
-//            if (cartTotal > 0) {
-//                val priceFormatter = instance.checkedInProject.getValue()?.priceFormatter
-//                val row = CartDiscountRow(
-//                    title = resources.getString(R.string.Snabble_Shoppingcart_deposit),
-//                    imageResId = R.drawable.snabble_ic_deposit,
-//                    name = priceFormatter?.format(cartTotal)
-//                )
-//                rows.add(row)
-//            }
-
-            return rows
         }
     }
 }
