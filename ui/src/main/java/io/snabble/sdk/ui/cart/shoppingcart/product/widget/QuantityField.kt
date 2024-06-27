@@ -20,7 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.cart.shoppingcart.ProductItem
+import io.snabble.sdk.ui.cart.shoppingcart.product.model.ProductItem
 
 @Composable
 fun QuantityField(
@@ -30,9 +30,11 @@ fun QuantityField(
 ) {
 
     item.quantityText?.let {
-        Box(modifier = Modifier
-            .fillMaxHeight()
-            .then(modifier)) {
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
+                .then(modifier)
+        ) {
             Row(
                 modifier = Modifier.height(38.dp),
                 verticalAlignment = Alignment.CenterVertically,

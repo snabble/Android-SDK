@@ -9,7 +9,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import io.snabble.sdk.ui.cart.shoppingcart.ProductItem
+import io.snabble.sdk.ui.cart.shoppingcart.product.model.ProductItem
 
 @Composable
 @OptIn(ExperimentalGlideComposeApi::class)

@@ -1,18 +1,18 @@
 package io.snabble.sdk.ui.cart.shoppingcart
 
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
-import io.snabble.sdk.PriceFormatter
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.Unit
 import io.snabble.sdk.checkout.LineItemType
 import io.snabble.sdk.extensions.xx
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
-import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.model.CartDiscountItem
+import io.snabble.sdk.ui.cart.shoppingcart.giveaway.model.GiveAwayItem
+import io.snabble.sdk.ui.cart.shoppingcart.product.model.DepositItem
+import io.snabble.sdk.ui.cart.shoppingcart.product.model.DiscountItem
+import io.snabble.sdk.ui.cart.shoppingcart.product.model.ProductItem
 import io.snabble.sdk.ui.telemetry.Telemetry
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -127,7 +127,7 @@ class ShoppingCartViewModel : ViewModel() {
 
     private fun MutableList<CartItem>.addDepositsToProducts(deposit: List<ShoppingCart.Item>) =
         deposit.forEach { item ->
-            firstOrNull { it.item?.id == item.lineItem?.refersTo }?.let {
+            firstOrNull { it.item.id == item.lineItem?.refersTo }?.let {
                 remove(it)
                 val product = it as? ProductItem ?: return@forEach
                 add(
@@ -171,73 +171,10 @@ class ShoppingCartViewModel : ViewModel() {
 sealed interface Event
 data class RemoveItem(
     val item: ShoppingCart.Item,
-    val onSuccess: (index: Int) -> kotlin.Unit
+    val onSuccess: (index: Int) -> Unit
 ) : Event
 
 data class UiState(
     val items: List<CartItem>,
     val hasAnyImages: Boolean = false
-)
-
-
-interface CartItem {
-
-    val item: ShoppingCart.Item
-    val type: CartItemType
-}
-
-sealed interface CartItemType
-data object Product : CartItemType
-data object CartDiscount : CartItemType
-data object GiveAway : CartItemType
-
-data class ProductItem(
-    override val item: ShoppingCart.Item,
-    override val type: CartItemType = Product,
-    val discounts: List<DiscountItem> = mutableListOf(),
-    val deposit: DepositItem? = null,
-    val name: String? = null,
-    val imageUrl: String? = null,
-    val encodingUnit: Unit? = null,
-    val priceText: String? = null,
-    val quantityText: String? = null,
-    val quantity: Int = 0,
-    val editable: Boolean = false,
-    val manualDiscountApplied: Boolean = false,
-) : CartItem {
-
-    fun totalPrice(formatter: PriceFormatter): String? {
-        val discountPrice = discounts.sumOf { it.discountValue }
-        item?.totalPrice ?: return null
-        return formatter.format(item.totalPrice + (deposit?.depositPrice ?: 0) + discountPrice)
-    }
-}
-
-data class CartDiscountItem(
-    override val item: ShoppingCart.Item,
-    override val type: CartItemType = CartDiscount,
-    @StringRes val title: Int = R.string.Snabble_Shoppingcart_discounts,
-    val discount: String,
-    val name: String,
-    @DrawableRes val imageResId: Int = R.drawable.snabble_ic_percent
-) : CartItem
-
-data class GiveAwayItem(
-    override val item: ShoppingCart.Item,
-    override val type: CartItemType = GiveAway,
-    val title: String,
-    @DrawableRes val imageResId: Int = R.drawable.snabble_ic_gift,
-    @StringRes val name: Int = R.string.Snabble_Shoppingcart_giveaway
-) : CartItem
-
-data class DiscountItem(
-    val name: String,
-    val discount: String,
-    val discountValue: Int
-)
-
-data class DepositItem(
-    val depositPrice: Int? = null,
-    val depositPriceText: String? = null,
-    val depositText: String? = null,
 )

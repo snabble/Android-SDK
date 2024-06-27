@@ -13,7 +13,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.PriceFormatter
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.ui.cart.shoppingcart.ProductItem
+import io.snabble.sdk.ui.cart.shoppingcart.product.model.ProductItem
 
 @Composable
 fun PriceDescription(modifier: Modifier = Modifier, item: ProductItem) {

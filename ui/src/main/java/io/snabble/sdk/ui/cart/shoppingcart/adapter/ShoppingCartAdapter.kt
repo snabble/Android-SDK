@@ -10,7 +10,7 @@ import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.GestureHandler.DismissibleAdapter
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.UndoHelper
-import io.snabble.sdk.ui.cart.shoppingcart.ShoppingCartView.Companion.buildRows
+import io.snabble.sdk.ui.cart.deprecated.ShoppingCartView.Companion.buildRows
 import io.snabble.sdk.ui.cart.shoppingcart.row.ProductRow
 import io.snabble.sdk.ui.cart.shoppingcart.row.Row
 import io.snabble.sdk.ui.cart.shoppingcart.row.SimpleRow
@@ -111,8 +111,7 @@ class ShoppingCartAdapter(private val parentView: View?, private val cart: Shopp
         parentView?.let {
 
             val snackbar = make(
-                parentView,
-                R.string.Snabble_Shoppingcart_articleRemoved, UIUtils.SNACKBAR_LENGTH_VERY_LONG
+                parentView, R.string.Snabble_Shoppingcart_articleRemoved, UIUtils.SNACKBAR_LENGTH_VERY_LONG
             )
             snackbar.setAction(R.string.Snabble_undo) { v: View? ->
                 cart.insert(item, adapterPosition)

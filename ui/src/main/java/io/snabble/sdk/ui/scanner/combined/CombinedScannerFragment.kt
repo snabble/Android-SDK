@@ -10,17 +10,13 @@ import android.view.ViewGroup
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
-import io.snabble.sdk.ui.GestureHandler
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.cart.shoppingcart.adapter.ShoppingCartAdapter
 import io.snabble.sdk.ui.scanner.BarcodeScannerView
 import io.snabble.sdk.ui.scanner.SelfScanningFragment
 import io.snabble.sdk.ui.utils.SnackbarUtils
@@ -66,7 +62,7 @@ class CombinedScannerFragment : SelfScanningFragment() {
             }
             scannerBottomSheetView.isVisible =
                 (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
-                        == PackageManager.PERMISSION_GRANTED)
+                    == PackageManager.PERMISSION_GRANTED)
         }
     }
 
@@ -86,13 +82,10 @@ class CombinedScannerFragment : SelfScanningFragment() {
         scannerBottomSheetView = view.findViewById(R.id.cart)
         scannerBottomSheetView.isVisible =
             (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
-                    == PackageManager.PERMISSION_GRANTED)
+                == PackageManager.PERMISSION_GRANTED)
         Snabble.checkedInProject.observe(viewLifecycleOwner) { project ->
             project?.let {
                 scannerBottomSheetView.cart = it.shoppingCart
-
-                val cartAdapter = ShoppingCartAdapter(scannerBottomSheetView, it.shoppingCart)
-                scannerBottomSheetView.shoppingCartAdapter = cartAdapter
             }
         }
         scannerBottomSheetView.behavior = ScannerBottomSheetBehavior(scannerBottomSheetView).apply {
@@ -124,21 +117,6 @@ class CombinedScannerFragment : SelfScanningFragment() {
         }
 
         scannerBottomSheetView.onItemsChangedListener += ::cartChanged
-        createItemTouchHelper()
-    }
-
-    private fun createItemTouchHelper() {
-        val gestureHandler: GestureHandler<Void> = object : GestureHandler<Void>(resources) {
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val pos = viewHolder.bindingAdapterPosition
-                cart?.get(pos)?.let { item ->
-                    scannerBottomSheetView.shoppingCartAdapter?.removeAndShowUndoSnackbar(pos, item)
-                }
-            }
-        }
-        val itemTouchHelper = ItemTouchHelper(gestureHandler)
-        gestureHandler.setItemTouchHelper(itemTouchHelper)
-        itemTouchHelper.attachToRecyclerView(scannerBottomSheetView.recyclerView)
     }
 
     private fun cartChanged(cart: ShoppingCart) {

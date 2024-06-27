@@ -24,11 +24,8 @@ import androidx.recyclerview.widget.RecyclerView
 import io.snabble.sdk.Product
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.UndoHelper
-import io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.product.ExtraImage
-import io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.product.ItemImage
-import io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.product.PriceDescription
-import io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.product.QuantityField
-import io.snabble.sdk.ui.cart.shoppingcart.adapter.widgets.product.UserWeighedField
+import io.snabble.sdk.ui.cart.shoppingcart.product.widget.ExtraImage
+import io.snabble.sdk.ui.cart.shoppingcart.product.widget.UserWeighedField
 import io.snabble.sdk.ui.cart.shoppingcart.row.SimpleRow
 import io.snabble.sdk.ui.cart.shoppingcart.row.ProductRow
 import io.snabble.sdk.ui.telemetry.Telemetry
@@ -55,23 +52,23 @@ class LineItemViewHolder(private val composeView: ComposeView, private val undoH
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Box(modifier = Modifier.wrapContentSize()) {
-                            ItemImage(row, hasAnyImages)
+//                            ItemImage(row, hasAnyImages)
                             ExtraImage(hasCoupon, isAgeRestricted, age, row.manualDiscountApplied)
                         }
                         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                             Row {
 
-                                PriceDescription(modifier = Modifier.weight(1f), row)
-                                if (row.editable && row.item?.product?.type != Product.Type.UserWeighed) {
-                                    QuantityField(modifier = Modifier, row, onQuantityChanged = {
-                                        if (it <= 0) {
-                                            undoHelper.removeAndShowUndoSnackbar(bindingAdapterPosition, row.item)
-                                        } else {
-                                            row.item?.setQuantityMethod(it)
-                                            Telemetry.event(Telemetry.Event.CartAmountChanged, row.item?.product)
-                                        }
-                                    })
-                                }
+//                                PriceDescription(modifier = Modifier.weight(1f), row)
+//                                if (row.editable && row.item?.product?.type != Product.Type.UserWeighed) {
+//                                    QuantityField(modifier = Modifier, row, onQuantityChanged = {
+//                                        if (it <= 0) {
+//                                            undoHelper.removeAndShowUndoSnackbar(bindingAdapterPosition, row.item)
+//                                        } else {
+//                                            row.item?.setQuantityMethod(it)
+//                                            Telemetry.event(Telemetry.Event.CartAmountChanged, row.item?.product)
+//                                        }
+//                                    })
+//                                }
                                 if (row.editable && row.item?.product?.type == Product.Type.UserWeighed) {
                                     UserWeighedField(
                                         row.quantity.toString(),
