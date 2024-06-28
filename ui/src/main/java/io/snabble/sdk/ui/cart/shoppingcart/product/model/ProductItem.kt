@@ -1,6 +1,5 @@
 package io.snabble.sdk.ui.cart.shoppingcart.product.model
 
-import io.snabble.sdk.PriceFormatter
 import io.snabble.sdk.Unit
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.cart.shoppingcart.CartItem
@@ -13,15 +12,16 @@ data class ProductItem(
     val imageUrl: String? = null,
     val encodingUnit: Unit? = null,
     val priceText: String? = null,
+    val listPrice: String? = null,
     val quantityText: String? = null,
     val quantity: Int = 0,
     val editable: Boolean = false,
     val manualDiscountApplied: Boolean = false,
+    val totalPrice: String? = null
 ) : CartItem {
 
-    fun totalPrice(formatter: PriceFormatter): String? {
+    fun totalPrice(): Int {
         val discountPrice = discounts.sumOf { it.discountValue }
-        item.totalPrice
-        return formatter.format(item.totalPrice + (deposit?.depositPrice ?: 0) + discountPrice)
+        return item.totalPrice + (deposit?.depositPrice ?: 0) + discountPrice
     }
 }

@@ -1,6 +1,7 @@
 package io.snabble.sdk.ui.cart.shoppingcart
 
 import androidx.lifecycle.ViewModel
+import io.snabble.sdk.PriceFormatter
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.checkout.LineItemType
 import io.snabble.sdk.extensions.xx
@@ -23,17 +24,25 @@ class ShoppingCartViewModel : ViewModel() {
     val uiState = _uiState.asStateFlow()
 
     private lateinit var cachedCart: ShoppingCart
+    private lateinit var priceFormatter: PriceFormatter
 
     private val shoppingCartListener: ShoppingCartListener = object : SimpleShoppingCartListener() {
         override fun onChanged(list: ShoppingCart?) {
-            updateUiState(list)
+            list?.let {
+                updateUiState(list)
+            }
         }
     }
 
     init {
+        val project = Snabble.checkedInProject.value
         val cart = Snabble.checkedInProject.value?.shoppingCart
         cart?.addListener(shoppingCartListener)
-        updateUiState(Snabble.checkedInProject.value?.shoppingCart)
+        project?.let {
+            it.id.xx()
+            priceFormatter = PriceFormatter(it)
+            updateUiState(it.shoppingCart)
+        }
     }
 
     fun onEvent(event: Event) {
@@ -52,9 +61,10 @@ class ShoppingCartViewModel : ViewModel() {
         }
     }
 
-    private fun updateUiState(cart: ShoppingCart?) {
-        cart ?: return
+    private fun updateUiState(cart: ShoppingCart) {
         cachedCart = cart
+
+        cart.data.items.forEach { it.lineItem.xx() }
 
         val cartItems: MutableList<CartItem> = mutableListOf()
 
@@ -72,7 +82,7 @@ class ShoppingCartViewModel : ViewModel() {
 
         _uiState.update {
             it.copy(
-                items = cartItems.xx("new items"),
+                items = cartItems,
                 hasAnyImages = cart.any { item -> !item?.product?.imageUrl.isNullOrEmpty() }
             )
         }
@@ -102,7 +112,7 @@ class ShoppingCartViewModel : ViewModel() {
             val discount = item.totalPriceText ?: return@forEach
             val value = item.totalPrice
 
-            firstOrNull { it.item?.id == item.lineItem?.refersTo }
+            firstOrNull { it.item.id == item.lineItem?.refersTo }
                 ?.let {
                     remove(it)
                     val product = it as? ProductItem ?: return@forEach
@@ -114,7 +124,8 @@ class ShoppingCartViewModel : ViewModel() {
                                     discount,
                                     value
                                 )
-                            )
+                            ),
+                            totalPrice = priceFormatter.format(it.totalPrice())
                         )
                     )
                 }
@@ -133,6 +144,7 @@ class ShoppingCartViewModel : ViewModel() {
                             depositText = item.displayName,
                             depositPrice = item.totalPrice
                         ),
+                        totalPrice = priceFormatter.format(it.totalPrice())
                     )
                 )
             }

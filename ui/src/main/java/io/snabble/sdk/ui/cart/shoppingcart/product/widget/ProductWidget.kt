@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import io.snabble.sdk.Product.Type.UserWeighed
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.ProductItem
@@ -56,19 +57,17 @@ fun ProductWidget(
                     Row {
 
                         PriceDescription(modifier = Modifier.weight(1f), cartItem)
-                        if (cartItem.editable && cartItem.item?.product?.type != io.snabble.sdk.Product.Type.UserWeighed) {
+                        if (cartItem.editable && cartItem.item.product?.type != UserWeighed) {
                             QuantityField(modifier = Modifier, cartItem, onQuantityChanged = {
                                 if (it <= 0) {
-                                    cartItem.item?.let { shoppingCartItem ->
-                                        onDeleteItem(shoppingCartItem)
-                                    }
+                                    onDeleteItem(cartItem.item)
                                 } else {
-                                    cartItem.item?.setQuantityMethod(it)
-                                    Telemetry.event(Telemetry.Event.CartAmountChanged, cartItem.item?.product)
+                                    cartItem.item.setQuantityMethod(it)
+                                    Telemetry.event(Telemetry.Event.CartAmountChanged, cartItem.item.product)
                                 }
                             })
                         }
-                        if (cartItem.editable && cartItem.item?.product?.type == io.snabble.sdk.Product.Type.UserWeighed) {
+                        if (cartItem.editable && cartItem.item.product?.type == UserWeighed) {
                             UserWeighedField(
                                 cartItem.quantity.toString(),
                                 encodingUnitDisplayName,
@@ -76,11 +75,7 @@ fun ProductWidget(
                                     cartItem.item.setQuantityMethod(it)
                                     Telemetry.event(Telemetry.Event.CartAmountChanged, cartItem.item.product)
                                 },
-                                onDeleteWeighed = {
-                                    cartItem.item?.let { shoppingCartItem ->
-                                        onDeleteItem(shoppingCartItem)
-                                    }
-                                }
+                                onDeleteWeighed = { onDeleteItem(cartItem.item) }
                             )
                         }
                     }
