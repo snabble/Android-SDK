@@ -125,8 +125,7 @@ class ShoppingCart(
         sortCouponsToBottom()
 
         if (update) {
-            data.addCount++
-            data.modCount++
+            data = data.copy(addCount = addCount.inc(), modCount = modCount.inc())
             generateNewUUID()
             invalidateOnlinePrices()
             updatePrices(true)
@@ -152,7 +151,7 @@ class ShoppingCart(
             val existing = getExistingMergeableProduct(item.product) ?: return false
             data.items.remove(existing)
             data.items.add(index, item)
-            data.modCount++
+            data = data.copy(modCount = modCount.inc())
             generateNewUUID()
             checkLimits()
             notifyQuantityChanged(this, item)
@@ -194,7 +193,7 @@ class ShoppingCart(
      * Removed a cart item from the cart by its index
      */
     fun remove(index: Int) {
-        data.modCount++
+        data = data.copy(modCount = modCount.inc())
         generateNewUUID()
         val removedItem = data.items.removeAt(index)
         checkLimits()
@@ -226,7 +225,7 @@ class ShoppingCart(
     fun backup() {
         if (data.items.size > 0) {
             oldData = data.deepCopy()
-            data.backupTimestamp = System.currentTimeMillis()
+            data = data.copy(backupTimestamp = System.currentTimeMillis())
         }
     }
 
@@ -241,7 +240,7 @@ class ShoppingCart(
      */
     fun clearBackup() {
         oldData = null
-        data.backupTimestamp = 0
+        data = data.copy(backupTimestamp = 0)
     }
 
     /**
@@ -271,11 +270,13 @@ class ShoppingCart(
      * Clears the cart of all items
      */
     fun clear() {
-        data.items = mutableListOf()
-        data.modCount = 0
-        data.addCount = 0
+        data = data.copy(
+            items = mutableListOf(),
+            modCount = 0,
+            addCount = 0,
+            onlineTotalPrice = null
+        )
         generateNewUUID()
-        data.onlineTotalPrice = null
         checkLimits()
         updatePrices(false)
         notifyCleared(this)
@@ -290,7 +291,7 @@ class ShoppingCart(
          * Sets the current taxation type of the cart
          */
         set(taxation) {
-            data.taxation = taxation
+            data = data.copy(taxation = taxation)
             notifyTaxationChanged(this, taxation)
         }
 
@@ -298,7 +299,7 @@ class ShoppingCart(
      * Clears the cart and generated a cart new session.
      */
     fun invalidate() {
-        data.id = UUID.randomUUID().toString()
+        data = data.copy(id = UUID.randomUUID().toString())
         generateNewUUID()
         clear()
     }
@@ -323,9 +324,11 @@ class ShoppingCart(
      * Resets the cart to the state before it was updated by the backend
      */
     fun invalidateOnlinePrices() {
-        data.invalidProducts = null
-        data.invalidDepositReturnVoucher = false
-        data.onlineTotalPrice = null
+        data = data.copy(
+            invalidProducts = null,
+            invalidDepositReturnVoucher = false,
+            onlineTotalPrice = null
+        )
 
         // use iterator directly instead of for each loop to avoid
         // ConcurrentModificationException due to modification while looping
@@ -393,7 +396,7 @@ class ShoppingCart(
      * If a checkout already exist with the same UUID, the checkout will get continued.
      */
     fun generateNewUUID() {
-        data.uuid = UUID.randomUUID().toString()
+        data = data.copy(uuid = UUID.randomUUID().toString())
         notifyProductsUpdate(this)
     }
 
@@ -411,7 +414,9 @@ class ShoppingCart(
         get() = data.uuid
 
     fun setOnlineTotalPrice(totalPrice: Int) {
-        data.onlineTotalPrice = totalPrice
+        data = data.copy(
+            onlineTotalPrice = totalPrice
+        )
     }
 
     /**
@@ -421,7 +426,9 @@ class ShoppingCart(
         get() = data.onlineTotalPrice != null
 
     fun setInvalidDepositReturnVoucher(invalidDepositReturnVoucher: Boolean) {
-        data.invalidDepositReturnVoucher = invalidDepositReturnVoucher
+        data = data.copy(
+            invalidDepositReturnVoucher = invalidDepositReturnVoucher
+        )
     }
 
     /**
@@ -430,7 +437,9 @@ class ShoppingCart(
     var invalidProducts: List<Product>?
         get() = data.invalidProducts ?: emptyList()
         set(invalidProducts) {
-            data.invalidProducts = invalidProducts
+            data = data.copy(
+                invalidProducts = invalidProducts
+            )
         }
 
     fun hasInvalidDepositReturnVoucher(): Boolean = data.invalidDepositReturnVoucher
@@ -508,7 +517,9 @@ class ShoppingCart(
     fun hasReachedMaxOnlinePaymentLimit(): Boolean = data.hasRaisedMaxOnlinePaymentLimit
 
     private fun updateTimestamp() {
-        data.lastModificationTime = System.currentTimeMillis()
+        data = data.copy(
+            lastModificationTime = System.currentTimeMillis()
+        )
     }
 
     fun checkLimits() {
@@ -516,22 +527,24 @@ class ShoppingCart(
         val maxCheckoutLimit = project?.maxCheckoutLimit ?: 0
         val maxOnlinePaymentLimit = project?.maxOnlinePaymentLimit ?: 0
         if (totalPrice < maxCheckoutLimit) {
-            data.hasRaisedMaxCheckoutLimit = false
+            data = data.copy(
+                hasRaisedMaxCheckoutLimit = false
+            )
         }
         if (totalPrice < maxOnlinePaymentLimit) {
-            data.hasRaisedMaxOnlinePaymentLimit = false
+            data = data.copy(hasRaisedMaxOnlinePaymentLimit = false)
         }
         if (!data.hasRaisedMaxCheckoutLimit
             && maxCheckoutLimit > 0
             && totalPrice >= maxCheckoutLimit
         ) {
-            data.hasRaisedMaxCheckoutLimit = true
+            data = data.copy(hasRaisedMaxCheckoutLimit = true)
             notifyCheckoutLimitReached(this)
         } else if (!data.hasRaisedMaxOnlinePaymentLimit
             && maxOnlinePaymentLimit > 0
             && totalPrice >= maxOnlinePaymentLimit
         ) {
-            data.hasRaisedMaxOnlinePaymentLimit = true
+            data = data.copy(hasRaisedMaxOnlinePaymentLimit = true)
             notifyOnlinePaymentLimitReached(this)
         }
     }
@@ -720,7 +733,7 @@ class ShoppingCart(
                 if (item.coupon == null || item.backendCouponId == null || item.backendCouponId != violation.refersTo) return
 
                 data.items.remove(item)
-                data.modCount++
+                data = data.copy(modCount = modCount.inc())
                 val foundViolation = data.violationNotifications.any { it.refersTo == violation.refersTo }
                 if (!foundViolation) {
                     data.violationNotifications.add(
@@ -746,7 +759,7 @@ class ShoppingCart(
     fun removeViolationNotification(violations: List<ViolationNotification?>?) {
         violations ?: return
         data.violationNotifications.removeAll(violations)
-        data.modCount++
+        data = data.copy(modCount = modCount.inc())
         notifyCartDataChanged(this)
     }
 
@@ -1038,7 +1051,7 @@ class ShoppingCart(
                     } else {
                         currentCart.notifyQuantityChanged(cart, this)
                     }
-                    currentCart.data.modCount++
+                    currentCart.data = currentCart.data.copy(modCount = currentCart.modCount.inc())
                     currentCart.generateNewUUID()
                     currentCart.invalidateOnlinePrices()
                     currentCart.updatePrices(true)
