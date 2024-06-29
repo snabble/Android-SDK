@@ -1341,6 +1341,9 @@ class ShoppingCart(
                 return 0
             }
 
+        val isAgeRestricted: Boolean
+            get() = product?.saleRestriction?.isAgeRestriction == true
+
         fun replace(product: Product?, scannedCode: ScannedCode?, quantity: Int) {
             this.product = product
             this.scannedCode = scannedCode

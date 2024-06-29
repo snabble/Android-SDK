@@ -39,7 +39,6 @@ class ShoppingCartViewModel : ViewModel() {
         val cart = Snabble.checkedInProject.value?.shoppingCart
         cart?.addListener(shoppingCartListener)
         project?.let {
-            it.id.xx()
             priceFormatter = PriceFormatter(it)
             updateUiState(it.shoppingCart)
         }
@@ -64,8 +63,6 @@ class ShoppingCartViewModel : ViewModel() {
     private fun updateUiState(cart: ShoppingCart) {
         cachedCart = cart
 
-        cart.data.items.forEach { it.lineItem.xx() }
-
         val cartItems: MutableList<CartItem> = mutableListOf()
 
         val products = cart.filter { it?.type == ItemType.PRODUCT }.filterNotNull()
@@ -82,8 +79,7 @@ class ShoppingCartViewModel : ViewModel() {
 
         _uiState.update {
             it.copy(
-                items = cartItems,
-                hasAnyImages = cart.any { item -> !item?.product?.imageUrl.isNullOrEmpty() }
+                items = cartItems.xx(),
             )
         }
     }
@@ -94,6 +90,7 @@ class ShoppingCartViewModel : ViewModel() {
             add(
                 ProductItem(
                     imageUrl = item.product?.imageUrl,
+                    showPlaceHolder = products.any { !it.product?.imageUrl.isNullOrEmpty() },
                     name = item.displayName,
                     encodingUnit = item.unit,
                     priceText = item.totalPriceText,
@@ -101,6 +98,8 @@ class ShoppingCartViewModel : ViewModel() {
                     quantityText = item.quantityText,
                     editable = item.isEditable,
                     manualDiscountApplied = item.isManualCouponApplied,
+                    isAgeRestricted = item.isAgeRestricted,
+                    minimumAge = item.minimumAge,
                     item = item,
                 )
             )
@@ -173,5 +172,4 @@ data class RemoveItem(
 
 data class UiState(
     val items: List<CartItem>,
-    val hasAnyImages: Boolean = false
 )

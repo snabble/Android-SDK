@@ -17,7 +17,6 @@ import io.snabble.sdk.checkout.Price
 import io.snabble.sdk.checkout.SignedCheckoutInfo
 import io.snabble.sdk.checkout.Violation
 import io.snabble.sdk.codes.ScannedCode.Companion.parseDefault
-import io.snabble.sdk.extensions.xx
 import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
@@ -129,7 +128,6 @@ internal class ShoppingCartUpdater(
 
         cart.invalidateOnlinePrices()
         val (price, lineItems, violations) = destructorCheckoutInfo(signedCheckoutInfo) ?: return error(false)
-        lineItems.xx("items:")
         resolveViolations(violations)
 
         if (!cartItemMatch(lineItems)) return

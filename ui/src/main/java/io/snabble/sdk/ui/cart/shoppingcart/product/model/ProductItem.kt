@@ -6,10 +6,11 @@ import io.snabble.sdk.ui.cart.shoppingcart.CartItem
 
 data class ProductItem(
     override val item: ShoppingCart.Item,
+    val imageUrl: String? = null,
+    val name: String? = null,
     val discounts: List<DiscountItem> = mutableListOf(),
     val deposit: DepositItem? = null,
-    val name: String? = null,
-    val imageUrl: String? = null,
+    val showPlaceHolder : Boolean =false,
     val encodingUnit: Unit? = null,
     val priceText: String? = null,
     val listPrice: String? = null,
@@ -17,7 +18,9 @@ data class ProductItem(
     val quantity: Int = 0,
     val editable: Boolean = false,
     val manualDiscountApplied: Boolean = false,
-    val totalPrice: String? = null
+    val totalPrice: String? = null,
+    val isAgeRestricted: Boolean = false,
+    val minimumAge: Int = 0
 ) : CartItem {
 
     fun totalPrice(): Int {

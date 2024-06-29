@@ -4,14 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.ProductItem
-import io.snabble.sdk.ui.cart.shoppingcart.product.widget.ProductWidget
+import io.snabble.sdk.ui.cart.shoppingcart.product.widget.Product
 
 @Composable
-fun ProductItemWidget(
+fun DeletableProduct(
     modifier: Modifier,
     item: ProductItem,
     onItemDeleted: (ShoppingCart.Item) -> Unit,
-    hasAnyImages: Boolean
 ) {
 
     SwipeToDeleteContainer(
@@ -19,9 +18,8 @@ fun ProductItemWidget(
         modifier = modifier,
         onDelete = { onItemDeleted(it.item) },
     ) {
-        ProductWidget(
+        Product(
             cartItem = item,
-            hasAnyImages = hasAnyImages,
             onDeleteItem = { onItemDeleted(it) }
         )
     }

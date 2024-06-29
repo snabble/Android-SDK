@@ -13,18 +13,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ExtraImage(hasCoupon: Boolean, isAgeRestricted: Boolean, age: Long, isManualApplied: Boolean) {
-    if (hasCoupon || (isAgeRestricted && age > 0)) {
+fun AgeRestrictionIcon(isAgeRestricted: Boolean, age: Int) {
+    if ((isAgeRestricted && age > 0)) {
         Box(
             modifier = Modifier
                 .clip(CircleShape)
                 .size(20.dp)
-                .background(if (!isManualApplied) Color(0xFF999999) else Color.Red),
+                .background(Color.Red),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 modifier = Modifier.background(Color.Red),
-                text = if (hasCoupon) "%" else age.toString(),
+                text = age.toString(),
                 color = Color.White
             )
         }

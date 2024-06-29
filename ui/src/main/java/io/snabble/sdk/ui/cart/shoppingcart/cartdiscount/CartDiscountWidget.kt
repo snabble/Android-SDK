@@ -16,31 +16,28 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.model.CartDiscountItem
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.widget.DiscountDescribtion
-import io.snabble.sdk.ui.utils.ThemeWrapper
 
 @Composable
 fun CartDiscountWidget(
     modifier: Modifier,
     item: CartDiscountItem,
 ) {
-    ThemeWrapper {
-        Row(
-            modifier = modifier.padding(vertical = 8.dp, horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Image(
-                modifier = Modifier.size(44.dp),
-                painter = painterResource(id = item.imageResId),
-                contentDescription = stringResource(id = item.title),
-                contentScale = ContentScale.Fit,
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
-            )
-            DiscountDescribtion(
-                title = stringResource(item.title),
-                description = item.name,
-                discount = item.discount
-            )
-        }
+    Row(
+        modifier = modifier.padding(vertical = 8.dp, horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Image(
+            modifier = Modifier.size(44.dp),
+            painter = painterResource(id = item.imageResId),
+            contentDescription = stringResource(id = item.title),
+            contentScale = ContentScale.Fit,
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+        )
+        DiscountDescribtion(
+            title = stringResource(item.title),
+            description = item.name,
+            discount = item.discount
+        )
     }
 }
