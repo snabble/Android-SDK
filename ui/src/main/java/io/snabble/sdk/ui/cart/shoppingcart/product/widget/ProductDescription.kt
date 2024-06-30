@@ -12,6 +12,7 @@ import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import io.snabble.sdk.extensions.xx
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.ProductItem
 
 @Composable
@@ -31,50 +32,73 @@ fun ProductDescription(modifier: Modifier = Modifier, item: ProductItem) {
                 style = MaterialTheme.typography.bodyLarge
             )
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            if (item.discounts.isNotEmpty()) {
-                item.priceText?.let {
-                    Text(
-                        text = it,
-                        overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = Bold,
-                    )
-                }
-                item.totalPrice?.let { totalPrice ->
-                    Text(
-                        text = totalPrice,
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = MaterialTheme.colorScheme.onSurface.copy(
-                                alpha = 0.33f
-                            ),
-                            textDecoration = if (item.discounts.isNotEmpty()) TextDecoration.LineThrough else TextDecoration.None
-                        )
-                    )
-                }
-            } else {
-                item.totalPrice?.let {
-                    Text(
-                        text = it,
-                        overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = Bold,
-                    )
-                } ?: item.priceText?.let {
-                    Text(
-                        text = it,
-                        overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = Bold,
-                    )
-                }
+        when {
+            item.discounts.isNotEmpty() -> {
+                Discountdescription(item)
+            }
+
+            item.quantity != 1 -> {
+                MultiLineItemDescription(item)
+            }
+
+            else -> {
+                SingleLineItemDescription(item)
             }
         }
-        item.deposit?.depositPrice?.let {
+        if (item.deposit != null) {
             Text(
                 text = "${item.priceText} + ${item.deposit.depositPriceText} ${item.deposit.depositText}",
                 style = MaterialTheme.typography.bodySmall
             )
         }
+    }
+}
+
+@Composable
+private fun MultiLineItemDescription(item: ProductItem) {
+    item.priceText?.let {
+        Text(
+            text = it,
+            overflow = TextOverflow.Ellipsis,
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = Bold,
+        )
+    }
+}
+
+@Composable
+private fun Discountdescription(item: ProductItem) {
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        item.priceText?.let {
+            Text(
+                text = it,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = Bold,
+            )
+        }
+        item.totalPrice?.let { totalPrice ->
+            Text(
+                text = totalPrice,
+                style = MaterialTheme.typography.bodySmall.copy(
+                    color = MaterialTheme.colorScheme.onSurface.copy(
+                        alpha = 0.33f
+                    ),
+                    textDecoration = if (item.discounts.isNotEmpty()) TextDecoration.LineThrough else TextDecoration.None
+                )
+            )
+        }
+    }
+}
+
+@Composable
+private fun SingleLineItemDescription(item: ProductItem) {
+    item.priceText?.let {
+        Text(
+            text = it,
+            overflow = TextOverflow.Ellipsis,
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = Bold,
+        )
     }
 }
