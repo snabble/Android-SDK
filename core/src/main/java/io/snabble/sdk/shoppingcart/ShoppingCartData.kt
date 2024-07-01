@@ -7,20 +7,20 @@ import io.snabble.sdk.utils.GsonHolder
 import java.util.*
 
 data class ShoppingCartData @JvmOverloads constructor(
-    @JvmField var id: String = UUID.randomUUID().toString(),
-    @JvmField var uuid: String = UUID.randomUUID().toString(),
-    @JvmField var lastModificationTime: Long = 0,
-    @JvmSuppressWildcards @JvmField var items: MutableList<ShoppingCart.Item> = mutableListOf(),
-    @JvmField var violationNotifications: MutableList<ViolationNotification> = mutableListOf(),
-    @JvmField var modCount: Int = 0,
-    @JvmField var addCount: Int = 0,
-    @JvmField var onlineTotalPrice: Int? = null,
-    @JvmSuppressWildcards @JvmField var invalidProducts: List<Product>? = null,
-    @JvmField var taxation: Taxation = Taxation.UNDECIDED,
-    @JvmField var hasRaisedMaxCheckoutLimit: Boolean = false,
-    @JvmField var hasRaisedMaxOnlinePaymentLimit: Boolean = false,
-    @JvmField var invalidDepositReturnVoucher: Boolean = false,
-    @JvmField var backupTimestamp: Long = 0,
+    @JvmField val id: String = UUID.randomUUID().toString(),
+    @JvmField val uuid: String = UUID.randomUUID().toString(),
+    @JvmField val lastModificationTime: Long = 0,
+    @JvmSuppressWildcards @JvmField val items: MutableList<ShoppingCart.Item> = mutableListOf(),
+    @JvmField val violationNotifications: MutableList<ViolationNotification> = mutableListOf(),
+    @JvmField val modCount: Int = 0,
+    @JvmField val addCount: Int = 0,
+    @JvmField val onlineTotalPrice: Int? = null,
+    @JvmSuppressWildcards @JvmField val invalidProducts: List<Product>? = null,
+    @JvmField val taxation: Taxation = Taxation.UNDECIDED,
+    @JvmField val hasRaisedMaxCheckoutLimit: Boolean = false,
+    @JvmField val hasRaisedMaxOnlinePaymentLimit: Boolean = false,
+    @JvmField val invalidDepositReturnVoucher: Boolean = false,
+    @JvmField val backupTimestamp: Long = 0,
 ) {
     fun applyShoppingCart(shoppingCart: ShoppingCart) {
         items.forEach {

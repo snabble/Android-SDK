@@ -1,46 +1,29 @@
 package io.snabble.sdk.ui.scanner.combined
 
 import android.content.Context
-import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import android.view.accessibility.AccessibilityEvent
 import android.widget.LinearLayout
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import io.snabble.accessibility.accessibility
-import io.snabble.accessibility.isTalkBackActive
+import androidx.compose.ui.platform.ComposeView
 import io.snabble.sdk.ViolationNotification
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.shoppingcart.data.Taxation
-import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.CheckoutBar
-import io.snabble.sdk.ui.cart.shoppingcart.adapter.ShoppingCartAdapter
-import io.snabble.sdk.ui.utils.behavior
+import io.snabble.sdk.ui.cart.shoppingcart.ShoppingCartScreen
+import io.snabble.sdk.ui.telemetry.Telemetry
+import io.snabble.sdk.ui.utils.SnackbarUtils.make
+import io.snabble.sdk.ui.utils.UIUtils
 
 class ScannerBottomSheetView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr), ShoppingCartListener {
 
     val checkout: CheckoutBar
-    val recyclerView: RecyclerView
+    private var composeView: ComposeView
     val onItemsChangedListener: MutableList<(cart: ShoppingCart) -> Unit> = mutableListOf()
-
-    var shoppingCartAdapter: ShoppingCartAdapter? = null
-        set(value) {
-            field = value
-            cart?.let {
-                value?.fetchFrom(it)
-            }
-            recyclerView.adapter = value
-        }
 
     val peekHeight: Int
         get() = if (cart?.isRestorable == true || cart?.isEmpty == false) {
@@ -52,63 +35,24 @@ class ScannerBottomSheetView @JvmOverloads constructor(
     init {
         LayoutInflater.from(context).inflate(R.layout.snabble_view_cart, this)
         checkout = findViewById(R.id.checkout)
-        recyclerView = findViewById(R.id.recycler_view)
+        composeView = findViewById(R.id.compose_card_container)
+
+        composeView.setContent {
+            ShoppingCartScreen(
+                onItemDeleted = { item, index ->
+                    val snackbar = make(
+                        this, R.string.Snabble_Shoppingcart_articleRemoved, UIUtils.SNACKBAR_LENGTH_VERY_LONG
+                    )
+                    snackbar.setAction(R.string.Snabble_undo) { v: View? ->
+                        cart?.insert(item, index)
+                        Telemetry.event(Telemetry.Event.UndoDeleteFromCart, item.product)
+                    }
+                    snackbar.show()
+                }
+            )
+        }
 
         orientation = VERTICAL
-
-        recyclerView.layoutManager = LinearLayoutManager(context)
-        val animator = DefaultItemAnimator()
-        animator.supportsChangeAnimations = false
-        recyclerView.itemAnimator = animator
-        recyclerView.adapter = shoppingCartAdapter
-
-        val dividerItemDecoration = DividerItemDecoration(recyclerView.context, RecyclerView.VERTICAL)
-        recyclerView.addItemDecoration(dividerItemDecoration)
-
-        recyclerView.accessibility {
-            onInitializeAccessibilityNodeInfo { info ->
-                val rowsCount = recyclerView.adapter?.itemCount ?: 0
-                val selectionMode = AccessibilityNodeInfoCompat.CollectionInfoCompat.SELECTION_MODE_NONE
-                val collectionInfo =
-                    AccessibilityNodeInfoCompat.CollectionInfoCompat.obtain(rowsCount, 1, false, selectionMode)
-                info.setCollectionInfo(collectionInfo)
-            }
-        }
-
-        if (context.isTalkBackActive) {
-            recyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
-                override fun getItemOffsets(
-                    outRect: Rect,
-                    view: View,
-                    parent: RecyclerView,
-                    state: RecyclerView.State
-                ) {
-                    super.getItemOffsets(outRect, view, parent, state)
-                    val viewHolder = recyclerView.findContainingViewHolder(view)
-                    val layoutManager = recyclerView.layoutManager as? LinearLayoutManager
-                    val behavior = this@ScannerBottomSheetView.behavior as? BottomSheetBehavior
-                    if (viewHolder != null && layoutManager != null && behavior != null) {
-                        view.accessibility {
-                            onAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) { _, _, _ ->
-                                val pos = viewHolder.absoluteAdapterPosition
-                                // maximize cart when at second element
-                                if (pos >= 1 && behavior.state != BottomSheetBehavior.STATE_EXPANDED) {
-                                    behavior.state = BottomSheetBehavior.STATE_EXPANDED
-                                } else if (pos == 0 && behavior.state == BottomSheetBehavior.STATE_EXPANDED) {
-                                    behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
-                                }
-                                // make sure that you can always see the element before and after the current one
-                                if (pos == layoutManager.findFirstCompletelyVisibleItemPosition() && pos > 0) {
-                                    recyclerView.smoothScrollToPosition(pos - 1)
-                                } else if (pos == layoutManager.findLastCompletelyVisibleItemPosition() && pos < recyclerView.adapter!!.itemCount) {
-                                    recyclerView.smoothScrollToPosition(pos + 1)
-                                }
-                            }
-                        }
-                    }
-                }
-            })
-        }
     }
 
     override fun onDetachedFromWindow() {
@@ -124,51 +68,28 @@ class ScannerBottomSheetView @JvmOverloads constructor(
     var cart: ShoppingCart? = null
         set(value) {
             field = value
-            if (value != null) {
-                shoppingCartAdapter?.fetchFrom(value)
-            }
             value?.addListener(this)
         }
 
-    private fun update() {
-        cart?.let {
-            shoppingCartAdapter?.fetchFrom(it)
-        }
-    }
-
     override fun onItemAdded(list: ShoppingCart?, item: ShoppingCart.Item?) {
-        update()
-
-        if (item?.type == ItemType.PRODUCT) {
-            recyclerView.scrollToPosition(0)
-        }
-
         onItemsChangedListener.forEach { it.invoke(requireNotNull(cart)) }
     }
 
-    override fun onQuantityChanged(list: ShoppingCart?, item: ShoppingCart.Item?) {
-        if (item?.product != null && list?.get(0) == item) {
-            recyclerView.scrollToPosition(0)
-        }
-
-        update()
-    }
+    override fun onQuantityChanged(list: ShoppingCart?, item: ShoppingCart.Item?) {}
 
     override fun onCleared(list: ShoppingCart?) {
-        update()
         onItemsChangedListener.forEach { it.invoke(requireNotNull(cart)) }
     }
 
     override fun onItemRemoved(list: ShoppingCart?, item: ShoppingCart.Item?, pos: Int) {
-        update()
         onItemsChangedListener.forEach { it.invoke(requireNotNull(cart)) }
     }
 
-    override fun onProductsUpdated(list: ShoppingCart?) = update()
-    override fun onPricesUpdated(list: ShoppingCart?) = update()
-    override fun onCheckoutLimitReached(list: ShoppingCart?) = update()
-    override fun onOnlinePaymentLimitReached(list: ShoppingCart?) = update()
+    override fun onProductsUpdated(list: ShoppingCart?) {}
+    override fun onPricesUpdated(list: ShoppingCart?) {}
+    override fun onCheckoutLimitReached(list: ShoppingCart?) {}
+    override fun onOnlinePaymentLimitReached(list: ShoppingCart?) {}
     override fun onTaxationChanged(list: ShoppingCart?, taxation: Taxation?) {}
     override fun onViolationDetected(violations: List<ViolationNotification?>) {}
-    override fun onCartDataChanged(list: ShoppingCart?) = update()
+    override fun onCartDataChanged(list: ShoppingCart?) {}
 }

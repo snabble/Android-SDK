@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.cart.shoppingcart.adapter.utils
+package io.snabble.sdk.ui.cart.shoppingcart.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.focus.FocusManager
@@ -6,7 +6,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
 
-class TextFieldManager(
+internal class TextFieldManager(
     private val focusManager: FocusManager,
     private val keyboardController: SoftwareKeyboardController?,
 ) {
@@ -18,7 +18,7 @@ class TextFieldManager(
 }
 
 @Composable
-fun rememberTextFieldManager(): TextFieldManager {
+internal fun rememberTextFieldManager(): TextFieldManager {
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     return TextFieldManager(focusManager, keyboardController)

@@ -128,7 +128,6 @@ internal class ShoppingCartUpdater(
 
         cart.invalidateOnlinePrices()
         val (price, lineItems, violations) = destructorCheckoutInfo(signedCheckoutInfo) ?: return error(false)
-
         resolveViolations(violations)
 
         if (!cartItemMatch(lineItems)) return
@@ -149,7 +148,17 @@ internal class ShoppingCartUpdater(
                 }
             }
         }
-        addDiscountLineItem(discounts)
+
+        val discountItems = lineItems.filter { it.type == LineItemType.DISCOUNT }
+        val couponsItems = lineItems.filter { it.type == LineItemType.COUPON }
+        val depositItems = lineItems.filter { it.type == LineItemType.DEPOSIT }
+
+        addCartDiscounts(discountItems.filter { it.discountType == "cart" })
+
+        couponsItems.forEach { addDiscountLineItem(it) }
+        depositItems.forEach { addDiscountLineItem(it) }
+        discountItems.filter { it.discountType != "cart" }.forEach { addDiscountLineItem(it) }
+
         setOnlinePrice(price)
         successfulModCount = modCount
         Logger.d("Successfully updated prices")
@@ -161,9 +170,16 @@ internal class ShoppingCartUpdater(
         cart.notifyPriceUpdate(cart)
     }
 
+    private fun addCartDiscounts(cartDiscountItems: List<LineItem>) {
+        val totalCartDiscount = cartDiscountItems.sumOf { it.totalPrice }
+        val cartDiscounts = cartDiscountItems.mapNotNull { it.name }
+        addCartDiscountLineItem(totalCartDiscount, cartDiscounts)
+    }
+
     private fun destructorCheckoutInfo(
         signedCheckoutInfo: SignedCheckoutInfo
     ): Triple<Price?, List<LineItem>, List<Violation>>? {
+        signedCheckoutInfo.checkoutInfo?.let {}
         return try {
             val (p, l, v) = GsonHolder
                 .get()
@@ -203,14 +219,20 @@ internal class ShoppingCartUpdater(
         }
     }
 
-    private fun addDiscountLineItem(discounts: Int) {
+    private fun addDiscountLineItem(lineItem: LineItem) {
+        cart.insert(cart.newItem(lineItem), cart.size(), false)
+    }
+
+    private fun addCartDiscountLineItem(discounts: Int, cartDiscounts: List<String>) {
         if (discounts != 0) {
             val lineItem = LineItem(
                 type = LineItemType.DISCOUNT,
                 amount = 1,
                 price = discounts,
                 id = UUID.randomUUID().toString(),
-                totalPrice = discounts
+                totalPrice = discounts,
+                discountType = "cart",
+                name = cartDiscounts.first()
             )
             cart.insert(cart.newItem(lineItem), cart.size(), false)
         }
