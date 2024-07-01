@@ -77,8 +77,18 @@ class ShoppingCartViewModel : ViewModel() {
         cartItems.addCartDiscount(cartDiscount)
 
         cartItems.updatePrices()
-        cartItems.sortBy { it.item.displayName }
-        cartItems.sortWith(
+        cartItems.sort()
+
+        _uiState.update {
+            it.copy(
+                items = cartItems,
+            )
+        }
+    }
+
+    private fun MutableList<CartItem>.sort() {
+        sortBy { it.item.displayName }
+        sortWith(
             compareBy {
                 when (it) {
                     is ProductItem -> -1
@@ -86,12 +96,6 @@ class ShoppingCartViewModel : ViewModel() {
                 }
             }
         )
-
-        _uiState.update {
-            it.copy(
-                items = cartItems,
-            )
-        }
     }
 
     private fun MutableList<CartItem>.updatePrices() {
