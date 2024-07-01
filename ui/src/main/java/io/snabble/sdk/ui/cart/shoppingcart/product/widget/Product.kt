@@ -76,8 +76,10 @@ internal fun Product(
 
 @Composable
 private fun Discounts(discounts: List<DiscountItem>) {
-    discounts.forEach {
-        DiscountItemWidget(it)
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        discounts.forEach {
+            DiscountItemWidget(it)
+        }
     }
 }
 
@@ -87,11 +89,11 @@ private fun DiscountItemWidget(it: DiscountItem) {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(it.discount, style = MaterialTheme.typography.bodyMedium)
+        Text(it.discount, style = MaterialTheme.typography.bodySmall)
         Spacer(Modifier.weight(1f))
-        Text(it.name, style = MaterialTheme.typography.bodyMedium)
+        Text(it.name, style = MaterialTheme.typography.bodySmall)
         Image(
-            modifier = Modifier.size(24.dp),
+            modifier = Modifier.size(18.dp),
             painter = painterResource(R.drawable.discount_badge),
             contentDescription = ""
         )
