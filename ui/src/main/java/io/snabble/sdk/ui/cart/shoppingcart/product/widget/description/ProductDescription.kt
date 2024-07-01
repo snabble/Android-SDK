@@ -32,11 +32,11 @@ internal fun ProductDescription(modifier: Modifier = Modifier, item: ProductItem
             item.discounts.isNotEmpty() -> Discountdescription(item.totalPrice, item.discountPrice)
             else -> LineItemDescription(item.totalPrice)
         }
-    }
-    if (item.deposit != null) {
-        Text(
-            text = "${item.totalPrice} + ${item.deposit.depositPriceText} ${item.deposit.depositText}",
-            style = MaterialTheme.typography.bodySmall
-        )
+        if (item.deposit != null) {
+            Text(
+                text = "${item.priceText} + ${item.deposit.depositPriceText} ${item.deposit.depositText}",
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
     }
 }
