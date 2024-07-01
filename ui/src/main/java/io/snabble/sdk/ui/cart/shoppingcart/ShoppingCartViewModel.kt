@@ -192,12 +192,12 @@ internal class ShoppingCartViewModel : ViewModel() {
         }
 }
 
-sealed interface Event
-data class RemoveItem(
+internal sealed interface Event
+internal data class RemoveItem(
     val item: ShoppingCart.Item,
     val onSuccess: (index: Int) -> Unit
 ) : Event
 
-data class UiState(
+internal data class UiState(
     val items: List<CartItem>,
 )
