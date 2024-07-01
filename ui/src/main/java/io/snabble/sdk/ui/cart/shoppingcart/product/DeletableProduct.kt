@@ -7,7 +7,7 @@ import io.snabble.sdk.ui.cart.shoppingcart.product.model.ProductItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.widget.Product
 
 @Composable
-fun DeletableProduct(
+internal fun DeletableProduct(
     modifier: Modifier,
     item: ProductItem,
     onItemDeleted: (ShoppingCart.Item) -> Unit,

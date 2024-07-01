@@ -18,7 +18,7 @@ import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.model.CartDiscountItem
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.widget.DiscountDescribtion
 
 @Composable
-fun CartDiscountWidget(
+internal fun CartDiscountWidget(
     modifier: Modifier,
     item: CartDiscountItem,
 ) {

@@ -11,7 +11,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun Discountdescription(totalPrice: String?, discountPrice: String?) {
+internal fun Discountdescription(totalPrice: String?, discountPrice: String?) {
     if (totalPrice == null || discountPrice == null) return
 
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

@@ -24,7 +24,7 @@ import androidx.compose.ui.graphics.Color
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun <T> SwipeToDeleteContainer(
+internal fun <T> SwipeToDeleteContainer(
     item: T,
     modifier: Modifier,
     onDelete: (T) -> Unit,

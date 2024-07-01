@@ -23,7 +23,7 @@ import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.ProductItem
 
 @Composable
-fun QuantityField(
+internal fun QuantityField(
     modifier: Modifier = Modifier,
     item: ProductItem,
     onQuantityChanged: (Int) -> Unit

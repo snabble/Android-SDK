@@ -6,7 +6,7 @@ import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.shoppingcart.CartItem
 
-data class CartDiscountItem(
+internal data class CartDiscountItem(
     override val item: ShoppingCart.Item,
     @StringRes val title: Int = R.string.Snabble_Shoppingcart_discounts,
     val discount: String,

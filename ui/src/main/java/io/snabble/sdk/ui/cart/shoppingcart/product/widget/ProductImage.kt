@@ -13,7 +13,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun ProductImage(
+internal fun ProductImage(
     imageUrl: String?,
     contentDescription: String?,
     showPlaceholder: Boolean,

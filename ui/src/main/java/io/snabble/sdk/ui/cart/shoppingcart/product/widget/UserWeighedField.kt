@@ -37,7 +37,7 @@ import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.shoppingcart.utils.rememberTextFieldManager
 
 @Composable
-fun UserWeighedField(
+internal fun UserWeighedField(
     weight: String,
     quantityAnnotation: String,
     onQuantityChanged: (Int) -> Unit,

@@ -7,7 +7,7 @@ import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextOverflow
 
 @Composable
-fun LineItemDescription(priceText: String?) {
+internal fun LineItemDescription(priceText: String?) {
     priceText ?: return
     Text(
         text = priceText,

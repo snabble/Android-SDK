@@ -25,7 +25,7 @@ import io.snabble.sdk.ui.cart.shoppingcart.product.widget.description.ProductDes
 import io.snabble.sdk.ui.telemetry.Telemetry
 
 @Composable
-fun Product(
+internal fun Product(
     cartItem: ProductItem,
     onDeleteItem: (ShoppingCart.Item) -> Unit,
 ) {

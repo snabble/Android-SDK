@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class ShoppingCartViewModel : ViewModel() {
+internal class ShoppingCartViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(UiState(emptyList()))
     val uiState = _uiState.asStateFlow()

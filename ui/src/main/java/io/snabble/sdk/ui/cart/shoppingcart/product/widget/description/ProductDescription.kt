@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.ProductItem
 
 @Composable
-fun ProductDescription(modifier: Modifier = Modifier, item: ProductItem) {
+internal fun ProductDescription(modifier: Modifier = Modifier, item: ProductItem) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.Start,

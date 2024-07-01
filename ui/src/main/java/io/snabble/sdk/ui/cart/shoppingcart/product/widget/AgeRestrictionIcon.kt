@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun AgeRestrictionIcon(isAgeRestricted: Boolean, age: Int) {
+internal fun AgeRestrictionIcon(isAgeRestricted: Boolean, age: Int) {
     if ((isAgeRestricted && age > 0)) {
         Box(
             modifier = Modifier
