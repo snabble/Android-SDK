@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-internal class ShoppingCartViewModel : ViewModel() {
+class ShoppingCartViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(UiState(emptyList()))
     val uiState = _uiState.asStateFlow()
@@ -192,12 +192,12 @@ internal class ShoppingCartViewModel : ViewModel() {
         }
 }
 
-internal sealed interface Event
+sealed interface Event
 internal data class RemoveItem(
     val item: ShoppingCart.Item,
     val onSuccess: (index: Int) -> Unit
 ) : Event
 
-internal data class UiState(
+data class UiState(
     val items: List<CartItem>,
 )
