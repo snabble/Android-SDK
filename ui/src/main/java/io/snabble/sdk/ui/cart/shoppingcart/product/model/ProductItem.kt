@@ -28,6 +28,6 @@ internal data class ProductItem(
 
     fun getDiscountPrice(): Int {
         val discountPrice = discounts.sumOf { it.discountValue }
-        return item.totalPrice + discountPrice
+        return item.totalPrice + (deposit?.depositPrice ?: 0) + discountPrice
     }
 }
