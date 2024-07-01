@@ -21,6 +21,7 @@ import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DiscountItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.ProductItem
+import io.snabble.sdk.ui.cart.shoppingcart.product.widget.description.ProductDescription
 import io.snabble.sdk.ui.telemetry.Telemetry
 
 @Composable
@@ -59,7 +60,7 @@ fun Product(
                 if (cartItem.editable && cartItem.item.product?.type == UserWeighed) {
                     UserWeighedField(
                         cartItem.quantity.toString(),
-                        cartItem.encodingUnit?.displayValue ?: "g",
+                        cartItem.unit,
                         onQuantityChanged = {
                             cartItem.item.setQuantityMethod(it)
                             Telemetry.event(Telemetry.Event.CartAmountChanged, cartItem.item.product)

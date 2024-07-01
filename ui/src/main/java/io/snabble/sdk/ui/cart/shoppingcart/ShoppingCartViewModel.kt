@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import io.snabble.sdk.PriceFormatter
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.checkout.LineItemType
-import io.snabble.sdk.extensions.xx
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
@@ -77,22 +76,52 @@ class ShoppingCartViewModel : ViewModel() {
         val cartDiscount = cart.filter { it?.isDiscount == true && it.lineItem?.discountType == "cart" }.filterNotNull()
         cartItems.addCartDiscount(cartDiscount)
 
+        cartItems.updatePrices()
+        cartItems.sortBy { it.item.displayName }
+        cartItems.sortWith(
+            compareBy {
+                when (it) {
+                    is ProductItem -> -1
+                    else -> 0
+                }
+            }
+        )
+
         _uiState.update {
             it.copy(
-                items = cartItems.xx(),
+                items = cartItems,
             )
         }
     }
 
-    private fun MutableList<CartItem>.addProducts(products: List<ShoppingCart.Item>) =
+    private fun MutableList<CartItem>.updatePrices() {
+        val modifiedItem = mutableListOf<CartItem>()
+        with(iterator()) {
+            forEach {
+                if (it is ProductItem) {
+                    remove()
+                    modifiedItem.add(
+                        it.copy(
+                            totalPrice = priceFormatter.format(it.getTotalPrice()),
+                            discountPrice = priceFormatter.format(it.getDiscountPrice())
+                        )
+                    )
+                }
+            }
+        }
+        addAll(modifiedItem)
+    }
+
+    private fun MutableList<CartItem>.addProducts(products: List<ShoppingCart.Item>) {
+        val hasAnyProductAnImage = products.any { !it.product?.imageUrl.isNullOrEmpty() }
         products.forEach { item: ShoppingCart.Item? ->
             item ?: return@forEach
             add(
                 ProductItem(
                     imageUrl = item.product?.imageUrl,
-                    showPlaceHolder = products.any { !it.product?.imageUrl.isNullOrEmpty() },
+                    showPlaceHolder = hasAnyProductAnImage,
                     name = item.displayName,
-                    encodingUnit = item.unit,
+                    unit = item.unit?.displayValue ?: "g",
                     priceText = item.totalPriceText,
                     quantity = item.getQuantityMethod(),
                     quantityText = item.quantityText,
@@ -104,6 +133,7 @@ class ShoppingCartViewModel : ViewModel() {
                 )
             )
         }
+    }
 
     private fun MutableList<CartItem>.addDiscountsToProducts(discounts: List<ShoppingCart.Item>) {
         discounts.forEach { item ->
@@ -123,8 +153,7 @@ class ShoppingCartViewModel : ViewModel() {
                                     discount,
                                     value
                                 )
-                            ),
-                            totalPrice = priceFormatter.format(it.totalPrice())
+                            )
                         )
                     )
                 }
@@ -143,7 +172,6 @@ class ShoppingCartViewModel : ViewModel() {
                             depositText = item.displayName,
                             depositPrice = item.totalPrice
                         ),
-                        totalPrice = priceFormatter.format(it.totalPrice())
                     )
                 )
             }
