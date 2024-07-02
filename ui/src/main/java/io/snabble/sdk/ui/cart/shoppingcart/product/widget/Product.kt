@@ -45,7 +45,9 @@ internal fun Product(
             age = cartItem.minimumAge
         )
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            Row {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 ProductDescription(modifier = Modifier.weight(1f), cartItem)
                 if (cartItem.editable && cartItem.item.product?.type != UserWeighed) {
                     QuantityField(modifier = Modifier, cartItem, onQuantityChanged = {
