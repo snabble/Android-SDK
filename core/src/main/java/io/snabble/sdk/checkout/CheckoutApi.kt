@@ -236,6 +236,7 @@ data class LineItem(
     val weight: Int? = null,
     val weightUnit: String? = null,
     val totalPrice: Int = 0,
+    val listPrice: Int = 0,
     val type: LineItemType? = null,
     val priceModifiers: List<PriceModifier>? = null,
     val redeemed: Boolean = false,
