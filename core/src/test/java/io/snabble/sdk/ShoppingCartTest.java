@@ -201,7 +201,8 @@ public class ShoppingCartTest extends SnabbleSdkTest {
                 100,
                 null,
                 null,
-                false
+                false,
+                0
 
         );
         item.setLineItem(lineItem);
@@ -228,7 +229,8 @@ public class ShoppingCartTest extends SnabbleSdkTest {
                 200,
                 null,
                 null,
-                false
+                false,
+                0
 
         );
         item.setLineItem(lineItem);
@@ -254,7 +256,8 @@ public class ShoppingCartTest extends SnabbleSdkTest {
                 154,
                 null,
                 null,
-                false
+                false,
+                0
 
         );
         item.setLineItem(lineItem);
@@ -280,7 +283,8 @@ public class ShoppingCartTest extends SnabbleSdkTest {
                 1000,
                 null,
                 null,
-                false
+                false,
+                0
 
         );
         item.setLineItem(lineItem);
@@ -307,7 +311,8 @@ public class ShoppingCartTest extends SnabbleSdkTest {
                 500,
                 null,
                 null,
-                false
+                false,
+                0
 
         );
         item.setLineItem(lineItem);
@@ -333,7 +338,8 @@ public class ShoppingCartTest extends SnabbleSdkTest {
                 60,
                 null,
                 null,
-                false
+                false,
+                0
 
         );
         item.setLineItem(lineItem);
@@ -359,7 +365,8 @@ public class ShoppingCartTest extends SnabbleSdkTest {
                 100,
                 null,
                 null,
-                false
+                false,
+                0
 
         );
         item.setLineItem(lineItem);
@@ -386,7 +393,8 @@ public class ShoppingCartTest extends SnabbleSdkTest {
                 400,
                 null,
                 null,
-                false
+                false,
+                0
 
         );
         item.setLineItem(lineItem);
