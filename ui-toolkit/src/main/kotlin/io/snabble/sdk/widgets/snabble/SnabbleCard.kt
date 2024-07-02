@@ -13,6 +13,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import io.snabble.sdk.dynamicview.theme.properties.elevation
@@ -39,7 +40,7 @@ internal fun SnabbleCard(
             onClick = onClick,
             modifier = Modifier
                 .indication(
-                    interactionSource = MutableInteractionSource(),
+                    interactionSource = remember { MutableInteractionSource()  },
                     indication = rememberRipple()
                 )
                 .then(modifier),

@@ -23,6 +23,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputLayout
 import io.snabble.accessibility.accessibility
 import io.snabble.sdk.*
+import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.utils.*
 import io.snabble.sdk.utils.Dispatch
 import java.lang.NumberFormatException

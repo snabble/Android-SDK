@@ -3,6 +3,7 @@ package io.snabble.sdk.checkout
 import io.snabble.sdk.*
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.payment.PaymentCredentials
+import io.snabble.sdk.shoppingcart.ShoppingCart
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

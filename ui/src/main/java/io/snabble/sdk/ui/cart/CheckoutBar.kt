@@ -23,7 +23,7 @@ import androidx.fragment.app.FragmentActivity
 import io.snabble.accessibility.accessibility
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
-import io.snabble.sdk.ShoppingCart
+import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.Snabble.instance
 import io.snabble.sdk.checkout.Checkout
@@ -31,6 +31,8 @@ import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.config.ExternalBillingSubjectLength
 import io.snabble.sdk.config.ProjectId
 import io.snabble.sdk.extensions.getApplicationInfoCompat
+import io.snabble.sdk.shoppingcart.data.Taxation
+import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
 import io.snabble.sdk.ui.Keyguard
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
@@ -75,7 +77,7 @@ open class CheckoutBar @JvmOverloads constructor(
     private val paymentSelectionHelper by lazy { PaymentSelectionHelper.getInstance() }
     private lateinit var project: Project
     private val cart: ShoppingCart by lazy { project.shoppingCart }
-    private val cartChangeListener = object : ShoppingCart.SimpleShoppingCartListener() {
+    private val cartChangeListener = object : SimpleShoppingCartListener() {
         override fun onChanged(list: ShoppingCart?) = update()
     }
 
@@ -119,7 +121,7 @@ open class CheckoutBar @JvmOverloads constructor(
         }
 
         payButton.setOneShotClickListener {
-            cart.taxation = ShoppingCart.Taxation.UNDECIDED
+            cart.taxation = Taxation.UNDECIDED
             handleButtonClick()
         }
 
@@ -212,7 +214,7 @@ open class CheckoutBar @JvmOverloads constructor(
             priceSum.text = project.priceFormatter.format(price)
 
             val onlinePaymentAvailable =
-                cart.availablePaymentMethods != null && cart.availablePaymentMethods.isNotEmpty()
+                cart.availablePaymentMethods != null && !cart.availablePaymentMethods.isNullOrEmpty()
             payButton.isEnabled =
                 price > 0 && (onlinePaymentAvailable || paymentSelectionHelper.selectedEntry.value != null)
 
@@ -448,9 +450,9 @@ open class CheckoutBar @JvmOverloads constructor(
                         )
                     ) { dialog, which ->
                         if (which == 0) {
-                            cart.taxation = ShoppingCart.Taxation.IN_HOUSE
+                            cart.taxation = Taxation.IN_HOUSE
                         } else {
-                            cart.taxation = ShoppingCart.Taxation.TAKEAWAY
+                            cart.taxation = Taxation.TAKEAWAY
                         }
                         dialog.dismiss()
                         project.checkout.checkout()

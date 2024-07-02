@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:parentTag="android.widget.LinearLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:parentTag="android.widget.LinearLayout">
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/snabble_ic_handle"
+        android:layout_marginBottom="-10dp"
         android:paddingTop="4dp"
-        android:layout_marginBottom="-10dp"/>
+        android:src="@drawable/snabble_ic_handle" />
 
     <io.snabble.sdk.ui.cart.CheckoutBar
         android:id="@+id/checkout"
-        android:paddingBottom="4dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
+        android:layout_height="wrap_content"
+        android:paddingBottom="4dp" />
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/colorSurface" />
+        android:background="?attr/colorSurface"
+        android:visibility="gone"/>
+
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/compose_card_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </merge>

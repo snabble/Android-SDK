@@ -34,13 +34,15 @@ import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Shop;
-import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.shoppingcart.ShoppingCart;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ViolationNotification;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.coupons.Coupon;
 import io.snabble.sdk.coupons.CouponCode;
 import io.snabble.sdk.coupons.CouponType;
+import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener;
+import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.checkout.ViolationNotificationUtils;
@@ -537,7 +539,7 @@ public class SelfScanningView extends FrameLayout {
         this.productConfirmationDialogFactory = productConfirmationDialogFactory;
     }
 
-    private final ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.SimpleShoppingCartListener() {
+    private final ShoppingCartListener shoppingCartListener = new SimpleShoppingCartListener() {
         @Override
         public void onItemAdded(ShoppingCart list, ShoppingCart.Item item) {
             super.onItemAdded(list, item);

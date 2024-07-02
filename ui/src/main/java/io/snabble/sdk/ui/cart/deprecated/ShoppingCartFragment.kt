@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.cart
+package io.snabble.sdk.ui.cart.deprecated
 
 import android.os.Bundle
 import android.view.Menu

@@ -22,12 +22,14 @@ import java.util.Set;
 
 import io.snabble.sdk.PaymentMethod;
 import io.snabble.sdk.Project;
-import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.shoppingcart.ShoppingCart;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.checkout.PaymentMethodInfo;
 import io.snabble.sdk.googlepay.GooglePayHelper;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
+import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener;
+import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.payment.PaymentMethodMetaDataHelper;
 import io.snabble.sdk.utils.GsonHolder;
@@ -63,8 +65,8 @@ public class PaymentSelectionHelper {
     @NotNull
     private PaymentMethodMetaDataHelper metaDataHelper;
 
-    private final ShoppingCart.ShoppingCartListener shoppingCartListener =
-            new ShoppingCart.SimpleShoppingCartListener() {
+    private final ShoppingCartListener shoppingCartListener =
+            new SimpleShoppingCartListener() {
                 @Override
                 public void onChanged(ShoppingCart list) {
                     update();

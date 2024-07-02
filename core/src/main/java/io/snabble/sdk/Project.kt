@@ -13,6 +13,8 @@ import io.snabble.sdk.coupons.Coupons
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions
 import io.snabble.sdk.events.Events
 import io.snabble.sdk.googlepay.GooglePayHelper
+import io.snabble.sdk.shoppingcart.ShoppingCart
+import io.snabble.sdk.shoppingcart.ShoppingCartStorage
 import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
 import io.snabble.sdk.utils.SimpleJsonCallback

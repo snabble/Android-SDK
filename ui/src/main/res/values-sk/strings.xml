@@ -27,6 +27,7 @@
   <string name="Snabble.Coupon.activate">Aktivovať</string>
   <string name="Snabble.Coupon.activated">Aktivovaný</string>
   <string name="Snabble.Coupon.countdown">Platnosť kupónu končí o %s minút</string>
+  <string name="Snabble.Coupon.deactivate">Deaktivácia</string>
   <string name="Snabble.Coupon.expired">Platnosť tohto kupónu už skončila.</string>
   <string name="Snabble.Coupon.explanation">Tento kupón je teraz pre teba aktivovaný. Ak chceš využiť kupón, naskenuj výrobok v obchode a pridaj ho do nákupného košíka.</string>
   <string name="Snabble.Coupon.validIndefinitely">platí neobmedzene</string>

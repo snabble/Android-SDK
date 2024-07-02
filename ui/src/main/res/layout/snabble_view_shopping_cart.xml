@@ -21,12 +21,11 @@
                 android:layout_above="@+id/bottom_payment_container"
                 android:id="@+id/coordinator_layout">
 
-                <androidx.recyclerview.widget.RecyclerView
+                <androidx.compose.ui.platform.ComposeView
+                    android:id="@+id/compose_card_container"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:id="@+id/recycler_view"
-                    tools:listitem="@layout/snabble_item_shoppingcart_product"
-                    tools:itemCount="3"/>
+                    />
             </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
             <LinearLayout
