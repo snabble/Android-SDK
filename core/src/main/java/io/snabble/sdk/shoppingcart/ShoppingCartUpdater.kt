@@ -226,13 +226,13 @@ internal class ShoppingCartUpdater(
     private fun addCartDiscountLineItem(discounts: Int, cartDiscounts: List<String>) {
         if (discounts != 0) {
             val lineItem = LineItem(
-                type = LineItemType.DISCOUNT,
-                amount = 1,
-                price = discounts,
                 id = UUID.randomUUID().toString(),
-                totalPrice = discounts,
+                amount = 1,
                 discountType = "cart",
-                name = cartDiscounts.first()
+                name = cartDiscounts.first(),
+                price = discounts,
+                totalPrice = discounts,
+                type = LineItemType.DISCOUNT
             )
             cart.insert(cart.newItem(lineItem), cart.size(), false)
         }
