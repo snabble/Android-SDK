@@ -12,6 +12,7 @@ internal data class ProductItem(
     val deposit: DepositItem? = null,
     val discountPrice: String? = null,
     val priceText: String? = null,
+    val listPrice: Int = 0,
     val totalPrice: String? = null,
     val isAgeRestricted: Boolean = false,
     val manualDiscountApplied: Boolean = false,
@@ -23,11 +24,11 @@ internal data class ProductItem(
 ) : CartItem {
 
     fun getTotalPrice(): Int {
-        return item.totalPrice + (deposit?.depositPrice ?: 0)
+        return (listPrice * quantity) + (deposit?.depositPrice ?: 0)
     }
 
     fun getDiscountPrice(): Int {
         val discountPrice = discounts.sumOf { it.discountValue }
-        return item.totalPrice + (deposit?.depositPrice ?: 0) + discountPrice
+        return (listPrice * quantity) + (deposit?.depositPrice ?: 0) + discountPrice
     }
 }

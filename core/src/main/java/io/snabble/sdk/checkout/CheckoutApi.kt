@@ -239,6 +239,7 @@ data class LineItem(
     val type: LineItemType? = null,
     val priceModifiers: List<PriceModifier>? = null,
     val redeemed: Boolean = false,
+    val listPrice: Int = 0,
 )
 
 data class PriceModifier(

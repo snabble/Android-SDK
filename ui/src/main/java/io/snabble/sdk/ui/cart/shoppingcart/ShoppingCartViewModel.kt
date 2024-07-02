@@ -70,6 +70,8 @@ class ShoppingCartViewModel : ViewModel() {
         val discounts = cart.filter { it?.isDiscount == true && it.lineItem?.discountType != "cart" }.filterNotNull()
         cartItems.addDiscountsToProducts(discounts)
 
+        cartItems.addPriceModifiersAsDiscountsProducts()
+
         val deposit = cart.filter { it?.lineItem?.type == LineItemType.DEPOSIT }.filterNotNull()
         cartItems.addDepositsToProducts(deposit)
 
@@ -134,9 +136,35 @@ class ShoppingCartViewModel : ViewModel() {
                     isAgeRestricted = item.isAgeRestricted,
                     minimumAge = item.minimumAge,
                     item = item,
+                    listPrice = item.lineItem?.listPrice ?: 0
                 )
             )
         }
+    }
+
+    private fun MutableList<CartItem>.addPriceModifiersAsDiscountsProducts() {
+        val modifiedItem = mutableListOf<CartItem>()
+        with(iterator()) {
+            forEach { item ->
+                if (item is ProductItem) {
+                    remove()
+                    val discounts = mutableListOf<DiscountItem>()
+                    item.item.lineItem?.priceModifiers?.forEach {
+                        discounts.add(
+                            DiscountItem(
+                                name = it.name ?: "",
+                                discount = priceFormatter.format(it.price * item.quantity),
+                                discountValue = it.price * item.quantity
+                            )
+                        )
+                    }
+                    modifiedItem.add(
+                        item.copy(discounts = item.discounts.plus(discounts))
+                    )
+                }
+            }
+        }
+        addAll(modifiedItem)
     }
 
     private fun MutableList<CartItem>.addDiscountsToProducts(discounts: List<ShoppingCart.Item>) {
@@ -179,7 +207,6 @@ class ShoppingCartViewModel : ViewModel() {
                     )
                 )
             }
-
         }
 
     private fun MutableList<CartItem>.addCartDiscount(cartDiscount: List<ShoppingCart.Item>) =
