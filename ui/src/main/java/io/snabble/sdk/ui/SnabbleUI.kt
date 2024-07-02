@@ -9,7 +9,7 @@ import androidx.lifecycle.*
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.SnabbleUI.Event.*
-import io.snabble.sdk.ui.cart.ShoppingCartActivity
+import io.snabble.sdk.ui.cart.deprecated.ShoppingCartActivity
 import io.snabble.sdk.ui.checkout.CheckoutActivity
 import io.snabble.sdk.ui.coupon.CouponDetailActivity
 import io.snabble.sdk.ui.payment.*

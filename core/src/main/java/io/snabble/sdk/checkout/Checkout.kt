@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import io.snabble.sdk.*
 import io.snabble.sdk.Snabble.instance
 import io.snabble.sdk.payment.PaymentCredentials
+import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.Logger
 import java.io.File
@@ -351,7 +352,7 @@ class Checkout @JvmOverloads constructor(
             selectedPaymentMethod = paymentMethod
             notifyStateChanged(CheckoutState.VERIFYING_PAYMENT_METHOD)
             checkoutApi.createPaymentProcess(
-                id = shoppingCart.uuid,
+                id = shoppingCart.uUID,
                 signedCheckoutInfo = signedCheckoutInfo,
                 paymentMethod = paymentMethod,
                 processedOffline = false,

@@ -312,9 +312,6 @@ public class CodeTemplate {
             int start = 0;
             for (int i = 0; i < groups.size(); i++) {
                 Group group = groups.get(i);
-                if (i == groups.size() - 1 && group instanceof IgnoreGroup) {
-                    break;
-                }
 
                 if (group instanceof WildcardGroup) {
                     ((WildcardGroup) group).setLength(matchedCode.length() - start);

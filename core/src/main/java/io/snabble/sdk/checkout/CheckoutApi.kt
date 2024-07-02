@@ -4,12 +4,12 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
-import io.snabble.sdk.ShoppingCart.BackendCart
 import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.Product
 import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.FulfillmentState
 import io.snabble.sdk.PaymentMethod
+import io.snabble.sdk.shoppingcart.data.cart.BackendCart
 import java.io.Serializable
 import java.lang.Exception
 import java.util.*
@@ -220,22 +220,26 @@ data class Violation(
 )
 
 data class LineItem(
-    var id: String? = null,
-    var refersTo: String? = null,
+    val id: String? = null,
+    val refersTo: String? = null,
     @SerializedName("couponID")
-    var couponId: String? = null,
-    var sku: String? = null,
-    var name: String? = null,
-    var scannedCode: String? = null,
-    var amount: Int = 0,
-    var price: Int = 0,
-    var units: Int? = null,
-    var weight: Int? = null,
-    var weightUnit: String? = null,
-    var totalPrice: Int = 0,
-    var type: LineItemType? = null,
-    var priceModifiers: List<PriceModifier>? = null,
-    var redeemed: Boolean = false,
+    val couponId: String? = null,
+    val sku: String? = null,
+    val name: String? = null,
+    val discountID: String? = null,
+    val discountType: String? = null,
+    val discountRuleID: String? = null,
+    val scannedCode: String? = null,
+    val amount: Int = 0,
+    val price: Int = 0,
+    val units: Int? = null,
+    val weight: Int? = null,
+    val weightUnit: String? = null,
+    val totalPrice: Int = 0,
+    val type: LineItemType? = null,
+    val priceModifiers: List<PriceModifier>? = null,
+    val redeemed: Boolean = false,
+    val listPrice: Int = 0,
 )
 
 data class PriceModifier(

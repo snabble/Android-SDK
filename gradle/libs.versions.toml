@@ -1,8 +1,8 @@
 [versions]
-compileSdk = "33"
-targetSdk = "32"
+compileSdk = "34"
+targetSdk = "33"
 minSdk = "21"
-gradlePlugin = "8.2.2"
+gradlePlugin = "8.4.0"
 desugarVersion = "1.1.5"
 okhttpVersion = "4.10.0"
 # @pin always, manually updated to ensure overall dependency support
@@ -14,7 +14,7 @@ navigation = "2.6.0"
 compose_version = "1.2.1"
 snabbleSdk = "0.69.6"
 androidx-camera = "1.2.3"
-androidx-compose-ui = "1.4.3"
+androidx-compose-ui = "1.6.7"
 com-squareup-okhttp3 = "4.11.0"
 io-kotest = "5.6.2"
 org-jetbrains-dokka = "1.8.20"
@@ -59,8 +59,8 @@ apache-commonsLang3 = "org.apache.commons:commons-lang3:3.12.0"
 caverock-androidsvgAar = "com.caverock:androidsvg-aar:1.4"
 compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
 compose-material = { module = "androidx.compose.material:material", version.ref = "androidx-compose-material" }
-compose-material3 = "androidx.compose.material3:material3:1.1.0-alpha08"
-compose-material3Themeadapter = "com.google.accompanist:accompanist-themeadapter-material3:0.30.1"
+compose-material3 = "androidx.compose.material3:material3:1.2.1"
+compose-material3Themeadapter = "com.google.accompanist:accompanist-themeadapter-material3:0.34.0"
 compose-ui = { module = "androidx.compose.ui:ui", version.ref = "androidx-compose-ui" }
 compose-uiTestManifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidx-compose-ui" }
 compose-uiTestJunit = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "androidx-compose-ui" }
@@ -69,6 +69,7 @@ compose-uiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", 
 compose-uiUtil = { module = "androidx.compose.ui:ui-util", version.ref = "androidx-compose-ui" }
 compose-uiViewBinding = { module = "androidx.compose.ui:ui-viewbinding", version.ref = "androidx-compose-ui" }
 compose-iconsExtended = { module = "androidx.compose.material:material-icons-extended", version.ref = "androidx-compose-material" }
+glide-compose = "com.github.bumptech.glide:compose:1.0.0-beta01"
 commonsIo = "commons-io:commons-io:2.5"
 datatrans-androidSdk = "ch.datatrans:android-sdk:3.2.0"
 desugarJdkLibsNio = "com.android.tools:desugar_jdk_libs_nio:2.0.4"

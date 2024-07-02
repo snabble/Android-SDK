@@ -9,8 +9,8 @@ import com.google.gson.reflect.TypeToken
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Product
 import io.snabble.sdk.Project
-import io.snabble.sdk.ShoppingCart.BackendCart
 import io.snabble.sdk.Snabble.instance
+import io.snabble.sdk.shoppingcart.data.cart.BackendCart
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger

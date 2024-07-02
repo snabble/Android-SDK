@@ -53,13 +53,13 @@
             android:name=".search.ProductSearchActivity"
             android:exported="false" />
         <activity
-            android:name=".cart.ShoppingCartActivity"
+            android:name=".cart.deprecated.ShoppingCartActivity"
             android:exported="false" />
         <activity
             android:name=".scanner.SelfScanningActivity"
             android:exported="false" />
         <activity
-            android:name=".scanner.CombinedScannerActivity"
+            android:name=".scanner.combined.CombinedScannerActivity"
             android:exported="false" />
         <activity
             android:name=".coupon.CouponDetailActivity"
