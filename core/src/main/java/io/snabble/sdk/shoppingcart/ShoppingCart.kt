@@ -580,13 +580,13 @@ class ShoppingCart(
         val loyaltyCardId = project?.customerCardId
 
         val backendCart = BackendCart(
-            session = id,
-            shopId = Snabble.checkedInShop?.id ?: "unknown",
-            clientId = userPreferences.clientId,
             appUserId = userPreferences.appUser?.id,
+            clientId = userPreferences.clientId,
             customer = if (loyaltyCardId != null) BackendCartCustomer(loyaltyCardId) else null,
+            items = backendCartItems(),
             requiredInformation = mutableListOf(),
-            items = backendCartItems()
+            session = id,
+            shopId = Snabble.checkedInShop?.id ?: "unknown"
         )
 
         if (data.taxation != Taxation.UNDECIDED) {
