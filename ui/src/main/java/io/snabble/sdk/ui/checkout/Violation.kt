@@ -12,9 +12,9 @@ import io.snabble.sdk.ui.utils.I18nUtils
 /**
  * Build a localized error message from a list of `ViolationNotification`.
  */
-fun List<ViolationNotification?>.getMessage(context: Context) = joinToString("\n") {
+fun List<ViolationNotification>.getMessage(context: Context) = joinToString("\n") {
     val res = context.resources
-    when (it?.type) {
+    when (it.type) {
         "coupon_invalid" -> res.getString(
             I18nUtils.getIdentifier(res, R.string.Snabble_Violations_couponInvalid),
             it.name
@@ -41,7 +41,7 @@ fun List<ViolationNotification?>.getMessage(context: Context) = joinToString("\n
 /**
  * Show a dialog with all current violations. The implementation will make sure that the dialog won't be shown twice.
  */
-fun List<ViolationNotification?>.showNotificationOnce(context: Context, cart: ShoppingCart) {
+fun List<ViolationNotification>.showNotificationOnce(context: Context, cart: ShoppingCart) {
     val message: String = getMessage(context)
     if (cart.violationNotifications.isNotEmpty()) {
         AlertDialog.Builder(context)
