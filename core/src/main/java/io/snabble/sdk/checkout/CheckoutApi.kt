@@ -111,7 +111,6 @@ enum class LineItemType {
     @SerializedName("default") DEFAULT,
     @SerializedName("deposit") DEPOSIT,
     @SerializedName("discount") DISCOUNT,
-    @SerializedName("giveaway") GIVEAWAY,
     @SerializedName("coupon") COUPON
 }
 

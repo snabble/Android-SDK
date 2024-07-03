@@ -1189,12 +1189,6 @@ class ShoppingCart(
             get() = lineItem != null && lineItem?.type == LineItemType.DISCOUNT
 
         /**
-         * Returns true if the item should be displayed as a giveaway
-         */
-        val isGiveaway: Boolean
-            get() = lineItem != null && lineItem?.type == LineItemType.GIVEAWAY
-
-        /**
          * Gets the price after applying all price modifiers
          */
         val modifiedPrice: Int
