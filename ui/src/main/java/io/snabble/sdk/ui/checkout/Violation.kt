@@ -34,7 +34,7 @@ fun List<ViolationNotification>.getMessage(context: Context) = joinToString("\n"
             ), it.name
         )
 
-        else -> it?.fallbackMessage.orEmpty()
+        else -> it.fallbackMessage.orEmpty()
     }
 }
 
