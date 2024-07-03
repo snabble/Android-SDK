@@ -800,7 +800,7 @@ class ShoppingCart(
         }
     }
 
-    private fun notifyItemRemoved(list: ShoppingCart?, item: Item, pos: Int) {
+    private fun notifyItemRemoved(list: ShoppingCart, item: Item, pos: Int) {
         updateTimestamp()
         Dispatch.mainThread {
             listeners?.forEach { listener ->
@@ -828,7 +828,7 @@ class ShoppingCart(
         }
     }
 
-    fun notifyPriceUpdate(list: ShoppingCart?) {
+    fun notifyPriceUpdate(list: ShoppingCart) {
         Dispatch.mainThread {
             listeners?.forEach { listener ->
                 listener.onPricesUpdated(list)
@@ -1047,7 +1047,7 @@ class ShoppingCart(
                 cart?.let { currentCart ->
                     if (quantity == 0) {
                         currentCart.data.items.remove(this)
-                        currentCart.notifyItemRemoved(cart, this, index)
+                        currentCart.notifyItemRemoved(currentCart, this, index)
                     } else {
                         currentCart.notifyQuantityChanged(cart, this)
                     }

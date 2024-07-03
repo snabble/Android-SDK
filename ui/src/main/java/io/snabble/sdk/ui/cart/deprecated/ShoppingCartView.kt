@@ -56,7 +56,7 @@ class ShoppingCartView : FrameLayout {
             update()
         }
 
-        override fun onCheckoutLimitReached(list: ShoppingCart?) {
+        override fun onCheckoutLimitReached(list: ShoppingCart) {
             alertDialog?.dismiss()
 
             project?.let {
@@ -75,7 +75,7 @@ class ShoppingCartView : FrameLayout {
             }
         }
 
-        override fun onOnlinePaymentLimitReached(list: ShoppingCart?) {
+        override fun onOnlinePaymentLimitReached(list: ShoppingCart) {
             alertDialog?.dismiss()
             project?.let {
 
@@ -93,7 +93,7 @@ class ShoppingCartView : FrameLayout {
             }
         }
 
-        override fun onViolationDetected(violations: List<ViolationNotification?>) {
+        override fun onViolationDetected(violations: List<ViolationNotification>) {
             cart?.let {
                 violations.showNotificationOnce(context, it)
             }
