@@ -78,7 +78,7 @@ open class CheckoutBar @JvmOverloads constructor(
     private lateinit var project: Project
     private val cart: ShoppingCart by lazy { project.shoppingCart }
     private val cartChangeListener = object : SimpleShoppingCartListener() {
-        override fun onChanged(list: ShoppingCart?) = update()
+        override fun onChanged(cart: ShoppingCart) = update()
     }
 
     val priceHeight: Int

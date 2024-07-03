@@ -26,10 +26,8 @@ class ShoppingCartViewModel : ViewModel() {
     private lateinit var priceFormatter: PriceFormatter
 
     private val shoppingCartListener: ShoppingCartListener = object : SimpleShoppingCartListener() {
-        override fun onChanged(list: ShoppingCart?) {
-            list?.let {
-                updateUiState(list)
-            }
+        override fun onChanged(cart: ShoppingCart) {
+                updateUiState(cart)
         }
     }
 

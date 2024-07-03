@@ -51,7 +51,7 @@ class Events internal constructor(
     init {
         project.shoppingCart.addListener(object : SimpleShoppingCartListener() {
 
-            override fun onChanged(cart: ShoppingCart?) {
+            override fun onChanged(cart: ShoppingCart) {
                 updateShop(Snabble.checkedInShop)
                 shop?.let {
                     if (!hasSentSessionStart) {
@@ -62,7 +62,7 @@ class Events internal constructor(
                 }
             }
 
-            override fun onCleared(cart: ShoppingCart?) {
+            override fun onCleared(cart: ShoppingCart) {
                 val isSameCartWithNewId = shoppingCart === cart && cart.id != cartId
                 if (isSameCartWithNewId) {
                     val payloadSessionEnd = PayloadSessionEnd(session = cartId)
@@ -72,19 +72,19 @@ class Events internal constructor(
                 }
             }
 
-            override fun onProductsUpdated(list: ShoppingCart?) {
+            override fun onProductsUpdated(cart: ShoppingCart) {
                 // Override because it shouldn't trigger onChanged(Cart)
             }
 
-            override fun onPricesUpdated(list: ShoppingCart?) {
+            override fun onPricesUpdated(cart: ShoppingCart) {
                 // Override because it shouldn't trigger onChanged(Cart)
             }
 
-            override fun onTaxationChanged(list: ShoppingCart?, taxation: Taxation?) {
+            override fun onTaxationChanged(cart: ShoppingCart, taxation: Taxation) {
                 // Override because it shouldn't trigger onChanged(Cart)
             }
 
-            override fun onCartDataChanged(list: ShoppingCart?) {
+            override fun onCartDataChanged(cart: ShoppingCart) {
                 // Override because it shouldn't trigger onChanged(Cart)
             }
         })
