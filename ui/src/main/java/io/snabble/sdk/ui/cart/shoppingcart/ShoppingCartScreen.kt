@@ -18,10 +18,9 @@ import io.snabble.sdk.ui.utils.ThemeWrapper
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ShoppingCartScreen(
-    viewModel: ShoppingCartViewModel = ShoppingCartViewModel(),
+    viewModel: ShoppingCartViewModel,
     onItemDeleted: (item: ShoppingCart.Item, index: Int) -> Unit
 ) {
-
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
     ThemeWrapper {
         LazyColumn {
@@ -31,15 +30,18 @@ fun ShoppingCartScreen(
                         DeletableProduct(
                             modifier = Modifier.animateItemPlacement(),
                             item = cartItem,
-                            onItemDeleted = { shoppingCartItem ->
+                            onItemDeleted = {
                                 viewModel.onEvent(
                                     RemoveItem(
-                                        item = shoppingCartItem,
+                                        item = cartItem.item,
                                         onSuccess = { index ->
-                                            onItemDeleted(shoppingCartItem, index)
+                                            onItemDeleted(cartItem.item, index)
                                         }
                                     )
                                 )
+                            },
+                            onQuantityChanged = { quantity ->
+                                viewModel.onEvent(UpdateQuantity(cartItem.item, quantity))
                             }
                         )
                         HorizontalDivider()

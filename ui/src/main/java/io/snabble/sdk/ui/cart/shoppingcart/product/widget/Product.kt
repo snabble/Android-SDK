@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.Product.Type.UserWeighed
-import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DiscountItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.ProductItem
@@ -27,7 +26,8 @@ import io.snabble.sdk.ui.telemetry.Telemetry
 @Composable
 internal fun Product(
     cartItem: ProductItem,
-    onDeleteItem: (ShoppingCart.Item) -> Unit,
+    onQuantityChanged: (Int) -> Unit,
+    onDeleteItem: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -52,10 +52,9 @@ internal fun Product(
                 if (cartItem.editable && cartItem.item.product?.type != UserWeighed) {
                     QuantityField(modifier = Modifier, cartItem, onQuantityChanged = {
                         if (it <= 0) {
-                            onDeleteItem(cartItem.item)
+                            onDeleteItem()
                         } else {
-                            cartItem.item.updateQuantity(it)
-                            Telemetry.event(Telemetry.Event.CartAmountChanged, cartItem.item.product)
+                            onQuantityChanged(it)
                         }
                     })
                 }
@@ -67,7 +66,7 @@ internal fun Product(
                             cartItem.item.updateQuantity(it)
                             Telemetry.event(Telemetry.Event.CartAmountChanged, cartItem.item.product)
                         },
-                        onDeleteWeighed = { onDeleteItem(cartItem.item) }
+                        onDeleteWeighed = onDeleteItem
                     )
                 }
             }

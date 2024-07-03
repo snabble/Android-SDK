@@ -24,10 +24,9 @@ import androidx.compose.ui.graphics.Color
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun <T> SwipeToDeleteContainer(
-    item: T,
+internal fun SwipeToDeleteContainer(
     modifier: Modifier,
-    onDelete: (T) -> Unit,
+    onDelete: () -> Unit,
     content: @Composable () -> Unit
 ) {
     var reset by remember { mutableStateOf(false) }
@@ -35,7 +34,7 @@ internal fun <T> SwipeToDeleteContainer(
     val swipeState = rememberSwipeToDismissBoxState(
         confirmValueChange = {
             if (it == SwipeToDismissBoxValue.EndToStart) {
-                onDelete(item)
+                onDelete()
                 reset = true
             }
             reset
