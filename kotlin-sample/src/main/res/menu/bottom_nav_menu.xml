@@ -17,13 +17,13 @@
         android:title="@string/shops" />
 
     <item
-        android:id="@+id/navigation_profile"
-        android:icon="@drawable/ic_menu_profile"
-        android:title="@string/profile" />
-
-    <item
         android:id="@+id/navigation_coupon"
         android:icon="@drawable/ic_menu_discount"
         android:title="@string/Snabble.Coupons.title" />
+
+    <item
+        android:id="@+id/navigation_profile"
+        android:icon="@drawable/ic_menu_profile"
+        android:title="@string/profile" />
 
 </menu>
