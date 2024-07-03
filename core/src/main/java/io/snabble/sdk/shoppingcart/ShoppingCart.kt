@@ -594,7 +594,7 @@ class ShoppingCart(
                 id = "taxation",
                 value = data.taxation.value
             )
-            backendCart.requiredInformation?.add(requiredInformation)
+            backendCart.requiredInformation.add(requiredInformation)
         }
 
         return backendCart
