@@ -987,7 +987,7 @@ class ShoppingCart(
         /**
          * Associate a user applied coupon with this item. E.g. manual price reductions.
          */
-        fun setCouponMethod(coupon: Coupon?) {
+        fun addManualCoupon(coupon: Coupon?) {
             if (coupon == null) {
                 this.coupon = null;
                 return;
@@ -1036,7 +1036,7 @@ class ShoppingCart(
         /**
          * Set the quantity of the cart item
          */
-        fun setQuantityMethod(quantity: Int) {
+        fun updateQuantity(quantity: Int) {
             if (scannedCode?.hasEmbeddedData() == true && scannedCode?.embeddedData != 0) {
                 return
             }

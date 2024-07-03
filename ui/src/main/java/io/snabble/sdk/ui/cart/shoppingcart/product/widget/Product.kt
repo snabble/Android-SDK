@@ -54,7 +54,7 @@ internal fun Product(
                         if (it <= 0) {
                             onDeleteItem(cartItem.item)
                         } else {
-                            cartItem.item.setQuantityMethod(it)
+                            cartItem.item.updateQuantity(it)
                             Telemetry.event(Telemetry.Event.CartAmountChanged, cartItem.item.product)
                         }
                     })
@@ -64,7 +64,7 @@ internal fun Product(
                         cartItem.quantity.toString(),
                         cartItem.unit,
                         onQuantityChanged = {
-                            cartItem.item.setQuantityMethod(it)
+                            cartItem.item.updateQuantity(it)
                             Telemetry.event(Telemetry.Event.CartAmountChanged, cartItem.item.product)
                         },
                         onDeleteWeighed = { onDeleteItem(cartItem.item) }
