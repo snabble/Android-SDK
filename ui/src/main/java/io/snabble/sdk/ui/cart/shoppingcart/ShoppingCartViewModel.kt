@@ -1,16 +1,12 @@
 package io.snabble.sdk.ui.cart.shoppingcart
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import io.snabble.sdk.PriceFormatter
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.ViolationNotification
 import io.snabble.sdk.checkout.LineItemType
-import io.snabble.sdk.extensions.xx
 import io.snabble.sdk.shoppingcart.ShoppingCart
-import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.shoppingcart.data.item.ItemType
-import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
+import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.model.CartDiscountItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DepositItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DiscountItem
@@ -21,9 +17,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
-class ShoppingCartViewModel : ViewModel(), ShoppingCartListener {
+class ShoppingCartViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(UiState(emptyList()))
     val uiState = _uiState.asStateFlow()
@@ -31,12 +26,16 @@ class ShoppingCartViewModel : ViewModel(), ShoppingCartListener {
     private lateinit var cachedCart: ShoppingCart
     private lateinit var priceFormatter: PriceFormatter
 
-    private var updateJob: Job? = null
+    private val simpleShoppingCartListener = object : SimpleShoppingCartListener() {
+        override fun onChanged(cart: ShoppingCart) {
+            updateUiState(cart)
+        }
+    }
 
     init {
         val project = Snabble.checkedInProject.value
         val cart = Snabble.checkedInProject.value?.shoppingCart
-        cart?.addListener(this)
+        cart?.addListener(simpleShoppingCartListener)
         project?.let {
             priceFormatter = PriceFormatter(it)
             updateUiState(it.shoppingCart)
@@ -56,14 +55,6 @@ class ShoppingCartViewModel : ViewModel(), ShoppingCartListener {
             cachedCart.remove(index)
             Telemetry.event(Telemetry.Event.DeletedFromCart, item?.product)
             onSuccess(index)
-        }
-    }
-
-    private fun update(cart: ShoppingCart) {
-        updateJob?.cancel()
-        updateJob = viewModelScope.launch {
-            delay(300)
-            updateUiState(cart)
         }
     }
 
@@ -92,18 +83,12 @@ class ShoppingCartViewModel : ViewModel(), ShoppingCartListener {
         cartItems.addCartDiscount(cartDiscount)
 
         cartItems.updatePrices()
-        cartItems.sort()
+        cartItems.sortCartDiscountsToBottom()
 
-        cartItems.xx("items")
-
-        _uiState.update {
-            it.copy(
-                items = cartItems,
-            )
-        }
+        _uiState.update { it.copy(items = cartItems) }
     }
 
-    private fun MutableList<CartItem>.sort() {
+    private fun MutableList<CartItem>.sortCartDiscountsToBottom() {
         sortBy { it.item.displayName }
         sortWith(
             compareBy {
@@ -243,42 +228,6 @@ class ShoppingCartViewModel : ViewModel(), ShoppingCartListener {
                 )
             )
         }
-
-    override fun onItemAdded(cart: ShoppingCart, item: ShoppingCart.Item) {}
-
-    override fun onQuantityChanged(cart: ShoppingCart, item: ShoppingCart.Item) {
-        "updateQuan ${System.currentTimeMillis()}".xx()
-        update(cart)
-    }
-
-    override fun onCleared(cart: ShoppingCart) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onItemRemoved(cart: ShoppingCart, item: ShoppingCart.Item, pos: Int) {
-    }
-
-    override fun onProductsUpdated(cart: ShoppingCart) {
-    }
-
-    override fun onPricesUpdated(cart: ShoppingCart) {
-        "updateAfterPrices ${System.currentTimeMillis()}".xx()
-        update(cart)
-    }
-
-    override fun onCheckoutLimitReached(cart: ShoppingCart) {
-    }
-
-    override fun onOnlinePaymentLimitReached(cart: ShoppingCart) {
-    }
-
-    override fun onTaxationChanged(cart: ShoppingCart, taxation: Taxation) {
-    }
-
-    override fun onViolationDetected(violations: List<ViolationNotification>) {
-    }
-
-    override fun onCartDataChanged(cart: ShoppingCart) {}
 }
 
 sealed interface Event
