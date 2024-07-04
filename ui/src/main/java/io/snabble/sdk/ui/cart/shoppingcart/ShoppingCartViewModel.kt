@@ -12,8 +12,6 @@ import io.snabble.sdk.ui.cart.shoppingcart.product.model.DepositItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DiscountItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.ProductItem
 import io.snabble.sdk.ui.telemetry.Telemetry
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -100,36 +98,30 @@ class ShoppingCartViewModel : ViewModel() {
         )
     }
 
-    private fun MutableList<CartItem>.updatePrices() {
-        val modifiedItem = mutableListOf<CartItem>()
-        with(iterator()) {
-            forEach {
-                if (it is ProductItem) {
-                    remove()
-                    val price = it.getTotalPrice()
-                    val priceText = if (price == 0) {
-                        it.priceText
-                    } else {
-                        priceFormatter.format(it.getTotalPrice())
+    private fun MutableList<CartItem>.updatePrices() = replaceAll {
+        when {
+            it is ProductItem -> {
+                // Since the total price can be null as we invalidate the online prices,'
+                // we need to use the price text instead to display the product price without an changed instead
+                val price = it.getTotalPrice()
+                val priceText = if (price == 0) it.priceText else priceFormatter.format(price)
+                it.copy(
+                    totalPrice = priceText,
+                    discountPrice = when {
+                        it.discounts.isNotEmpty() -> priceFormatter.format(it.getDiscountPrice())
+                        else -> null
                     }
-
-                    modifiedItem.add(
-                        it.copy(
-                            totalPrice = priceText,
-                            discountPrice = if (it.discounts.isNotEmpty()) priceFormatter.format(it.getDiscountPrice()) else null
-                        )
-                    )
-                }
+                )
             }
+
+            else -> it
         }
-        addAll(modifiedItem)
     }
 
     private fun MutableList<CartItem>.addProducts(products: List<ShoppingCart.Item>) {
         val hasAnyProductAnImage = products.any { !it.product?.imageUrl.isNullOrEmpty() }
-        products.forEach { item: ShoppingCart.Item? ->
-            item ?: return@forEach
-            add(
+        addAll(
+            products.map { item ->
                 ProductItem(
                     imageUrl = item.product?.imageUrl,
                     showPlaceHolder = hasAnyProductAnImage,
@@ -145,8 +137,8 @@ class ShoppingCartViewModel : ViewModel() {
                     item = item,
                     listPrice = item.lineItem?.listPrice ?: 0
                 )
-            )
-        }
+            }
+        )
     }
 
     private fun MutableList<CartItem>.addPriceModifiersAsDiscountsProducts() {
