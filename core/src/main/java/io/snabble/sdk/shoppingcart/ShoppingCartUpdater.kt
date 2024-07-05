@@ -155,9 +155,9 @@ internal class ShoppingCartUpdater(
 
         addCartDiscounts(discountItems.filter { it.discountType == "cart" })
 
-        couponsItems.forEach { addDiscountLineItem(it) }
-        depositItems.forEach { addDiscountLineItem(it) }
-        discountItems.filter { it.discountType != "cart" }.forEach { addDiscountLineItem(it) }
+        couponsItems.forEach { addLineItem(it) }
+        depositItems.forEach { addLineItem(it) }
+        discountItems.filter { it.discountType != "cart" }.forEach { addLineItem(it) }
 
         setOnlinePrice(price)
         successfulModCount = modCount
@@ -219,7 +219,7 @@ internal class ShoppingCartUpdater(
         }
     }
 
-    private fun addDiscountLineItem(lineItem: LineItem) {
+    private fun addLineItem(lineItem: LineItem) {
         cart.insert(cart.newItem(lineItem), cart.size(), false)
     }
 
