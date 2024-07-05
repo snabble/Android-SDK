@@ -227,6 +227,7 @@ data class LineItem(
     val discountRuleID: String? = null,
     val discountType: String? = null,
     val listPrice: Int = 0,
+    val referenceUnit: String? = null,
     val name: String? = null,
     val price: Int = 0,
     val priceModifiers: List<PriceModifier>? = null,
