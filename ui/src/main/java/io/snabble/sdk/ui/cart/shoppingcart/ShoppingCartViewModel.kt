@@ -98,23 +98,23 @@ class ShoppingCartViewModel : ViewModel() {
         )
     }
 
-    private fun MutableList<CartItem>.updatePrices() = replaceAll {
+    private fun MutableList<CartItem>.updatePrices() = replaceAll { item ->
         when {
-            it is ProductItem -> {
+            item is ProductItem -> {
                 // Since the total price can be null as we invalidate the online prices,'
                 // we need to use the price text instead to display the product price without an changed instead
-                val price = it.getTotalPrice()
-                val priceText = if (price == 0) it.priceText else priceFormatter.format(price)
-                it.copy(
+                val price = item.getTotalPrice()
+                val priceText = if (price == 0) item.priceText else priceFormatter.format(price)
+                item.copy(
                     totalPrice = priceText,
                     discountPrice = when {
-                        it.discounts.isNotEmpty() -> priceFormatter.format(it.getDiscountPrice())
+                        item.discounts.isNotEmpty() -> priceFormatter.format(item.getDiscountPrice())
                         else -> null
                     }
                 )
             }
 
-            else -> it
+            else -> item
         }
     }
 
@@ -141,29 +141,24 @@ class ShoppingCartViewModel : ViewModel() {
         )
     }
 
-    private fun MutableList<CartItem>.addPriceModifiersAsDiscountsProducts() {
-        val modifiedItem = mutableListOf<CartItem>()
-        with(iterator()) {
-            forEach { item ->
-                if (item is ProductItem) {
-                    remove()
-                    val discounts = mutableListOf<DiscountItem>()
-                    item.item.lineItem?.priceModifiers?.forEach {
-                        discounts.add(
-                            DiscountItem(
-                                name = it.name ?: "",
-                                discount = priceFormatter.format(it.price * item.quantity),
-                                discountValue = it.price * item.quantity
-                            )
+    private fun MutableList<CartItem>.addPriceModifiersAsDiscountsProducts() = replaceAll { item ->
+        when {
+            item is ProductItem && item.item.lineItem?.priceModifiers?.isNotEmpty() == true -> {
+                val discounts = mutableListOf<DiscountItem>()
+                item.item.lineItem?.priceModifiers?.forEach { modifier ->
+                    discounts.add(
+                        DiscountItem(
+                            name = item.name ?: "",
+                            discount = priceFormatter.format(item.getDiscountPrice()),
+                            discountValue = item.getDiscountPrice()
                         )
-                    }
-                    modifiedItem.add(
-                        item.copy(discounts = item.discounts.plus(discounts))
                     )
                 }
+                item.copy(discounts = item.discounts.plus(discounts))
             }
+
+            else -> item
         }
-        addAll(modifiedItem)
     }
 
     private fun MutableList<CartItem>.addDiscountsToProducts(discounts: List<ShoppingCart.Item>) {
