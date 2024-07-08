@@ -1,5 +1,7 @@
 package io.snabble.sdk;
 
+import androidx.annotation.Nullable;
+
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
@@ -208,5 +210,17 @@ public enum Unit {
         Logger.d("Unsupported conversion: %s -> %s", from.toString(), to.toString());
 
         return value;
+    }
+
+    static public int getConversionFactor(@Nullable String weightedUnit, @Nullable String referencedUnit) {
+        if (weightedUnit == null || referencedUnit == null) return 1;
+        final Unit to = Unit.fromString(weightedUnit);
+        final Unit from = Unit.fromString(referencedUnit);
+        for (Conversion conversion : conversions) {
+            if (conversion.from == from && conversion.to == to) {
+                return conversion.factor;
+            }
+        }
+        return 1;
     }
 }
