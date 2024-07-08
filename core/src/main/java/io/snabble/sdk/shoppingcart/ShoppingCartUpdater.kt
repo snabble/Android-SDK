@@ -132,18 +132,13 @@ internal class ShoppingCartUpdater(
 
         if (!cartItemMatch(lineItems)) return
 
-        var discounts = 0
-
         lineItems.forEach { lineItem ->
             val item = cart.getByItemId(lineItem.id)
             if (item != null) {
                 val updateIsSuccess = updateItem(item, lineItem, products)
                 if (!updateIsSuccess) return
             } else {
-                discounts += if (lineItem.type == LineItemType.DISCOUNT) {
-                    lineItem.totalPrice
-                } else {
-                    insertLineItemIfNoMatchingCoupon(lineItem)
+                if (lineItem.type != LineItemType.DISCOUNT) {
                     applyModifiedPrice(lineItem)
                 }
             }
@@ -191,14 +186,6 @@ internal class ShoppingCartUpdater(
         } catch (e: JsonSyntaxException) {
             Logger.e("Could not parse Checkout info: %s", e.message)
             null
-        }
-    }
-
-    private fun insertLineItemIfNoMatchingCoupon(lineItem: LineItem) {
-        val hasMatchingCoupon = project.coupons.any { it.id == lineItem.couponId }
-
-        if (!hasMatchingCoupon) {
-            cart.insert(cart.newItem(lineItem), cart.size(), false)
         }
     }
 
