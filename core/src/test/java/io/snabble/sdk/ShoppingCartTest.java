@@ -52,6 +52,7 @@ public class ShoppingCartTest extends SnabbleSdkTest {
                 null,
                 null,
                 null,
+                null,
                 totalPrice,
                 null,
                 null,
