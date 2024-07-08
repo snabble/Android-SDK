@@ -135,7 +135,6 @@ class ShoppingCartViewModel : ViewModel() {
                     isAgeRestricted = item.isAgeRestricted,
                     minimumAge = item.minimumAge,
                     item = item,
-                    listPrice = item.lineItem?.listPrice ?: 0,
                     finalPrice = item.lineItem?.totalPrice ?: 0
                 )
             }

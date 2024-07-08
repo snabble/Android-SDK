@@ -1,7 +1,5 @@
 package io.snabble.sdk.ui.cart.shoppingcart.product.model
 
-import io.snabble.sdk.Product
-import io.snabble.sdk.extensions.xx
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.cart.shoppingcart.CartItem
 import io.snabble.sdk.ui.cart.shoppingcart.convertPriceModifier
@@ -15,7 +13,6 @@ internal data class ProductItem(
     val deposit: DepositItem? = null,
     val discountPrice: String? = null,
     val priceText: String? = null,
-    val listPrice: Int = 0,
     val totalPrice: String? = null,
     val finalPrice: Int = 0,
     val isAgeRestricted: Boolean = false,
@@ -34,31 +31,17 @@ internal data class ProductItem(
                 val totalModifiedPrices = priceModifiers.sumOf {
                     it.convertPriceModifier(quantity, unit, item.lineItem?.referenceUnit)
                 }
-                finalPrice - totalModifiedPrices.intValueExact()
+                finalPrice - totalModifiedPrices.intValueExact()+ (deposit?.depositPrice ?: 0)
             }
 
             else -> {
-                if (item.product?.type == Product.Type.UserWeighed) {
-                    finalPrice
-                } else {
-                    (listPrice * quantity) + (deposit?.depositPrice ?: 0)
-                }
+                finalPrice + (deposit?.depositPrice ?: 0)
             }
         }
     }
 
     fun getDiscountedPrice(): Int {
-        val priceModifiers = item.lineItem?.priceModifiers
         val discountPrice = discounts.sumOf { it.discountValue }
-        return when {
-
-            !priceModifiers.isNullOrEmpty() -> {
-                (finalPrice + (deposit?.depositPrice ?: 0)) + discountPrice
-            }
-
-            else -> {
-                (listPrice * quantity) + (deposit?.depositPrice ?: 0) + discountPrice
-            }
-        }
+        return (finalPrice + (deposit?.depositPrice ?: 0)) + discountPrice
     }
 }
