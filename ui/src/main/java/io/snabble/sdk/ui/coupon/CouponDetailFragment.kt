@@ -81,22 +81,22 @@ open class CouponDetailFragment : Fragment() {
                     activateCoupon.isEnabled = false
                 }
 
-                isCouponActive(sdkCoupon) -> {
+                isCouponApplied(sdkCoupon) -> {
                     markAsApplied()
                 }
 
                 else -> {
-                    markAsUsable()
+                    markAsApplicable()
                 }
             }
         }
     }
 
-    private fun isCouponActive(coupon: Coupon) = project.shoppingCart.isCouponApplied(coupon)
+    private fun isCouponApplied(coupon: Coupon) = project.shoppingCart.isCouponApplied(coupon)
 
     private fun removeCoupon(coupon: Coupon) {
         project.shoppingCart.removeCoupon(coupon)
-        markAsUsable()
+        markAsApplicable()
     }
 
     protected open fun onRedeem(sdkCoupon: Coupon) {
@@ -114,7 +114,7 @@ open class CouponDetailFragment : Fragment() {
         }
     }
 
-    private fun markAsUsable() {
+    private fun markAsApplicable() {
         activateCoupon.setText(R.string.Snabble_Coupon_activate)
         activateCoupon.setOnClickListener {
             item.coupon?.let {
