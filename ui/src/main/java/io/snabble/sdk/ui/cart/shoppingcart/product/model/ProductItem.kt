@@ -1,7 +1,9 @@
 package io.snabble.sdk.ui.cart.shoppingcart.product.model
 
+import io.snabble.sdk.Product
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.cart.shoppingcart.CartItem
+import io.snabble.sdk.ui.cart.shoppingcart.convertPriceModifier
 
 internal data class ProductItem(
     override val item: ShoppingCart.Item,
@@ -14,8 +16,9 @@ internal data class ProductItem(
     val priceText: String? = null,
     val listPrice: Int = 0,
     val totalPrice: String? = null,
+    val finalPrice: Int = 0,
     val isAgeRestricted: Boolean = false,
-    val manualDiscountApplied: Boolean = false,
+    val isManualDiscountApplied: Boolean = false,
     val editable: Boolean = false,
     val quantityText: String,
     val unit: String,
@@ -24,11 +27,37 @@ internal data class ProductItem(
 ) : CartItem {
 
     fun getTotalPrice(): Int {
-        return (listPrice * quantity) + (deposit?.depositPrice ?: 0)
+        val priceModifiers = item.lineItem?.priceModifiers
+        return when {
+            !priceModifiers.isNullOrEmpty() -> {
+                val totalModifiedPrices = priceModifiers.sumOf {
+                    it.convertPriceModifier(quantity, unit, item.lineItem?.referenceUnit)
+                }
+                finalPrice + totalModifiedPrices.intValueExact()
+            }
+
+            else -> {
+                if (item.product?.type == Product.Type.UserWeighed) {
+                    finalPrice
+                } else {
+                    (listPrice * quantity) + (deposit?.depositPrice ?: 0)
+                }
+            }
+        }
     }
 
-    fun getDiscountPrice(): Int {
+    fun getDiscountedPrice(): Int {
+        val priceModifiers = item.lineItem?.priceModifiers
         val discountPrice = discounts.sumOf { it.discountValue }
-        return (listPrice * quantity) + (deposit?.depositPrice ?: 0) + discountPrice
+        return when {
+
+            !priceModifiers.isNullOrEmpty() -> {
+                (finalPrice + (deposit?.depositPrice ?: 0)) + discountPrice
+            }
+
+            else -> {
+                (listPrice * quantity) + (deposit?.depositPrice ?: 0) + discountPrice
+            }
+        }
     }
 }

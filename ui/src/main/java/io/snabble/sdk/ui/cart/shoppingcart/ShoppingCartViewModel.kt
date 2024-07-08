@@ -108,7 +108,7 @@ class ShoppingCartViewModel : ViewModel() {
                 item.copy(
                     totalPrice = priceText,
                     discountPrice = when {
-                        item.discounts.isNotEmpty() -> priceFormatter.format(item.getDiscountPrice())
+                        item.discounts.isNotEmpty() -> priceFormatter.format(item.getDiscountedPrice())
                         else -> null
                     }
                 )
@@ -131,11 +131,12 @@ class ShoppingCartViewModel : ViewModel() {
                     quantity = item.getQuantityMethod(),
                     quantityText = item.quantityText,
                     editable = item.isEditable,
-                    manualDiscountApplied = item.isManualCouponApplied,
+                    isManualDiscountApplied = item.isManualCouponApplied,
                     isAgeRestricted = item.isAgeRestricted,
                     minimumAge = item.minimumAge,
                     item = item,
-                    listPrice = item.lineItem?.listPrice ?: 0
+                    listPrice = item.lineItem?.listPrice ?: 0,
+                    finalPrice = item.lineItem?.totalPrice ?: 0
                 )
             }
         )
@@ -146,11 +147,19 @@ class ShoppingCartViewModel : ViewModel() {
             item is ProductItem && item.item.lineItem?.priceModifiers?.isNotEmpty() == true -> {
                 val discounts = mutableListOf<DiscountItem>()
                 item.item.lineItem?.priceModifiers?.forEach { modifier ->
+                    val name = modifier.name ?: return@forEach
+                    val modifiedPrice = modifier.convertPriceModifier(
+                        item.quantity,
+                        item.item.lineItem?.weightUnit,
+                        item.item.lineItem?.referenceUnit
+                    ).intValueExact()
                     discounts.add(
                         DiscountItem(
-                            name = item.name ?: "",
-                            discount = priceFormatter.format(item.getDiscountPrice()),
-                            discountValue = item.getDiscountPrice()
+                            name = name,
+                            discount = priceFormatter.format(
+                                modifiedPrice
+                            ),
+                            discountValue = 0
                         )
                     )
                 }
