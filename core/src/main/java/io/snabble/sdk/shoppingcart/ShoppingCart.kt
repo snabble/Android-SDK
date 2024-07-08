@@ -648,7 +648,7 @@ class ShoppingCart(
 
     private fun createBackendCartItem(cartItem: Item): BackendCartItem {
         val product = cartItem.product
-        val quantity = cartItem.getQuantityMethod()
+        val quantity = cartItem.getUnitBasedQuantity()
         val scannedCode = cartItem.scannedCode
         val encodingUnit = getCurrentEncodingUnit(scannedCode, product)
 
@@ -1018,21 +1018,21 @@ class ShoppingCart(
             val scannedCode = scannedCode
             return when {
                 scannedCode != null && scannedCode.hasEmbeddedData() && scannedCode.embeddedData != 0 -> scannedCode.embeddedData
-                else -> getQuantityMethod(ignoreLineItem)
+                else -> getUnitBasedQuantity(ignoreLineItem)
             }
         }
 
         /**
          * Returns the quantity of the cart item
          */
-        fun getQuantityMethod(): Int = getQuantityMethod(false)
+        fun getUnitBasedQuantity(): Int = getUnitBasedQuantity(ignoreLineItem = false)
 
         /**
          * Returns the quantity of the cart item
          *
          * @param ignoreLineItem if set to true, only return the local quantity before backend updates
          */
-        fun getQuantityMethod(ignoreLineItem: Boolean): Int {
+        fun getUnitBasedQuantity(ignoreLineItem: Boolean): Int {
             val lineItem = lineItem
             return when {
                 lineItem != null && !ignoreLineItem -> lineItem.weight ?: lineItem.units ?: lineItem.amount

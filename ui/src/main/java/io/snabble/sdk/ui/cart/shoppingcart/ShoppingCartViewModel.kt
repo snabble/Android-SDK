@@ -129,7 +129,7 @@ class ShoppingCartViewModel : ViewModel() {
                     name = item.displayName,
                     unit = item.unit?.displayValue ?: "g",
                     priceText = item.totalPriceText,
-                    quantity = item.getQuantityMethod(),
+                    quantity = item.getUnitBasedQuantity(),
                     quantityText = item.quantityText,
                     editable = item.isEditable,
                     isManualDiscountApplied = item.isManualCouponApplied,

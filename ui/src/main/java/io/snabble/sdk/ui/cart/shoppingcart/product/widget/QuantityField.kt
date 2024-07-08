@@ -45,7 +45,7 @@ internal fun QuantityField(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.33f)
                 ),
-                onClick = { onQuantityChanged(item.item.getQuantityMethod() - 1) }) {
+                onClick = { onQuantityChanged(item.item.getUnitBasedQuantity() - 1) }) {
                 Icon(
                     painter = painterResource(
                         id = when (item.item.quantity) {
@@ -72,7 +72,7 @@ internal fun QuantityField(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.33f)
                 ),
-                onClick = { onQuantityChanged(item.item.getQuantityMethod() + 1) }) {
+                onClick = { onQuantityChanged(item.item.getUnitBasedQuantity() + 1) }) {
                 Icon(
                     painter = painterResource(id = R.drawable.snabble_ic_add),
                     contentDescription = stringResource(
