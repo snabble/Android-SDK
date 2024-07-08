@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.snabble.sdk.shoppingcart.ShoppingCart
-import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.CartDiscountWidget
+import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.CartDiscount
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.model.CartDiscountItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.DeletableProduct
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.ProductItem
@@ -51,7 +51,7 @@ fun ShoppingCartScreen(
                     }
 
                     is CartDiscountItem -> {
-                        CartDiscountWidget(
+                        CartDiscount(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .background(MaterialTheme.colorScheme.background),

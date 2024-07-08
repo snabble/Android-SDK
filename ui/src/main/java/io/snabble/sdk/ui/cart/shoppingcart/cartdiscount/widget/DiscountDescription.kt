@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import io.snabble.sdk.ui.R
 
 @Composable
-internal fun DiscountDescribtion(title: String, description: String, discount: String) {
+internal fun DiscountDescription(title: String, description: String, discount: String) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
             text = title,

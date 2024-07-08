@@ -15,10 +15,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.model.CartDiscountItem
-import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.widget.DiscountDescribtion
+import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.widget.DiscountDescription
 
 @Composable
-internal fun CartDiscountWidget(
+internal fun CartDiscount(
     modifier: Modifier,
     item: CartDiscountItem,
 ) {
@@ -34,7 +34,7 @@ internal fun CartDiscountWidget(
             contentScale = ContentScale.Fit,
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
         )
-        DiscountDescribtion(
+        DiscountDescription(
             title = stringResource(item.title),
             description = item.name,
             discount = item.discount
