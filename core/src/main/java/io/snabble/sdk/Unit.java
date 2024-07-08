@@ -212,7 +212,7 @@ public enum Unit {
         return value;
     }
 
-    static public int getConversionFactor(@Nullable String weightedUnit, @Nullable String referencedUnit) {
+    static public int getConversionDivisor(@Nullable String weightedUnit, @Nullable String referencedUnit) {
         if (weightedUnit == null || referencedUnit == null) return 1;
         final Unit to = Unit.fromString(weightedUnit);
         final Unit from = Unit.fromString(referencedUnit);
