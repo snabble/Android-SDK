@@ -103,7 +103,7 @@ class ShoppingCartViewModel : ViewModel() {
             item is ProductItem -> {
                 // Since the total price can be null as we invalidate the online prices,'
                 // we need to use the price text instead to display the product price without an changed instead
-                val price = item.getTotalPrice()
+                val price = item.calculateTotalPrice()
                 val priceText = if (price == 0) item.priceText else priceFormatter.format(price)
 
                 item.copy(

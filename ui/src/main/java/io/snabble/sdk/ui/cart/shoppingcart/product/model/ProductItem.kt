@@ -26,7 +26,7 @@ internal data class ProductItem(
     val minimumAge: Int = 0
 ) : CartItem {
 
-    fun getTotalPrice(): Int {
+    fun calculateTotalPrice(): Int {
         val priceModifiers = item.lineItem?.priceModifiers
         return when {
             !priceModifiers.isNullOrEmpty() -> {
