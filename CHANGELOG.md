@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 ### Added
 * core: add new and update existing user agent headers
+* core: add new methods to check if a coupon is applied and to remove it
+* ui: add button to deactivate coupons on the coupons details page
 ### Changed
 ### Removed
 ### Fixed

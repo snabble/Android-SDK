@@ -431,6 +431,13 @@ class ShoppingCart(
         )
     }
 
+    fun isCouponApplied(coupon: Coupon): Boolean = any { it?.coupon?.id == coupon.id }
+
+    fun removeCoupon(coupon: Coupon) {
+        val index = indexOfFirst { it?.coupon?.id == coupon.id }
+        if (index != -1) remove(index)
+    }
+
     /**
      * Gets a list of invalid products that were rejected by the backend.
      */
