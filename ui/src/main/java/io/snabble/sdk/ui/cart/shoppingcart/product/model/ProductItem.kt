@@ -1,6 +1,7 @@
 package io.snabble.sdk.ui.cart.shoppingcart.product.model
 
 import io.snabble.sdk.Product
+import io.snabble.sdk.extensions.xx
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.cart.shoppingcart.CartItem
 import io.snabble.sdk.ui.cart.shoppingcart.convertPriceModifier
@@ -33,7 +34,7 @@ internal data class ProductItem(
                 val totalModifiedPrices = priceModifiers.sumOf {
                     it.convertPriceModifier(quantity, unit, item.lineItem?.referenceUnit)
                 }
-                finalPrice + totalModifiedPrices.intValueExact()
+                finalPrice - totalModifiedPrices.intValueExact()
             }
 
             else -> {
