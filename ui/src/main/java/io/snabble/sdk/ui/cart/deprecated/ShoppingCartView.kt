@@ -33,6 +33,7 @@ import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.ui.utils.observeView
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks
 
+@Deprecated("Integrate [io.snabble.sdk.ui.cart.shoppingcart.ShoppingCartScreen] instead.")
 class ShoppingCartView : FrameLayout {
 
     private var rootView: View? = null
