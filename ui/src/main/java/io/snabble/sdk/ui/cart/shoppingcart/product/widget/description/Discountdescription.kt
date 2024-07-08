@@ -20,6 +20,7 @@ internal fun Discountdescription(totalPrice: String?, discountPrice: String?) {
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.bodySmall,
             fontWeight = Bold,
+            color = MaterialTheme.colorScheme.onSurface
         )
         Text(
             text = totalPrice,

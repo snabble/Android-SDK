@@ -98,7 +98,11 @@ internal fun UserWeighedField(
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number),
                 textStyle = MaterialTheme.typography.bodyMedium
             )
-            Text(text = quantityAnnotation, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                text = quantityAnnotation,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
             if (showApplyButton) {
                 OutlinedIconButton(
                     modifier = Modifier

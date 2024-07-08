@@ -63,7 +63,8 @@ internal fun QuantityField(
                 modifier = Modifier.widthIn(min = 36.dp),
                 text = item.quantityText,
                 style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurface
             )
             OutlinedIconButton(
                 modifier = Modifier.size(36.dp),

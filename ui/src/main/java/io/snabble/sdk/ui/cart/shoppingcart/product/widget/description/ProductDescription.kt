@@ -25,7 +25,8 @@ internal fun ProductDescription(modifier: Modifier = Modifier, item: ProductItem
                 overflow = TextOverflow.Ellipsis,
                 softWrap = true,
                 maxLines = 2,
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
         when {
@@ -35,7 +36,8 @@ internal fun ProductDescription(modifier: Modifier = Modifier, item: ProductItem
         if (item.deposit != null) {
             Text(
                 text = "${item.priceText} + ${item.deposit.depositPriceText} ${item.deposit.depositText}",
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }

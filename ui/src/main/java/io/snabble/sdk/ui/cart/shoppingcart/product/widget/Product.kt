@@ -90,9 +90,9 @@ private fun DiscountItemWidget(it: DiscountItem) {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(it.discount, style = MaterialTheme.typography.bodySmall)
+        Text(it.discount, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
         Spacer(Modifier.weight(1f))
-        Text(it.name, style = MaterialTheme.typography.bodySmall)
+        Text(it.name, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
         Image(
             modifier = Modifier.size(18.dp),
             painter = painterResource(R.drawable.discount_badge),
