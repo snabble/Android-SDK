@@ -410,7 +410,7 @@ class ShoppingCart(
      *
      * If a checkout already exist with the same UUID, the checkout will get continued.
      */
-    val uUID: String
+    val uuid: String
         get() = data.uuid
 
     fun setOnlineTotalPrice(totalPrice: Int) {
