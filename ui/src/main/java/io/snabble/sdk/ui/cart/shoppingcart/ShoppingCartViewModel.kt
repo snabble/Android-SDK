@@ -105,10 +105,11 @@ class ShoppingCartViewModel : ViewModel() {
                 // we need to use the price text instead to display the product price without an changed instead
                 val price = item.getTotalPrice()
                 val priceText = if (price == 0) item.priceText else priceFormatter.format(price)
+
                 item.copy(
-                    totalPrice = priceText,
-                    discountPrice = when {
-                        item.discounts.isNotEmpty() -> priceFormatter.format(item.getDiscountedPrice())
+                    totalPriceText = priceText,
+                    discountedPrice = when {
+                        item.discounts.isNotEmpty() -> priceFormatter.format(item.getPriceWithDiscountsApplied())
                         else -> null
                     }
                 )
@@ -135,7 +136,7 @@ class ShoppingCartViewModel : ViewModel() {
                     isAgeRestricted = item.isAgeRestricted,
                     minimumAge = item.minimumAge,
                     item = item,
-                    finalPrice = item.lineItem?.totalPrice ?: 0
+                    totalPrice = item.lineItem?.totalPrice ?: 0
                 )
             }
         )

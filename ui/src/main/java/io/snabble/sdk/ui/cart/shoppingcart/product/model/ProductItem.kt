@@ -11,10 +11,12 @@ internal data class ProductItem(
     val name: String? = null,
     val discounts: List<DiscountItem> = mutableListOf(),
     val deposit: DepositItem? = null,
-    val discountPrice: String? = null,
+    val discountedPrice: String? = null,
+    //Displays the price without any deposits, etc. applied
     val priceText: String? = null,
-    val totalPrice: String? = null,
-    val finalPrice: Int = 0,
+    //Displays the total price with deposits, etc. applied
+    val totalPriceText: String? = null,
+    val totalPrice: Int = 0,
     val isAgeRestricted: Boolean = false,
     val isManualDiscountApplied: Boolean = false,
     val editable: Boolean = false,
@@ -31,17 +33,17 @@ internal data class ProductItem(
                 val totalModifiedPrices = priceModifiers.sumOf {
                     it.convertPriceModifier(quantity, unit, item.lineItem?.referenceUnit)
                 }
-                finalPrice - totalModifiedPrices.intValueExact()+ (deposit?.depositPrice ?: 0)
+                totalPrice - totalModifiedPrices.intValueExact()+ (deposit?.depositPrice ?: 0)
             }
 
             else -> {
-                finalPrice + (deposit?.depositPrice ?: 0)
+                totalPrice + (deposit?.depositPrice ?: 0)
             }
         }
     }
 
-    fun getDiscountedPrice(): Int {
+    fun getPriceWithDiscountsApplied(): Int {
         val discountPrice = discounts.sumOf { it.discountValue }
-        return (finalPrice + (deposit?.depositPrice ?: 0)) + discountPrice
+        return (totalPrice + (deposit?.depositPrice ?: 0)) + discountPrice
     }
 }

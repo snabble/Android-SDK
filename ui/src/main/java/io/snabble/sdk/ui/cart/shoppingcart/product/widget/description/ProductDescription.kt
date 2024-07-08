@@ -29,8 +29,8 @@ internal fun ProductDescription(modifier: Modifier = Modifier, item: ProductItem
             )
         }
         when {
-            item.discounts.isNotEmpty() -> Discountdescription(item.totalPrice, item.discountPrice)
-            else -> LineItemDescription(item.totalPrice)
+            item.discounts.isNotEmpty() -> Discountdescription(item.totalPriceText, item.discountedPrice)
+            else -> LineItemDescription(item.totalPriceText)
         }
         if (item.deposit != null) {
             Text(
