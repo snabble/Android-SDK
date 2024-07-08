@@ -5,7 +5,6 @@ import android.os.Looper
 import android.os.SystemClock
 import io.snabble.sdk.Project
 import io.snabble.sdk.Shop
-import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.events.data.Event
@@ -18,6 +17,7 @@ import io.snabble.sdk.events.data.payload.PayloadLog
 import io.snabble.sdk.events.data.payload.PayloadProductNotFound
 import io.snabble.sdk.events.data.payload.PayloadSessionEnd
 import io.snabble.sdk.events.data.payload.PayloadSessionStart
+import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
 import io.snabble.sdk.utils.DateUtils
@@ -67,7 +67,7 @@ class Events internal constructor(
                 if (isSameCartWithNewId) {
                     val payloadSessionEnd = PayloadSessionEnd(session = cartId)
                     post(payloadSessionEnd, false)
-                    cartId = cart?.id
+                    cartId = cart.id
                     hasSentSessionStart = false
                 }
             }
