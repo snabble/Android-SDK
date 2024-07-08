@@ -29,66 +29,57 @@ internal fun QuantityField(
     onQuantityChanged: (Int) -> Unit
 ) {
 
-    item.quantityText?.let {
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .then(modifier)
+    Box(
+        modifier = Modifier
+            .fillMaxHeight()
+            .then(modifier)
+    ) {
+        Row(
+            modifier = Modifier.height(38.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(3.dp)
         ) {
-            Row(
-                modifier = Modifier.height(38.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(3.dp)
-            ) {
-                OutlinedIconButton(
-                    modifier = Modifier.size(36.dp),
-                    border = BorderStroke(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.33f)
-                    ),
-                    onClick = {
-                        item.item?.let {
-                            onQuantityChanged(it.getQuantityMethod() - 1)
+            OutlinedIconButton(
+                modifier = Modifier.size(36.dp),
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.33f)
+                ),
+                onClick = { onQuantityChanged(item.item.getQuantityMethod() - 1) }) {
+                Icon(
+                    painter = painterResource(
+                        id = when (item.item.quantity) {
+                            1 -> R.drawable.snabble_ic_delete
+                            else -> R.drawable.snabble_ic_minus
                         }
-                    }) {
-                    Icon(
-                        painter = painterResource(
-                            id = when (item.item?.quantity) {
-                                1 -> R.drawable.snabble_ic_delete
-                                else -> R.drawable.snabble_ic_minus
-                            }
-                        ),
-                        contentDescription = stringResource(
-                            id = R.string.Snabble_Shoppingcart_Accessibility_decreaseQuantity
-                        ),
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-                Text(
-                    modifier = Modifier.widthIn(min = 36.dp),
-                    text = it,
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center
+                    ),
+                    contentDescription = stringResource(
+                        id = R.string.Snabble_Shoppingcart_Accessibility_decreaseQuantity
+                    ),
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
-                OutlinedIconButton(
-                    modifier = Modifier.size(36.dp),
-                    border = BorderStroke(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.33f)
+            }
+            Text(
+                modifier = Modifier.widthIn(min = 36.dp),
+                text = item.quantityText,
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            OutlinedIconButton(
+                modifier = Modifier.size(36.dp),
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.33f)
+                ),
+                onClick = { onQuantityChanged(item.item.getQuantityMethod() + 1) }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.snabble_ic_add),
+                    contentDescription = stringResource(
+                        id = R.string.Snabble_Shoppingcart_Accessibility_increaseQuantity
                     ),
-                    onClick = {
-                        item.item?.let {
-                            onQuantityChanged(it.getQuantityMethod() + 1)
-                        }
-                    }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.snabble_ic_add),
-                        contentDescription = stringResource(
-                            id = R.string.Snabble_Shoppingcart_Accessibility_increaseQuantity
-                        ),
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
-                }
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
             }
         }
     }

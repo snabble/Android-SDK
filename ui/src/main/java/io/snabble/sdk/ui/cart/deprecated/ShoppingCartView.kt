@@ -51,12 +51,12 @@ class ShoppingCartView : FrameLayout {
     private var isRegistered = false
 
     private val shoppingCartListener: ShoppingCartListener = object : SimpleShoppingCartListener() {
-        override fun onChanged(list: ShoppingCart?) {
+        override fun onChanged(cart: ShoppingCart) {
             swipeRefreshLayout.isRefreshing = false
             update()
         }
 
-        override fun onCheckoutLimitReached(list: ShoppingCart?) {
+        override fun onCheckoutLimitReached(cart: ShoppingCart) {
             alertDialog?.dismiss()
 
             project?.let {
@@ -75,7 +75,7 @@ class ShoppingCartView : FrameLayout {
             }
         }
 
-        override fun onOnlinePaymentLimitReached(list: ShoppingCart?) {
+        override fun onOnlinePaymentLimitReached(cart: ShoppingCart) {
             alertDialog?.dismiss()
             project?.let {
 
@@ -93,7 +93,7 @@ class ShoppingCartView : FrameLayout {
             }
         }
 
-        override fun onViolationDetected(violations: List<ViolationNotification?>) {
+        override fun onViolationDetected(violations: List<ViolationNotification>) {
             cart?.let {
                 violations.showNotificationOnce(context, it)
             }

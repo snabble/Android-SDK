@@ -71,25 +71,25 @@ class ScannerBottomSheetView @JvmOverloads constructor(
             value?.addListener(this)
         }
 
-    override fun onItemAdded(list: ShoppingCart?, item: ShoppingCart.Item?) {
-        onItemsChangedListener.forEach { it.invoke(requireNotNull(cart)) }
+    override fun onItemAdded(cart: ShoppingCart, item: ShoppingCart.Item) {
+        onItemsChangedListener.forEach { it.invoke(requireNotNull(this.cart)) }
     }
 
-    override fun onQuantityChanged(list: ShoppingCart?, item: ShoppingCart.Item?) {}
+    override fun onQuantityChanged(cart: ShoppingCart, item: ShoppingCart.Item) {}
 
-    override fun onCleared(list: ShoppingCart?) {
-        onItemsChangedListener.forEach { it.invoke(requireNotNull(cart)) }
+    override fun onCleared(cart: ShoppingCart) {
+        onItemsChangedListener.forEach { it.invoke(requireNotNull(this.cart)) }
     }
 
-    override fun onItemRemoved(list: ShoppingCart?, item: ShoppingCart.Item?, pos: Int) {
-        onItemsChangedListener.forEach { it.invoke(requireNotNull(cart)) }
+    override fun onItemRemoved(cart: ShoppingCart, item: ShoppingCart.Item, pos: Int) {
+        onItemsChangedListener.forEach { it.invoke(requireNotNull(this.cart)) }
     }
 
-    override fun onProductsUpdated(list: ShoppingCart?) {}
-    override fun onPricesUpdated(list: ShoppingCart?) {}
-    override fun onCheckoutLimitReached(list: ShoppingCart?) {}
-    override fun onOnlinePaymentLimitReached(list: ShoppingCart?) {}
-    override fun onTaxationChanged(list: ShoppingCart?, taxation: Taxation?) {}
-    override fun onViolationDetected(violations: List<ViolationNotification?>) {}
-    override fun onCartDataChanged(list: ShoppingCart?) {}
+    override fun onProductsUpdated(cart: ShoppingCart) {}
+    override fun onPricesUpdated(cart: ShoppingCart) {}
+    override fun onCheckoutLimitReached(cart: ShoppingCart) {}
+    override fun onOnlinePaymentLimitReached(cart: ShoppingCart) {}
+    override fun onTaxationChanged(cart: ShoppingCart, taxation: Taxation) {}
+    override fun onViolationDetected(violations: List<ViolationNotification>) {}
+    override fun onCartDataChanged(cart: ShoppingCart) {}
 }

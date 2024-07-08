@@ -111,7 +111,6 @@ enum class LineItemType {
     @SerializedName("default") DEFAULT,
     @SerializedName("deposit") DEPOSIT,
     @SerializedName("discount") DISCOUNT,
-    @SerializedName("giveaway") GIVEAWAY,
     @SerializedName("coupon") COUPON
 }
 
@@ -221,25 +220,26 @@ data class Violation(
 
 data class LineItem(
     val id: String? = null,
-    val refersTo: String? = null,
+    val amount: Int = 0,
     @SerializedName("couponID")
     val couponId: String? = null,
-    val sku: String? = null,
-    val name: String? = null,
     val discountID: String? = null,
-    val discountType: String? = null,
     val discountRuleID: String? = null,
-    val scannedCode: String? = null,
-    val amount: Int = 0,
+    val discountType: String? = null,
+    val listPrice: Int = 0,
+    val name: String? = null,
     val price: Int = 0,
+    val priceModifiers: List<PriceModifier>? = null,
+    val redeemed: Boolean = false,
+    val refersTo: String? = null,
+    val referenceUnit: String? = null,
+    val scannedCode: String? = null,
+    val sku: String? = null,
+    val totalPrice: Int = 0,
+    val type: LineItemType? = null,
     val units: Int? = null,
     val weight: Int? = null,
     val weightUnit: String? = null,
-    val totalPrice: Int = 0,
-    val type: LineItemType? = null,
-    val priceModifiers: List<PriceModifier>? = null,
-    val redeemed: Boolean = false,
-    val listPrice: Int = 0,
 )
 
 data class PriceModifier(

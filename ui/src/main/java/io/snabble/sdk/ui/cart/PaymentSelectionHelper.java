@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LiveData;
@@ -68,7 +69,7 @@ public class PaymentSelectionHelper {
     private final ShoppingCartListener shoppingCartListener =
             new SimpleShoppingCartListener() {
                 @Override
-                public void onChanged(ShoppingCart list) {
+                public void onChanged(@NonNull ShoppingCart cart) {
                     update();
                 }
             };

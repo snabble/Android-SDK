@@ -4,6 +4,5 @@ import androidx.annotation.RestrictTo
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 data class BackendCartCustomer(
-    val loyaltyCard: String? = null
+    val loyaltyCard: String
 )
-

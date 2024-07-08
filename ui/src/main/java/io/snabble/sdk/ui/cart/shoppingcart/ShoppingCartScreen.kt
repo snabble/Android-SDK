@@ -1,13 +1,16 @@
 package io.snabble.sdk.ui.cart.shoppingcart
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.CartDiscountWidget
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.model.CartDiscountItem
@@ -18,10 +21,9 @@ import io.snabble.sdk.ui.utils.ThemeWrapper
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ShoppingCartScreen(
-    viewModel: ShoppingCartViewModel = ShoppingCartViewModel(),
+    viewModel: ShoppingCartViewModel = viewModel(),
     onItemDeleted: (item: ShoppingCart.Item, index: Int) -> Unit
 ) {
-
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
     ThemeWrapper {
         LazyColumn {
@@ -31,15 +33,18 @@ fun ShoppingCartScreen(
                         DeletableProduct(
                             modifier = Modifier.animateItemPlacement(),
                             item = cartItem,
-                            onItemDeleted = { shoppingCartItem ->
+                            onItemDeleted = {
                                 viewModel.onEvent(
                                     RemoveItem(
-                                        item = shoppingCartItem,
+                                        item = cartItem.item,
                                         onSuccess = { index ->
-                                            onItemDeleted(shoppingCartItem, index)
+                                            onItemDeleted(cartItem.item, index)
                                         }
                                     )
                                 )
+                            },
+                            onQuantityChanged = { quantity ->
+                                viewModel.onEvent(UpdateQuantity(cartItem.item, quantity))
                             }
                         )
                         HorizontalDivider()
@@ -47,7 +52,9 @@ fun ShoppingCartScreen(
 
                     is CartDiscountItem -> {
                         CartDiscountWidget(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(MaterialTheme.colorScheme.background),
                             item = cartItem
                         )
                         HorizontalDivider()

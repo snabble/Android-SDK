@@ -14,5 +14,6 @@ internal fun LineItemDescription(priceText: String?) {
         overflow = TextOverflow.Ellipsis,
         style = MaterialTheme.typography.bodySmall,
         fontWeight = Bold,
+        color = MaterialTheme.colorScheme.onSurface
     )
 }

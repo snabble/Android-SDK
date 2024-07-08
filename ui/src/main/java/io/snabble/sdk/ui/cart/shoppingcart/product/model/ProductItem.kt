@@ -2,6 +2,7 @@ package io.snabble.sdk.ui.cart.shoppingcart.product.model
 
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.cart.shoppingcart.CartItem
+import io.snabble.sdk.ui.cart.shoppingcart.convertPriceModifier
 
 internal data class ProductItem(
     override val item: ShoppingCart.Item,
@@ -10,12 +11,14 @@ internal data class ProductItem(
     val name: String? = null,
     val discounts: List<DiscountItem> = mutableListOf(),
     val deposit: DepositItem? = null,
-    val discountPrice: String? = null,
+    val discountedPrice: String? = null,
+    //Displays the price without any deposits, etc. applied
     val priceText: String? = null,
-    val listPrice: Int = 0,
-    val totalPrice: String? = null,
+    //Displays the total price with deposits, etc. applied
+    val totalPriceText: String? = null,
+    val totalPrice: Int = 0,
     val isAgeRestricted: Boolean = false,
-    val manualDiscountApplied: Boolean = false,
+    val isManualDiscountApplied: Boolean = false,
     val editable: Boolean = false,
     val quantityText: String,
     val unit: String,
@@ -23,12 +26,24 @@ internal data class ProductItem(
     val minimumAge: Int = 0
 ) : CartItem {
 
-    fun getTotalPrice(): Int {
-        return (listPrice * quantity) + (deposit?.depositPrice ?: 0)
+    fun calculateTotalPrice(): Int {
+        val priceModifiers = item.lineItem?.priceModifiers
+        return when {
+            !priceModifiers.isNullOrEmpty() -> {
+                val totalModifiedPrices = priceModifiers.sumOf {
+                    it.convertPriceModifier(quantity, unit, item.lineItem?.referenceUnit)
+                }
+                totalPrice - totalModifiedPrices.intValueExact()+ (deposit?.depositPrice ?: 0)
+            }
+
+            else -> {
+                totalPrice + (deposit?.depositPrice ?: 0)
+            }
+        }
     }
 
-    fun getDiscountPrice(): Int {
+    fun getPriceWithDiscountsApplied(): Int {
         val discountPrice = discounts.sumOf { it.discountValue }
-        return (listPrice * quantity) + (deposit?.depositPrice ?: 0) + discountPrice
+        return (totalPrice + (deposit?.depositPrice ?: 0)) + discountPrice
     }
 }

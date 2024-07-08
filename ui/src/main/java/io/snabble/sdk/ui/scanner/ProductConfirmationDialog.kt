@@ -121,7 +121,7 @@ interface ProductConfirmationDialog {
         // syncs the quantity property with the cart item and updates the addToCartButtonText
         private val quantityObserver = Observer<Int?> {
             it?.let {
-                cartItem.setQuantityMethod(it)
+                cartItem.updateQuantity(it)
             }
             val existingQuantity =
                 shoppingCart.getExistingMergeableProduct(cartItem.product)?.effectiveQuantity
@@ -155,7 +155,7 @@ interface ProductConfirmationDialog {
             updatePrice()
             updateButtons()
             appliedCoupon.observeForever {
-                cartItem.setCouponMethod(it)
+                cartItem.addManualCoupon(it)
                 updatePrice()
             }
         }
@@ -349,7 +349,7 @@ interface ProductConfirmationDialog {
                 shoppingCart.add(cartItem)
             }
             if (cartItem.product?.type == Product.Type.UserWeighed) {
-                cartItem.setQuantityMethod(q)
+                cartItem.updateQuantity(q)
             }
             shoppingCart.updatePrices(false)
 

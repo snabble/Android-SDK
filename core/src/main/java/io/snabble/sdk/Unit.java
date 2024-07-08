@@ -1,5 +1,7 @@
 package io.snabble.sdk;
 
+import androidx.annotation.Nullable;
+
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
@@ -51,7 +53,7 @@ public enum Unit {
 
     /**
      * Returns a unit from it's string representation.
-     *
+     * <p>
      * E.g. "mm" -> Unit.MILLIMETER
      */
     public static Unit fromString(String value) {
@@ -68,7 +70,7 @@ public enum Unit {
 
     /**
      * Returns the units unique identifier.
-     *
+     * <p>
      * E.g. "mm" -> Unit.MILLIMETER
      */
     public String getId() {
@@ -84,7 +86,7 @@ public enum Unit {
 
     /**
      * Gets the dimension (group of units).
-     *
+     * <p>
      * E.g. Dimension.DISTANCE for MILLIMETER, CENTIMETER and so on.
      */
     public Dimension getDimension() {
@@ -93,7 +95,7 @@ public enum Unit {
 
     /**
      * Gets the fractional unit of a given decimal place.
-     *
+     * <p>
      * E.g. 0.002m -> 2mm
      */
     public Unit getFractionalUnit(int decimal) {
@@ -102,7 +104,7 @@ public enum Unit {
         }
 
         for (Conversion conversion : conversions) {
-            if (conversion.from == this && conversion.factor == (int)Math.pow(10, decimal)) {
+            if (conversion.from == this && conversion.factor == (int) Math.pow(10, decimal)) {
                 return conversion.to;
             }
         }
@@ -192,7 +194,7 @@ public enum Unit {
 
     /**
      * Converts a given value from one unit to another.
-     *
+     * <p>
      * Returns the same value if a conversion is not possible. (e.g. KILOGRAM -> MILLIMETER)
      */
     public static BigDecimal convert(BigDecimal value, Unit from, Unit to) {
@@ -208,5 +210,17 @@ public enum Unit {
         Logger.d("Unsupported conversion: %s -> %s", from.toString(), to.toString());
 
         return value;
+    }
+
+    static public int getConversionFactor(@Nullable String weightedUnit, @Nullable String referencedUnit) {
+        if (weightedUnit == null || referencedUnit == null) return 1;
+        final Unit to = Unit.fromString(weightedUnit);
+        final Unit from = Unit.fromString(referencedUnit);
+        for (Conversion conversion : conversions) {
+            if (conversion.from == from && conversion.to == to) {
+                return conversion.factor;
+            }
+        }
+        return 1;
     }
 }

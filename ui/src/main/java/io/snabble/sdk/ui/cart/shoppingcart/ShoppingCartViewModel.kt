@@ -6,7 +6,6 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.checkout.LineItemType
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.shoppingcart.data.item.ItemType
-import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.model.CartDiscountItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DepositItem
@@ -25,18 +24,16 @@ class ShoppingCartViewModel : ViewModel() {
     private lateinit var cachedCart: ShoppingCart
     private lateinit var priceFormatter: PriceFormatter
 
-    private val shoppingCartListener: ShoppingCartListener = object : SimpleShoppingCartListener() {
-        override fun onChanged(list: ShoppingCart?) {
-            list?.let {
-                updateUiState(list)
-            }
+    private val simpleShoppingCartListener = object : SimpleShoppingCartListener() {
+        override fun onChanged(cart: ShoppingCart) {
+            updateUiState(cart)
         }
     }
 
     init {
         val project = Snabble.checkedInProject.value
         val cart = Snabble.checkedInProject.value?.shoppingCart
-        cart?.addListener(shoppingCartListener)
+        cart?.addListener(simpleShoppingCartListener)
         project?.let {
             priceFormatter = PriceFormatter(it)
             updateUiState(it.shoppingCart)
@@ -46,17 +43,22 @@ class ShoppingCartViewModel : ViewModel() {
     fun onEvent(event: Event) {
         when (event) {
             is RemoveItem -> removeItemFromCart(event.item, event.onSuccess)
+            is UpdateQuantity -> updateQuantity(event.item, event.quantity)
         }
     }
 
-    private fun removeItemFromCart(item: ShoppingCart.Item?, onSuccess: (index: Int) -> kotlin.Unit) {
+    private fun removeItemFromCart(item: ShoppingCart.Item?, onSuccess: (index: Int) -> Unit) {
         val index = cachedCart.indexOf(item)
         if (index != -1) {
             cachedCart.remove(index)
-            updateUiState(cachedCart)
             Telemetry.event(Telemetry.Event.DeletedFromCart, item?.product)
             onSuccess(index)
         }
+    }
+
+    private fun updateQuantity(item: ShoppingCart.Item, quantity: Int) {
+        item.updateQuantity(quantity)
+        Telemetry.event(Telemetry.Event.CartAmountChanged, item.product)
     }
 
     private fun updateUiState(cart: ShoppingCart) {
@@ -79,16 +81,12 @@ class ShoppingCartViewModel : ViewModel() {
         cartItems.addCartDiscount(cartDiscount)
 
         cartItems.updatePrices()
-        cartItems.sort()
+        cartItems.sortCartDiscountsToBottom()
 
-        _uiState.update {
-            it.copy(
-                items = cartItems,
-            )
-        }
+        _uiState.update { it.copy(items = cartItems) }
     }
 
-    private fun MutableList<CartItem>.sort() {
+    private fun MutableList<CartItem>.sortCartDiscountsToBottom() {
         sortBy { it.item.displayName }
         sortWith(
             compareBy {
@@ -100,29 +98,31 @@ class ShoppingCartViewModel : ViewModel() {
         )
     }
 
-    private fun MutableList<CartItem>.updatePrices() {
-        val modifiedItem = mutableListOf<CartItem>()
-        with(iterator()) {
-            forEach {
-                if (it is ProductItem) {
-                    remove()
-                    modifiedItem.add(
-                        it.copy(
-                            totalPrice = priceFormatter.format(it.getTotalPrice()),
-                            discountPrice = priceFormatter.format(it.getDiscountPrice())
-                        )
-                    )
-                }
+    private fun MutableList<CartItem>.updatePrices() = replaceAll { item ->
+        when {
+            item is ProductItem -> {
+                // Since the total price can be null as we invalidate the online prices,'
+                // we need to use the price text instead to display the product price without an changed instead
+                val price = item.calculateTotalPrice()
+                val priceText = if (price == 0) item.priceText else priceFormatter.format(price)
+
+                item.copy(
+                    totalPriceText = priceText,
+                    discountedPrice = when {
+                        item.discounts.isNotEmpty() -> priceFormatter.format(item.getPriceWithDiscountsApplied())
+                        else -> null
+                    }
+                )
             }
+
+            else -> item
         }
-        addAll(modifiedItem)
     }
 
     private fun MutableList<CartItem>.addProducts(products: List<ShoppingCart.Item>) {
         val hasAnyProductAnImage = products.any { !it.product?.imageUrl.isNullOrEmpty() }
-        products.forEach { item: ShoppingCart.Item? ->
-            item ?: return@forEach
-            add(
+        addAll(
+            products.map { item ->
                 ProductItem(
                     imageUrl = item.product?.imageUrl,
                     showPlaceHolder = hasAnyProductAnImage,
@@ -132,39 +132,42 @@ class ShoppingCartViewModel : ViewModel() {
                     quantity = item.getQuantityMethod(),
                     quantityText = item.quantityText,
                     editable = item.isEditable,
-                    manualDiscountApplied = item.isManualCouponApplied,
+                    isManualDiscountApplied = item.isManualCouponApplied,
                     isAgeRestricted = item.isAgeRestricted,
                     minimumAge = item.minimumAge,
                     item = item,
-                    listPrice = item.lineItem?.listPrice ?: 0
+                    totalPrice = item.lineItem?.totalPrice ?: 0
                 )
-            )
-        }
+            }
+        )
     }
 
-    private fun MutableList<CartItem>.addPriceModifiersAsDiscountsProducts() {
-        val modifiedItem = mutableListOf<CartItem>()
-        with(iterator()) {
-            forEach { item ->
-                if (item is ProductItem) {
-                    remove()
-                    val discounts = mutableListOf<DiscountItem>()
-                    item.item.lineItem?.priceModifiers?.forEach {
-                        discounts.add(
-                            DiscountItem(
-                                name = it.name ?: "",
-                                discount = priceFormatter.format(it.price * item.quantity),
-                                discountValue = it.price * item.quantity
-                            )
+    private fun MutableList<CartItem>.addPriceModifiersAsDiscountsProducts() = replaceAll { item ->
+        when {
+            item is ProductItem && item.item.lineItem?.priceModifiers?.isNotEmpty() == true -> {
+                val discounts = mutableListOf<DiscountItem>()
+                item.item.lineItem?.priceModifiers?.forEach { modifier ->
+                    val name = modifier.name ?: return@forEach
+                    val modifiedPrice = modifier.convertPriceModifier(
+                        item.quantity,
+                        item.item.lineItem?.weightUnit,
+                        item.item.lineItem?.referenceUnit
+                    ).intValueExact()
+                    discounts.add(
+                        DiscountItem(
+                            name = name,
+                            discount = priceFormatter.format(
+                                modifiedPrice
+                            ),
+                            discountValue = 0
                         )
-                    }
-                    modifiedItem.add(
-                        item.copy(discounts = item.discounts.plus(discounts))
                     )
                 }
+                item.copy(discounts = item.discounts.plus(discounts))
             }
+
+            else -> item
         }
-        addAll(modifiedItem)
     }
 
     private fun MutableList<CartItem>.addDiscountsToProducts(discounts: List<ShoppingCart.Item>) {
@@ -227,6 +230,11 @@ sealed interface Event
 internal data class RemoveItem(
     val item: ShoppingCart.Item,
     val onSuccess: (index: Int) -> Unit
+) : Event
+
+internal data class UpdateQuantity(
+    val item: ShoppingCart.Item,
+    val quantity: Int
 ) : Event
 
 data class UiState(

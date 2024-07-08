@@ -587,13 +587,13 @@ class ShoppingCart(
         val loyaltyCardId = project?.customerCardId
 
         val backendCart = BackendCart(
-            session = id,
-            shopId = Snabble.checkedInShop?.id ?: "unknown",
-            clientId = userPreferences.clientId,
             appUserId = userPreferences.appUser?.id,
+            clientId = userPreferences.clientId,
             customer = if (loyaltyCardId != null) BackendCartCustomer(loyaltyCardId) else null,
+            items = backendCartItems(),
             requiredInformation = mutableListOf(),
-            items = backendCartItems()
+            session = id,
+            shopId = Snabble.checkedInShop?.id ?: "unknown"
         )
 
         if (data.taxation != Taxation.UNDECIDED) {
@@ -601,7 +601,7 @@ class ShoppingCart(
                 id = "taxation",
                 value = data.taxation.value
             )
-            backendCart.requiredInformation?.add(requiredInformation)
+            backendCart.requiredInformation.add(requiredInformation)
         }
 
         return backendCart
@@ -807,7 +807,7 @@ class ShoppingCart(
         }
     }
 
-    private fun notifyItemRemoved(list: ShoppingCart?, item: Item, pos: Int) {
+    private fun notifyItemRemoved(list: ShoppingCart, item: Item, pos: Int) {
         updateTimestamp()
         Dispatch.mainThread {
             listeners?.forEach { listener ->
@@ -835,7 +835,7 @@ class ShoppingCart(
         }
     }
 
-    fun notifyPriceUpdate(list: ShoppingCart?) {
+    fun notifyPriceUpdate(list: ShoppingCart) {
         Dispatch.mainThread {
             listeners?.forEach { listener ->
                 listener.onPricesUpdated(list)
@@ -994,7 +994,7 @@ class ShoppingCart(
         /**
          * Associate a user applied coupon with this item. E.g. manual price reductions.
          */
-        fun setCouponMethod(coupon: Coupon?) {
+        fun addManualCoupon(coupon: Coupon?) {
             if (coupon == null) {
                 this.coupon = null;
                 return;
@@ -1043,7 +1043,7 @@ class ShoppingCart(
         /**
          * Set the quantity of the cart item
          */
-        fun setQuantityMethod(quantity: Int) {
+        fun updateQuantity(quantity: Int) {
             if (scannedCode?.hasEmbeddedData() == true && scannedCode?.embeddedData != 0) {
                 return
             }
@@ -1054,7 +1054,7 @@ class ShoppingCart(
                 cart?.let { currentCart ->
                     if (quantity == 0) {
                         currentCart.data.items.remove(this)
-                        currentCart.notifyItemRemoved(cart, this, index)
+                        currentCart.notifyItemRemoved(currentCart, this, index)
                     } else {
                         currentCart.notifyQuantityChanged(cart, this)
                     }
@@ -1194,12 +1194,6 @@ class ShoppingCart(
          */
         val isDiscount: Boolean
             get() = lineItem != null && lineItem?.type == LineItemType.DISCOUNT
-
-        /**
-         * Returns true if the item should be displayed as a giveaway
-         */
-        val isGiveaway: Boolean
-            get() = lineItem != null && lineItem?.type == LineItemType.GIVEAWAY
 
         /**
          * Gets the price after applying all price modifiers

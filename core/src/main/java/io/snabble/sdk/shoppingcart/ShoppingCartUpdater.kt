@@ -132,18 +132,13 @@ internal class ShoppingCartUpdater(
 
         if (!cartItemMatch(lineItems)) return
 
-        var discounts = 0
-
         lineItems.forEach { lineItem ->
             val item = cart.getByItemId(lineItem.id)
             if (item != null) {
                 val updateIsSuccess = updateItem(item, lineItem, products)
                 if (!updateIsSuccess) return
             } else {
-                discounts += if (lineItem.type == LineItemType.DISCOUNT) {
-                    lineItem.totalPrice
-                } else {
-                    insertLineItemIfNoMatchingCoupon(lineItem)
+                if (lineItem.type != LineItemType.DISCOUNT) {
                     applyModifiedPrice(lineItem)
                 }
             }
@@ -155,9 +150,9 @@ internal class ShoppingCartUpdater(
 
         addCartDiscounts(discountItems.filter { it.discountType == "cart" })
 
-        couponsItems.forEach { addDiscountLineItem(it) }
-        depositItems.forEach { addDiscountLineItem(it) }
-        discountItems.filter { it.discountType != "cart" }.forEach { addDiscountLineItem(it) }
+        couponsItems.forEach { addLineItem(it) }
+        depositItems.forEach { addLineItem(it) }
+        discountItems.filter { it.discountType != "cart" }.forEach { addLineItem(it) }
 
         setOnlinePrice(price)
         successfulModCount = modCount
@@ -194,14 +189,6 @@ internal class ShoppingCartUpdater(
         }
     }
 
-    private fun insertLineItemIfNoMatchingCoupon(lineItem: LineItem) {
-        val hasMatchingCoupon = project.coupons.any { it.id == lineItem.couponId }
-
-        if (!hasMatchingCoupon) {
-            cart.insert(cart.newItem(lineItem), cart.size(), false)
-        }
-    }
-
     private fun applyModifiedPrice(lineItem: LineItem): Int {
         if (lineItem.type == LineItemType.COUPON) {
             val refersTo = cart.getByItemId(lineItem.refersTo)
@@ -219,20 +206,20 @@ internal class ShoppingCartUpdater(
         }
     }
 
-    private fun addDiscountLineItem(lineItem: LineItem) {
+    private fun addLineItem(lineItem: LineItem) {
         cart.insert(cart.newItem(lineItem), cart.size(), false)
     }
 
     private fun addCartDiscountLineItem(discounts: Int, cartDiscounts: List<String>) {
         if (discounts != 0) {
             val lineItem = LineItem(
-                type = LineItemType.DISCOUNT,
-                amount = 1,
-                price = discounts,
                 id = UUID.randomUUID().toString(),
-                totalPrice = discounts,
+                amount = 1,
                 discountType = "cart",
-                name = cartDiscounts.first()
+                name = cartDiscounts.first(),
+                price = discounts,
+                totalPrice = discounts,
+                type = LineItemType.DISCOUNT
             )
             cart.insert(cart.newItem(lineItem), cart.size(), false)
         }

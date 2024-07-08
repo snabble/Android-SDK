@@ -40,7 +40,7 @@ internal fun DiscountDescribtion(title: String, description: String, discount: S
                 textAlign = TextAlign.End
             )
             Image(
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(18.dp),
                 painter = painterResource(R.drawable.discount_badge),
                 contentDescription = ""
             )

@@ -36,6 +36,31 @@ public class ShoppingCartTest extends SnabbleSdkTest {
         }
     }
 
+    private LineItem createTestLineItem(int price, int totalPrice, int amount) {
+        return new LineItem(
+                null,
+                amount,
+                null,
+                null,
+                null,
+                null,
+                0,
+                null,
+                price,
+                null,
+                false,
+                null,
+                null,
+                null,
+                null,
+                totalPrice,
+                null,
+                null,
+                null,
+                null
+        );
+    }
+
     private void add(TestProduct testProduct) {
         cart.add(testProduct.cartItem());
     }
@@ -183,220 +208,55 @@ public class ShoppingCartTest extends SnabbleSdkTest {
     public void testLineItems() {
         ShoppingCart.Item item = simpleProduct1.cartItem();
         LineItem lineItem;
-        lineItem = new LineItem(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                0,
-                100,
-                null,
-                null,
-                null,
-                100,
-                null,
-                null,
-                false,
-                0
-
-        );
+        lineItem = createTestLineItem(100, 100, 0);
         item.setLineItem(lineItem);
         assertStrEquals(item.getQuantityText(), "1");
         assertStrEquals(item.getFullPriceText(), "1,00 €");
 
         item = simpleProduct1.cartItem();
         item.setQuantity(2);
-        lineItem = new LineItem(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                2,
-                100,
-                null,
-                null,
-                null,
-                200,
-                null,
-                null,
-                false,
-                0
-
-        );
+        lineItem = createTestLineItem(100, 200, 2);
         item.setLineItem(lineItem);
         assertStrEquals(item.getQuantityText(), "2");
         assertStrEquals(item.getFullPriceText(), "2 \u00D7 1,00 € = 2,00 €");
 
         item = preWeighedProduct.cartItem();
-        lineItem = new LineItem(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                1,
-                1000,
-                null,
-                null,
-                null,
-                154,
-                null,
-                null,
-                false,
-                0
-
-        );
+        lineItem = createTestLineItem(1000, 154, 1);
         item.setLineItem(lineItem);
         assertStrEquals(item.getQuantityText(), "154g");
         assertStrEquals(item.getFullPriceText(), "154g \u00D7 10,00 € / kg = 1,54 €");
 
         item = preWeighedProduct.cartItem();
-        lineItem = new LineItem(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                1,
-                1000,
-                null,
-                null,
-                null,
-                1000,
-                null,
-                null,
-                false,
-                0
-
-        );
+        lineItem = createTestLineItem(1000, 1000, 1);
         item.setLineItem(lineItem);
         assertStrEquals(item.getQuantityText(), "154g");
         assertStrEquals(item.getFullPriceText(), "154g \u00D7 10,00 € / kg = 10,00 €");
 
         item = userWeighedProduct.cartItem();
         item.setQuantity(500);
-        lineItem = new LineItem(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                500,
-                1000,
-                null,
-                null,
-                null,
-                500,
-                null,
-                null,
-                false,
-                0
+        lineItem = createTestLineItem(1000, 500, 500);
 
-        );
         item.setLineItem(lineItem);
         assertStrEquals(item.getQuantityText(), "500g");
         assertStrEquals(item.getFullPriceText(), "500g \u00D7 10,00 € / kg = 5,00 €");
 
         item = pieceProduct.cartItem();
-        lineItem = new LineItem(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                1,
-                10,
-                null,
-                null,
-                null,
-                60,
-                null,
-                null,
-                false,
-                0
+        lineItem = createTestLineItem(10, 60, 1);
 
-        );
         item.setLineItem(lineItem);
         assertStrEquals(item.getQuantityText(), "1");
         assertStrEquals(item.getFullPriceText(), "0,60 €");
 
         item = priceProduct.cartItem();
-        lineItem = new LineItem(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                1,
-                100,
-                null,
-                null,
-                null,
-                100,
-                null,
-                null,
-                false,
-                0
-
-        );
+        lineItem = createTestLineItem(100, 100, 1);
         item.setLineItem(lineItem);
         assertStrEquals(item.getQuantityText(), "1");
         assertStrEquals(item.getFullPriceText(), "1,00 €");
 
         item = zeroAmountProduct.cartItem();
         item.setQuantity(4);
-        lineItem = new LineItem(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                4,
-                100,
-                null,
-                null,
-                null,
-                400,
-                null,
-                null,
-                false,
-                0
+        lineItem = createTestLineItem(100, 400, 4);
 
-        );
         item.setLineItem(lineItem);
         assertStrEquals(item.getQuantityText(), "4");
         assertStrEquals(item.getFullPriceText(), "4 \u00D7 1,00 € = 4,00 €");

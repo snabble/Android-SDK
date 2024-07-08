@@ -25,17 +25,19 @@ internal fun ProductDescription(modifier: Modifier = Modifier, item: ProductItem
                 overflow = TextOverflow.Ellipsis,
                 softWrap = true,
                 maxLines = 2,
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
         when {
-            item.discounts.isNotEmpty() -> Discountdescription(item.totalPrice, item.discountPrice)
-            else -> LineItemDescription(item.totalPrice)
+            item.discounts.isNotEmpty() -> Discountdescription(item.totalPriceText, item.discountedPrice)
+            else -> LineItemDescription(item.totalPriceText)
         }
         if (item.deposit != null) {
             Text(
                 text = "${item.priceText} + ${item.deposit.depositPriceText} ${item.deposit.depositText}",
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }
