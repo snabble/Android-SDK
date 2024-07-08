@@ -4,24 +4,25 @@ import io.snabble.sdk.Product
 import io.snabble.sdk.ViolationNotification
 import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.utils.GsonHolder
-import java.util.*
+import java.util.UUID
 
 data class ShoppingCartData @JvmOverloads constructor(
-    @JvmField val id: String = UUID.randomUUID().toString(),
-    @JvmField val uuid: String = UUID.randomUUID().toString(),
-    @JvmField val lastModificationTime: Long = 0,
-    @JvmSuppressWildcards @JvmField val items: MutableList<ShoppingCart.Item> = mutableListOf(),
-    @JvmField val violationNotifications: MutableList<ViolationNotification> = mutableListOf(),
-    @JvmField val modCount: Int = 0,
-    @JvmField val addCount: Int = 0,
-    @JvmField val onlineTotalPrice: Int? = null,
-    @JvmSuppressWildcards @JvmField val invalidProducts: List<Product>? = null,
-    @JvmField val taxation: Taxation = Taxation.UNDECIDED,
-    @JvmField val hasRaisedMaxCheckoutLimit: Boolean = false,
-    @JvmField val hasRaisedMaxOnlinePaymentLimit: Boolean = false,
-    @JvmField val invalidDepositReturnVoucher: Boolean = false,
-    @JvmField val backupTimestamp: Long = 0,
+    val id: String = UUID.randomUUID().toString(),
+    val uuid: String = UUID.randomUUID().toString(),
+    val lastModificationTime: Long = 0,
+    val items: MutableList<ShoppingCart.Item> = mutableListOf(),
+    val violationNotifications: MutableList<ViolationNotification> = mutableListOf(),
+    val modCount: Int = 0,
+    val addCount: Int = 0,
+    val onlineTotalPrice: Int? = null,
+    val invalidProducts: List<Product>? = null,
+    val taxation: Taxation = Taxation.UNDECIDED,
+    val hasRaisedMaxCheckoutLimit: Boolean = false,
+    val hasRaisedMaxOnlinePaymentLimit: Boolean = false,
+    val invalidDepositReturnVoucher: Boolean = false,
+    val backupTimestamp: Long = 0,
 ) {
+
     fun applyShoppingCart(shoppingCart: ShoppingCart) {
         items.forEach {
             it.cart = shoppingCart
