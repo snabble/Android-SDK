@@ -28,6 +28,7 @@ import io.snabble.sdk.utils.GsonHolder
 import java.math.BigDecimal
 import java.util.Locale
 import java.util.UUID
+import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.time.Duration.Companion.minutes
 
 /**
@@ -41,7 +42,7 @@ class ShoppingCart(
     private var oldData: ShoppingCartData? = ShoppingCartData()
 
     @Transient
-    private val listeners: MutableList<ShoppingCartListener>? = mutableListOf()
+    private val listeners: MutableList<ShoppingCartListener>? = CopyOnWriteArrayList()
 
     @Transient
     private var updater: ShoppingCartUpdater? = null
@@ -51,17 +52,15 @@ class ShoppingCart(
 
     init {
         updateTimestamp()
-        project?.let {
-            updater = ShoppingCartUpdater(project, this)
-        }
+        updater = project?.let { ShoppingCartUpdater(it, this) }
         priceFormatter = project?.priceFormatter
     }
 
     fun initWithData(data: ShoppingCartData) {
         updateData(data)
         checkForTimeout()
-        updatePrices(false)
-        notifyCartDataChanged(this)
+        updatePrices(debounce = false)
+        notifyCartDataChanged(list = this)
     }
 
     private fun updateData(data: ShoppingCartData) {
@@ -112,7 +111,7 @@ class ShoppingCart(
     /**
      * Insert a cart item into the shopping cart at a specific index
      */
-    fun insert(item: Item, index: Int) = insert(item, index, true)
+    fun insert(item: Item, index: Int) = insert(item, index, update = true)
 
     fun insert(item: Item, index: Int, update: Boolean) {
         val itemIsMerged = insertIfMergeable(item, index, update)
@@ -128,17 +127,17 @@ class ShoppingCart(
             data = data.copy(addCount = addCount.inc(), modCount = modCount.inc())
             generateNewUUID()
             invalidateOnlinePrices()
-            updatePrices(true)
+            updatePrices(debounce = true)
         }
     }
 
     private fun sortCouponsToBottom() {
-        data.items.sortWith(Comparator { o1: Item, o2: Item ->
-            val t1 = o1.type
-            val t2 = o2.type
-            if (t2 == ItemType.COUPON && t1 == ItemType.PRODUCT) {
+        data.items.sortWith(Comparator { item: Item, otherItem: Item ->
+            val itemType = item.type
+            val otherItemType = otherItem.type
+            if (itemType == ItemType.PRODUCT && otherItemType == ItemType.COUPON) {
                 return@Comparator -1
-            } else if (t1 == ItemType.COUPON && t2 == ItemType.PRODUCT) {
+            } else if (itemType == ItemType.COUPON && otherItemType == ItemType.PRODUCT) {
                 return@Comparator 1
             } else {
                 return@Comparator 0
@@ -157,7 +156,7 @@ class ShoppingCart(
             notifyQuantityChanged(this, item)
             if (update) {
                 invalidateOnlinePrices()
-                updatePrices(true)
+                updatePrices(debounce = true)
             }
             true
         } else false
@@ -197,7 +196,7 @@ class ShoppingCart(
         generateNewUUID()
         val removedItem = data.items.removeAt(index)
         checkLimits()
-        updatePrices(size() != 0)
+        updatePrices(debounce = size() != 0)
         invalidateOnlinePrices()
         notifyItemRemoved(this, removedItem, index)
     }
@@ -247,14 +246,13 @@ class ShoppingCart(
      * Restores the cart previously backed up by [.backup]
      */
     fun restore() {
-        val restorableData = oldData ?: return
         if (isRestorable) {
-            data = restorableData
+            oldData?.let { data = it }
             data.applyShoppingCart(this)
             clearBackup()
             checkLimits()
-            updatePrices(false)
-            notifyProductsUpdate(this)
+            updatePrices(debounce = false)
+            notifyProductsUpdate(list = this)
         }
     }
 
@@ -278,8 +276,8 @@ class ShoppingCart(
         )
         generateNewUUID()
         checkLimits()
-        updatePrices(false)
-        notifyCleared(this)
+        updatePrices(debounce = false)
+        notifyCleared(list = this)
     }
 
     var taxation: Taxation
@@ -310,14 +308,14 @@ class ShoppingCart(
     fun updateProducts() {
         val productDatabase = project?.productDatabase
         if (productDatabase?.isUpToDate == true) {
-            data.items.forEach { item ->
-                val product = productDatabase.findByCode(item.scannedCode) ?: return@forEach
-                item.product = product
-
+            data.items.replaceAll { item ->
+                val product: Product? = productDatabase.findByCode(item.scannedCode)
+                item.apply { product?.let { item.product = product } }
             }
+
             notifyProductsUpdate(this)
         }
-        updatePrices(false)
+        updatePrices(debounce = false)
     }
 
     /**
@@ -332,7 +330,6 @@ class ShoppingCart(
 
         // use iterator directly instead of for each loop to avoid
         // ConcurrentModificationException due to modification while looping
-
         val iterator: MutableIterator<Item> = iterator()
         while (iterator.hasNext()) {
             val item = iterator.next()
@@ -360,7 +357,7 @@ class ShoppingCart(
         if (debounce) {
             updater?.dispatchUpdate()
         } else {
-            updater?.update(true)
+            updater?.update(force = true)
         }
     }
 
@@ -414,9 +411,7 @@ class ShoppingCart(
         get() = data.uuid
 
     fun setOnlineTotalPrice(totalPrice: Int) {
-        data = data.copy(
-            onlineTotalPrice = totalPrice
-        )
+        data = data.copy(onlineTotalPrice = totalPrice)
     }
 
     /**
@@ -426,9 +421,7 @@ class ShoppingCart(
         get() = data.onlineTotalPrice != null
 
     fun setInvalidDepositReturnVoucher(invalidDepositReturnVoucher: Boolean) {
-        data = data.copy(
-            invalidDepositReturnVoucher = invalidDepositReturnVoucher
-        )
+        data = data.copy(invalidDepositReturnVoucher = invalidDepositReturnVoucher)
     }
 
     fun isCouponApplied(coupon: Coupon): Boolean = any { it?.coupon?.id == coupon.id }
@@ -444,9 +437,7 @@ class ShoppingCart(
     var invalidProducts: List<Product>?
         get() = data.invalidProducts ?: emptyList()
         set(invalidProducts) {
-            data = data.copy(
-                invalidProducts = invalidProducts
-            )
+            data = data.copy(invalidProducts = invalidProducts)
         }
 
     fun hasInvalidDepositReturnVoucher(): Boolean = data.invalidDepositReturnVoucher
@@ -460,14 +451,7 @@ class ShoppingCart(
     val totalPrice: Int
         get() = data.onlineTotalPrice ?: calculateTotalPrice()
 
-    private fun calculateTotalPrice(): Int {
-        var sum = 0
-        data.items.forEach { item ->
-            sum += item.totalPrice
-        }
-        sum += totalDepositPrice
-        return sum
-    }
+    private fun calculateTotalPrice(): Int = data.items.sumOf { it.totalDepositPrice }
 
     /**
      * Returns the total sum of deposit
@@ -475,16 +459,16 @@ class ShoppingCart(
     val totalDepositPrice: Int
         get() {
             var sum = 0
-            var vPOSsum = 0
+            var vPosSum = 0
             data.items.forEach { item ->
                 if (item.type == ItemType.LINE_ITEM) {
-                    vPOSsum += item.totalDepositPrice
+                    vPosSum += item.totalDepositPrice
                 } else {
                     sum += item.totalDepositPrice
                 }
             }
 
-            return vPOSsum.coerceAtLeast(sum)
+            return vPosSum.coerceAtLeast(sum)
         }
 
     /**
@@ -516,12 +500,12 @@ class ShoppingCart(
     /**
      * Returns true if the shopping cart is over the current set limit
      */
-    fun hasReachedMaxCheckoutLimit(): Boolean = data.hasRaisedMaxCheckoutLimit
+    fun hasReachedMaxCheckoutLimit(): Boolean = data.hasReachedMaxCheckoutLimit
 
     /**
      * Returns true if the shopping cart is over the current set limit for online checkouts
      */
-    fun hasReachedMaxOnlinePaymentLimit(): Boolean = data.hasRaisedMaxOnlinePaymentLimit
+    fun hasReachedMaxOnlinePaymentLimit(): Boolean = data.hasReachedMaxOnlinePaymentLimit
 
     private fun updateTimestamp() {
         data = data.copy(
@@ -534,24 +518,22 @@ class ShoppingCart(
         val maxCheckoutLimit = project?.maxCheckoutLimit ?: 0
         val maxOnlinePaymentLimit = project?.maxOnlinePaymentLimit ?: 0
         if (totalPrice < maxCheckoutLimit) {
-            data = data.copy(
-                hasRaisedMaxCheckoutLimit = false
-            )
+            data = data.copy(hasReachedMaxCheckoutLimit = false)
         }
         if (totalPrice < maxOnlinePaymentLimit) {
-            data = data.copy(hasRaisedMaxOnlinePaymentLimit = false)
+            data = data.copy(hasReachedMaxOnlinePaymentLimit = false)
         }
-        if (!data.hasRaisedMaxCheckoutLimit
+        if (!data.hasReachedMaxCheckoutLimit
             && maxCheckoutLimit > 0
             && totalPrice >= maxCheckoutLimit
         ) {
-            data = data.copy(hasRaisedMaxCheckoutLimit = true)
+            data = data.copy(hasReachedMaxCheckoutLimit = true)
             notifyCheckoutLimitReached(this)
-        } else if (!data.hasRaisedMaxOnlinePaymentLimit
+        } else if (!data.hasReachedMaxOnlinePaymentLimit
             && maxOnlinePaymentLimit > 0
             && totalPrice >= maxOnlinePaymentLimit
         ) {
-            data = data.copy(hasRaisedMaxOnlinePaymentLimit = true)
+            data = data.copy(hasReachedMaxOnlinePaymentLimit = true)
             notifyOnlinePaymentLimitReached(this)
         }
     }
@@ -559,14 +541,7 @@ class ShoppingCart(
     /**
      * Returns the current minimum age required to purchase all items of the shopping cart
      */
-    val minimumAge: Int
-        get() {
-            var minimumAge = 0
-            data.items.forEach { item ->
-                minimumAge = minimumAge.coerceAtLeast(item.minimumAge)
-            }
-            return minimumAge
-        }
+    val minimumAge: Int get() = data.items.maxOf { it.minimumAge }
 
     /**
      * Checks if the provided scanned code is contained inside the shopping cart
@@ -576,6 +551,7 @@ class ShoppingCart(
 
     val availablePaymentMethods: List<PaymentMethodInfo>?
         get() = updater?.lastAvailablePaymentMethods
+
     val isVerifiedOnline: Boolean
         get() = updater?.isUpdated == true
 
@@ -586,35 +562,31 @@ class ShoppingCart(
         val userPreferences = Snabble.userPreferences
         val loyaltyCardId = project?.customerCardId
 
-        val backendCart = BackendCart(
+        val requiredInfo = listOfNotNull(
+            when (data.taxation != Taxation.UNDECIDED) {
+                true -> BackendCartRequiredInformation(id = "taxation", value = data.taxation.value)
+                else -> null
+            }
+        )
+        return BackendCart(
             appUserId = userPreferences.appUser?.id,
             clientId = userPreferences.clientId,
-            customer = if (loyaltyCardId != null) BackendCartCustomer(loyaltyCardId) else null,
-            items = backendCartItems(),
-            requiredInformation = mutableListOf(),
+            customer = loyaltyCardId?.let { BackendCartCustomer(it) },
+            items = createBackendCartItems(),
+            requiredInformation = requiredInfo,
             session = id,
             shopId = Snabble.checkedInShop?.id ?: "unknown"
         )
-
-        if (data.taxation != Taxation.UNDECIDED) {
-            val requiredInformation = BackendCartRequiredInformation(
-                id = "taxation",
-                value = data.taxation.value
-            )
-            backendCart.requiredInformation.add(requiredInformation)
-        }
-
-        return backendCart
     }
 
-    private fun backendCartItems(): MutableList<BackendCartItem> {
+    private fun createBackendCartItems(): MutableList<BackendCartItem> {
         val items: MutableList<BackendCartItem> = mutableListOf()
         forEach { cartItem ->
             when (cartItem?.type) {
                 ItemType.PRODUCT -> {
                     val item = createBackendCartItem(cartItem)
-
                     items.add(item)
+
                     if (cartItem.coupon != null) {
                         // this item id needs to be unique per item or else the
                         // promotion engine on the backend gets confused
@@ -640,7 +612,7 @@ class ShoppingCart(
                     )
                 }
 
-                else -> return@forEach
+                else -> Unit
             }
         }
         return items
@@ -651,7 +623,6 @@ class ShoppingCart(
         val quantity = cartItem.getUnitBasedQuantity()
         val scannedCode = cartItem.scannedCode
         val encodingUnit = getCurrentEncodingUnit(scannedCode, product)
-
         return BackendCartItem(
             id = cartItem.id,
             sku = product?.sku.toString(),
@@ -667,10 +638,7 @@ class ShoppingCart(
     private fun getCurrentEncodingUnit(
         scannedCode: ScannedCode?,
         product: Product?
-    ) = scannedCode?.embeddedUnit ?: product?.getEncodingUnit(
-        scannedCode?.templateName,
-        scannedCode?.lookupCode
-    )
+    ): Unit? = scannedCode?.embeddedUnit ?: product?.getEncodingUnit(scannedCode?.templateName, scannedCode?.lookupCode)
 
     private fun getCurrentUnit(cartItem: Item) = when (cartItem.unit) {
         Unit.PIECE -> cartItem.getEffectiveQuantity(true)
@@ -680,13 +648,11 @@ class ShoppingCart(
     private fun getCurrentPrice(
         cartItem: Item,
         scannedCode: ScannedCode?
-    ) =
-        when {
-            cartItem.unit == Unit.PRICE -> cartItem.localTotalPrice
-            scannedCode?.hasPrice() == true -> scannedCode.price
-            else -> null
-
-        }
+    ): Int? = when {
+        scannedCode?.hasPrice() == true -> scannedCode.price
+        cartItem.unit == Unit.PRICE -> cartItem.localTotalPrice
+        else -> null
+    }
 
     private fun getCurrentWeight(
         cartItem: Item,
@@ -694,7 +660,7 @@ class ShoppingCart(
         quantity: Int
     ) = when {
         cartItem.unit != Unit.PRICE && cartItem.unit != Unit.PIECE && cartItem.unit != null ->
-            cartItem.getEffectiveQuantity(true)
+            cartItem.getEffectiveQuantity(ignoreLineItem = true)
 
         product?.type == Type.UserWeighed -> quantity
         else -> null
@@ -736,26 +702,31 @@ class ShoppingCart(
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun resolveViolations(violations: List<Violation>) {
         violations.forEach { violation ->
-            data.items.reversed().forEach { item ->
-                if (item.coupon == null || item.backendCouponId == null || item.backendCouponId != violation.refersTo) return
+            data.items
+                .filter { it.coupon != null }
+                .filter { it.backendCouponId != null }
+                .filter { it.backendCouponId == violation.refersTo }
+                .reversed()
+                .forEach { item ->
+                    data.items.remove(item)
+                    data = data.copy(modCount = modCount.inc())
 
-                data.items.remove(item)
-                data = data.copy(modCount = modCount.inc())
-                val foundViolation = data.violationNotifications.any { it.refersTo == violation.refersTo }
-                if (!foundViolation) {
-                    data.violationNotifications.add(
-                        ViolationNotification(
-                            item.coupon?.name,
-                            violation.refersTo,
-                            violation.type,
-                            violation.message
+                    val isViolationAlreadyPresent: Boolean =
+                        data.violationNotifications.any { it.refersTo == violation.refersTo }
+                    if (!isViolationAlreadyPresent) {
+                        data.violationNotifications.add(
+                            ViolationNotification(
+                                item.coupon?.name,
+                                violation.refersTo,
+                                violation.type,
+                                violation.message
+                            )
                         )
-                    )
+                    }
                 }
-            }
         }
         notifyViolations()
-        updatePrices(false)
+        updatePrices(debounce = false)
     }
 
     /**
@@ -763,8 +734,7 @@ class ShoppingCart(
      *
      * @param violations the handled ViolationNotifications.
      */
-    fun removeViolationNotification(violations: List<ViolationNotification?>?) {
-        violations ?: return
+    fun removeViolationNotification(violations: List<ViolationNotification>) {
         data.violationNotifications.removeAll(violations)
         data = data.copy(modCount = modCount.inc())
         notifyCartDataChanged(this)
@@ -995,16 +965,11 @@ class ShoppingCart(
          * Associate a user applied coupon with this item. E.g. manual price reductions.
          */
         fun addManualCoupon(coupon: Coupon?) {
-            if (coupon == null) {
-                this.coupon = null;
-                return;
+            if (coupon != null && coupon.type != CouponType.MANUAL) {
+                throw RuntimeException("Only manual coupons can be added")
             }
 
-            if (coupon.type != CouponType.MANUAL) {
-                throw RuntimeException("Only manual coupons can be added");
-            }
-
-            this.coupon = coupon;
+            this.coupon = coupon
         }
 
         /**
@@ -1061,14 +1026,11 @@ class ShoppingCart(
                     currentCart.data = currentCart.data.copy(modCount = currentCart.modCount.inc())
                     currentCart.generateNewUUID()
                     currentCart.invalidateOnlinePrices()
-                    currentCart.updatePrices(true)
+                    currentCart.updatePrices(debounce = true)
                 }
             }
         }
 
-        /**
-         * Returns the [ItemType] of the cart item
-         */
         /**
          * Returns the [ItemType] of the cart item
          */
@@ -1083,9 +1045,6 @@ class ShoppingCart(
                 else -> null
             }
 
-        /**
-         * Returns true if the item is editable by the user
-         */
         /**
          * Returns true if the item is editable by the user
          */
@@ -1110,14 +1069,14 @@ class ShoppingCart(
             }
 
         /**
-         * Returns true if the item can be merged with items that conain the same product and type
+         * Returns true if the item can be merged with items that contain the same product and type
          */
         val isMergeable: Boolean
             get() {
                 val isMergeableOverride = Snabble.isMergeable
-                val isMergeable = isMergeableDefault
-                return isMergeableOverride?.isMergeable(this, isMergeable) ?: isMergeable
+                return isMergeableOverride?.isMergeable(this, isMergeableDefault) ?: isMergeableDefault
             }
+
         private val isMergeableDefault: Boolean
             get() {
                 if (product == null && lineItem != null || coupon != null) return false
@@ -1132,18 +1091,15 @@ class ShoppingCart(
          * Returns the unit associated with the cart item, or null if the cart item has no unit
          */
         val unit: Unit?
-            get() {
-                if (type == ItemType.PRODUCT) {
-                    return scannedCode?.embeddedUnit ?: product?.getEncodingUnit(
-                        scannedCode?.templateName,
-                        scannedCode?.lookupCode
-                    )
-                } else if (type == ItemType.LINE_ITEM) {
-                    if (lineItem?.weightUnit != null) {
-                        return Unit.fromString(lineItem?.weightUnit)
-                    }
+            get() = when (type) {
+                ItemType.PRODUCT -> {
+                    scannedCode?.embeddedUnit
+                        ?: product?.getEncodingUnit(scannedCode?.templateName, scannedCode?.lookupCode)
                 }
-                return null
+
+                ItemType.LINE_ITEM -> lineItem?.weightUnit?.let { Unit.fromString(it) }
+
+                else -> null
             }
 
         /**
@@ -1200,13 +1156,8 @@ class ShoppingCart(
          */
         val modifiedPrice: Int
             get() {
-                var sum = 0
-                lineItem?.priceModifiers?.forEach { priceModifier ->
-                    lineItem?.let {
-                        sum += it.amount * priceModifier.price
-                    }
-                }
-                return sum
+                val item = lineItem
+                return item?.priceModifiers?.sumOf { item.amount * it.price } ?: 0
             }
 
         /**
@@ -1233,11 +1184,13 @@ class ShoppingCart(
                 if (type == ItemType.LINE_ITEM) {
                     return lineItem?.amount.toString()
                 }
+
                 val embeddedData = scannedCode?.embeddedData ?: 0
                 if (unit == Unit.PRICE || (unit == Unit.PIECE && embeddedData > 0)) {
                     val units = lineItem?.units ?: 1
                     return units.toString()
                 }
+
                 val q = effectiveQuantity
                 return if (q > 0) {
                     q.toString() + if (unit != null) unit?.displayValue else ""
@@ -1263,7 +1216,10 @@ class ShoppingCart(
 
         private val reducedPriceText: String?
             get() = when {
-                lineItem?.priceModifiers?.isNotEmpty() == true -> cart?.priceFormatter?.format(totalPrice, true)
+                lineItem?.priceModifiers?.isNotEmpty() == true -> {
+                    cart?.priceFormatter?.format(totalPrice, allowZeroPrice = true)
+                }
+
                 else -> null
             }
 
@@ -1272,15 +1228,15 @@ class ShoppingCart(
                 val reducedPriceText = reducedPriceText
                 return when {
                     reducedPriceText != null -> this.reducedPriceText
-                    else -> product?.let { product ->
-                        lineItem?.let {
-                            String.format(
-                                Locale.getDefault(),
-                                "\u00D7 %s = %s",
-                                cart?.priceFormatter?.format(product, it.price),
-                                cart?.priceFormatter?.format(totalPrice)
-                            )
-                        }
+                    else -> {
+                        val product = product ?: return null
+                        val lineItem = lineItem ?: return null
+                        String.format(
+                            Locale.getDefault(),
+                            "\u00D7 %s = %s",
+                            cart?.priceFormatter?.format(product, lineItem.price),
+                            cart?.priceFormatter?.format(totalPrice)
+                        )
                     }
                 }
             }
@@ -1305,7 +1261,8 @@ class ShoppingCart(
                     val unitsIsAtLeastOne = units != null && units > 1
 
                     if (lineItem.price != 0) {
-                        return if (product != null
+                        return if (
+                            product != null
                             && unitsIsAtLeastOne
                             || (unit != Unit.PRICE
                                     && (unit != Unit.PIECE || scannedCode?.embeddedData == 0)
