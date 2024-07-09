@@ -163,7 +163,7 @@ class ShoppingCartViewModel : ViewModel() {
                         )
                     )
                 }
-                item.copy(discounts = item.discounts.plus(discounts))
+                item.copy(discounts = item.discounts + discounts)
             }
 
             else -> item
@@ -180,9 +180,7 @@ class ShoppingCartViewModel : ViewModel() {
                 ?.let {
                     remove(it)
                     val product = it as? ProductItem ?: return@forEach
-                    add(
-                        product.copy(discounts = it.discounts + DiscountItem(name, discount, value))
-                    )
+                    add(product.copy(discounts = it.discounts + DiscountItem(name, discount, value)))
                 }
         }
     }
