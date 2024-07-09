@@ -181,7 +181,7 @@ class ShoppingCartViewModel : ViewModel() {
                     remove(it)
                     val product = it as? ProductItem ?: return@forEach
                     add(
-                        product.copy(discounts = it.discounts + (DiscountItem(name, discount, value)))
+                        product.copy(discounts = it.discounts + DiscountItem(name, discount, value))
                     )
                 }
         }
