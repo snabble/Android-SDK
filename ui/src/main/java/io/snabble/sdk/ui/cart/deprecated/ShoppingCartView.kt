@@ -15,7 +15,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import io.snabble.sdk.Product
 import io.snabble.sdk.Project
-import io.snabble.sdk.Snabble.instance
+import io.snabble.sdk.Snabble
 import io.snabble.sdk.ViolationNotification
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
@@ -30,6 +30,7 @@ import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.I18nUtils.getIdentifier
 import io.snabble.sdk.ui.utils.SnackbarUtils.make
 import io.snabble.sdk.ui.utils.UIUtils
+import io.snabble.sdk.ui.utils.isNotNullOrBlank
 import io.snabble.sdk.ui.utils.observeView
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks
 
@@ -120,13 +121,13 @@ class ShoppingCartView : FrameLayout {
 
         if (isInEditMode) return
 
-        instance.checkedInProject.observeView(this) { p: Project? ->
+        Snabble.instance.checkedInProject.observeView(this) { p: Project? ->
             if (p != null) {
                 initViewState(p)
             }
         }
 
-        val currentProject = instance.checkedInProject.getValue()
+        val currentProject = Snabble.instance.checkedInProject.getValue()
         if (currentProject != null) {
             initViewState(currentProject)
         }
@@ -260,7 +261,7 @@ class ShoppingCartView : FrameLayout {
     private fun scanForImages() {
         val lastHasAnyImages = hasAnyImages
 
-        hasAnyImages = cart?.any { !it?.product?.imageUrl.isNullOrEmpty() } == true
+        hasAnyImages = cart?.any { it?.product?.imageUrl.isNotNullOrBlank() } == true
 
         if (hasAnyImages != lastHasAnyImages) {
             update()
