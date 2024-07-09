@@ -42,7 +42,7 @@ internal class ShoppingCartUpdater(
         private set
 
     private var successfulModCount = -1
-    private val updatePriceRunnable = Runnable { update(false) }
+    private val updatePriceRunnable = Runnable { update(force = false) }
 
     val mainScope = CoroutineScope(Dispatchers.Main + Job())
 
@@ -58,62 +58,65 @@ internal class ShoppingCartUpdater(
             return
         }
 
-        checkoutApi.createCheckoutInfo(cart.toBackendCart(), object : CheckoutInfoResult {
-            override fun onSuccess(
-                signedCheckoutInfo: SignedCheckoutInfo,
-                onlinePrice: Int,
-                availablePaymentMethods: List<PaymentMethodInfo>
-            ) {
+        checkoutApi.createCheckoutInfo(
+            cart.toBackendCart(),
+            object : CheckoutInfoResult {
 
-                // ignore when cart was modified mid request
-                if (cart.modCount != modCount) {
-                    return
-                }
-                val skus = getToBeReplacedSkus(signedCheckoutInfo)
-                mainScope.launch {
-                    if (skus.isNotEmpty()) {
-                        val products = withContext(Dispatchers.Default) { getReplacedProducts(skus) }
-                        if (products == null) {
-                            onUnknownError()
+                override fun onSuccess(
+                    signedCheckoutInfo: SignedCheckoutInfo,
+                    onlinePrice: Int,
+                    availablePaymentMethods: List<PaymentMethodInfo>
+                ) {
+                    // ignore when cart was modified mid request
+                    if (cart.modCount != modCount) return
+
+                    val skus = getToBeReplacedSkus(signedCheckoutInfo)
+                    mainScope.launch {
+                        if (skus.isNotEmpty()) {
+                            val products = withContext(Dispatchers.Default) { getReplacedProducts(skus) }
+                            if (products == null) {
+                                onUnknownError()
+                            } else {
+                                commitCartUpdate(modCount, signedCheckoutInfo, products)
+                            }
                         } else {
-                            commitCartUpdate(modCount, signedCheckoutInfo, products)
+                            commitCartUpdate(modCount, signedCheckoutInfo, null)
                         }
-                    } else {
-                        commitCartUpdate(modCount, signedCheckoutInfo, null)
                     }
                 }
-            }
 
-            override fun onNoShopFound() {
-                error(true)
-            }
+                override fun onNoShopFound() {
+                    error(requestSucceeded = true)
+                }
 
-            override fun onInvalidProducts(products: List<Product>) {
-                cart.invalidProducts = products
-                error(true)
-            }
+                override fun onInvalidProducts(products: List<Product>) {
+                    cart.invalidProducts = products
+                    error(requestSucceeded = true)
+                }
 
-            override fun onNoAvailablePaymentMethodFound() {
-                error(true)
-            }
+                override fun onNoAvailablePaymentMethodFound() {
+                    error(requestSucceeded = true)
+                }
 
-            override fun onInvalidDepositReturnVoucher() {
-                cart.setInvalidDepositReturnVoucher(true)
-                error(true)
-            }
+                override fun onInvalidDepositReturnVoucher() {
+                    cart.setInvalidDepositReturnVoucher(true)
+                    error(requestSucceeded = true)
+                }
 
-            override fun onUnknownError() {
-                error(false)
-            }
+                override fun onUnknownError() {
+                    error(requestSucceeded = false)
+                }
 
-            override fun onConnectionError() {
-                error(false)
-            }
-        }, -1)
+                override fun onConnectionError() {
+                    error(requestSucceeded = false)
+                }
+            },
+            timeout = -1
+        )
     }
 
-    private fun error(b: Boolean) {
-        isUpdated = b
+    private fun error(requestSucceeded: Boolean) {
+        isUpdated = requestSucceeded
         lastAvailablePaymentMethods = null
         cart.notifyPriceUpdate(cart)
     }
@@ -123,14 +126,15 @@ internal class ShoppingCartUpdater(
         signedCheckoutInfo: SignedCheckoutInfo,
         products: Map<String?, Product>?
     ) {
-
         if (isCardModified(modCount)) return
 
         cart.invalidateOnlinePrices()
-        val (price, lineItems, violations) = destructorCheckoutInfo(signedCheckoutInfo) ?: return error(false)
+        val (price, lineItems, violations) = deserializedCheckoutInfo(signedCheckoutInfo) ?: return error(
+            requestSucceeded = false
+        )
         resolveViolations(violations)
 
-        if (!cartItemMatch(lineItems)) return
+        if (!areAllItemsSynced(lineItems)) return
 
         lineItems.forEach { lineItem ->
             val item = cart.getByItemId(lineItem.id)
@@ -171,18 +175,11 @@ internal class ShoppingCartUpdater(
         addCartDiscountLineItem(totalCartDiscount, cartDiscounts)
     }
 
-    private fun destructorCheckoutInfo(
+    private fun deserializedCheckoutInfo(
         signedCheckoutInfo: SignedCheckoutInfo
-    ): Triple<Price?, List<LineItem>, List<Violation>>? {
-        signedCheckoutInfo.checkoutInfo?.let {}
+    ): CheckoutInfo? {
         return try {
-            val (p, l, v) = GsonHolder
-                .get()
-                .fromJson(
-                    signedCheckoutInfo.checkoutInfo,
-                    CheckoutInfo::class.java
-                )
-            Triple(p, l, v)
+            GsonHolder.get().fromJson(signedCheckoutInfo.checkoutInfo, CheckoutInfo::class.java)
         } catch (e: JsonSyntaxException) {
             Logger.e("Could not parse Checkout info: %s", e.message)
             null
@@ -241,7 +238,7 @@ internal class ShoppingCartUpdater(
     ): Boolean {
         if (item.product?.sku != lineItem.sku) {
             if (products == null) {
-                error(false)
+                error(requestSucceeded = false)
                 return false
             }
             val product = products[lineItem.sku]
@@ -260,8 +257,7 @@ internal class ShoppingCartUpdater(
         return true
     }
 
-    private fun cartItemMatch(lineItems: List<LineItem>): Boolean {
-
+    private fun areAllItemsSynced(lineItems: List<LineItem>): Boolean {
         val requiredIds = cart.filter { it?.type != ItemType.COUPON }.map { it?.id }
         val receivedIds = lineItems.map { it.id }
 
@@ -270,7 +266,7 @@ internal class ShoppingCartUpdater(
         // error out when items are missing
         if (!idsAreMatching) {
             Logger.e("Missing products in price update: $requiredIds")
-            error(false)
+            error(requestSucceeded = false)
             return false
         }
         return true
@@ -286,7 +282,7 @@ internal class ShoppingCartUpdater(
     }
 
     private fun getToBeReplacedSkus(signedCheckoutInfo: SignedCheckoutInfo): List<String?> {
-        val (_, lineItems) = destructorCheckoutInfo(signedCheckoutInfo) ?: return emptyList()
+        val (_, lineItems) = deserializedCheckoutInfo(signedCheckoutInfo) ?: return emptyList()
         val skus: MutableList<String?> = mutableListOf()
         lineItems.forEach { currentItem ->
             val item = cart.getByItemId(itemId = currentItem.id)
