@@ -152,7 +152,7 @@ class ShoppingCartViewModel : ViewModel() {
                         item.quantity,
                         item.item.lineItem?.weightUnit,
                         item.item.lineItem?.referenceUnit
-                    ).intValueExact()
+                    )
                     discounts.add(
                         DiscountItem(
                             name = name,

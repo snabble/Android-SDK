@@ -33,7 +33,7 @@ internal data class ProductItem(
                 val totalModifiedPrices = priceModifiers.sumOf {
                     it.convertPriceModifier(quantity, unit, item.lineItem?.referenceUnit)
                 }
-                totalPrice - totalModifiedPrices.intValueExact()+ (deposit?.depositPrice ?: 0)
+                totalPrice - totalModifiedPrices + (deposit?.depositPrice ?: 0)
             }
 
             else -> {
