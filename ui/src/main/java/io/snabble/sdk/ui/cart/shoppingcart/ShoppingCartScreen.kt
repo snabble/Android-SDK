@@ -9,6 +9,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.snabble.sdk.shoppingcart.ShoppingCart
@@ -26,7 +28,9 @@ fun ShoppingCartScreen(
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
     ThemeWrapper {
-        LazyColumn {
+        LazyColumn(
+            modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())
+        ) {
             items(items = uiState.items, key = { it.hashCode() }) { cartItem ->
                 when (cartItem) {
                     is ProductItem -> {
