@@ -48,7 +48,12 @@ internal fun Product(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ProductDescription(modifier = Modifier.weight(1f), cartItem)
+                ProductDescription(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 16.dp),
+                    item = cartItem
+                )
                 if (cartItem.editable && cartItem.item.product?.type != UserWeighed) {
                     QuantityField(
                         modifier = Modifier,
