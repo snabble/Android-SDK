@@ -3,10 +3,32 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
+### Changed
+### Removed
+### Fixed
+
+## [0.74.0]
+### Added
 * core: add new and update existing user agent headers
 * core: add new methods to check if a coupon is applied and to remove it
 * ui: add button to deactivate coupons on the coupons details page
 ### Changed
+* core: migrate the `ShoppingCart` and its logic to kotlin
+* ui: migrate `ShoppingCartAdapter` to compose. To integrate the new implementation follow these steps:
+  * Add these dependencies to get access to the `ComposeView` if ur application is not written in compose already
+    * "androidx.activity:activity-compose:<latest_version>", "androidx.activity:activity-ktx:<latest_version>"
+  * Replace the recycler view with the compose view and use the new `ShoppingCartScreen` instead as it's content.
+  ```kotlin
+         composeContainer = findViewById(R.id.cart_items_compose)
+
+        composeContainer.setContent {
+            ShoppingCartScreen(
+                onItemDeleted = { item, index ->
+                    // Do something with the deleted item
+                }
+            )
+        }
+  ```
 ### Removed
 ### Fixed
 
