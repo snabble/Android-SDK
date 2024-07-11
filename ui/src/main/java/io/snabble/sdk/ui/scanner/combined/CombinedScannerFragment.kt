@@ -18,6 +18,9 @@ import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.scanner.BarcodeScannerView
+import io.snabble.sdk.ui.scanner.ScannerBottomSheetBehavior
+import io.snabble.sdk.ui.scanner.ScannerBottomSheetView
+import io.snabble.sdk.ui.scanner.ScannerParallaxBehavior
 import io.snabble.sdk.ui.scanner.SelfScanningFragment
 import io.snabble.sdk.ui.utils.SnackbarUtils
 import io.snabble.sdk.ui.utils.behavior

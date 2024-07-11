@@ -1,10 +1,8 @@
-package io.snabble.sdk.ui.scanner.combined
+package io.snabble.sdk.ui.scanner
 
 import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.scanner.BarcodeScannerView
-import io.snabble.sdk.ui.scanner.SelfScanningView
 
 class ScannerParallaxBehavior(private val barcodeScannerView: BarcodeScannerView) :
     CoordinatorLayout.Behavior<SelfScanningView>(barcodeScannerView.context, null) {

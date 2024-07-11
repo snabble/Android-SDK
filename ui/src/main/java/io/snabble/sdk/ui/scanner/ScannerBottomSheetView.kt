@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.scanner.combined
+package io.snabble.sdk.ui.scanner
 
 import android.content.Context
 import android.util.AttributeSet
