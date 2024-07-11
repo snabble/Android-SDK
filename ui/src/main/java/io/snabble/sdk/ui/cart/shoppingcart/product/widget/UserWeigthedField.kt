@@ -26,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -37,7 +38,7 @@ import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.shoppingcart.utils.rememberTextFieldManager
 
 @Composable
-internal fun UserWeighedField(
+internal fun UserWeightedField(
     weight: String,
     quantityAnnotation: String,
     onQuantityChanged: (Int) -> Unit,
@@ -51,24 +52,9 @@ internal fun UserWeighedField(
     if (weight.toInt() > 0) {
         Row(
             modifier = Modifier.widthIn(min = 88.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            OutlinedIconButton(
-                modifier = Modifier.size(36.dp),
-                border = BorderStroke(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.33f)
-                ),
-                onClick = { onDeleteWeighed() }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.snabble_ic_delete),
-                    contentDescription = stringResource(
-                        id = R.string.Snabble_Shoppingcart_Accessibility_actionDelete
-                    ),
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
             OutlinedTextField(
                 modifier = Modifier.width(80.dp),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -103,33 +89,46 @@ internal fun UserWeighedField(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
-            if (showApplyButton) {
-                OutlinedIconButton(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape),
-                    border = BorderStroke(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.33f)
-                    ),
-                    onClick = {
+            val iconResId = when (showApplyButton) {
+                true -> R.drawable.snabble_ic_check_white
+                else -> R.drawable.snabble_ic_delete
+            }
+            val backgroundColor = when (showApplyButton) {
+                true -> MaterialTheme.colorScheme.primary
+                else -> Color.Transparent
+            }
+            val iconTint = when (showApplyButton) {
+                true -> MaterialTheme.colorScheme.onPrimary
+                else -> MaterialTheme.colorScheme.onSurface
+            }
+            OutlinedIconButton(
+                modifier = Modifier
+                    .size(36.dp)
+                    .clip(CircleShape),
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.33f)
+                ),
+                onClick = {
+                    if (showApplyButton) {
+
                         onQuantityChanged(value.text.toInt())
                         showApplyButton = false
                         textFieldManager.clearFocusAndHideKeyboard()
-                    }) {
-                    Icon(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primary)
-                            .padding(6.dp),
-                        painter = painterResource(id = R.drawable.snabble_ic_check_white),
-                        contentDescription = stringResource(
-                            id = R.string.Snabble_Shoppingcart_Accessibility_actionDelete
-                        ),
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
+                    } else {
+                        onDeleteWeighed()
+                    }
+                }) {
+                Icon(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(CircleShape)
+                        .background(backgroundColor)
+                        .padding(6.dp),
+                    painter = painterResource(id = iconResId),
+                    contentDescription = "",
+                    tint = iconTint
+                )
             }
         }
     }

@@ -64,7 +64,7 @@ internal fun Product(
                     )
                 }
                 if (cartItem.editable && cartItem.item.product?.type == UserWeighed) {
-                    UserWeighedField(
+                    UserWeigthedField(
                         cartItem.quantity.toString(),
                         cartItem.unit,
                         onQuantityChanged = {
