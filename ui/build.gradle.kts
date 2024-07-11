@@ -91,7 +91,9 @@ dependencies {
     implementation(libs.androidx.viewpager2)
     implementation(libs.androidx.webkit)
     implementation(libs.commonsIo)
+    implementation(libs.compose.iconsExtended)
     implementation(libs.datatrans.androidSdk)
+    implementation(libs.glide.compose)
     implementation(libs.google.zxing.core)
     implementation(libs.googlePlayServices.wallet)
     implementation(libs.picasso)
@@ -105,8 +107,6 @@ dependencies {
     implementation(libs.bundles.navigation)
 
     implementation(libs.bundles.compose)
-    implementation(libs.glide.compose)
-    implementation(libs.compose.iconsExtended)
     debugImplementation(libs.bundles.compose.debug)
 
     testImplementation(libs.kotest.assertionsCore)
