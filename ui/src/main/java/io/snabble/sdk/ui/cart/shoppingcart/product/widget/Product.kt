@@ -50,13 +50,18 @@ internal fun Product(
             ) {
                 ProductDescription(modifier = Modifier.weight(1f), cartItem)
                 if (cartItem.editable && cartItem.item.product?.type != UserWeighed) {
-                    QuantityField(modifier = Modifier, cartItem, onQuantityChanged = {
-                        if (it <= 0) {
-                            onDeleteItem()
-                        } else {
-                            onQuantityChanged(it)
+                    QuantityField(
+                        modifier = Modifier,
+                        quantity = cartItem.quantity,
+                        quantityText = cartItem.quantityText,
+                        onQuantityChanged = {
+                            if (it <= 0) {
+                                onDeleteItem()
+                            } else {
+                                onQuantityChanged(it)
+                            }
                         }
-                    })
+                    )
                 }
                 if (cartItem.editable && cartItem.item.product?.type == UserWeighed) {
                     UserWeighedField(

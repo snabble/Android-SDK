@@ -20,12 +20,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.cart.shoppingcart.product.model.ProductItem
 
 @Composable
 internal fun QuantityField(
     modifier: Modifier = Modifier,
-    item: ProductItem,
+    quantity: Int,
+    quantityText: String,
     onQuantityChanged: (Int) -> Unit
 ) {
 
@@ -45,10 +45,10 @@ internal fun QuantityField(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.33f)
                 ),
-                onClick = { onQuantityChanged(item.quantity - 1) }) {
+                onClick = { onQuantityChanged(quantity - 1) }) {
                 Icon(
                     painter = painterResource(
-                        id = when (item.item.quantity) {
+                        id = when (quantity) {
                             1 -> R.drawable.snabble_ic_delete
                             else -> R.drawable.snabble_ic_minus
                         }
@@ -61,7 +61,7 @@ internal fun QuantityField(
             }
             Text(
                 modifier = Modifier.widthIn(min = 36.dp),
-                text = item.quantityText,
+                text = quantityText,
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurface
@@ -72,7 +72,7 @@ internal fun QuantityField(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.33f)
                 ),
-                onClick = { onQuantityChanged(item.quantity + 1) }) {
+                onClick = { onQuantityChanged(quantity + 1) }) {
                 Icon(
                     painter = painterResource(id = R.drawable.snabble_ic_add),
                     contentDescription = stringResource(
