@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,7 +20,7 @@ internal fun AgeRestrictionIcon(isAgeRestricted: Boolean, age: Int) {
     if ((isAgeRestricted && age > 0)) {
         Box(
             modifier = Modifier
-                .clip(CircleShape)
+                .clip(RoundedCornerShape(4.dp))
                 .size(20.dp)
                 .background(Color.Red),
             contentAlignment = Alignment.Center
