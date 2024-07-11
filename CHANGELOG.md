@@ -29,6 +29,14 @@ All notable changes to this project will be documented in this file.
             )
         }
   ```
+  * set the following attribute in the theme to ensure that the background is displayed according to your theme
+    * <item name="android:colorBackground"> // your background color </item>
+* core: the package structure has changed. The following imports need to be adjusted
+  * io.snabble.sdk.ShoppingCart -> io.snabble.sdk.shoppingcart.ShoppingCart
+  * io.snabble.sdk.ShoppingCart.ShoppingCartListener -> io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
+  * io.snabble.sdk.ShoppingCart.SimpleShoppingCartListener -> io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
+* ui: The ShoppingCartFragment and view is deprecated and will be removed in the future
+  * io.snabble.sdk.ui.cart.ShoppingCartFragment -> io.snabble.sdk.ui.cart.deprecated.ShoppingCartFragment;
 ### Removed
 ### Fixed
 
