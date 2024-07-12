@@ -2,7 +2,9 @@ package io.snabble.sdk.ui.cart.shoppingcart.product.widget
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -10,14 +12,20 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TextFieldDefaults.contentPaddingWithLabel
+import androidx.compose.material3.TextFieldDefaults.contentPaddingWithoutLabel
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,14 +37,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.shoppingcart.utils.rememberTextFieldManager
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun UserWeightedField(
     weight: String,
@@ -55,7 +66,7 @@ internal fun UserWeightedField(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            OutlinedTextField(
+            ShoppingCartTextField(
                 modifier = Modifier.width(80.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -68,11 +79,9 @@ internal fun UserWeightedField(
                 },
                 value = value,
                 onValueChange = {
-                    if (it.text.isNotBlank() &&
-                        it.text.toInt() > 0 &&
-                        it.text.toInt() < ShoppingCart.MAX_QUANTITY
-                    ) {
-                        if (it.text != value.text) showApplyButton = true
+                    val newValue = it.text.toIntOrNull() ?: 0
+                    if (newValue > 0 && newValue < ShoppingCart.MAX_QUANTITY) {
+                        if (newValue != value.text.toIntOrNull()) showApplyButton = true
                         value = it
                     }
                 },
@@ -82,7 +91,8 @@ internal fun UserWeightedField(
                     textFieldManager.clearFocusAndHideKeyboard()
                 }),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number),
-                textStyle = MaterialTheme.typography.bodyMedium
+                textStyle = MaterialTheme.typography.bodyMedium,
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
             )
             Text(
                 text = quantityAnnotation,
@@ -130,6 +140,56 @@ internal fun UserWeightedField(
                     tint = iconTint
                 )
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ShoppingCartTextField(
+    modifier: Modifier = Modifier,
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
+    label: @Composable (() -> Unit)? = null,
+    placeholder: @Composable (() -> Unit)? = null,
+    textStyle: TextStyle = LocalTextStyle.current,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    colors: TextFieldColors = OutlinedTextFieldDefaults.colors(),
+    contentPadding: PaddingValues? = null
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    BasicTextField(
+        modifier = modifier,
+        value = value,
+        onValueChange = onValueChange,
+        textStyle = textStyle,
+        keyboardActions = keyboardActions,
+        keyboardOptions = keyboardOptions,
+        interactionSource = interactionSource
+    ) { innerTextField ->
+        TextFieldDefaults.DecorationBox(
+            value = value.toString(),
+            visualTransformation = VisualTransformation.None,
+            innerTextField = innerTextField,
+            singleLine = true,
+            enabled = true,
+            placeholder = placeholder,
+            label = label,
+            interactionSource = interactionSource,
+            contentPadding = when {
+                contentPadding != null -> contentPadding
+                label == null -> contentPaddingWithoutLabel()
+                else -> contentPaddingWithLabel()
+            }
+        ) {
+            OutlinedTextFieldDefaults.ContainerBox(
+                enabled = true,
+                isError = false,
+                interactionSource = interactionSource,
+                colors = colors,
+                shape = OutlinedTextFieldDefaults.shape
+            )
         }
     }
 }
