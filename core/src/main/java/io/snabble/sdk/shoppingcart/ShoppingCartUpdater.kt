@@ -129,44 +129,44 @@ internal class ShoppingCartUpdater(
         if (isCardModified(modCount)) return
 
         cart.invalidateOnlinePrices()
-        val (price, lineItems, violations) = deserializedCheckoutInfo(signedCheckoutInfo) ?: return error(
-            requestSucceeded = false
-        )
+        val (price, lineItems, violations) = deserializedCheckoutInfo(signedCheckoutInfo)
+            ?: return error(requestSucceeded = false)
+
         resolveViolations(violations)
 
         if (!areAllItemsSynced(lineItems)) return
 
+        // If an item exists but the update was not successful, exit this ::commitCartUpdate function!
         lineItems.forEach { lineItem ->
-            val item = cart.getByItemId(lineItem.id)
+            val item = getShoppingCartItem(lineItem)
             if (item != null) {
                 val updateIsSuccess = updateItem(item, lineItem, products)
                 if (!updateIsSuccess) return
-            } else {
-                if (lineItem.type != LineItemType.DISCOUNT) {
-                    applyModifiedPrice(lineItem)
-                }
+            } else if (lineItem.type != LineItemType.DISCOUNT) {
+                applyModifiedPrice(lineItem)
             }
         }
 
-        val discountItems = lineItems.filter { it.type == LineItemType.DISCOUNT }
-        val couponsItems = lineItems.filter { it.type == LineItemType.COUPON }
-        val depositItems = lineItems.filter { it.type == LineItemType.DEPOSIT }
+        with(lineItems) {
+            addCartDiscounts(filter { it.type == LineItemType.DISCOUNT && it.discountType == "cart" })
+            addLineItemsAsCartItems(filter { it.type == LineItemType.DISCOUNT && it.discountType != "cart" })
 
-        addCartDiscounts(discountItems.filter { it.discountType == "cart" })
-
-        couponsItems.forEach { addLineItem(it) }
-        depositItems.forEach { addLineItem(it) }
-        discountItems.filter { it.discountType != "cart" }.forEach { addLineItem(it) }
+            addLineItemsAsCartItems(filter { it.type == LineItemType.COUPON })
+            addLineItemsAsCartItems(filter { it.type == LineItemType.DEPOSIT })
+        }
 
         setOnlinePrice(price)
-        successfulModCount = modCount
         Logger.d("Successfully updated prices")
 
+        successfulModCount = modCount
         lastAvailablePaymentMethods = signedCheckoutInfo.getAvailablePaymentMethods()
         isUpdated = true
-        cart.invalidProducts = null
-        cart.checkLimits()
-        cart.notifyPriceUpdate(cart)
+
+        with(cart) {
+            invalidProducts = null
+            checkLimits()
+            notifyPriceUpdate(this)
+        }
     }
 
     private fun addCartDiscounts(cartDiscountItems: List<LineItem>) {
@@ -203,8 +203,10 @@ internal class ShoppingCartUpdater(
         }
     }
 
-    private fun addLineItem(lineItem: LineItem) {
-        cart.insert(cart.newItem(lineItem), cart.size(), false)
+    private fun addLineItemsAsCartItems(lineItem: List<LineItem>) {
+        lineItem.forEach { item ->
+            cart.insert(cart.newItem(item), cart.size(), false)
+        }
     }
 
     private fun addCartDiscountLineItem(discounts: Int, cartDiscounts: List<String>) {
@@ -291,6 +293,11 @@ internal class ShoppingCartUpdater(
             }
         }
         return skus
+    }
+
+    private fun getShoppingCartItem(lineItem: LineItem): ShoppingCart.Item? {
+        val item = cart.getByItemId(lineItem.id)
+        return item
     }
 
     private fun getReplacedProducts(skus: List<String?>): Map<String?, Product>? {
