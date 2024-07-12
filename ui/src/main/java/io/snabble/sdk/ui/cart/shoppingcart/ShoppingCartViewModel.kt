@@ -18,11 +18,11 @@ import kotlinx.coroutines.flow.update
 
 class ShoppingCartViewModel : ViewModel() {
 
-    private val _uiState = MutableStateFlow(UiState(emptyList()))
+    private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
     private lateinit var cachedCart: ShoppingCart
-    private lateinit var priceFormatter: PriceFormatter
+    private var priceFormatter: PriceFormatter? = null
 
     private val simpleShoppingCartListener = object : SimpleShoppingCartListener() {
         override fun onChanged(cart: ShoppingCart) {
@@ -64,21 +64,19 @@ class ShoppingCartViewModel : ViewModel() {
     private fun updateUiState(cart: ShoppingCart) {
         cachedCart = cart
 
+        val filteredCart = cart.filterNotNull()
+
         val cartItems: MutableList<CartItem> = mutableListOf()
 
-        val products = cart.filter { it?.type == ItemType.PRODUCT }.filterNotNull()
-        cartItems.addProducts(products)
+        with(filteredCart) {
+            filter { it.type == ItemType.PRODUCT }.let { cartItems.addProducts(it) }
 
-        val discounts = cart.filter { it?.isDiscount == true && it.lineItem?.discountType != "cart" }.filterNotNull()
-        cartItems.addDiscountsToProducts(discounts)
+            filter { it.lineItem?.type == LineItemType.DEPOSIT }.let { cartItems.addDepositsToProducts(it) }
 
+            filter { it.isDiscount && it.lineItem?.discountType != "cart" }.let { cartItems.addDiscountsToProducts(it) }
+            filter { it.isDiscount && it.lineItem?.discountType == "cart" }.let { cartItems.addCartDiscount(it) }
+        }
         cartItems.addPriceModifiersAsDiscountsProducts()
-
-        val deposit = cart.filter { it?.lineItem?.type == LineItemType.DEPOSIT }.filterNotNull()
-        cartItems.addDepositsToProducts(deposit)
-
-        val cartDiscount = cart.filter { it?.isDiscount == true && it.lineItem?.discountType == "cart" }.filterNotNull()
-        cartItems.addCartDiscount(cartDiscount)
 
         cartItems.updatePrices()
         cartItems.sortCartDiscountsToBottom()
@@ -101,15 +99,15 @@ class ShoppingCartViewModel : ViewModel() {
     private fun MutableList<CartItem>.updatePrices() = replaceAll { item ->
         when {
             item is ProductItem -> {
-                // Since the total price can be null as we invalidate the online prices,'
-                // we need to use the price text instead to display the product price without an changed instead
                 val price = item.calculateTotalPrice()
-                val priceText = if (price == 0) item.priceText else priceFormatter.format(price)
+                // Since the total price can be null as we invalidate the online prices,
+                // we need to use the price text instead to display the product price without an changed instead
+                val priceText = if (price == 0) item.priceText else priceFormatter?.format(price).orEmpty()
 
                 item.copy(
                     totalPriceText = priceText,
                     discountedPrice = when {
-                        item.discounts.isNotEmpty() -> priceFormatter.format(item.getPriceWithDiscountsApplied())
+                        item.discounts.isNotEmpty() -> priceFormatter?.format(item.getPriceWithDiscountsApplied())
                         else -> null
                     }
                 )
@@ -144,24 +142,20 @@ class ShoppingCartViewModel : ViewModel() {
 
     private fun MutableList<CartItem>.addPriceModifiersAsDiscountsProducts() = replaceAll { item ->
         when {
-            item is ProductItem && item.item.lineItem?.priceModifiers?.isNotEmpty() == true -> {
+            item is ProductItem && !item.item.lineItem?.priceModifiers.isNullOrEmpty() -> {
                 val discounts = mutableListOf<DiscountItem>()
-                item.item.lineItem?.priceModifiers?.forEach { modifier ->
-                    val name = modifier.name ?: return@forEach
-                    val modifiedPrice = modifier.convertPriceModifier(
-                        item.quantity,
-                        item.item.lineItem?.weightUnit,
-                        item.item.lineItem?.referenceUnit
-                    )
-                    discounts.add(
-                        DiscountItem(
-                            name = name,
-                            discount = priceFormatter.format(
-                                modifiedPrice
-                            ),
-                            discountValue = 0
+                item.item.lineItem?.priceModifiers?.forEach { priceModifier ->
+                    val name = priceModifier.name.orEmpty()
+                    val modifiedPrice = priceModifier
+                        .convertPriceModifier(
+                            item.quantity,
+                            item.item.lineItem?.weightUnit,
+                            item.item.lineItem?.referenceUnit
                         )
-                    )
+                        .let { priceFormatter?.format(it).orEmpty() }
+                    // Set this to zero because the backend already subtracted the discount from the total price:
+                    val discountValue = 0
+                    discounts.add(DiscountItem(name = name, discount = modifiedPrice, discountValue = discountValue))
                 }
                 item.copy(discounts = item.discounts + discounts)
             }
@@ -172,8 +166,8 @@ class ShoppingCartViewModel : ViewModel() {
 
     private fun MutableList<CartItem>.addDiscountsToProducts(discounts: List<ShoppingCart.Item>) {
         discounts.forEach { item ->
-            val name = item.displayName ?: return@forEach
             val discount = item.totalPriceText ?: return@forEach
+            val name = item.displayName.orEmpty()
             val value = item.totalPrice
 
             firstOrNull { it.item.id == item.lineItem?.refersTo }
@@ -228,5 +222,5 @@ internal data class UpdateQuantity(
 ) : Event
 
 data class UiState(
-    val items: List<CartItem>,
+    val items: List<CartItem> = emptyList(),
 )

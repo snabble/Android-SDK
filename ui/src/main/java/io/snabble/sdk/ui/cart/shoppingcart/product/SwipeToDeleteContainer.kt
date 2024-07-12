@@ -58,7 +58,8 @@ internal fun SwipeToDeleteContainer(
                     imageVector = Icons.Outlined.Delete, contentDescription = null
                 )
             }
-        }
+        },
+        enableDismissFromStartToEnd = false
     ) {
         content()
     }
