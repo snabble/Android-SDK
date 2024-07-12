@@ -47,7 +47,6 @@ import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.shoppingcart.utils.rememberTextFieldManager
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun UserWeightedField(
     weight: String,
