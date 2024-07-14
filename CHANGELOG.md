@@ -16,7 +16,12 @@ All notable changes to this project will be documented in this file.
 * core: migrate the `ShoppingCart` and its logic to kotlin
 * ui: migrate `ShoppingCartAdapter` to compose. To integrate the new implementation follow these steps:
   * Add these dependencies to get access to the `ComposeView` if ur application is not written in compose already
-    * "androidx.activity:activity-compose:<latest_version>", "androidx.activity:activity-ktx:<latest_version>"
+    * ```groovy
+      implementation("androidx.activity:activity-compose:<latest_version>")
+      ```
+    * ```groovy
+      implementation("androidx.activity:activity-ktx:<latest_version>")
+      ```
   * Replace the recycler view with the compose view and use the new `ShoppingCartScreen` instead as it's content.
   ```kotlin
         composeContainer = findViewById(R.id.cart_items_compose)
@@ -30,7 +35,9 @@ All notable changes to this project will be documented in this file.
         }
   ```
   * set the following attribute in the theme to ensure that the background is displayed according to your theme
-    * <item name="android:colorBackground"> // your background color </item>
+    * ```xml
+      <item name="android:colorBackground"> // your background color </item>
+      ```
 * core: the package structure has changed.
   * Everything related to the shopping cart has been moved into the package io.snabble.sdk.shoppingcart like:
     * io.snabble.sdk.ShoppingCart -> io.snabble.sdk.shoppingcart.ShoppingCart
