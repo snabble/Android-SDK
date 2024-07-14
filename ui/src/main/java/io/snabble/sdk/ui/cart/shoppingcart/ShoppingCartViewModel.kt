@@ -85,7 +85,6 @@ class ShoppingCartViewModel : ViewModel() {
     }
 
     private fun MutableList<CartItem>.sortCartDiscountsToBottom() {
-        sortBy { it.item.displayName }
         sortWith(
             compareBy {
                 when (it) {
