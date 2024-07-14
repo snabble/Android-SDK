@@ -44,9 +44,7 @@ All notable changes to this project will be documented in this file.
     * io.snabble.sdk.ShoppingCart.ShoppingCartListener -> io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
     * io.snabble.sdk.ShoppingCart.SimpleShoppingCartListener -> io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
 * ui: The ShoppingCartFragment and view is deprecated and will be removed in the future. It has been moved to a new package:
-  * io.snabble.sdk.ui.cart.ShoppingCartFragment -> io.snabble.sdk.ui.cart.deprecated.ShoppingCartFragment;
-### Removed
-### Fixed
+  * io.snabble.sdk.ui.cart.ShoppingCartFragment -> io.snabble.sdk.ui.cart.deprecated.ShoppingCartFragment
 
 ## [0.73.0]
 ### Added
