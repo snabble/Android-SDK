@@ -53,7 +53,7 @@ fun ShoppingCartScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ShoppingCartScreen(
+private fun ShoppingCartScreen(
     uiState: UiState,
     onItemDeleted: (ShoppingCart.Item) -> Unit,
     onQuantityChanged: (ShoppingCart.Item, Int) -> Unit
@@ -92,7 +92,7 @@ fun ShoppingCartScreen(
 
 @Preview
 @Composable
-fun CardWithDefaultItems() {
+private fun CardWithDefaultItems() {
     val uiState = UiState(
         items = listOf(
             ProductItem(
@@ -132,7 +132,7 @@ fun CardWithDefaultItems() {
 
 @Preview
 @Composable
-fun CardWithUserWeightedItems() {
+private fun CardWithUserWeightedItems() {
     val uiState = UiState(
         items = listOf(
             ProductItem(
@@ -159,7 +159,7 @@ fun CardWithUserWeightedItems() {
 
 @Preview
 @Composable
-fun CardWithDiscountItem() {
+private fun CardWithDiscountItem() {
     val uiState = UiState(
         items = listOf(
             ProductItem(
@@ -194,7 +194,7 @@ fun CardWithDiscountItem() {
 
 @Preview
 @Composable
-fun CardWithDeposit() {
+private fun CardWithDeposit() {
     val uiState = UiState(
         items = listOf(
             ProductItem(
@@ -228,7 +228,7 @@ fun CardWithDeposit() {
 
 @Preview
 @Composable
-fun CardWithCartDiscount() {
+private fun CardWithCartDiscount() {
     val uiState = UiState(
         items = listOf(
             ProductItem(
