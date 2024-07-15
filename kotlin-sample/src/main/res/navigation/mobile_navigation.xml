@@ -86,7 +86,7 @@
 
         <fragment
             android:id="@+id/navigation_combinedScanner"
-            android:name="io.snabble.sdk.ui.scanner.CombinedScannerFragment"
+            android:name="io.snabble.sdk.ui.scanner.combined.CombinedScannerFragment"
             android:label="@string/scanner">
             <argument
                 android:name="showProductCode"
@@ -189,5 +189,21 @@
         app:destination="@id/navigation_payment_status"
         app:popUpTo="@id/navigation_scanner"
         app:popUpToInclusive="true" />
+
+    <navigation
+        android:id="@+id/navigation_coupon"
+        app:startDestination="@id/fragment_coupon">
+
+        <fragment
+            android:id="@+id/fragment_coupon"
+            android:name="io.snabble.sdk.sample.CouponFragment"
+            android:label="@string/Snabble.Coupons.title" />
+
+        <fragment
+            android:id="@+id/fragment_coupon_details"
+            android:name="io.snabble.sdk.ui.coupon.CouponDetailFragment"
+            android:label="@string/Snabble.Coupons.title" />
+
+    </navigation>
 
 </navigation>

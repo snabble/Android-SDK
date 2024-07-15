@@ -4,12 +4,12 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
-import io.snabble.sdk.ShoppingCart.BackendCart
 import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.Product
 import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.FulfillmentState
 import io.snabble.sdk.PaymentMethod
+import io.snabble.sdk.shoppingcart.data.cart.BackendCart
 import java.io.Serializable
 import java.lang.Exception
 import java.util.*
@@ -111,7 +111,6 @@ enum class LineItemType {
     @SerializedName("default") DEFAULT,
     @SerializedName("deposit") DEPOSIT,
     @SerializedName("discount") DISCOUNT,
-    @SerializedName("giveaway") GIVEAWAY,
     @SerializedName("coupon") COUPON
 }
 
@@ -220,22 +219,27 @@ data class Violation(
 )
 
 data class LineItem(
-    var id: String? = null,
-    var refersTo: String? = null,
+    val id: String? = null,
+    val amount: Int = 0,
     @SerializedName("couponID")
-    var couponId: String? = null,
-    var sku: String? = null,
-    var name: String? = null,
-    var scannedCode: String? = null,
-    var amount: Int = 0,
-    var price: Int = 0,
-    var units: Int? = null,
-    var weight: Int? = null,
-    var weightUnit: String? = null,
-    var totalPrice: Int = 0,
-    var type: LineItemType? = null,
-    var priceModifiers: List<PriceModifier>? = null,
-    var redeemed: Boolean = false,
+    val couponId: String? = null,
+    val discountID: String? = null,
+    val discountRuleID: String? = null,
+    val discountType: String? = null,
+    val listPrice: Int = 0,
+    val name: String? = null,
+    val price: Int = 0,
+    val priceModifiers: List<PriceModifier>? = null,
+    val redeemed: Boolean = false,
+    val refersTo: String? = null,
+    val referenceUnit: String? = null,
+    val scannedCode: String? = null,
+    val sku: String? = null,
+    val totalPrice: Int = 0,
+    val type: LineItemType? = null,
+    val units: Int? = null,
+    val weight: Int? = null,
+    val weightUnit: String? = null,
 )
 
 data class PriceModifier(

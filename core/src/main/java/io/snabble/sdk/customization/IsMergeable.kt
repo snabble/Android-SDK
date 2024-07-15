@@ -1,6 +1,6 @@
 package io.snabble.sdk.customization
 
-import io.snabble.sdk.ShoppingCart
+import io.snabble.sdk.shoppingcart.ShoppingCart
 
 /**
  * Implement the interface and set [Snabble.isMergeable] to make use of the

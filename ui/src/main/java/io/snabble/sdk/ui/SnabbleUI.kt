@@ -5,14 +5,42 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.annotation.RestrictTo
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.*
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.ui.SnabbleUI.Event.*
-import io.snabble.sdk.ui.cart.ShoppingCartActivity
+import io.snabble.sdk.ui.SnabbleUI.Event.EXIT_TOKEN_AVAILABLE
+import io.snabble.sdk.ui.SnabbleUI.Event.GO_BACK
+import io.snabble.sdk.ui.SnabbleUI.Event.NOT_CHECKED_IN
+import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_AGE_VERIFICATION
+import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_BARCODE_SEARCH
+import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_CHECKOUT
+import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_CHECKOUT_DONE
+import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_COUPON_DETAILS
+import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT
+import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_EXTERNAL_BILLING
+import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_GIROPAY_INPUT
+import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_PAYMENT_CREDENTIALS_LIST
+import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_PAYMENT_OPTIONS
+import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_PAYONE_INPUT
+import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_PAYONE_SEPA
+import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_PROJECT_PAYMENT_OPTIONS
+import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_SCANNER
+import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_SEPA_CARD_INPUT
+import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_SHOPPING_CART
+import io.snabble.sdk.ui.cart.deprecated.ShoppingCartActivity
 import io.snabble.sdk.ui.checkout.CheckoutActivity
 import io.snabble.sdk.ui.coupon.CouponDetailActivity
-import io.snabble.sdk.ui.payment.*
+import io.snabble.sdk.ui.payment.AgeVerificationInputActivity
+import io.snabble.sdk.ui.payment.CreditCardInputActivity
+import io.snabble.sdk.ui.payment.GiropayInputActivity
+import io.snabble.sdk.ui.payment.PaymentCredentialsListActivity
+import io.snabble.sdk.ui.payment.PaymentOptionsActivity
+import io.snabble.sdk.ui.payment.PayoneInputActivity
+import io.snabble.sdk.ui.payment.ProjectPaymentOptionsActivity
+import io.snabble.sdk.ui.payment.SEPACardInputActivity
 import io.snabble.sdk.ui.payment.externalbilling.ExternalBillingActivity
 import io.snabble.sdk.ui.payment.payone.sepa.form.PayoneSepaActivity
 import io.snabble.sdk.ui.scanner.SelfScanningActivity
@@ -42,6 +70,8 @@ object SnabbleUI {
         SHOW_PAYONE_INPUT,
         SHOW_GIROPAY_INPUT,
         SHOW_EXTERNAL_BILLING,
+
+        @Deprecated("Will be removed in future versions. There's no replacement planned.")
         SHOW_SHOPPING_CART,
         SHOW_PAYMENT_CREDENTIALS_LIST,
         SHOW_PAYMENT_OPTIONS,

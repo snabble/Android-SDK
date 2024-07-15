@@ -5,9 +5,6 @@ import android.os.Looper
 import android.os.SystemClock
 import io.snabble.sdk.Project
 import io.snabble.sdk.Shop
-import io.snabble.sdk.ShoppingCart
-import io.snabble.sdk.ShoppingCart.SimpleShoppingCartListener
-import io.snabble.sdk.ShoppingCart.Taxation
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.events.data.Event
@@ -20,6 +17,9 @@ import io.snabble.sdk.events.data.payload.PayloadLog
 import io.snabble.sdk.events.data.payload.PayloadProductNotFound
 import io.snabble.sdk.events.data.payload.PayloadSessionEnd
 import io.snabble.sdk.events.data.payload.PayloadSessionStart
+import io.snabble.sdk.shoppingcart.ShoppingCart
+import io.snabble.sdk.shoppingcart.data.Taxation
+import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
 import io.snabble.sdk.utils.DateUtils
 import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
@@ -72,19 +72,19 @@ class Events internal constructor(
                 }
             }
 
-            override fun onProductsUpdated(list: ShoppingCart) {
+            override fun onProductsUpdated(cart: ShoppingCart) {
                 // Override because it shouldn't trigger onChanged(Cart)
             }
 
-            override fun onPricesUpdated(list: ShoppingCart) {
+            override fun onPricesUpdated(cart: ShoppingCart) {
                 // Override because it shouldn't trigger onChanged(Cart)
             }
 
-            override fun onTaxationChanged(list: ShoppingCart, taxation: Taxation) {
+            override fun onTaxationChanged(cart: ShoppingCart, taxation: Taxation) {
                 // Override because it shouldn't trigger onChanged(Cart)
             }
 
-            override fun onCartDataChanged(list: ShoppingCart) {
+            override fun onCartDataChanged(cart: ShoppingCart) {
                 // Override because it shouldn't trigger onChanged(Cart)
             }
         })

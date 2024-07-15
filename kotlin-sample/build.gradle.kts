@@ -93,12 +93,12 @@ dependencies {
     implementation(libs.androidx.navigation.fragmentKtx)
     implementation(libs.androidx.navigation.uiKtx)
     implementation(libs.androidx.preferences)
-    implementation(libs.compose.material)
-    implementation(libs.compose.ui)
-    implementation(libs.compose.uiToolingPreview)
     implementation(libs.compose.uiUtil)
     implementation(libs.jakewhartonProcessPhoenix)
     implementation(libs.kotlin.stdlib)
+    implementation(libs.glide.compose)
+
+    implementation(libs.bundles.compose)
 
     debugImplementation(libs.compose.uiTestManifest)
     debugImplementation(libs.compose.uiTooling)

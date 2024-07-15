@@ -8,11 +8,12 @@ import java.util.List;
 import io.snabble.sdk.coupons.Coupon;
 import io.snabble.sdk.coupons.CouponCode;
 import io.snabble.sdk.Product;
-import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.shoppingcart.ShoppingCart;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.codes.templates.groups.EmbedGroup;
+import io.snabble.sdk.shoppingcart.data.item.ItemType;
 
 /**
  * Class for encoding scanned codes into one or multiple combined codes (e.g. a QR-Code)
@@ -74,7 +75,7 @@ public class EncodedCodesGenerator {
         for (int i = 0; i < shoppingCart.size(); i++) {
             ShoppingCart.Item item = shoppingCart.get(i);
 
-            if (item.getType() == ShoppingCart.ItemType.COUPON) {
+            if (item.getType() == ItemType.COUPON) {
                 ScannedCode scannedCode = item.getScannedCode();
                 if (scannedCode != null) {
                     coupons.add(scannedCode.getCode());
@@ -94,9 +95,9 @@ public class EncodedCodesGenerator {
                 }
 
                 productInfos.add(new ProductInfo(product,
-                        item.getQuantity(),
+                        item.getUnitBasedQuantity(),
                         item.getScannedCode(),
-                        item.isManualCouponApplied()));
+                        item.isManualCouponApplied));
             }
         }
 

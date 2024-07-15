@@ -26,6 +26,7 @@
   <string name="Snabble.Coupon.activate">Activer</string>
   <string name="Snabble.Coupon.activated">Activé</string>
   <string name="Snabble.Coupon.countdown">Le coupon expire dans %s minutes</string>
+  <string name="Snabble.Coupon.deactivate">Désactiver</string>
   <string name="Snabble.Coupon.expired">Ce coupon a expiré.</string>
   <string name="Snabble.Coupon.explanation">Votre coupon est maintenant activé. Veuillez scanner le produit dans la boutique et l\'ajouter à votre panier afin de profiter des avantages du coupon.</string>
   <string name="Snabble.Coupon.validIndefinitely">validité indéterminée</string>
@@ -344,7 +345,6 @@
   <string name="Snabble.Shoppingcart.coupons">Bons d\'achat</string>
   <string name="Snabble.Shoppingcart.deposit">Consigne</string>
   <string name="Snabble.Shoppingcart.discounts">Réduction</string>
-  <string name="Snabble.Shoppingcart.giveaway">Cadeau gratuit</string>
   <string name="Snabble.Shoppingcart.howToPay">Comment souhaitez-vous payer ?</string>
   <string name="Snabble.Shoppingcart.includesDeposit">consigne incl.</string>
   <string name="Snabble.Shoppingcart.noPaymentData">Ajouter maintenant</string>

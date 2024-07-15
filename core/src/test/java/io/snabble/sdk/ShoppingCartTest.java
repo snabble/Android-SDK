@@ -6,9 +6,10 @@ import org.junit.Test;
 
 import java.util.List;
 
-import io.snabble.sdk.checkout.DefaultCheckoutApi;
 import io.snabble.sdk.checkout.LineItem;
 import io.snabble.sdk.codes.ScannedCode;
+import io.snabble.sdk.shoppingcart.ShoppingCart;
+import io.snabble.sdk.shoppingcart.data.cart.BackendCart;
 
 public class ShoppingCartTest extends SnabbleSdkTest {
     private ShoppingCart cart;
@@ -33,6 +34,31 @@ public class ShoppingCartTest extends SnabbleSdkTest {
         public ShoppingCart.Item cartItem() {
             return cart.newItem(product, scannedCode);
         }
+    }
+
+    private LineItem createTestLineItem(int price, int totalPrice, int amount) {
+        return new LineItem(
+                null,
+                amount,
+                null,
+                null,
+                null,
+                null,
+                0,
+                null,
+                price,
+                null,
+                false,
+                null,
+                null,
+                null,
+                null,
+                totalPrice,
+                null,
+                null,
+                null,
+                null
+        );
     }
 
     private void add(TestProduct testProduct) {
@@ -181,75 +207,56 @@ public class ShoppingCartTest extends SnabbleSdkTest {
     @Test
     public void testLineItems() {
         ShoppingCart.Item item = simpleProduct1.cartItem();
-        LineItem lineItem = new LineItem();
-        lineItem.setPrice(100);
-        lineItem.setTotalPrice(100);
+        LineItem lineItem;
+        lineItem = createTestLineItem(100, 100, 0);
         item.setLineItem(lineItem);
         assertStrEquals(item.getQuantityText(), "1");
         assertStrEquals(item.getFullPriceText(), "1,00 €");
 
         item = simpleProduct1.cartItem();
         item.setQuantity(2);
-        lineItem = new LineItem();
-        lineItem.setAmount(2);
-        lineItem.setPrice(100);
-        lineItem.setTotalPrice(200);
+        lineItem = createTestLineItem(100, 200, 2);
         item.setLineItem(lineItem);
         assertStrEquals(item.getQuantityText(), "2");
         assertStrEquals(item.getFullPriceText(), "2 \u00D7 1,00 € = 2,00 €");
 
         item = preWeighedProduct.cartItem();
-        lineItem = new LineItem();
-        lineItem.setAmount(1);
-        lineItem.setPrice(1000);
-        lineItem.setTotalPrice(154);
+        lineItem = createTestLineItem(1000, 154, 1);
         item.setLineItem(lineItem);
         assertStrEquals(item.getQuantityText(), "154g");
         assertStrEquals(item.getFullPriceText(), "154g \u00D7 10,00 € / kg = 1,54 €");
 
         item = preWeighedProduct.cartItem();
-        lineItem = new LineItem();
-        lineItem.setAmount(1);
-        lineItem.setPrice(1000);
-        lineItem.setTotalPrice(1000);
+        lineItem = createTestLineItem(1000, 1000, 1);
         item.setLineItem(lineItem);
         assertStrEquals(item.getQuantityText(), "154g");
         assertStrEquals(item.getFullPriceText(), "154g \u00D7 10,00 € / kg = 10,00 €");
 
         item = userWeighedProduct.cartItem();
         item.setQuantity(500);
-        lineItem = new LineItem();
-        lineItem.setAmount(500);
-        lineItem.setPrice(1000);
-        lineItem.setTotalPrice(500);
+        lineItem = createTestLineItem(1000, 500, 500);
+
         item.setLineItem(lineItem);
         assertStrEquals(item.getQuantityText(), "500g");
         assertStrEquals(item.getFullPriceText(), "500g \u00D7 10,00 € / kg = 5,00 €");
 
         item = pieceProduct.cartItem();
-        lineItem = new LineItem();
-        lineItem.setAmount(1);
-        lineItem.setPrice(10);
-        lineItem.setTotalPrice(60);
+        lineItem = createTestLineItem(10, 60, 1);
+
         item.setLineItem(lineItem);
         assertStrEquals(item.getQuantityText(), "1");
         assertStrEquals(item.getFullPriceText(), "0,60 €");
 
         item = priceProduct.cartItem();
-        lineItem = new LineItem();
-        lineItem.setAmount(1);
-        lineItem.setPrice(100);
-        lineItem.setTotalPrice(100);
+        lineItem = createTestLineItem(100, 100, 1);
         item.setLineItem(lineItem);
         assertStrEquals(item.getQuantityText(), "1");
         assertStrEquals(item.getFullPriceText(), "1,00 €");
 
         item = zeroAmountProduct.cartItem();
         item.setQuantity(4);
-        lineItem = new LineItem();
-        lineItem.setAmount(4);
-        lineItem.setPrice(100);
-        lineItem.setTotalPrice(400);
+        lineItem = createTestLineItem(100, 400, 4);
+
         item.setLineItem(lineItem);
         assertStrEquals(item.getQuantityText(), "4");
         assertStrEquals(item.getFullPriceText(), "4 \u00D7 1,00 € = 4,00 €");
@@ -282,30 +289,30 @@ public class ShoppingCartTest extends SnabbleSdkTest {
         item.setQuantity(4);
         cart.add(item);
 
-        ShoppingCart.BackendCart backendCart = cart.toBackendCart();
-        Assert.assertEquals(backendCart.items.length, cart.size());
-        Assert.assertEquals(backendCart.items[cart.size() - 1].amount, 2);
+        BackendCart backendCart = cart.toBackendCart();
+        Assert.assertEquals(backendCart.items.size(), cart.size());
+        Assert.assertEquals(backendCart.items.get(cart.size() - 1).amount, 2);
 
-        Assert.assertEquals(backendCart.items[cart.size() - 2].amount, 1);
-        Assert.assertEquals(backendCart.items[cart.size() - 2].weight.intValue(), 154);
-        Assert.assertEquals(backendCart.items[cart.size() - 2].weightUnit, Unit.GRAM.getId());
+        Assert.assertEquals(backendCart.items.get(cart.size() - 2).amount, 1);
+        Assert.assertEquals(backendCart.items.get(cart.size() - 2).weight.intValue(), 154);
+        Assert.assertEquals(backendCart.items.get(cart.size() - 2).weightUnit, Unit.GRAM.getId());
 
-        Assert.assertEquals(backendCart.items[cart.size() - 3].amount, 1);
-        Assert.assertEquals(backendCart.items[cart.size() - 3].weight.intValue(), 500);
-        Assert.assertEquals(backendCart.items[cart.size() - 3].weightUnit, Unit.GRAM.getId());
+        Assert.assertEquals(backendCart.items.get(cart.size() - 3).amount, 1);
+        Assert.assertEquals(backendCart.items.get(cart.size() - 3).weight.intValue(), 500);
+        Assert.assertEquals(backendCart.items.get(cart.size() - 3).weightUnit, Unit.GRAM.getId());
 
-        Assert.assertEquals(backendCart.items[cart.size() - 4].amount, 1);
-        Assert.assertEquals(backendCart.items[cart.size() - 4].units.intValue(), 6);
-        Assert.assertEquals(backendCart.items[cart.size() - 4].weightUnit, Unit.PIECE.getId());
+        Assert.assertEquals(backendCart.items.get(cart.size() - 4).amount, 1);
+        Assert.assertEquals(backendCart.items.get(cart.size() - 4).units.intValue(), 6);
+        Assert.assertEquals(backendCart.items.get(cart.size() - 4).weightUnit, Unit.PIECE.getId());
 
-        Assert.assertEquals(backendCart.items[cart.size() - 5].amount, 1);
-        Assert.assertEquals(backendCart.items[cart.size() - 5].price.intValue(), 249);
-        Assert.assertEquals(backendCart.items[cart.size() - 5].weightUnit, Unit.PRICE.getId());
+        Assert.assertEquals(backendCart.items.get(cart.size() - 5).amount, 1);
+        Assert.assertEquals(backendCart.items.get(cart.size() - 5).price.intValue(), 249);
+        Assert.assertEquals(backendCart.items.get(cart.size() - 5).weightUnit, Unit.PRICE.getId());
 
-        Assert.assertEquals(backendCart.items[cart.size() - 6].amount, 1);
-        Assert.assertEquals(backendCart.items[cart.size() - 6].units.intValue(), 4);
-        Assert.assertEquals(backendCart.items[cart.size() - 6].scannedCode, "2523237000040");
-        Assert.assertEquals(backendCart.items[cart.size() - 6].weightUnit, Unit.PIECE.getId());
+        Assert.assertEquals(backendCart.items.get(cart.size() - 6).amount, 1);
+        Assert.assertEquals(backendCart.items.get(cart.size() - 6).units.intValue(), 4);
+        Assert.assertEquals(backendCart.items.get(cart.size() - 6).scannedCode, "2523237000040");
+        Assert.assertEquals(backendCart.items.get(cart.size() - 6).weightUnit, Unit.PIECE.getId());
     }
 
     @Test
@@ -341,30 +348,30 @@ public class ShoppingCartTest extends SnabbleSdkTest {
         item.setQuantity(4);
         cart.add(item);
 
-        ShoppingCart.BackendCart backendCart = cart.toBackendCart();
-        Assert.assertEquals(backendCart.items.length, cart.size());
-        Assert.assertEquals(backendCart.items[cart.size() - 1].amount, 2);
+        BackendCart backendCart = cart.toBackendCart();
+        Assert.assertEquals(backendCart.items.size(), cart.size());
+        Assert.assertEquals(backendCart.items.get(cart.size() - 1).amount, 2);
 
-        Assert.assertEquals(backendCart.items[cart.size() - 2].amount, 1);
-        Assert.assertEquals(backendCart.items[cart.size() - 2].weight.intValue(), 154);
-        Assert.assertEquals(backendCart.items[cart.size() - 2].weightUnit, Unit.GRAM.getId());
+        Assert.assertEquals(backendCart.items.get(cart.size() - 2).amount, 1);
+        Assert.assertEquals(backendCart.items.get(cart.size() - 2).weight.intValue(), 154);
+        Assert.assertEquals(backendCart.items.get(cart.size() - 2).weightUnit, Unit.GRAM.getId());
 
-        Assert.assertEquals(backendCart.items[cart.size() - 3].amount, 1);
-        Assert.assertEquals(backendCart.items[cart.size() - 3].weight.intValue(), 500);
-        Assert.assertEquals(backendCart.items[cart.size() - 3].weightUnit, Unit.GRAM.getId());
+        Assert.assertEquals(backendCart.items.get(cart.size() - 3).amount, 1);
+        Assert.assertEquals(backendCart.items.get(cart.size() - 3).weight.intValue(), 500);
+        Assert.assertEquals(backendCart.items.get(cart.size() - 3).weightUnit, Unit.GRAM.getId());
 
-        Assert.assertEquals(backendCart.items[cart.size() - 4].amount, 1);
-        Assert.assertEquals(backendCart.items[cart.size() - 4].units.intValue(), 6);
-        Assert.assertEquals(backendCart.items[cart.size() - 4].weightUnit, Unit.PIECE.getId());
+        Assert.assertEquals(backendCart.items.get(cart.size() - 4).amount, 1);
+        Assert.assertEquals(backendCart.items.get(cart.size() - 4).units.intValue(), 6);
+        Assert.assertEquals(backendCart.items.get(cart.size() - 4).weightUnit, Unit.PIECE.getId());
 
-        Assert.assertEquals(backendCart.items[cart.size() - 5].amount, 1);
-        Assert.assertEquals(backendCart.items[cart.size() - 5].price.intValue(), 249);
-        Assert.assertEquals(backendCart.items[cart.size() - 5].weightUnit, Unit.PRICE.getId());
+        Assert.assertEquals(backendCart.items.get(cart.size() - 5).amount, 1);
+        Assert.assertEquals(backendCart.items.get(cart.size() - 5).price.intValue(), 249);
+        Assert.assertEquals(backendCart.items.get(cart.size() - 5).weightUnit, Unit.PRICE.getId());
 
-        Assert.assertEquals(backendCart.items[cart.size() - 6].amount, 1);
-        Assert.assertEquals(backendCart.items[cart.size() - 6].units.intValue(), 4);
-        Assert.assertEquals(backendCart.items[cart.size() - 6].scannedCode, "2523237000040");
-        Assert.assertEquals(backendCart.items[cart.size() - 6].weightUnit, Unit.PIECE.getId());
+        Assert.assertEquals(backendCart.items.get(cart.size() - 6).amount, 1);
+        Assert.assertEquals(backendCart.items.get(cart.size() - 6).units.intValue(), 4);
+        Assert.assertEquals(backendCart.items.get(cart.size() - 6).scannedCode, "2523237000040");
+        Assert.assertEquals(backendCart.items.get(cart.size() - 6).weightUnit, Unit.PIECE.getId());
     }
 
     public void assertStrEquals(String a, String b) {

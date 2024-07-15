@@ -34,13 +34,15 @@ import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Shop;
-import io.snabble.sdk.ShoppingCart;
+import io.snabble.sdk.shoppingcart.ShoppingCart;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ViolationNotification;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.coupons.Coupon;
 import io.snabble.sdk.coupons.CouponCode;
 import io.snabble.sdk.coupons.CouponType;
+import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener;
+import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.checkout.ViolationNotificationUtils;
@@ -537,34 +539,34 @@ public class SelfScanningView extends FrameLayout {
         this.productConfirmationDialogFactory = productConfirmationDialogFactory;
     }
 
-    private final ShoppingCart.ShoppingCartListener shoppingCartListener = new ShoppingCart.SimpleShoppingCartListener() {
+    private final ShoppingCartListener shoppingCartListener = new SimpleShoppingCartListener() {
         @Override
-        public void onItemAdded(ShoppingCart list, ShoppingCart.Item item) {
-            super.onItemAdded(list, item);
+        public void onItemAdded(@NonNull ShoppingCart cart, @NonNull ShoppingCart.Item item) {
+            super.onItemAdded(cart, item);
 
-            if (list.getAddCount() == 1) {
+            if (cart.getAddCount() == 1) {
                 showHints();
             }
         }
 
         @Override
-        public void onQuantityChanged(ShoppingCart list, ShoppingCart.Item item) {
+        public void onQuantityChanged(@NonNull ShoppingCart cart, ShoppingCart.Item item) {
             showScanMessage(item.getProduct(), false);
         }
 
         @Override
-        public void onChanged(ShoppingCart list) {
+        public void onChanged(@NonNull ShoppingCart cart) {
             updateCartButton();
         }
 
         @Override
-        public void onCheckoutLimitReached(ShoppingCart list) {
+        public void onCheckoutLimitReached(@NonNull ShoppingCart cart) {
             showInfo(getResources().getString(R.string.Snabble_LimitsAlert_checkoutNotAvailable,
                     project.getPriceFormatter().format(project.getMaxCheckoutLimit())));
         }
 
         @Override
-        public void onOnlinePaymentLimitReached(ShoppingCart list) {
+        public void onOnlinePaymentLimitReached(@NonNull ShoppingCart list) {
             showInfo(getResources().getString(R.string.Snabble_LimitsAlert_notAllMethodsAvailable,
                     project.getPriceFormatter().format(project.getMaxOnlinePaymentLimit())));
 
