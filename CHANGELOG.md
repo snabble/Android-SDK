@@ -15,14 +15,8 @@ All notable changes to this project will be documented in this file.
 ### Changed
 * core: migrate the `ShoppingCart` and its logic to kotlin
 * ui: migrate `ShoppingCartAdapter` to compose. To integrate the new implementation follow these steps:
-  * Add these dependencies to get access to the `ComposeView` if ur application is not written in compose already <br>
-    (dont forget to enable the compose feature and to set the compose compiler options)
-    * ```groovy
-      implementation("androidx.activity:activity-compose:<latest_version>")
-      ```
-    * ```groovy
-      implementation("androidx.activity:activity-ktx:<latest_version>")
-      ```
+  * If you're not already using compose, add the the required dependencies for the [ComposeView](https://developer.android.com/reference/kotlin/androidx/compose/ui/platform/ComposeView)
+    (don't forget to enable the compose feature and to set the compose compiler options)
   * Replace the recycler view with the compose view and use the new `ShoppingCartScreen` instead as it's content.
   ```kotlin
         composeContainer = findViewById(R.id.cart_items_compose)
