@@ -6,6 +6,7 @@ io.snabble.accessibility
 module:core
 io.snabble.sdk
 io.snabble.sdk.auth
+io.snabble.sdk.auth.useragent
 io.snabble.sdk.checkin
 io.snabble.sdk.checkout
 io.snabble.sdk.codes
@@ -26,11 +27,18 @@ io.snabble.sdk.payment.data
 io.snabble.sdk.payment.externalbilling
 io.snabble.sdk.payment.externalbilling.data
 io.snabble.sdk.payment.payone.sepa
+io.snabble.sdk.shoppingcart
+io.snabble.sdk.shoppingcart.data
+io.snabble.sdk.shoppingcart.data.cart
+io.snabble.sdk.shoppingcart.data.item
+io.snabble.sdk.shoppingcart.data.listener
 module:mlkit-scanner-engine
 io.snabble.sdk.firebase
 module:ui
 io.snabble.sdk.ui
 io.snabble.sdk.ui.cart
+io.snabble.sdk.ui.cart.deprecated
+io.snabble.sdk.ui.cart.shoppingcart
 io.snabble.sdk.ui.checkout
 io.snabble.sdk.ui.checkout.routingtargets
 io.snabble.sdk.ui.coupon
@@ -47,6 +55,7 @@ io.snabble.sdk.ui.payment.payone.sepa.form.viewmodel
 io.snabble.sdk.ui.payment.payone.sepa.mandate
 io.snabble.sdk.ui.payment.payone.sepa.mandate.viewmodel
 io.snabble.sdk.ui.scanner
+io.snabble.sdk.ui.scanner.combined
 io.snabble.sdk.ui.search
 io.snabble.sdk.ui.telemetry
 io.snabble.sdk.ui.utils
