@@ -15,7 +15,8 @@ All notable changes to this project will be documented in this file.
 ### Changed
 * core: migrate the `ShoppingCart` and its logic to kotlin
 * ui: migrate `ShoppingCartAdapter` to compose. To integrate the new implementation follow these steps:
-  * Add these dependencies to get access to the `ComposeView` if ur application is not written in compose already
+  * Add these dependencies to get access to the `ComposeView` if ur application is not written in compose already <br>
+    (dont forget to enable the compose feature and to set the compose compiler options)
     * ```groovy
       implementation("androidx.activity:activity-compose:<latest_version>")
       ```
@@ -28,7 +29,7 @@ All notable changes to this project will be documented in this file.
 
         composeContainer.setContent {
             ShoppingCartScreen(
-                onItemDeleted = { item, index ->
+                onItemDeleted = { item: ShoppingCart.Item, index: Int ->
                     // Do something with the deleted item
                 }
             )
