@@ -27,12 +27,14 @@ import io.snabble.sdk.ui.utils.ThemeWrapper
 
 @Composable
 fun ShoppingCartScreen(
+    modifier: Modifier = Modifier,
     viewModel: ShoppingCartViewModel = viewModel(),
     onItemDeleted: (item: ShoppingCart.Item, index: Int) -> Unit
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
     ThemeWrapper {
         ShoppingCartScreen(
+            modifier = modifier,
             uiState = uiState,
             onItemDeleted = { item ->
                 viewModel.onEvent(
@@ -55,12 +57,13 @@ fun ShoppingCartScreen(
 @Composable
 private fun ShoppingCartScreen(
     uiState: UiState,
+    modifier: Modifier = Modifier,
     onItemDeleted: (ShoppingCart.Item) -> Unit,
     onQuantityChanged: (ShoppingCart.Item, Int) -> Unit
 ) {
 
     LazyColumn(
-        modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())
+        modifier = modifier.nestedScroll(rememberNestedScrollInteropConnection())
     ) {
         items(items = uiState.items, key = { it.hashCode() }) { cartItem ->
             when (cartItem) {
@@ -78,9 +81,7 @@ private fun ShoppingCartScreen(
 
                 is CartDiscountItem -> {
                     CartDiscount(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.background),
+                        modifier = Modifier.fillMaxWidth(),
                         item = cartItem
                     )
                     HorizontalDivider()

@@ -31,7 +31,7 @@ internal fun Product(
 ) {
     Row(
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.background)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(vertical = 16.dp, horizontal = 16.dp)
             .heightIn(min = 48.dp),
         verticalAlignment = Alignment.CenterVertically,
