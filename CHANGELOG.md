@@ -13,33 +13,30 @@ All notable changes to this project will be documented in this file.
 * core: add new methods to check if a coupon is applied and to remove it
 * ui: add button to deactivate coupons on the coupons details page
 ### Changed
-* core: migrate the `ShoppingCart` and its logic to kotlin
-* ui: migrate `ShoppingCartAdapter` to compose. To integrate the new implementation follow these steps:
-  * If you're not already using compose, add the the required dependencies for the [ComposeView](https://developer.android.com/reference/kotlin/androidx/compose/ui/platform/ComposeView)
-    (don't forget to enable the compose feature and to set the compose compiler options)
-  * Replace the recycler view with the compose view and use the new `ShoppingCartScreen` instead as it's content.
-  ```kotlin
-        composeContainer = findViewById(R.id.cart_items_compose)
-
-        composeContainer.setContent {
-            ShoppingCartScreen(
-                onItemDeleted = { item: ShoppingCart.Item, index: Int ->
-                    // Do something with the deleted item
-                }
-            )
-        }
-  ```
-  * set the following attribute in the theme to ensure that the background is displayed according to your theme
-    * ```xml
-      <item name="android:colorBackground"> // your background color </item>
-      ```
-* core: the package structure has changed.
-  * Everything related to the shopping cart has been moved into the package io.snabble.sdk.shoppingcart like:
+* core: 
+  * migrate the `ShoppingCart` and its logic to kotlin
+  * everything related to the shopping cart has been moved into the package io.snabble.sdk.shoppingcart like:
     * io.snabble.sdk.ShoppingCart -> io.snabble.sdk.shoppingcart.ShoppingCart
     * io.snabble.sdk.ShoppingCart.ShoppingCartListener -> io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
     * io.snabble.sdk.ShoppingCart.SimpleShoppingCartListener -> io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
-* ui: The ShoppingCartFragment and view is deprecated and will be removed in the future. It has been moved to a new package:
-  * io.snabble.sdk.ui.cart.ShoppingCartFragment -> io.snabble.sdk.ui.cart.deprecated.ShoppingCartFragment
+* ui:
+  * the ShoppingCartFragment and view is deprecated and will be removed in the future. It has been moved to a new package:
+    * io.snabble.sdk.ui.cart.ShoppingCartFragment -> io.snabble.sdk.ui.cart.deprecated.ShoppingCartFragment
+  * migrate `ShoppingCartAdapter` to compose. To integrate the new implementation follow these steps:
+    * If you're not already using compose, add the the required dependencies for the [ComposeView](https://developer.android.com/reference/kotlin/androidx/compose/ui/platform/ComposeView)
+      (don't forget to enable the compose feature and to set the compose compiler options)
+    * Replace the recycler view with the compose view and use the new `ShoppingCartScreen` instead as it's content.
+    ```kotlin
+          composeContainer = findViewById(R.id.cart_items_compose)
+
+          composeContainer.setContent {
+              ShoppingCartScreen(
+                  onItemDeleted = { item: ShoppingCart.Item, index: Int ->
+                      // Do something with the deleted item
+                  }
+              )
+          }
+    ```
 
 ## [0.73.0]
 ### Added
