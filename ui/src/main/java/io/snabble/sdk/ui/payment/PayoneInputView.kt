@@ -11,8 +11,8 @@ import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.FrameLayout
 import android.widget.ProgressBar
+import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.Keep
@@ -53,7 +53,7 @@ import java.util.Locale
 import java.util.concurrent.CancellationException
 
 class PayoneInputView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) :
-    FrameLayout(context, attrs, defStyleAttr), LifecycleEventObserver {
+    RelativeLayout(context, attrs, defStyleAttr), LifecycleEventObserver {
 
     private lateinit var webView: WebView
     private lateinit var progressBar: ProgressBar
