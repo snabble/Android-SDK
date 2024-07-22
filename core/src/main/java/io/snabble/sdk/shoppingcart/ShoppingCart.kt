@@ -451,7 +451,7 @@ class ShoppingCart(
     val totalPrice: Int
         get() = data.onlineTotalPrice ?: calculateTotalPrice()
 
-    private fun calculateTotalPrice(): Int = data.items.sumOf { it.totalDepositPrice }
+    private fun calculateTotalPrice(): Int = data.items.sumOf { it.totalPrice } + totalDepositPrice
 
     /**
      * Returns the total sum of deposit
