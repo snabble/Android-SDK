@@ -1,4 +1,5 @@
 
+APPS-
 
 ### How to test?
 
@@ -9,7 +10,7 @@
 - [ ] All requirements of the issue are fulfilled
 - [ ] Changelog is updated
 - [ ] Documentation is updated
-- [ ] [Self-Review](https://www.nerdwallet.com/blog/engineering/why-you-should-be-doing-self-reviews/))_
+- [ ] [Self-Review](https://www.nerdwallet.com/blog/engineering/why-you-should-be-doing-self-reviews/)
 - [ ] Review with the Product Owner _(Release-Variante o. Minified Build)_
 
 #### App Tests

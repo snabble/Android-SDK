@@ -79,7 +79,7 @@
                         tools:src="@drawable/snabble_ic_payment_select_sepa"
                         android:importantForAccessibility="no" />
 
-                    <ImageView
+                    <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/payment_chevron"
                         android:layout_width="7dp"
                         android:layout_height="7dp"

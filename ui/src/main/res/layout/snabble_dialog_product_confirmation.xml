@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,8 +7,9 @@
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:gravity="center"
-    android:orientation="vertical"
-    android:minWidth="350dp">
+    android:background="?attr/colorSurface"
+    android:minWidth="350dp"
+    android:orientation="vertical">
 
     <ImageButton
         android:id="@+id/close"
@@ -78,11 +78,12 @@
         android:id="@+id/quantity_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="16dp">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <FrameLayout
             android:id="@+id/minus_layout"
@@ -90,7 +91,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -112,12 +113,12 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="95dp"
             android:layout_height="48dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             android:insetLeft="0dp"
             android:insetTop="0dp"
             android:insetRight="0dp"
             android:insetBottom="0dp"
-            android:clipChildren="false"
-            android:clipToPadding="false"
             app:boxStrokeColor="@drawable/snabble_stroke"
             app:hintEnabled="false"
             app:shapeAppearance="@style/Snabble.ShapeAppearanceOverlay.RoundedCorners.Big"
@@ -144,7 +145,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
