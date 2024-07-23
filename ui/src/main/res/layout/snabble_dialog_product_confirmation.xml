@@ -91,12 +91,12 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:importantForAccessibility="no"
-                android:src="@drawable/snabble_ic_minus"
+                android:src="@drawable/snabble_ic_minus_content"
                 app:tint="?attr/colorOnSurface" />
 
             <com.google.android.material.button.MaterialButton
@@ -145,12 +145,12 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:importantForAccessibility="no"
-                android:src="@drawable/snabble_ic_plus"
+                android:src="@drawable/snabble_ic_plus_content"
                 app:tint="?attr/colorOnSurface" />
 
             <com.google.android.material.button.MaterialButton

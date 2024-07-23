@@ -90,11 +90,11 @@
     </style>
 
     <style name="Widget.App.SnackbarText" parent="Widget.MaterialComponents.Snackbar.TextView">
-        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textColor">?attr/colorOnSecondaryContainer</item>
     </style>
 
     <style name="ThemeOverlay.App.Snackbar" parent="">
-        <item name="colorOnSurface">?attr/colorSurface</item>
+        <item name="colorOnSurface">?attr/colorSecondaryContainer</item>
     </style>
 
 </resources>
