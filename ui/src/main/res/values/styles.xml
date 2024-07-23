@@ -76,4 +76,25 @@
     <style name="Snabble.Rating.Positive" parent="@android:style/Widget.CompoundButton.RadioButton">
         <item name="android:button">@drawable/snabble_rating_positive</item>
     </style>
+
+    <style name="Widget.App.Snackbar" parent="Widget.MaterialComponents.Snackbar">
+        <!--this child makes changes to the background color of the snackbar-->
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Snackbar</item>
+        <!--if this is made 0 then the action button text color will be white-->
+        <!--if this is 1 then the custom color can be set to action button text-->
+        <item name="actionTextColorAlpha">1</item>
+    </style>
+
+    <style name="Widget.App.SnackbarButton" parent="Widget.MaterialComponents.Button.TextButton.Snackbar">
+        <item name="android:textColor">?attr/colorPrimary</item>
+    </style>
+
+    <style name="Widget.App.SnackbarText" parent="Widget.MaterialComponents.Snackbar.TextView">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="ThemeOverlay.App.Snackbar" parent="">
+        <item name="colorOnSurface">?attr/colorSurface</item>
+    </style>
+
 </resources>
