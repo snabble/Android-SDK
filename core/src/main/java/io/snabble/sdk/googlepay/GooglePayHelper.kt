@@ -8,7 +8,13 @@ import android.widget.Toast
 import androidx.annotation.RestrictTo
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.wallet.*
+import com.google.android.gms.wallet.AutoResolveHelper
+import com.google.android.gms.wallet.IsReadyToPayRequest
+import com.google.android.gms.wallet.PaymentData
+import com.google.android.gms.wallet.PaymentDataRequest
+import com.google.android.gms.wallet.PaymentsClient
+import com.google.android.gms.wallet.Wallet
+import com.google.android.gms.wallet.WalletConstants
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import io.snabble.sdk.PaymentMethod
@@ -16,7 +22,6 @@ import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
-import java.lang.Exception
 
 /**
  * Class for interfacing with google pay
@@ -171,10 +176,12 @@ class GooglePayHelper(
      */
     fun requestPayment(priceToPay: Int): Boolean {
         val priceToPayDecimal = priceToPay.toBigDecimal().divide(100.toBigDecimal())
-        val intent = Intent(context, GooglePayHelperActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        intent.putExtra(GooglePayHelperActivity.INTENT_EXTRA_PROJECT_ID, project.id)
-        intent.putExtra(GooglePayHelperActivity.INTENT_EXTRA_PAYMENT_PRICE_TO_PAY, priceToPayDecimal.toString())
+        val intent = Intent(context, GooglePayHelperActivity::class.java).apply {
+            setPackage(context.packageName)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            putExtra(GooglePayHelperActivity.INTENT_EXTRA_PROJECT_ID, project.id)
+            putExtra(GooglePayHelperActivity.INTENT_EXTRA_PAYMENT_PRICE_TO_PAY, priceToPayDecimal.toString())
+        }
         context.startActivity(intent)
 
         return false

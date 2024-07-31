@@ -20,6 +20,7 @@ class PayoneSepaActivity : BaseFragmentActivity() {
             context: Context,
             paymentOriginCandidate: PaymentOriginCandidate? = null,
         ): Intent = Intent(context, PayoneSepaActivity::class.java).apply {
+            setPackage(context.packageName)
             paymentOriginCandidate?.let { putExtra(ARG_PAYMENT_ORIGIN_CANDIDATE, it) }
             addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
         }
