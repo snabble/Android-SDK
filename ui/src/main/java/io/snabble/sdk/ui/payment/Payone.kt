@@ -15,11 +15,13 @@ import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.Logger
 import io.snabble.sdk.utils.SimpleJsonCallback
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 import okhttp3.Callback
 import okhttp3.Request
 
 object Payone {
 
+    @Serializable
     @Parcelize
     data class PayoneTokenizationData(
         val merchantID: String,
@@ -31,12 +33,14 @@ object Payone {
         val links: Map<String, Link>
     ) : Parcelable
 
+    @Serializable
     @Parcelize
     data class PreAuthInfo(
         val amount: Int?,
         val currency: String?
     ) : Parcelable
 
+    @Serializable
     @Parcelize
     data class Link(
         val href: String?
