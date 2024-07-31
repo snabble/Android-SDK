@@ -47,7 +47,7 @@ fun VersionWidget(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(
-                interactionSource = remember { MutableInteractionSource()  },
+                interactionSource = remember { MutableInteractionSource() },
                 indication = null,
             ) {
                 onAction(DynamicAction(model))
@@ -76,7 +76,7 @@ private fun provideAppVersion(context: Context): String {
         @Suppress("DEPRECATION")
         context.packageManager.getPackageInfo(context.packageName, 0)
     }
-    return packageInfo.versionName
+    return packageInfo.versionName.orEmpty()
 }
 
 @Preview
