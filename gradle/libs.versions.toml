@@ -2,7 +2,7 @@
 compileSdk = "34"
 targetSdk = "34"
 minSdk = "21"
-gradlePlugin = "8.4.2"
+gradlePlugin = "8.5.1"
 desugarVersion = "1.1.5"
 okhttpVersion = "4.10.0"
 # @pin always, manually updated to ensure overall dependency support
