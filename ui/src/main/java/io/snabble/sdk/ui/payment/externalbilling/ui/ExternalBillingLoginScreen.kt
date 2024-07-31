@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -29,9 +28,8 @@ import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.payment.externalbilling.ui.widgets.PasswordField
 import io.snabble.sdk.ui.payment.payone.sepa.form.ui.widget.TextFieldWidget
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun ExternalBillingLoginScreen(
+internal fun ExternalBillingLoginScreen(
     onSaveClick: (username: String, password: String) -> Unit,
     onFocusChanged: () -> Unit,
     isInputValid: Boolean,
