@@ -76,7 +76,7 @@ private fun provideAppVersion(context: Context): String {
         @Suppress("DEPRECATION")
         context.packageManager.getPackageInfo(context.packageName, 0)
     }
-    return packageInfo.versionName.orEmpty()
+    return packageInfo.versionName
 }
 
 @Preview
