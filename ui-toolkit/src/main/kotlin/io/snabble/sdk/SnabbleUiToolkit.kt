@@ -149,6 +149,7 @@ object SnabbleUiToolkit {
         unique: Boolean = false,
     ) {
         val intent = Intent(context, clazz).apply {
+            setPackage(context.packageName)
             if (args != null) putExtras(args)
             if (!canGoBack) addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
             if (unique) addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)

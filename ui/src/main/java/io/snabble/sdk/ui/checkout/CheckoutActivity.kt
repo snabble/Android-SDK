@@ -9,7 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.*
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updateMargins
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
@@ -31,13 +37,11 @@ class CheckoutActivity : FragmentActivity() {
 
         @JvmStatic
         fun startCheckoutFlow(context: Context, newTask: Boolean = false) {
-            val intent = Intent(context, CheckoutActivity::class.java)
-            if (newTask) {
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            val intent = Intent(context, CheckoutActivity::class.java).apply {
+                setPackage(context.packageName)
+                if (newTask) addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
             }
-
-            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-
             context.startActivity(intent)
         }
 

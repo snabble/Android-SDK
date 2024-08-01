@@ -47,7 +47,7 @@ fun VersionWidget(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(
-                interactionSource = remember { MutableInteractionSource()  },
+                interactionSource = remember { MutableInteractionSource() },
                 indication = null,
             ) {
                 onAction(DynamicAction(model))

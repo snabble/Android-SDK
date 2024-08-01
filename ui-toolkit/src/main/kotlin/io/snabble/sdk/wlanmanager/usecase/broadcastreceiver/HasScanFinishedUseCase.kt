@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.wifi.WifiManager
+import androidx.core.content.ContextCompat
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.coroutines.resume
@@ -33,7 +34,12 @@ internal class ScanIsFinishedImpl(
 
                 val intentFilter = IntentFilter()
                 intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)
-                context.registerReceiver(scanFinishedReceiver, intentFilter)
+                ContextCompat.registerReceiver(
+                    context,
+                    scanFinishedReceiver,
+                    intentFilter,
+                    ContextCompat.RECEIVER_EXPORTED
+                )
 
                 continuation.invokeOnCancellation {
                     context.unregisterReceiver(scanFinishedReceiver)
