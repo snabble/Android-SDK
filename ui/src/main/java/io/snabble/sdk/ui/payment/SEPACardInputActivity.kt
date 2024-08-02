@@ -20,6 +20,7 @@ class SEPACardInputActivity : BaseFragmentActivity() {
             context: Context,
             paymentOriginCandidate: PaymentOriginCandidateHelper.PaymentOriginCandidate? = null,
         ): Intent = Intent(context, SEPACardInputActivity::class.java).apply {
+            setPackage(context.packageName)
             paymentOriginCandidate?.let { putExtra(ARG_PAYMENT_ORIGIN_CANDIDATE, it) }
             addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
         }
