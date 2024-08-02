@@ -113,13 +113,11 @@ open class CheckoutBar @JvmOverloads constructor(
         }
 
         paymentSelectorButton.setOnClickListener {
-            SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_PAYMENT_SELECTION_DIALOG)
-//            paymentSelectionHelper.showDialog(UIUtils.getHostFragmentActivity(context))
+            paymentSelectionHelper.showDialog(UIUtils.getHostFragmentActivity(context))
         }
 
         paymentSelectorButtonBig.setOnClickListener {
-            SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_PAYMENT_SELECTION_DIALOG)
-//            paymentSelectionHelper.showDialog(UIUtils.getHostFragmentActivity(context))
+            paymentSelectionHelper.showDialog(UIUtils.getHostFragmentActivity(context))
         }
 
         payButton.setOneShotClickListener {

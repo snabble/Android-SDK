@@ -24,14 +24,12 @@ import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_EXTERNAL_BILLING
 import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_GIROPAY_INPUT
 import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_PAYMENT_CREDENTIALS_LIST
 import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_PAYMENT_OPTIONS
-import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_PAYMENT_SELECTION_DIALOG
 import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_PAYONE_INPUT
 import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_PAYONE_SEPA
 import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_PROJECT_PAYMENT_OPTIONS
 import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_SCANNER
 import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_SEPA_CARD_INPUT
 import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_SHOPPING_CART
-import io.snabble.sdk.ui.cart.PaymentSelectionHelper
 import io.snabble.sdk.ui.cart.deprecated.ShoppingCartActivity
 import io.snabble.sdk.ui.checkout.CheckoutActivity
 import io.snabble.sdk.ui.coupon.CouponDetailActivity
@@ -82,8 +80,7 @@ object SnabbleUI {
         SHOW_COUPON_DETAILS,
         GO_BACK,
         EXIT_TOKEN_AVAILABLE,
-        NOT_CHECKED_IN,
-        SHOW_PAYMENT_SELECTION_DIALOG
+        NOT_CHECKED_IN
     }
 
     private class ActivityCallback(
@@ -198,16 +195,12 @@ object SnabbleUI {
 
                 SHOW_COUPON_DETAILS -> startActivity(context, CouponDetailActivity::class.java, args)
 
-                SHOW_PAYMENT_SELECTION_DIALOG -> PaymentSelectionHelper.getInstance()
-                    .showDialog(UIUtils.getHostFragmentActivity(context))
-
                 // unhandled actions
                 GO_BACK,
                 SHOW_CHECKOUT_DONE,
                 NOT_CHECKED_IN,
                 EXIT_TOKEN_AVAILABLE,
                 null -> Unit
-
             }
         }
     }
