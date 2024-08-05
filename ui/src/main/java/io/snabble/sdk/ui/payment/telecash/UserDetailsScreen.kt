@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import io.snabble.sdk.BuildConfig
 import io.snabble.sdk.ui.cart.shoppingcart.utils.rememberTextFieldManager
 import io.snabble.sdk.ui.payment.telecash.domain.Address
 import io.snabble.sdk.ui.payment.telecash.domain.UserDetails
@@ -39,6 +40,17 @@ fun UserDetailsScreen(
     var city by remember { mutableStateOf("") }
     var state by remember { mutableStateOf("") }
     var country by remember { mutableStateOf("") }
+
+    if (BuildConfig.DEBUG) {
+        name = "Max Mustermann"
+        phoneNumber = "+491729973186"
+        email = "max.mustermann@example.com123"
+        street = "Fakestr. 123"
+        zip = "12345"
+        city = "Bonn"
+        state = "NRW"
+        country = "DE"
+    }
 
     val textFieldManager = rememberTextFieldManager()
 

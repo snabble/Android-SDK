@@ -1,5 +1,8 @@
 package io.snabble.sdk.ui.payment.telecash.data
 
+import android.util.Log
+import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Snabble
@@ -9,73 +12,87 @@ import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-interface TelecashRemoteDataSource {
+internal interface TelecashRemoteDataSource {
 
-    suspend fun preAuth(userDetails: UserDetailsDto, paymentMethod: PaymentMethod): Result<PreAuthData>
+    suspend fun sendUserData(customerInfo: CustomerInfoDto, paymentMethod: PaymentMethod): Result<CreditCardAuthData>
 }
 
-class TelecashRemoteDataSourceImpl : TelecashRemoteDataSource {
+internal class TelecashRemoteDataSourceImpl(
+    val gson: Gson = GsonHolder.get(),
+) : TelecashRemoteDataSource {
 
-    override suspend fun preAuth(userDetails: UserDetailsDto, paymentMethod: PaymentMethod): Result<PreAuthData> {
+    override suspend fun sendUserData(
+        customerInfo: CustomerInfoDto,
+        paymentMethod: PaymentMethod
+    ): Result<CreditCardAuthData> {
         val project = Snabble.checkedInProject.value ?: return Result.failure(Exception("Missing projectId"))
-        val authUrl = project.paymentMethodDescriptors
+
+        val customerInfoPostUrl = project.paymentMethodDescriptors
             .firstOrNull { it.paymentMethod == paymentMethod }
             ?.links
             ?.get("tokenization")
-            ?: return Result.failure(Exception("Missing pre-auth Url"))
+            ?.href
+            ?.let(Snabble::absoluteUrl)
+            ?: return Result.failure(Exception("Missing link to send customer info to"))
 
-        val requestBody = GsonHolder.get().toJson(userDetails).toRequestBody("application/json".toMediaType())
-
+        val requestBody: RequestBody = gson.toJson(customerInfo).toRequestBody("application/json".toMediaType())
         val request: Request = Request.Builder()
-            .url(Snabble.absoluteUrl(authUrl.href))
+            .url(customerInfoPostUrl)
             .post(requestBody)
             .build()
 
         return project.okHttpClient.post(request)
     }
 
-    private suspend fun OkHttpClient.post(request: Request) = suspendCoroutine<Result<PreAuthData>> {
+    private suspend fun OkHttpClient.post(request: Request) = suspendCoroutine<Result<CreditCardAuthData>> {
         newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                it.resume(Result.failure(e))
-            }
 
             override fun onResponse(call: Call, response: Response) {
                 when {
                     response.isSuccessful -> {
                         val body = response.body?.string()
-                        val preAuthData: PreAuthData? = GsonHolder.get().fromJson(body, PreAuthData::class.java)
-                        if (preAuthData == null) {
-                            it.resume(Result.failure(Exception("Missing content")))
-                        } else {
-                            it.resume(Result.success(preAuthData))
+                        val creditCardAuthData: CreditCardAuthData? = try {
+                            gson.fromJson(body, CreditCardAuthData::class.java)
+                        } catch (e: JsonSyntaxException) {
+                            Log.e("Telecash", "Error parsing pre-registration response", e)
+                            null
                         }
+
+                        val result = if (creditCardAuthData == null) {
+                            Result.failure(Exception("Missing content"))
+                        } else {
+                            Result.success(creditCardAuthData)
+                        }
+                        it.resume(result)
                     }
 
-                    else -> {
-                        it.resume(Result.failure(Exception(response.message)))
-                    }
+                    else -> it.resume(Result.failure(Exception(response.message)))
                 }
+            }
+
+            override fun onFailure(call: Call, e: IOException) {
+                it.resume(Result.failure(e))
             }
         })
     }
 }
 
-data class PreAuthData(
+internal data class CreditCardAuthData(
     @SerializedName("links") val links: Links
 )
 
-data class Links(
+internal data class Links(
     @SerializedName("self") val deleteUrl: Link,
     @SerializedName("tokenizationForm") val formUrl: Link
 )
 
-data class Link(
+internal data class Link(
     @SerializedName("href") val href: String
 )

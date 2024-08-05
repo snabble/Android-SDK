@@ -1,9 +1,9 @@
 package io.snabble.sdk.ui.payment.telecash.domain
 
 import io.snabble.sdk.PaymentMethod
-import io.snabble.sdk.ui.payment.telecash.data.PreAuthInformation
+import io.snabble.sdk.ui.payment.telecash.data.CreditCardAdditionInfo
 
-interface TelecashRepository {
+internal interface TelecashRepository {
 
-    suspend fun preAuth(userDetails: UserDetails, paymentMethod: PaymentMethod): Result<PreAuthInformation?>?
+    suspend fun sendUserData(userDetails: UserDetails, paymentMethod: PaymentMethod): Result<CreditCardAdditionInfo>
 }

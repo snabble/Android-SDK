@@ -6,7 +6,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
@@ -37,7 +36,7 @@ import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.payment.creditcard.data.CreditCardInfo;
-import io.snabble.sdk.ui.payment.creditcard.data.CreditCardUrlBuilder;
+import io.snabble.sdk.ui.payment.creditcard.data.SnabbleCreditCardUrlCreator;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Dispatch;
@@ -191,10 +190,8 @@ public class CreditCardInputView extends RelativeLayout {
     }
 
     private void loadUrl() {
-        CreditCardUrlBuilder builder = new CreditCardUrlBuilder();
-        String url = builder.createUrlFor(paymentType, this.url);
-        Log.d("xx", "loadUrl: " + url);
-        webView.loadUrl(url);
+        final String formUrl = SnabbleCreditCardUrlCreator.createCreditCardUrlFor(paymentType, url);
+        webView.loadUrl(formUrl);
     }
 
     private void authenticateAndSave(final CreditCardInfo creditCardInfo) {

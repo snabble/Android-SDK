@@ -2,29 +2,46 @@ package io.snabble.sdk.ui.payment.telecash
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import io.snabble.sdk.PaymentMethod
-import io.snabble.sdk.ui.payment.telecash.data.TelecashRemoteDataSourceImpl
 import io.snabble.sdk.ui.payment.telecash.data.TelecashRepositoryImpl
+import io.snabble.sdk.ui.payment.telecash.domain.TelecashRepository
 import io.snabble.sdk.ui.payment.telecash.domain.UserDetails
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class TelecashViewModel(
-    private val handle: SavedStateHandle
+internal class TelecashViewModel(
+    private val telecashRepo: TelecashRepository = TelecashRepositoryImpl(),
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    val _uiState = MutableStateFlow("")
-    val uiState = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow("")
+    val uiState: StateFlow<String> = _uiState.asStateFlow()
 
-    fun preuAuth(userDetails: UserDetails) {
+    fun sendUserData(userDetails: UserDetails) {
         viewModelScope.launch {
-            val paymentMethod = handle.get<PaymentMethod>("paymentType") ?: return@launch
-            val result = TelecashRepositoryImpl(TelecashRemoteDataSourceImpl()).preAuth(userDetails, paymentMethod)
-            result.onSuccess { pre ->
-                _uiState.update { pre.formUrl }
+            val paymentMethod = savedStateHandle.get<PaymentMethod>("paymentType") ?: return@launch
+            val result = telecashRepo.sendUserData(userDetails, paymentMethod)
+            result.onSuccess { info ->
+                _uiState.update { info.formUrl }
+            }
+            // TBI: On error?
+        }
+    }
+
+    companion object {
+
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val savedStateHandle = createSavedStateHandle()
+                TelecashViewModel(savedStateHandle = savedStateHandle)
             }
         }
     }
