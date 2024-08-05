@@ -10,7 +10,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.ui.payment.telecash.data.TelecashRepositoryImpl
 import io.snabble.sdk.ui.payment.telecash.domain.TelecashRepository
-import io.snabble.sdk.ui.payment.telecash.domain.UserDetails
+import io.snabble.sdk.ui.payment.telecash.domain.CustomerInfo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,10 +25,10 @@ internal class TelecashViewModel(
     private val _uiState = MutableStateFlow("")
     val uiState: StateFlow<String> = _uiState.asStateFlow()
 
-    fun sendUserData(userDetails: UserDetails) {
+    fun sendUserData(customerInfo: CustomerInfo) {
         viewModelScope.launch {
             val paymentMethod = savedStateHandle.get<PaymentMethod>("paymentType") ?: return@launch
-            val result = telecashRepo.sendUserData(userDetails, paymentMethod)
+            val result = telecashRepo.sendUserData(customerInfo, paymentMethod)
             result.onSuccess { info ->
                 _uiState.update { info.formUrl }
             }

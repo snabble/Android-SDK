@@ -1,6 +1,6 @@
 package io.snabble.sdk.ui.payment.telecash.domain
 
-data class UserDetails(
+data class CustomerInfo(
     val name: String,
     val phoneNumber: String,
     val email: String,
