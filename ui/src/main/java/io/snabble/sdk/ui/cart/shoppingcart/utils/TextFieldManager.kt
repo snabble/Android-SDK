@@ -1,6 +1,7 @@
 package io.snabble.sdk.ui.cart.shoppingcart.utils
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -14,6 +15,10 @@ internal class TextFieldManager(
     fun clearFocusAndHideKeyboard() {
         focusManager.clearFocus()
         keyboardController?.hide()
+    }
+
+    fun moveFocusToNext() {
+        focusManager.moveFocus(FocusDirection.Next)
     }
 }
 
