@@ -1,8 +1,9 @@
 package io.snabble.sdk.ui.payment.telecash.domain
 
-import java.net.URL
+import io.snabble.sdk.PaymentMethod
+import io.snabble.sdk.ui.payment.telecash.data.PreAuthInformation
 
 interface TelecashRepository {
 
-    fun preAuth(userDetails: UserDetails): URL
+    suspend fun preAuth(userDetails: UserDetails, paymentMethod: PaymentMethod): Result<PreAuthInformation?>?
 }
