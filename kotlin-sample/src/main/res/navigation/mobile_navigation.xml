@@ -170,6 +170,11 @@
         android:label="Enter credit card" />
 
     <fragment
+        android:id="@+id/user_details"
+        android:name="io.snabble.sdk.ui.payment.telecash.UserDetailsFragment"
+        android:label="User details" />
+
+    <fragment
         android:id="@+id/navigation_sepa_card_input"
         android:name="io.snabble.sdk.ui.payment.SEPACardInputFragment"
         android:label="Enter SEPA card info" />

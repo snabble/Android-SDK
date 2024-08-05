@@ -40,7 +40,7 @@ fun setUpUiEvents(activity: AppCompatActivity, navController: NavController, bot
         activity,
         SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT
     ) { _, args ->
-        navController.navigate(R.id.navigation_credit_card_input, args)
+        navController.navigate(R.id.user_details, args)
     }
     SnabbleUI.setUiAction(
         activity,
