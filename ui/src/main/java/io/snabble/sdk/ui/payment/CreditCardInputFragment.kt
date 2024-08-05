@@ -28,6 +28,6 @@ open class CreditCardInputFragment : BaseFragment(
 
     override fun onActualViewCreated(view: View, savedInstanceState: Bundle?) {
         val v = view as CreditCardInputView
-        v.load(projectId, paymentMethod)
+//        v.load(projectId, paymentMethod)
     }
 }

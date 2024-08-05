@@ -8,7 +8,7 @@ class TelecashRepositoryImpl(
     private val remoteDataSource: TelecashRemoteDataSource
 ) : TelecashRepository {
 
-    override suspend fun preAuth(userDetails: UserDetails, paymentMethod: PaymentMethod): Result<PreAuthInformation?> =
+    override suspend fun preAuth(userDetails: UserDetails, paymentMethod: PaymentMethod): Result<PreAuthInformation> =
         remoteDataSource.preAuth(userDetails.toDto(), paymentMethod)
             .map { PreAuthInformation(it.links.formUrl.href, it.links.deleteUrl.href) }
 }

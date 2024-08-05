@@ -6,6 +6,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
@@ -56,6 +57,7 @@ public class CreditCardInputView extends RelativeLayout {
 
     private PaymentMethod paymentType;
     private String projectId;
+    private String url;
     private TextView threeDHint;
     private boolean isLoaded;
 
@@ -162,10 +164,9 @@ public class CreditCardInputView extends RelativeLayout {
         }
     }
 
-    public void load(String projectId, PaymentMethod paymentType) {
-        this.projectId = projectId;
+    public void load(PaymentMethod paymentType, String url) {
         this.paymentType = paymentType;
-
+        this.url = Snabble.getInstance().absoluteUrl(url);
         inflateView();
     }
 
@@ -191,7 +192,8 @@ public class CreditCardInputView extends RelativeLayout {
 
     private void loadUrl() {
         CreditCardUrlBuilder builder = new CreditCardUrlBuilder();
-        String url = builder.createUrlFor(projectId, paymentType);
+        String url = builder.createUrlFor(paymentType, this.url);
+        Log.d("xx", "loadUrl: " + url);
         webView.loadUrl(url);
     }
 
@@ -340,10 +342,10 @@ public class CreditCardInputView extends RelativeLayout {
             Dispatch.mainThread(() -> {
                 isLoaded = true;
                 Project project = getProject();
-                String companyName = project.getName();
-                if (project.getCompany() != null && project.getCompany().name != null) {
-                    companyName = project.getCompany().name;
-                }
+//                String companyName = project.getName();
+//                if (project.getCompany() != null && project.getCompany().name != null) {
+//                    companyName = project.getCompany().name;
+//                }
                 NumberFormat numberFormat = NumberFormat.getCurrencyInstance();
                 numberFormat.setCurrency(Currency.getInstance(currency));
                 BigDecimal chargeTotal = new BigDecimal(totalCharge);
@@ -351,7 +353,7 @@ public class CreditCardInputView extends RelativeLayout {
                 threeDHint.setText(
                         resources.getString(R.string.Snabble_CC_3dsecureHint_retailerWithPrice,
                                 numberFormat.format(chargeTotal),
-                                companyName)
+                                "companyName")
                 );
             });
         }
