@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 
 @Composable
-fun <T> DropDownMenu(
+internal fun <T> DropDownMenu(
     modifier: Modifier = Modifier,
     isExpanded: Boolean,
     onExpand: () -> Unit,

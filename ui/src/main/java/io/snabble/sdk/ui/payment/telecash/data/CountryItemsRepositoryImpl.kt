@@ -4,7 +4,7 @@ import io.snabble.sdk.ui.payment.telecash.data.country.LocalCountryItemsDataSour
 import io.snabble.sdk.ui.payment.telecash.domain.CountryItemsRepository
 import io.snabble.sdk.ui.payment.telecash.domain.model.country.CountryItem
 
-class CountryItemsRepositoryImpl(
+internal class CountryItemsRepositoryImpl(
     private val localCountryItemsDataSource: LocalCountryItemsDataSource,
 ) : CountryItemsRepository {
 

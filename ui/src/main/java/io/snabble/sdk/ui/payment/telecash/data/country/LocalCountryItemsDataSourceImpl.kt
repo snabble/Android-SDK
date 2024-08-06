@@ -3,12 +3,12 @@ package io.snabble.sdk.ui.payment.telecash.data.country
 import android.content.res.AssetManager
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.tegut.tbox.account.details.domain.model.country.StateItem
+import io.snabble.sdk.ui.payment.telecash.domain.model.country.StateItem
 import io.snabble.sdk.ui.payment.telecash.data.dto.country.CountryDto
 import io.snabble.sdk.ui.payment.telecash.domain.model.country.CountryItem
 import java.util.Locale
 
-class LocalCountryItemsDataSourceImpl(
+internal class LocalCountryItemsDataSourceImpl(
     private val assetManager: AssetManager,
     private val gson: Gson,
 ) : LocalCountryItemsDataSource {

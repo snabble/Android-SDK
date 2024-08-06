@@ -50,7 +50,7 @@ internal class TelecashViewModel(
     }
 }
 
-data class UiState(
+internal data class UiState(
     val isLoading: Boolean = false,
     val formUrl: String? = null,
     val countryItems: List<CountryItem>,

@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun TextInput(
+internal fun TextInput(
     modifier: Modifier = Modifier,
     value: String,
     label: String,
@@ -64,7 +64,7 @@ fun TextInput(
 }
 
 @Composable
-fun TextFieldDefaults.defaultColors() = colors(
+private fun TextFieldDefaults.defaultColors() = colors(
     focusedContainerColor = MaterialTheme.colorScheme.background,
     unfocusedContainerColor = MaterialTheme.colorScheme.background,
     focusedIndicatorColor = MaterialTheme.colorScheme.primary,

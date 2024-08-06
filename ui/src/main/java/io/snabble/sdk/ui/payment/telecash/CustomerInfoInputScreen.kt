@@ -33,7 +33,7 @@ import io.snabble.sdk.ui.payment.telecash.widget.CountrySelectionMenu
 import io.snabble.sdk.ui.payment.telecash.widget.TextInput
 
 @Composable
-fun CustomerInfoInputScreen(
+internal fun CustomerInfoInputScreen(
     onSendAction: (CustomerInfo) -> Unit,
     onErrorProcessed: () -> Unit,
     showError: Boolean,

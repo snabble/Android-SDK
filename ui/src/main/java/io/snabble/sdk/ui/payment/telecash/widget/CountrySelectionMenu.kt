@@ -11,14 +11,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
-import com.tegut.tbox.account.details.domain.model.country.StateItem
+import io.snabble.sdk.ui.payment.telecash.domain.model.country.StateItem
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.payment.telecash.data.country.displayName
 import io.snabble.sdk.ui.payment.telecash.domain.model.country.CountryItem
 import java.util.Locale
 
 @Composable
-fun CountrySelectionMenu(
+internal fun CountrySelectionMenu(
     modifier: Modifier = Modifier,
     countryItems: List<CountryItem>?,
     selectedCountryCode: String? = null,
