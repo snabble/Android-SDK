@@ -52,6 +52,8 @@ fun CustomerInfoInputScreen(
 
     val textFieldManager = rememberTextFieldManager()
 
+    val isEnabled = listOf(name, phoneNumber, email, street, zip, city, country).all { it.isNotEmpty() }
+
     val createCustomerInfo: () -> CustomerInfo = {
         CustomerInfo(
             name = name,
@@ -169,7 +171,7 @@ fun CustomerInfoInputScreen(
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = { onSendAction(createCustomerInfo()) },
-                enabled = !isLoading
+                enabled = !isLoading && isEnabled
             ) {
                 Text(stringResource(R.string.Snabble_Payment_CustomerInfo_next))
             }

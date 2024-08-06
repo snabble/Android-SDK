@@ -4,7 +4,6 @@ package io.snabble.sdk.ui.payment.creditcard.data
 import android.net.Uri
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.extensions.xx
 
 fun createCreditCardUrlFor(paymentType: PaymentMethod, url: String): String {
     val paymentMethod = when (paymentType) {
@@ -20,7 +19,7 @@ fun createCreditCardUrlFor(paymentType: PaymentMethod, url: String): String {
         .appendQueryParameter(PARAM_KEY_ADD_USER_ID, appUserId)
         .appendQueryParameter(PARAM_KEY_PAYMENT_METHOD, paymentMethod)
         .build()
-        .toString().xx("Final URL:")
+        .toString()
 }
 
 private const val PARAM_KEY_PLATFORM = "platform"
