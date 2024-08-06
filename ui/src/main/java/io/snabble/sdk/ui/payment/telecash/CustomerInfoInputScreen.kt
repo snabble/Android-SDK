@@ -2,7 +2,6 @@ package io.snabble.sdk.ui.payment.telecash
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -22,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.BuildConfig
 import io.snabble.sdk.ui.R
@@ -73,7 +73,7 @@ fun CustomerInfoInputScreen(
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -95,6 +95,10 @@ fun CustomerInfoInputScreen(
             label = stringResource(R.string.Snabble_Payment_CustomerInfo_phoneNumber),
             keyboardActions = KeyboardActions(
                 onNext = { textFieldManager.moveFocusToNext() }
+            ),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Phone,
+                imeAction = ImeAction.Next
             )
         )
         TextInput(
@@ -105,7 +109,6 @@ fun CustomerInfoInputScreen(
             keyboardActions = KeyboardActions(
                 onNext = { textFieldManager.moveFocusToNext() }
             ),
-            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words)
         )
         TextInput(
             modifier = Modifier.fillMaxWidth(),
@@ -115,7 +118,6 @@ fun CustomerInfoInputScreen(
             keyboardActions = KeyboardActions(
                 onNext = { textFieldManager.moveFocusToNext() }
             ),
-            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words)
         )
         TextInput(
             modifier = Modifier.fillMaxWidth(),
@@ -125,7 +127,6 @@ fun CustomerInfoInputScreen(
             keyboardActions = KeyboardActions(
                 onNext = { textFieldManager.moveFocusToNext() }
             ),
-            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words)
         )
         TextInput(
             modifier = Modifier.fillMaxWidth(),
@@ -135,7 +136,6 @@ fun CustomerInfoInputScreen(
             keyboardActions = KeyboardActions(
                 onNext = { textFieldManager.moveFocusToNext() }
             ),
-            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words)
         )
         TextInput(
             modifier = Modifier.fillMaxWidth(),
@@ -145,7 +145,6 @@ fun CustomerInfoInputScreen(
             keyboardActions = KeyboardActions(
                 onNext = { textFieldManager.moveFocusToNext() }
             ),
-            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words)
         )
         TextInput(
             modifier = Modifier.fillMaxWidth(),
@@ -153,11 +152,11 @@ fun CustomerInfoInputScreen(
             onValueChanged = { country = it },
             label = stringResource(R.string.Snabble_Payment_CustomerInfo_country),
             keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Words,
-                imeAction = ImeAction.Send
+                imeAction = ImeAction.Send,
+                capitalization = KeyboardCapitalization.Words
             ),
             keyboardActions = KeyboardActions(
-                onNext = {
+                onSend = {
                     textFieldManager.clearFocusAndHideKeyboard()
                     onSendAction(createCustomerInfo())
                 }

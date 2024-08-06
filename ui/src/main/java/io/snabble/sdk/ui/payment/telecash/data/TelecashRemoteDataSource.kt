@@ -6,6 +6,7 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.utils.GsonHolder
 import okhttp3.Call
 import okhttp3.Callback
@@ -25,21 +26,22 @@ internal interface TelecashRemoteDataSource {
 }
 
 internal class TelecashRemoteDataSourceImpl(
-    val gson: Gson = GsonHolder.get(),
+    private val snabble: Snabble = Snabble,
+    private val gson: Gson = GsonHolder.get(),
 ) : TelecashRemoteDataSource {
 
     override suspend fun sendUserData(
         customerInfo: CustomerInfoDto,
         paymentMethod: PaymentMethod
     ): Result<CreditCardAuthData> {
-        val project = Snabble.checkedInProject.value ?: return Result.failure(Exception("Missing projectId"))
+        val project = snabble.checkedInProject.value ?: return Result.failure(Exception("Missing projectId"))
 
         val customerInfoPostUrl = project.paymentMethodDescriptors
             .firstOrNull { it.paymentMethod == paymentMethod }
             ?.links
             ?.get("tokenization")
             ?.href
-            ?.let(Snabble::absoluteUrl)
+            ?.let(snabble::absoluteUrl)
             ?: return Result.failure(Exception("Missing link to send customer info to"))
 
         val requestBody: RequestBody = gson.toJson(customerInfo).toRequestBody("application/json".toMediaType())

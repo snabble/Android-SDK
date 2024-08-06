@@ -14,7 +14,7 @@ import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.ui.payment.CreditCardInputView
 import io.snabble.sdk.ui.payment.PaymentMethodMetaDataHelper
 import io.snabble.sdk.ui.utils.ThemeWrapper
-import io.snabble.sdk.ui.utils.parcelableExtra
+import io.snabble.sdk.ui.utils.serializableExtra
 
 class CustomerInfoInputFragment : Fragment() {
 
@@ -25,8 +25,8 @@ class CustomerInfoInputFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        paymentMethod = arguments?.parcelableExtra<PaymentMethod>("paymentTyp")
-            ?: kotlin.run { requireActivity().finish(); return }
+        paymentMethod = arguments?.serializableExtra<PaymentMethod>(CreditCardInputView.ARG_PAYMENT_TYPE)
+            ?: kotlin.run { activity?.onBackPressed(); return }
 
         (requireActivity() as? AppCompatActivity)?.supportActionBar?.title =
             PaymentMethodMetaDataHelper(requireContext()).labelFor(paymentMethod)
