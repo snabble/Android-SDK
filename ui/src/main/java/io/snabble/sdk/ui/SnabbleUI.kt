@@ -34,7 +34,7 @@ import io.snabble.sdk.ui.cart.deprecated.ShoppingCartActivity
 import io.snabble.sdk.ui.checkout.CheckoutActivity
 import io.snabble.sdk.ui.coupon.CouponDetailActivity
 import io.snabble.sdk.ui.payment.AgeVerificationInputActivity
-import io.snabble.sdk.ui.payment.CreditCardInputActivity
+import io.snabble.sdk.ui.payment.fiserv.FiservInputActivity
 import io.snabble.sdk.ui.payment.GiropayInputActivity
 import io.snabble.sdk.ui.payment.PaymentCredentialsListActivity
 import io.snabble.sdk.ui.payment.PaymentOptionsActivity
@@ -175,7 +175,7 @@ object SnabbleUI {
                 )
 
                 SHOW_CREDIT_CARD_INPUT ->
-                    startActivity(context, CreditCardInputActivity::class.java, args, canGoBack = false)
+                    startActivity(context, FiservInputActivity::class.java, args, canGoBack = false)
 
                 SHOW_PAYONE_INPUT -> startActivity(context, PayoneInputActivity::class.java, args, canGoBack = false)
 
