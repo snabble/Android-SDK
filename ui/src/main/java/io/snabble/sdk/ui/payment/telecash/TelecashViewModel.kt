@@ -4,11 +4,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.snabble.sdk.PaymentMethod
-import io.snabble.sdk.extensions.xx
 import io.snabble.sdk.ui.payment.CreditCardInputView
 import io.snabble.sdk.ui.payment.telecash.domain.CountryItemsRepository
 import io.snabble.sdk.ui.payment.telecash.domain.CustomerInfo
 import io.snabble.sdk.ui.payment.telecash.domain.TelecashRepository
+import io.snabble.sdk.ui.payment.telecash.domain.model.country.CountryItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,16 +17,13 @@ import kotlinx.coroutines.launch
 
 internal class TelecashViewModel(
     private val telecashRepo: TelecashRepository,
-    private val countryItemsRepo: CountryItemsRepository,
+    countryItemsRepo: CountryItemsRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(UiState())
+    private val _uiState = MutableStateFlow(UiState(countryItems = countryItemsRepo.loadCountryItems()))
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    init {
-        countryItemsRepo.loadCountryItems().xx("Countries")
-    }
 
     fun sendUserData(customerInfo: CustomerInfo) {
         viewModelScope.launch {
@@ -56,6 +53,7 @@ internal class TelecashViewModel(
 data class UiState(
     val isLoading: Boolean = false,
     val formUrl: String? = null,
+    val countryItems: List<CountryItem>,
     val deletePreAuthUrl: String? = null,
     val showError: Boolean = false
 )

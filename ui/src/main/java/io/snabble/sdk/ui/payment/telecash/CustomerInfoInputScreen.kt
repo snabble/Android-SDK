@@ -19,7 +19,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -29,6 +28,8 @@ import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.shoppingcart.utils.rememberTextFieldManager
 import io.snabble.sdk.ui.payment.telecash.domain.Address
 import io.snabble.sdk.ui.payment.telecash.domain.CustomerInfo
+import io.snabble.sdk.ui.payment.telecash.domain.model.country.CountryItem
+import io.snabble.sdk.ui.payment.telecash.widget.CountrySelectionMenu
 import io.snabble.sdk.ui.payment.telecash.widget.TextInput
 
 @Composable
@@ -37,6 +38,7 @@ fun CustomerInfoInputScreen(
     onErrorProcessed: () -> Unit,
     showError: Boolean,
     isLoading: Boolean,
+    countryItems: List<CountryItem>?,
     onBackNavigationClick: () -> Unit,
 ) {
     var name by remember { mutableStateOf("") }
@@ -141,41 +143,25 @@ fun CustomerInfoInputScreen(
                 if (showError) onErrorProcessed()
             },
             label = stringResource(R.string.Snabble_Payment_CustomerInfo_city),
-            keyboardActions = KeyboardActions(
-                onNext = { textFieldManager.moveFocusToNext() }
-            ),
-        )
-        TextInput(
-            modifier = Modifier.fillMaxWidth(),
-            value = state,
-            onValueChanged = {
-                state = it
-                if (showError) onErrorProcessed()
-            },
-            label = stringResource(R.string.Snabble_Payment_CustomerInfo_state),
-            keyboardActions = KeyboardActions(
-                onNext = { textFieldManager.moveFocusToNext() }
-            ),
-        )
-        TextInput(
-            modifier = Modifier.fillMaxWidth(),
-            value = country,
-            onValueChanged = {
-                country = it
-                if (showError) onErrorProcessed()
-            },
-            label = stringResource(R.string.Snabble_Payment_CustomerInfo_country),
             keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Send,
+                imeAction = ImeAction.Done,
                 capitalization = KeyboardCapitalization.Words
             ),
             keyboardActions = KeyboardActions(
-                onSend = {
-                    textFieldManager.clearFocusAndHideKeyboard()
-                    onSendAction(createCustomerInfo())
-                }
+                onDone = { textFieldManager.clearFocusAndHideKeyboard() }
             )
         )
+        CountrySelectionMenu(
+            countryItems = countryItems,
+            selectedCountryCode = country,
+            selectedStateCode = null,
+            onCountrySelected = { (_, countryCode), stateItem ->
+                country = countryCode
+                state = stateItem?.code.orEmpty()
+                if (showError) onErrorProcessed()
+            }
+        )
+
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -190,8 +176,9 @@ fun CustomerInfoInputScreen(
             if (showError) {
                 Text(
                     stringResource(R.string.Snabble_Payment_CustomerInfo_error),
-                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.Red),
-                    modifier = Modifier.padding(horizontal = 16.dp)
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
         }

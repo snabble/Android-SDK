@@ -1,6 +1,5 @@
 package io.snabble.sdk.ui.payment.telecash
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -37,7 +36,7 @@ class CustomerInfoInputFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         ComposeView(inflater.context).apply {
             setContent {
-                val uiState = viewModel.uiState.collectAsStateWithLifecycle().value // TBI: It's currently only the url
+                val uiState: UiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
                 when {
                     uiState.formUrl == null ->
@@ -47,6 +46,7 @@ class CustomerInfoInputFragment : Fragment() {
                                 isLoading = uiState.isLoading,
                                 onSendAction = { viewModel.sendUserData(it) },
                                 showError = uiState.showError,
+                                countryItems = uiState.countryItems,
                                 onBackNavigationClick = { activity?.onBackPressed() }
                             )
                         }

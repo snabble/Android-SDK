@@ -109,6 +109,7 @@
   <string name="Snabble.Payment.CustomerInfo.next">Weiter</string>
   <string name="Snabble.Payment.CustomerInfo.phoneNumber">Telefonnummer</string>
   <string name="Snabble.Payment.CustomerInfo.state">Bundesland</string>
+  <string name="Snabble.Payment.CustomerInfo.stateSelect">Bitte wählen</string>
   <string name="Snabble.Payment.CustomerInfo.street">Straße inkl. Hausnummer</string>
   <string name="Snabble.Payment.CustomerInfo.zip">Postleitzahl</string>
   <string name="Snabble.Payment.Delete.message">Möchtest Du diese Zahlungsmethode wirklich entfernen?</string>

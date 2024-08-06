@@ -109,6 +109,7 @@
   <string name="Snabble.Payment.CustomerInfo.next">Continue</string>
   <string name="Snabble.Payment.CustomerInfo.phoneNumber">Phone number</string>
   <string name="Snabble.Payment.CustomerInfo.state">State</string>
+  <string name="Snabble.Payment.CustomerInfo.stateSelect">Pick one</string>
   <string name="Snabble.Payment.CustomerInfo.street">Street</string>
   <string name="Snabble.Payment.CustomerInfo.zip">ZIP code</string>
   <string name="Snabble.Payment.Delete.message">Are you sure you want to remove this payment method?</string>
