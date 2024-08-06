@@ -30,17 +30,19 @@ internal class TelecashViewModel(
             val paymentMethod =
                 savedStateHandle.get<PaymentMethod>(CreditCardInputView.ARG_PAYMENT_TYPE) ?: return@launch
             val result = telecashRepo.sendUserData(customerInfo, paymentMethod)
-            result.onSuccess { info ->
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        formUrl = info.formUrl,
-                        deletePreAuthUrl = it.deletePreAuthUrl
-                    )
+            result
+                .onSuccess { info ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            formUrl = info.formUrl,
+                            deletePreAuthUrl = info.preAuthDeleteUrl
+                        )
+                    }
                 }
-            }.onFailure {
-                _uiState.update { it.copy(isLoading = false, showError = true) }
-            }
+                .onFailure {
+                    _uiState.update { it.copy(isLoading = false, showError = true) }
+                }
         }
     }
 

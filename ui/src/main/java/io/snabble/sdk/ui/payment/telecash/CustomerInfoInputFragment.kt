@@ -54,7 +54,14 @@ class CustomerInfoInputFragment : Fragment() {
                     else -> AndroidView(
                         factory = { context ->
                             CreditCardInputView(context)
-                                .apply { load(Snabble.checkedInProject.value?.id, paymentMethod, uiState.formUrl) }
+                                .apply {
+                                    load(
+                                        Snabble.checkedInProject.value?.id,
+                                        paymentMethod,
+                                        uiState.formUrl,
+                                        uiState.deletePreAuthUrl
+                                    )
+                                }
                         }
                     )
                 }

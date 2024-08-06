@@ -24,6 +24,7 @@ import androidx.lifecycle.Lifecycle;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Currency;
@@ -42,6 +43,7 @@ import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
+import okhttp3.Request;
 
 public class CreditCardInputView extends RelativeLayout {
     public static final String ARG_PROJECT_ID = "projectId";
@@ -56,7 +58,8 @@ public class CreditCardInputView extends RelativeLayout {
 
     private PaymentMethod paymentType;
     private String projectId;
-    private String url;
+    private String formUrl;
+    private String deleteUrl;
     private TextView threeDHint;
     private boolean isLoaded;
 
@@ -163,10 +166,11 @@ public class CreditCardInputView extends RelativeLayout {
         }
     }
 
-    public void load(String projectId, PaymentMethod paymentType, String url) {
+    public void load(String projectId, PaymentMethod paymentType, String formUrl, String deletePreAuthUrl) {
         this.paymentType = paymentType;
         this.projectId = projectId;
-        this.url = Snabble.getInstance().absoluteUrl(url);
+        this.formUrl = Snabble.getInstance().absoluteUrl(formUrl);
+        this.deleteUrl = Snabble.getInstance().absoluteUrl(deletePreAuthUrl);
         inflateView();
     }
 
@@ -191,7 +195,7 @@ public class CreditCardInputView extends RelativeLayout {
     }
 
     private void loadUrl() {
-        final String formUrl = SnabbleCreditCardUrlCreator.createCreditCardUrlFor(paymentType, url);
+        final String formUrl = SnabbleCreditCardUrlCreator.createCreditCardUrlFor(paymentType, this.formUrl);
         webView.loadUrl(formUrl);
     }
 
@@ -257,7 +261,21 @@ public class CreditCardInputView extends RelativeLayout {
     }
 
     private void finish() {
+        deletePreAuth();
         SnabbleUI.executeAction(getContext(), SnabbleUI.Event.GO_BACK);
+    }
+
+    private void deletePreAuth() {
+        Dispatch.io(() -> {
+            final Request request = new Request.Builder().url(deleteUrl).delete().build();
+            try {
+                final Project project = getProject();
+                if (project != null) {
+                    project.getOkHttpClient().newCall(request).execute();
+                }
+            } catch (final IOException ignored) {
+            }
+        });
     }
 
     private void finishWithError(String failReason) {
