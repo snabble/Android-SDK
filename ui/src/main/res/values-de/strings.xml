@@ -104,6 +104,7 @@
   <string name="Snabble.Payment.CustomerInfo.city">Stadt</string>
   <string name="Snabble.Payment.CustomerInfo.country">Land</string>
   <string name="Snabble.Payment.CustomerInfo.email">E-Mail-Adresse</string>
+  <string name="Snabble.Payment.CustomerInfo.error">Bitte überprüfe deine Eingaben und versuche es erneut</string>
   <string name="Snabble.Payment.CustomerInfo.fullName">Vor- und Nachname</string>
   <string name="Snabble.Payment.CustomerInfo.next">Weiter</string>
   <string name="Snabble.Payment.CustomerInfo.phoneNumber">Telefonnummer</string>

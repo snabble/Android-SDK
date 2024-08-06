@@ -21,8 +21,8 @@ internal class TelecashViewModel(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow("")
-    val uiState: StateFlow<String> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     init {
         countryItemsRepo.loadCountryItems().xx("Countries")
@@ -30,13 +30,32 @@ internal class TelecashViewModel(
 
     fun sendUserData(customerInfo: CustomerInfo) {
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
             val paymentMethod =
                 savedStateHandle.get<PaymentMethod>(CreditCardInputView.ARG_PAYMENT_TYPE) ?: return@launch
             val result = telecashRepo.sendUserData(customerInfo, paymentMethod)
             result.onSuccess { info ->
-                _uiState.update { info.formUrl }
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        formUrl = info.formUrl,
+                        deletePreAuthUrl = it.deletePreAuthUrl
+                    )
+                }
+            }.onFailure {
+                _uiState.update { it.copy(isLoading = false, showError = true) }
             }
-            // TBI: On error?
         }
     }
+
+    fun errorHandled() {
+        _uiState.update { it.copy(showError = false) }
+    }
 }
+
+data class UiState(
+    val isLoading: Boolean = false,
+    val formUrl: String? = null,
+    val deletePreAuthUrl: String? = null,
+    val showError: Boolean = false
+)

@@ -163,8 +163,9 @@ public class CreditCardInputView extends RelativeLayout {
         }
     }
 
-    public void load(PaymentMethod paymentType, String url) {
+    public void load(String projectId, PaymentMethod paymentType, String url) {
         this.paymentType = paymentType;
+        this.projectId = projectId;
         this.url = Snabble.getInstance().absoluteUrl(url);
         inflateView();
     }
@@ -339,10 +340,10 @@ public class CreditCardInputView extends RelativeLayout {
             Dispatch.mainThread(() -> {
                 isLoaded = true;
                 Project project = getProject();
-//                String companyName = project.getName();
-//                if (project.getCompany() != null && project.getCompany().name != null) {
-//                    companyName = project.getCompany().name;
-//                }
+                String companyName = project.getName();
+                if (project.getCompany() != null && project.getCompany().name != null) {
+                    companyName = project.getCompany().name;
+                }
                 NumberFormat numberFormat = NumberFormat.getCurrencyInstance();
                 numberFormat.setCurrency(Currency.getInstance(currency));
                 BigDecimal chargeTotal = new BigDecimal(totalCharge);
@@ -350,7 +351,7 @@ public class CreditCardInputView extends RelativeLayout {
                 threeDHint.setText(
                         resources.getString(R.string.Snabble_CC_3dsecureHint_retailerWithPrice,
                                 numberFormat.format(chargeTotal),
-                                "companyName")
+                                companyName)
                 );
             });
         }
