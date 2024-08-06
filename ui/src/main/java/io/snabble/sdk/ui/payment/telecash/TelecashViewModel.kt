@@ -24,7 +24,6 @@ internal class TelecashViewModel(
     private val _uiState = MutableStateFlow(UiState(countryItems = countryItemsRepo.loadCountryItems()))
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-
     fun sendUserData(customerInfo: CustomerInfo) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
