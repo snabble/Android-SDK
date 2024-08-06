@@ -1,0 +1,2261 @@
+[
+  {
+    "code": "AF"
+  },
+  {
+    "code": "AL"
+  },
+  {
+    "code": "DZ"
+  },
+  {
+    "code": "AS"
+  },
+  {
+    "code": "AD"
+  },
+  {
+    "code": "AO"
+  },
+  {
+    "code": "AI"
+  },
+  {
+    "code": "AQ"
+  },
+  {
+    "code": "AG"
+  },
+  {
+    "code": "AR",
+    "states": [
+      {
+        "code" : "B",
+        "name" : "Buenos Aires"
+      },
+      {
+        "code" : "K",
+        "name" : "Catamarca"
+      },
+      {
+        "code" : "H",
+        "name" : "Chaco"
+      },
+      {
+        "code" : "U",
+        "name" : "Chubut"
+      },
+      {
+        "code" : "C",
+        "name" : "Ciudad Autónoma de Buenos Aires"
+      },
+      {
+        "code" : "W",
+        "name" : "Corrientes"
+      },
+      {
+        "code" : "X",
+        "name" : "Córdoba"
+      },
+      {
+        "code" : "E",
+        "name" : "Entre Ríos"
+      },
+      {
+        "code" : "P",
+        "name" : "Formosa"
+      },
+      {
+        "code" : "Y",
+        "name" : "Jujuy"
+      },
+      {
+        "code" : "L",
+        "name" : "La Pampa"
+      },
+      {
+        "code" : "F",
+        "name" : "La Rioja"
+      },
+      {
+        "code" : "M",
+        "name" : "Mendoza"
+      },
+      {
+        "code" : "N",
+        "name" : "Misiones"
+      },
+      {
+        "code" : "Q",
+        "name" : "Neuquén"
+      },
+      {
+        "code" : "R",
+        "name" : "Río Negro"
+      },
+      {
+        "code" : "A",
+        "name" : "Salta"
+      },
+      {
+        "code" : "J",
+        "name" : "San Juan"
+      },
+      {
+        "code" : "D",
+        "name" : "San Luis"
+      },
+      {
+        "code" : "Z",
+        "name" : "Santa Cruz"
+      },
+      {
+        "code" : "S",
+        "name" : "Santa Fe"
+      },
+      {
+        "code" : "G",
+        "name" : "Santiago del Estero"
+      },
+      {
+        "code" : "V",
+        "name" : "Tierra del Fuego"
+      },
+      {
+        "code" : "T",
+        "name" : "Tucumán"
+      }
+    ]
+  },
+  {
+    "code": "AM"
+  },
+  {
+    "code": "AW"
+  },
+  {
+    "code": "AU"
+  },
+  {
+    "code": "AT"
+  },
+  {
+    "code": "AZ"
+  },
+  {
+    "code": "BS"
+  },
+  {
+    "code": "BH"
+  },
+  {
+    "code": "BD"
+  },
+  {
+    "code": "BB"
+  },
+  {
+    "code": "BY"
+  },
+  {
+    "code": "BE"
+  },
+  {
+    "code": "BZ"
+  },
+  {
+    "code": "BJ"
+  },
+  {
+    "code": "BM"
+  },
+  {
+    "code": "BT"
+  },
+  {
+    "code": "BO"
+  },
+  {
+    "code": "BQ"
+  },
+  {
+    "code": "BA"
+  },
+  {
+    "code": "BW"
+  },
+  {
+    "code": "BV"
+  },
+  {
+    "code": "BR",
+    "states": [
+      {
+        "code" : "AC",
+        "name" : "Acre"
+      },
+      {
+        "code" : "AL",
+        "name" : "Alagoas"
+      },
+      {
+        "code" : "AP",
+        "name" : "Amapá"
+      },
+      {
+        "code" : "AM",
+        "name" : "Amazonas"
+      },
+      {
+        "code" : "BA",
+        "name" : "Bahia"
+      },
+      {
+        "code" : "CE",
+        "name" : "Ceará"
+      },
+      {
+        "code" : "DF",
+        "name" : "Distrito Federal"
+      },
+      {
+        "code" : "ES",
+        "name" : "Espírito Santo"
+      },
+      {
+        "code" : "GO",
+        "name" : "Goiás"
+      },
+      {
+        "code" : "MA",
+        "name" : "Maranhão"
+      },
+      {
+        "code" : "MT",
+        "name" : "Mato Grosso"
+      },
+      {
+        "code" : "MS",
+        "name" : "Mato Grosso do Sul"
+      },
+      {
+        "code" : "MG",
+        "name" : "Minas Gerais"
+      },
+      {
+        "code" : "PR",
+        "name" : "Paraná"
+      },
+      {
+        "code" : "PB",
+        "name" : "Paraíba"
+      },
+      {
+        "code" : "PA",
+        "name" : "Pará"
+      },
+      {
+        "code" : "PE",
+        "name" : "Pernambuco"
+      },
+      {
+        "code" : "PI",
+        "name" : "Piauí"
+      },
+      {
+        "code" : "RN",
+        "name" : "Rio Grande do Norte"
+      },
+      {
+        "code" : "RS",
+        "name" : "Rio Grande do Sul"
+      },
+      {
+        "code" : "RJ",
+        "name" : "Rio de Janeiro"
+      },
+      {
+        "code" : "RO",
+        "name" : "Rondônia"
+      },
+      {
+        "code" : "RR",
+        "name" : "Roraima"
+      },
+      {
+        "code" : "SC",
+        "name" : "Santa Catarina"
+      },
+      {
+        "code" : "SE",
+        "name" : "Sergipe"
+      },
+      {
+        "code" : "SP",
+        "name" : "São Paulo"
+      },
+      {
+        "code" : "TO",
+        "name" : "Tocantins"
+      }
+    ]
+  },
+  {
+    "code": "IO"
+  },
+  {
+    "code": "BN"
+  },
+  {
+    "code": "BG"
+  },
+  {
+    "code": "BF"
+  },
+  {
+    "code": "BI"
+  },
+  {
+    "code": "KH"
+  },
+  {
+    "code": "CM"
+  },
+  {
+    "code": "CA",
+    "states": [
+      {
+        "code" : "AB",
+        "name" : "Alberta"
+      },
+      {
+        "code" : "BC",
+        "name" : "British Columbia"
+      },
+      {
+        "code" : "MB",
+        "name" : "Manitoba"
+      },
+      {
+        "code" : "NB",
+        "name" : "New Brunswick"
+      },
+      {
+        "code" : "NL",
+        "name" : "Newfoundland and Labrador"
+      },
+      {
+        "code" : "NT",
+        "name" : "Northwest Territories"
+      },
+      {
+        "code" : "NS",
+        "name" : "Nova Scotia"
+      },
+      {
+        "code" : "NU",
+        "name" : "Nunavut"
+      },
+      {
+        "code" : "ON",
+        "name" : "Ontario"
+      },
+      {
+        "code" : "PE",
+        "name" : "Prince Edward Island"
+      },
+      {
+        "code" : "QC",
+        "name" : "Quebec"
+      },
+      {
+        "code" : "SK",
+        "name" : "Saskatchewan"
+      },
+      {
+        "code" : "YT",
+        "name" : "Yukon"
+      }
+    ]
+  },
+  {
+    "code": "CV"
+  },
+  {
+    "code": "KY"
+  },
+  {
+    "code": "CF"
+  },
+  {
+    "code": "TD"
+  },
+  {
+    "code": "CL"
+  },
+  {
+    "code": "CN",
+    "states": [
+      {
+        "code" : "11",
+        "name" : "Beijing"
+      },
+      {
+        "code" : "43",
+        "name" : "Hunan"
+      },
+      {
+        "code" : "12",
+        "name" : "Tianjin"
+      },
+      {
+        "code" : "44",
+        "name" : "Guangdong"
+      },
+      {
+        "code" : "13",
+        "name" : "Hebei"
+      },
+      {
+        "code" : "45",
+        "name" : "Guangxi"
+      },
+      {
+        "code" : "14",
+        "name" : "Shanxi"
+      },
+      {
+        "code" : "46",
+        "name" : "Hainan"
+      },
+      {
+        "code" : "15",
+        "name" : "Nei Mongol (mn), (Inner Mongolia)"
+      },
+      {
+        "code" : "50",
+        "name" : "Chongqing"
+      },
+      {
+        "code" : "21",
+        "name" : "Liaoning"
+      },
+      {
+        "code" : "51",
+        "name" : "Sichuan"
+      },
+      {
+        "code" : "22",
+        "name" : "Jilin"
+      },
+      {
+        "code" : "52",
+        "name" : "Guizhou"
+      },
+      {
+        "code" : "23",
+        "name" : "Heilongjiang"
+      },
+      {
+        "code" : "53",
+        "name" : "Yunnan"
+      },
+      {
+        "code" : "31",
+        "name" : "Shanghai"
+      },
+      {
+        "code" : "54",
+        "name" : "Xizang (Tibet)"
+      },
+      {
+        "code" : "32",
+        "name" : "Jiangsu"
+      },
+      {
+        "code" : "61",
+        "name" : "Shaanxi"
+      },
+      {
+        "code" : "33",
+        "name" : "Zhejiang"
+      },
+      {
+        "code" : "62",
+        "name" : "Gansu"
+      },
+      {
+        "code" : "34",
+        "name" : "Anhui"
+      },
+      {
+        "code" : "63",
+        "name" : "Qinghai"
+      },
+      {
+        "code" : "35",
+        "name" : "Fujian"
+      },
+      {
+        "code" : "64",
+        "name" : "Ningxia"
+      },
+      {
+        "code" : "36",
+        "name" : "Jiangxi"
+      },
+      {
+        "code" : "65",
+        "name" : "Xinjiang"
+      },
+      {
+        "code" : "37",
+        "name" : "Shandong"
+      },
+      {
+        "code" : "71",
+        "name" : "Taiwan"
+      },
+      {
+        "code" : "41",
+        "name" : "Henan"
+      },
+      {
+        "code" : "91",
+        "name" : "Hong Kong (en) Xianggang (zh)"
+      },
+      {
+        "code" : "42",
+        "name" : "Hubei"
+      },
+      {
+        "code" : "92",
+        "name" : "Macao (en) Aomen (zh)"
+      }
+    ]
+  },
+  {
+    "code": "CW"
+  },
+  {
+    "code": "CX"
+  },
+  {
+    "code": "CC"
+  },
+  {
+    "code": "CO"
+  },
+  {
+    "code": "KM"
+  },
+  {
+    "code": "CG"
+  },
+  {
+    "code": "CK"
+  },
+  {
+    "code": "CR"
+  },
+  {
+    "code": "CI"
+  },
+  {
+    "code": "HR"
+  },
+  {
+    "code": "CU"
+  },
+  {
+    "code": "CY"
+  },
+  {
+    "code": "CZ"
+  },
+  {
+    "code": "DK"
+  },
+  {
+    "code": "DJ"
+  },
+  {
+    "code": "DM"
+  },
+  {
+    "code": "DO"
+  },
+  {
+    "code": "TL"
+  },
+  {
+    "code": "EC"
+  },
+  {
+    "code": "EG"
+  },
+  {
+    "code": "SV"
+  },
+  {
+    "code": "GQ"
+  },
+  {
+    "code": "ER"
+  },
+  {
+    "code": "EE"
+  },
+  {
+    "code": "ET"
+  },
+  {
+    "code": "FK"
+  },
+  {
+    "code": "FO"
+  },
+  {
+    "code": "FJ"
+  },
+  {
+    "code": "FI"
+  },
+  {
+    "code": "FR"
+  },
+  {
+    "code": "GF"
+  },
+  {
+    "code": "PF"
+  },
+  {
+    "code": "TF"
+  },
+  {
+    "code": "GA"
+  },
+  {
+    "code": "GM"
+  },
+  {
+    "code": "GE"
+  },
+  {
+    "code": "DE"
+  },
+  {
+    "code": "GH"
+  },
+  {
+    "code": "GI"
+  },
+  {
+    "code": "GR"
+  },
+  {
+    "code": "GL"
+  },
+  {
+    "code": "GD"
+  },
+  {
+    "code": "GP"
+  },
+  {
+    "code": "GU"
+  },
+  {
+    "code": "GT"
+  },
+  {
+    "code": "GN"
+  },
+  {
+    "code": "GW"
+  },
+  {
+    "code": "GY"
+  },
+  {
+    "code": "HT"
+  },
+  {
+    "code": "HM"
+  },
+  {
+    "code": "HN"
+  },
+  {
+    "code": "HK"
+  },
+  {
+    "code": "HU"
+  },
+  {
+    "code": "IS"
+  },
+  {
+    "code": "IN",
+    "states": [
+      {
+        "code" : "AN",
+        "name" : "Andaman and Nicobar Islands"
+      },
+      {
+        "code" : "AP",
+        "name" : "Andhra Pradesh"
+      },
+      {
+        "code" : "AR",
+        "name" : "Arunachal Pradesh"
+      },
+      {
+        "code" : "AS",
+        "name" : "Assam"
+      },
+      {
+        "code" : "BR",
+        "name" : "Bihar"
+      },
+      {
+        "code" : "CH",
+        "name" : "Chandigarh"
+      },
+      {
+        "code" : "CT",
+        "name" : "Chhattisgarh"
+      },
+      {
+        "code" : "DN",
+        "name" : "Dadra and Nagar Haveli"
+      },
+      {
+        "code" : "DD",
+        "name" : "Daman and Diu"
+      },
+      {
+        "code" : "DL",
+        "name" : "Delhi"
+      },
+      {
+        "code" : "GA",
+        "name" : "Goa"
+      },
+      {
+        "code" : "GJ",
+        "name" : "Gujarat"
+      },
+      {
+        "code" : "HR",
+        "name" : "Haryana"
+      },
+      {
+        "code" : "HP",
+        "name" : "Himachal Pradesh"
+      },
+      {
+        "code" : "JK",
+        "name" : "Jammu and Kashmir"
+      },
+      {
+        "code" : "JH",
+        "name" : "Jharkhand"
+      },
+      {
+        "code" : "KA",
+        "name" : "Karnataka"
+      },
+      {
+        "code" : "KL",
+        "name" : "Kerala"
+      },
+      {
+        "code" : "LD",
+        "name" : "Lakshadweep"
+      },
+      {
+        "code" : "MP",
+        "name" : "Madhya Pradesh"
+      },
+      {
+        "code" : "MH",
+        "name" : "Maharashtra"
+      },
+      {
+        "code" : "MN",
+        "name" : "Manipur"
+      },
+      {
+        "code" : "ML",
+        "name" : "Meghalaya"
+      },
+      {
+        "code" : "MZ",
+        "name" : "Mizoram"
+      },
+      {
+        "code" : "NL",
+        "name" : "Nagaland"
+      },
+      {
+        "code" : "OR",
+        "name" : "Odisha"
+      },
+      {
+        "code" : "PY",
+        "name" : "Puducherry"
+      },
+      {
+        "code" : "PB",
+        "name" : "Punjab"
+      },
+      {
+        "code" : "RJ",
+        "name" : "Rajasthan"
+      },
+      {
+        "code" : "SK",
+        "name" : "Sikkim"
+      },
+      {
+        "code" : "TN",
+        "name" : "Tamil Nadu"
+      },
+      {
+        "code" : "TG",
+        "name" : "Telangana"
+      },
+      {
+        "code" : "TR",
+        "name" : "Tripura"
+      },
+      {
+        "code" : "UP",
+        "name" : "Uttar Pradesh"
+      },
+      {
+        "code" : "UT",
+        "name" : "Uttarakhand"
+      },
+      {
+        "code" : "WB",
+        "name" : "West Bengal"
+      }
+    ]
+  },
+  {
+    "code": "ID",
+    "states": [
+      {
+        "code" : "AC",
+        "name" : "Aceh, Aceh"
+      },
+      {
+        "code" : "BA",
+        "name" : "Bali, Bali"
+      },
+      {
+        "code" : "BB",
+        "name" : "Bangka Belitung, Bangka-Belitung Islands"
+      },
+      {
+        "code" : "BT",
+        "name" : "Banten, Banten"
+      },
+      {
+        "code" : "BE",
+        "name" : "Bengkulu, Bengkulu"
+      },
+      {
+        "code" : "GO",
+        "name" : "Gorontalo, Gorontalo"
+      },
+      {
+        "code" : "JK",
+        "name" : "Jakarta Raya, Jakarta"
+      },
+      {
+        "code" : "JA",
+        "name" : "Jambi, Jambi"
+      },
+      {
+        "code" : "JB",
+        "name" : "Jawa Barat, West Java"
+      },
+      {
+        "code" : "JT",
+        "name" : "Jawa Tengah, Central Java"
+      },
+      {
+        "code" : "JI",
+        "name" : "Jawa Timur, East Java"
+      },
+      {
+        "code" : "KB",
+        "name" : "Kalimantan Baratm, West Kalimantan"
+      },
+      {
+        "code" : "KS",
+        "name" : "Kalimantan Selatan, South Kalimantan"
+      },
+      {
+        "code" : "KT",
+        "name" : "Kalimantan Tengah, Central Kalimantan"
+      },
+      {
+        "code" : "KI",
+        "name" : "Kalimantan Timur, East Kalimantan"
+      },
+      {
+        "code" : "KU",
+        "name" : "Kalimantan Utara, North Kalimantan"
+      },
+      {
+        "code" : "KR",
+        "name" : "Kepulauan Riau, Riau Islands"
+      },
+      {
+        "code" : "LA",
+        "name" : "Lampung, Lampung"
+      },
+      {
+        "code" : "MU",
+        "name" : "Maluku Utara, North Maluku"
+      },
+      {
+        "code" : "MA",
+        "name" : "Maluku, Maluku"
+      },
+      {
+        "code" : "NB",
+        "name" : "Nusa Tenggara Barat, West Nusa Tenggara"
+      },
+      {
+        "code" : "NT",
+        "name" : "Nusa Tenggara Timur, East Nusa Tenggara"
+      },
+      {
+        "code" : "PB",
+        "name" : "Papua Barat, West Papua"
+      },
+      {
+        "code" : "PA",
+        "name" : "Papua, Papua"
+      },
+      {
+        "code" : "RI",
+        "name" : "Riau, Riau"
+      },
+      {
+        "code" : "SR",
+        "name" : "Sulawesi Barat, West Sulawesi"
+      },
+      {
+        "code" : "SN",
+        "name" : "Sulawesi Selatan, South Sulawesi"
+      },
+      {
+        "code" : "ST",
+        "name" : "Sulawesi Tengah, Central Sulawesi"
+      },
+      {
+        "code" : "SG",
+        "name" : "Sulawesi Tenggara, Southeast Sulawesi"
+      },
+      {
+        "code" : "SA",
+        "name" : "Sulawesi Utara, North Sulawesi"
+      },
+      {
+        "code" : "SB",
+        "name" : "Sumatera Barat, West Sumatra"
+      },
+      {
+        "code" : "SS",
+        "name" : "Sumatera Selatan, South Sumatra"
+      },
+      {
+        "code" : "SU",
+        "name" : "Sumatera Utara, North Sumatra"
+      },
+      {
+        "code" : "YO",
+        "name" : "Yogyakarta, Yogyakarta"
+      }
+    ]
+  },
+  {
+    "code": "IR"
+  },
+  {
+    "code": "IQ"
+  },
+  {
+    "code": "IE"
+  },
+  {
+    "code": "IL"
+  },
+  {
+    "code": "IT"
+  },
+  {
+    "code": "JM"
+  },
+  {
+    "code": "JP",
+    "states": [
+      {
+        "code" : "23",
+        "name" : "Aiti (Aichi)"
+      },
+      {
+        "code" : "05",
+        "name" : "Akita"
+      },
+      {
+        "code" : "02",
+        "name" : "Aomori"
+      },
+      {
+        "code" : "38",
+        "name" : "Ehime"
+      },
+      {
+        "code" : "21",
+        "name" : "Gihu (Gifu)"
+      },
+      {
+        "code" : "10",
+        "name" : "Gunma"
+      },
+      {
+        "code" : "34",
+        "name" : "Hirosima (Hiroshima)"
+      },
+      {
+        "code" : "01",
+        "name" : "Hokkaidô (Hokkaido)"
+      },
+      {
+        "code" : "18",
+        "name" : "Hukui (Fukui)"
+      },
+      {
+        "code" : "40",
+        "name" : "Hukuoka (Fukuoka)"
+      },
+      {
+        "code" : "07",
+        "name" : "Hukusima (Fukushima)"
+      },
+      {
+        "code" : "28",
+        "name" : "Hyôgo (Hyogo)"
+      },
+      {
+        "code" : "08",
+        "name" : "Ibaraki"
+      },
+      {
+        "code" : "17",
+        "name" : "Isikawa (Ishikawa)"
+      },
+      {
+        "code" : "03",
+        "name" : "Iwate"
+      },
+      {
+        "code" : "37",
+        "name" : "Kagawa"
+      },
+      {
+        "code" : "46",
+        "name" : "Kagosima (Kagoshima)"
+      },
+      {
+        "code" : "14",
+        "name" : "Kanagawa"
+      },
+      {
+        "code" : "43",
+        "name" : "Kumamoto"
+      },
+      {
+        "code" : "26",
+        "name" : "Kyôto (Kyoto)"
+      },
+      {
+        "code" : "39",
+        "name" : "Kôti (Kochi)"
+      },
+      {
+        "code" : "24",
+        "name" : "Mie"
+      },
+      {
+        "code" : "04",
+        "name" : "Miyagi"
+      },
+      {
+        "code" : "45",
+        "name" : "Miyazaki"
+      },
+      {
+        "code" : "20",
+        "name" : "Nagano"
+      },
+      {
+        "code" : "42",
+        "name" : "Nagasaki"
+      },
+      {
+        "code" : "29",
+        "name" : "Nara"
+      },
+      {
+        "code" : "15",
+        "name" : "Niigata"
+      },
+      {
+        "code" : "33",
+        "name" : "Okayama"
+      },
+      {
+        "code" : "47",
+        "name" : "Okinawa"
+      },
+      {
+        "code" : "41",
+        "name" : "Saga"
+      },
+      {
+        "code" : "11",
+        "name" : "Saitama"
+      },
+      {
+        "code" : "25",
+        "name" : "Siga (Shiga)"
+      },
+      {
+        "code" : "32",
+        "name" : "Simane (Shimane)"
+      },
+      {
+        "code" : "22",
+        "name" : "Sizuoka (Shizuoka)"
+      },
+      {
+        "code" : "12",
+        "name" : "Tiba (Chiba)"
+      },
+      {
+        "code" : "36",
+        "name" : "Tokusima (Tokushima)"
+      },
+      {
+        "code" : "09",
+        "name" : "Totigi (Tochigi)"
+      },
+      {
+        "code" : "31",
+        "name" : "Tottori"
+      },
+      {
+        "code" : "16",
+        "name" : "Toyama"
+      },
+      {
+        "code" : "13",
+        "name" : "Tôkyô (Tokyo)"
+      },
+      {
+        "code" : "30",
+        "name" : "Wakayama"
+      },
+      {
+        "code" : "06",
+        "name" : "Yamagata"
+      },
+      {
+        "code" : "35",
+        "name" : "Yamaguti (Yamaguchi)"
+      },
+      {
+        "code" : "19",
+        "name" : "Yamanasi (Yamanashi)"
+      },
+      {
+        "code" : "44",
+        "name" : "Ôita (Oita)"
+      },
+      {
+        "code" : "27",
+        "name" : "Ôsaka (Osaka)"
+      }
+    ]
+  },
+  {
+    "code": "JO"
+  },
+  {
+    "code": "KZ"
+  },
+  {
+    "code": "KE"
+  },
+  {
+    "code": "KI"
+  },
+  {
+    "code": "KP"
+  },
+  {
+    "code": "KR"
+  },
+  {
+    "code": "KW"
+  },
+  {
+    "code": "KG"
+  },
+  {
+    "code": "LA"
+  },
+  {
+    "code": "LV"
+  },
+  {
+    "code": "LB"
+  },
+  {
+    "code": "LS"
+  },
+  {
+    "code": "LR"
+  },
+  {
+    "code": "LY"
+  },
+  {
+    "code": "LI"
+  },
+  {
+    "code": "LT"
+  },
+  {
+    "code": "LU"
+  },
+  {
+    "code": "MO"
+  },
+  {
+    "code": "MG"
+  },
+  {
+    "code": "MW"
+  },
+  {
+    "code": "MY"
+  },
+  {
+    "code": "MV"
+  },
+  {
+    "code": "ML"
+  },
+  {
+    "code": "MT"
+  },
+  {
+    "code": "MH"
+  },
+  {
+    "code": "MQ"
+  },
+  {
+    "code": "MR"
+  },
+  {
+    "code": "MU"
+  },
+  {
+    "code": "YT"
+  },
+  {
+    "code": "MX",
+    "states": [
+      {
+        "code" : "AGU",
+        "name" : "Aguascalientes"
+      },
+      {
+        "code" : "BCN",
+        "name" : "Baja California"
+      },
+      {
+        "code" : "BCS",
+        "name" : "Baja California Sur"
+      },
+      {
+        "code" : "CAM",
+        "name" : "Campeche"
+      },
+      {
+        "code" : "CHP",
+        "name" : "Chiapas"
+      },
+      {
+        "code" : "CHH",
+        "name" : "Chihuahua"
+      },
+      {
+        "code" : "COA",
+        "name" : "Coahuila"
+      },
+      {
+        "code" : "COL",
+        "name" : "Colima"
+      },
+      {
+        "code" : "DIF",
+        "name" : "Distrito Federal"
+      },
+      {
+        "code" : "DUR",
+        "name" : "Durango"
+      },
+      {
+        "code" : "GUA",
+        "name" : "Guanajuato"
+      },
+      {
+        "code" : "GRO",
+        "name" : "Guerrero"
+      },
+      {
+        "code" : "HID",
+        "name" : "Hidalgo"
+      },
+      {
+        "code" : "JAL",
+        "name" : "Jalisco"
+      },
+      {
+        "code" : "MIC",
+        "name" : "Michoacán"
+      },
+      {
+        "code" : "MOR",
+        "name" : "Morelos"
+      },
+      {
+        "code" : "MEX",
+        "name" : "México"
+      },
+      {
+        "code" : "NAY",
+        "name" : "Nayarit"
+      },
+      {
+        "code" : "NLE",
+        "name" : "Nuevo León"
+      },
+      {
+        "code" : "OAX",
+        "name" : "Oaxaca"
+      },
+      {
+        "code" : "PUE",
+        "name" : "Puebla"
+      },
+      {
+        "code" : "QUE",
+        "name" : "Querétaro"
+      },
+      {
+        "code" : "ROO",
+        "name" : "Quintana Roo"
+      },
+      {
+        "code" : "SLP",
+        "name" : "San Luis Potosí"
+      },
+      {
+        "code" : "SIN",
+        "name" : "Sinaloa"
+      },
+      {
+        "code" : "SON",
+        "name" : "Sonora"
+      },
+      {
+        "code" : "TAB",
+        "name" : "Tabasco"
+      },
+      {
+        "code" : "TAM",
+        "name" : "Tamaulipas"
+      },
+      {
+        "code" : "TLA",
+        "name" : "Tlaxcala"
+      },
+      {
+        "code" : "VER",
+        "name" : "Veracruz"
+      },
+      {
+        "code" : "YUC",
+        "name" : "Yucatán"
+      },
+      {
+        "code" : "ZAC",
+        "name" : "Zacatecas"
+      }
+    ]
+  },
+  {
+    "code": "FM"
+  },
+  {
+    "code": "MD"
+  },
+  {
+    "code": "MC"
+  },
+  {
+    "code": "MN"
+  },
+  {
+    "code": "MS"
+  },
+  {
+    "code": "MA"
+  },
+  {
+    "code": "MZ"
+  },
+  {
+    "code": "MM"
+  },
+  {
+    "code": "NA"
+  },
+  {
+    "code": "NR"
+  },
+  {
+    "code": "NP"
+  },
+  {
+    "code": "NL"
+  },
+  {
+    "code": "NC"
+  },
+  {
+    "code": "NZ"
+  },
+  {
+    "code": "NI"
+  },
+  {
+    "code": "NE"
+  },
+  {
+    "code": "NG"
+  },
+  {
+    "code": "NU"
+  },
+  {
+    "code": "NF"
+  },
+  {
+    "code": "MP"
+  },
+  {
+    "code": "NO"
+  },
+  {
+    "code": "OM"
+  },
+  {
+    "code": "PK"
+  },
+  {
+    "code": "PW"
+  },
+  {
+    "code": "PA"
+  },
+  {
+    "code": "PG"
+  },
+  {
+    "code": "PY"
+  },
+  {
+    "code": "PE"
+  },
+  {
+    "code": "PH"
+  },
+  {
+    "code": "PN"
+  },
+  {
+    "code": "PL"
+  },
+  {
+    "code": "PT"
+  },
+  {
+    "code": "PR"
+  },
+  {
+    "code": "QA"
+  },
+  {
+    "code": "MK"
+  },
+  {
+    "code": "RE"
+  },
+  {
+    "code": "RO"
+  },
+  {
+    "code": "RU"
+  },
+  {
+    "code": "RW"
+  },
+  {
+    "code": "KN"
+  },
+  {
+    "code": "LC"
+  },
+  {
+    "code": "VC"
+  },
+  {
+    "code": "WS"
+  },
+  {
+    "code": "SM"
+  },
+  {
+    "code": "ST"
+  },
+  {
+    "code": "SA"
+  },
+  {
+    "code": "SN"
+  },
+  {
+    "code": "SC"
+  },
+  {
+    "code": "SL"
+  },
+  {
+    "code": "SG"
+  },
+  {
+    "code": "SK"
+  },
+  {
+    "code": "SI"
+  },
+  {
+    "code": "SB"
+  },
+  {
+    "code": "SO"
+  },
+  {
+    "code": "SX"
+  },
+  {
+    "code": "ZA"
+  },
+  {
+    "code": "GS"
+  },
+  {
+    "code": "ES"
+  },
+  {
+    "code": "LK"
+  },
+  {
+    "code": "SH"
+  },
+  {
+    "code": "PM"
+  },
+  {
+    "code": "SD"
+  },
+  {
+    "code": "SR"
+  },
+  {
+    "code": "SJ"
+  },
+  {
+    "code": "SZ"
+  },
+  {
+    "code": "SE"
+  },
+  {
+    "code": "CH"
+  },
+  {
+    "code": "SY"
+  },
+  {
+    "code": "TW"
+  },
+  {
+    "code": "TJ"
+  },
+  {
+    "code": "TZ"
+  },
+  {
+    "code": "TH",
+    "states": [
+      {
+        "code" : "37",
+        "name" : "Amnat Charoen"
+      },
+      {
+        "code" : "15",
+        "name" : "Ang Thong"
+      },
+      {
+        "code" : "38",
+        "name" : "Bueng Kan"
+      },
+      {
+        "code" : "31",
+        "name" : "Buri Ram"
+      },
+      {
+        "code" : "24",
+        "name" : "Chachoengsao"
+      },
+      {
+        "code" : "18",
+        "name" : "Chai Nat"
+      },
+      {
+        "code" : "36",
+        "name" : "Chaiyaphum"
+      },
+      {
+        "code" : "22",
+        "name" : "Chanthaburi"
+      },
+      {
+        "code" : "50",
+        "name" : "Chiang Mai"
+      },
+      {
+        "code" : "57",
+        "name" : "Chiang Rai"
+      },
+      {
+        "code" : "20",
+        "name" : "Chon Buri"
+      },
+      {
+        "code" : "86",
+        "name" : "Chumphon"
+      },
+      {
+        "code" : "46",
+        "name" : "Kalasin"
+      },
+      {
+        "code" : "62",
+        "name" : "Kamphaeng Phet"
+      },
+      {
+        "code" : "71",
+        "name" : "Kanchanaburi"
+      },
+      {
+        "code" : "40",
+        "name" : "Khon Kaen"
+      },
+      {
+        "code" : "81",
+        "name" : "Krabi"
+      },
+      {
+        "code" : "10",
+        "name" : "Krung Thep Maha Nakhon [Bangkok]"
+      },
+      {
+        "code" : "52",
+        "name" : "Lampang"
+      },
+      {
+        "code" : "51",
+        "name" : "Lamphun"
+      },
+      {
+        "code" : "42",
+        "name" : "Loei"
+      },
+      {
+        "code" : "16",
+        "name" : "Lop Buri"
+      },
+      {
+        "code" : "58",
+        "name" : "Mae Hong Son"
+      },
+      {
+        "code" : "44",
+        "name" : "Maha Sarakham"
+      },
+      {
+        "code" : "49",
+        "name" : "Mukdahan"
+      },
+      {
+        "code" : "26",
+        "name" : "Nakhon Nayok"
+      },
+      {
+        "code" : "73",
+        "name" : "Nakhon Pathom"
+      },
+      {
+        "code" : "48",
+        "name" : "Nakhon Phanom"
+      },
+      {
+        "code" : "30",
+        "name" : "Nakhon Ratchasima"
+      },
+      {
+        "code" : "60",
+        "name" : "Nakhon Sawan"
+      },
+      {
+        "code" : "80",
+        "name" : "Nakhon Si Thammarat"
+      },
+      {
+        "code" : "55",
+        "name" : "Nan"
+      },
+      {
+        "code" : "96",
+        "name" : "Narathiwat"
+      },
+      {
+        "code" : "39",
+        "name" : "Nong Bua Lam Phu"
+      },
+      {
+        "code" : "43",
+        "name" : "Nong Khai"
+      },
+      {
+        "code" : "12",
+        "name" : "Nonthaburi"
+      },
+      {
+        "code" : "13",
+        "name" : "Pathum Thani"
+      },
+      {
+        "code" : "94",
+        "name" : "Pattani"
+      },
+      {
+        "code" : "82",
+        "name" : "Phangnga"
+      },
+      {
+        "code" : "93",
+        "name" : "Phatthalung"
+      },
+      {
+        "code" : "S",
+        "name" : "Phatthaya"
+      },
+      {
+        "code" : "56",
+        "name" : "Phayao"
+      },
+      {
+        "code" : "67",
+        "name" : "Phetchabun"
+      },
+      {
+        "code" : "76",
+        "name" : "Phetchaburi"
+      },
+      {
+        "code" : "66",
+        "name" : "Phichit"
+      },
+      {
+        "code" : "65",
+        "name" : "Phitsanulok"
+      },
+      {
+        "code" : "14",
+        "name" : "Phra Nakhon Si Ayutthaya"
+      },
+      {
+        "code" : "54",
+        "name" : "Phrae"
+      },
+      {
+        "code" : "83",
+        "name" : "Phuket"
+      },
+      {
+        "code" : "25",
+        "name" : "Prachin Buri"
+      },
+      {
+        "code" : "77",
+        "name" : "Prachuap Khiri Khan"
+      },
+      {
+        "code" : "85",
+        "name" : "Ranong"
+      },
+      {
+        "code" : "70",
+        "name" : "Ratchaburi"
+      },
+      {
+        "code" : "21",
+        "name" : "Rayong"
+      },
+      {
+        "code" : "45",
+        "name" : "Roi Et"
+      },
+      {
+        "code" : "27",
+        "name" : "Sa Kaeo"
+      },
+      {
+        "code" : "47",
+        "name" : "Sakon Nakhon"
+      },
+      {
+        "code" : "11",
+        "name" : "Samut Prakan"
+      },
+      {
+        "code" : "74",
+        "name" : "Samut Sakhon"
+      },
+      {
+        "code" : "75",
+        "name" : "Samut Songkhram"
+      },
+      {
+        "code" : "19",
+        "name" : "Saraburi"
+      },
+      {
+        "code" : "91",
+        "name" : "Satun"
+      },
+      {
+        "code" : "33",
+        "name" : "Si Sa Ket"
+      },
+      {
+        "code" : "17",
+        "name" : "Sing Buri"
+      },
+      {
+        "code" : "90",
+        "name" : "Songkhla"
+      },
+      {
+        "code" : "64",
+        "name" : "Sukhothai"
+      },
+      {
+        "code" : "72",
+        "name" : "Suphan Buri"
+      },
+      {
+        "code" : "84",
+        "name" : "Surat Thani"
+      },
+      {
+        "code" : "32",
+        "name" : "Surin"
+      },
+      {
+        "code" : "63",
+        "name" : "Tak"
+      },
+      {
+        "code" : "92",
+        "name" : "Trang"
+      },
+      {
+        "code" : "23",
+        "name" : "Trat"
+      },
+      {
+        "code" : "34",
+        "name" : "Ubon Ratchathani"
+      },
+      {
+        "code" : "41",
+        "name" : "Udon Thani"
+      },
+      {
+        "code" : "61",
+        "name" : "Uthai Thani"
+      },
+      {
+        "code" : "53",
+        "name" : "Uttaradit"
+      },
+      {
+        "code" : "95",
+        "name" : "Yala"
+      },
+      {
+        "code" : "35",
+        "name" : "Yasothon"
+      }
+    ]
+  },
+  {
+    "code": "TG"
+  },
+  {
+    "code": "TK"
+  },
+  {
+    "code": "TO"
+  },
+  {
+    "code": "TT"
+  },
+  {
+    "code": "TN"
+  },
+  {
+    "code": "TR"
+  },
+  {
+    "code": "TM"
+  },
+  {
+    "code": "TC"
+  },
+  {
+    "code": "TV"
+  },
+  {
+    "code": "UG"
+  },
+  {
+    "code": "UA"
+  },
+  {
+    "code": "AE"
+  },
+  {
+    "code": "GB"
+  },
+  {
+    "code": "US",
+    "states": [
+      {
+        "code" : "AL",
+        "name" : "Alabama"
+      },
+      {
+        "code" : "AK",
+        "name" : "Alaska"
+      },
+      {
+        "code" : "AS",
+        "name" : "American Samoa"
+      },
+      {
+        "code" : "AZ",
+        "name" : "Arizona"
+      },
+      {
+        "code" : "AR",
+        "name" : "Arkansas"
+      },
+      {
+        "code" : "CA",
+        "name" : "California"
+      },
+      {
+        "code" : "CO",
+        "name" : "Colorado"
+      },
+      {
+        "code" : "CT",
+        "name" : "Connecticut"
+      },
+      {
+        "code" : "DE",
+        "name" : "Delaware"
+      },
+      {
+        "code" : "DC",
+        "name" : "District of Columbia"
+      },
+      {
+        "code" : "FL",
+        "name" : "Florida"
+      },
+      {
+        "code" : "GA",
+        "name" : "Georgia"
+      },
+      {
+        "code" : "GU",
+        "name" : "Guam"
+      },
+      {
+        "code" : "HI",
+        "name" : "Hawaii"
+      },
+      {
+        "code" : "ID",
+        "name" : "Idaho"
+      },
+      {
+        "code" : "IL",
+        "name" : "Illinois"
+      },
+      {
+        "code" : "IN",
+        "name" : "Indiana"
+      },
+      {
+        "code" : "IA",
+        "name" : "Iowa"
+      },
+      {
+        "code" : "KS",
+        "name" : "Kansas"
+      },
+      {
+        "code" : "KY",
+        "name" : "Kentucky"
+      },
+      {
+        "code" : "LA",
+        "name" : "Louisiana"
+      },
+      {
+        "code" : "ME",
+        "name" : "Maine"
+      },
+      {
+        "code" : "MD",
+        "name" : "Maryland"
+      },
+      {
+        "code" : "MA",
+        "name" : "Massachusetts"
+      },
+      {
+        "code" : "MI",
+        "name" : "Michigan"
+      },
+      {
+        "code" : "MN",
+        "name" : "Minnesota"
+      },
+      {
+        "code" : "MS",
+        "name" : "Mississippi"
+      },
+      {
+        "code" : "MO",
+        "name" : "Missouri"
+      },
+      {
+        "code" : "MT",
+        "name" : "Montana"
+      },
+      {
+        "code" : "NE",
+        "name" : "Nebraska"
+      },
+      {
+        "code" : "NV",
+        "name" : "Nevada"
+      },
+      {
+        "code" : "NH",
+        "name" : "New Hampshire"
+      },
+      {
+        "code" : "NJ",
+        "name" : "New Jersey"
+      },
+      {
+        "code" : "NM",
+        "name" : "New Mexico"
+      },
+      {
+        "code" : "NY",
+        "name" : "New York"
+      },
+      {
+        "code" : "NC",
+        "name" : "North Carolina"
+      },
+      {
+        "code" : "ND",
+        "name" : "North Dakota"
+      },
+      {
+        "code" : "MP",
+        "name" : "Northern Mariana Islands"
+      },
+      {
+        "code" : "OH",
+        "name" : "Ohio"
+      },
+      {
+        "code" : "OK",
+        "name" : "Oklahoma"
+      },
+      {
+        "code" : "OR",
+        "name" : "Oregon"
+      },
+      {
+        "code" : "PA",
+        "name" : "Pennsylvania"
+      },
+      {
+        "code" : "PR",
+        "name" : "Puerto Rico"
+      },
+      {
+        "code" : "RI",
+        "name" : "Rhode Island"
+      },
+      {
+        "code" : "SC",
+        "name" : "South Carolina"
+      },
+      {
+        "code" : "SD",
+        "name" : "South Dakota"
+      },
+      {
+        "code" : "TN",
+        "name" : "Tennessee"
+      },
+      {
+        "code" : "TX",
+        "name" : "Texas"
+      },
+      {
+        "code" : "UM",
+        "name" : "United States Minor"
+      },
+      {
+        "code" : "UT",
+        "name" : "Utah"
+      },
+      {
+        "code" : "VT",
+        "name" : "Vermont"
+      },
+      {
+        "code" : "VI",
+        "name" : "Virgin Islands, U.S."
+      },
+      {
+        "code" : "VA",
+        "name" : "Virginia"
+      },
+      {
+        "code" : "WA",
+        "name" : "Washington"
+      },
+      {
+        "code" : "WV",
+        "name" : "West Virginia"
+      },
+      {
+        "code" : "WI",
+        "name" : "Wisconsin"
+      },
+      {
+        "code" : "WY",
+        "name" : "Wyoming"
+      }
+    ]
+  },
+  {
+    "code": "UY"
+  },
+  {
+    "code": "UZ"
+  },
+  {
+    "code": "VU"
+  },
+  {
+    "code": "VA"
+  },
+  {
+    "code": "VE"
+  },
+  {
+    "code": "VN"
+  },
+  {
+    "code": "VG"
+  },
+  {
+    "code": "VI"
+  },
+  {
+    "code": "WF"
+  },
+  {
+    "code": "YE"
+  },
+  {
+    "code": "CD"
+  },
+  {
+    "code": "ZM"
+  },
+  {
+    "code": "ZW"
+  }
+]

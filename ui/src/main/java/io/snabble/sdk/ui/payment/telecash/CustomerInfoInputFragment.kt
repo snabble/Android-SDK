@@ -1,5 +1,6 @@
 package io.snabble.sdk.ui.payment.telecash
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,7 +19,7 @@ import io.snabble.sdk.ui.utils.serializableExtra
 
 class CustomerInfoInputFragment : Fragment() {
 
-    private val viewModel: TelecashViewModel by viewModels { TelecashViewModel.Factory }
+    private val viewModel: TelecashViewModel by viewModels { TelecashViewModelFactory(requireContext()) }
 
     private lateinit var paymentMethod: PaymentMethod
 
