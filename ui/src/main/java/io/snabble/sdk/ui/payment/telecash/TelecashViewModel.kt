@@ -9,8 +9,8 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.ui.payment.telecash.data.TelecashRepositoryImpl
-import io.snabble.sdk.ui.payment.telecash.domain.TelecashRepository
 import io.snabble.sdk.ui.payment.telecash.domain.CustomerInfo
+import io.snabble.sdk.ui.payment.telecash.domain.TelecashRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,18 +22,30 @@ internal class TelecashViewModel(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow("")
-    val uiState: StateFlow<String> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     fun sendUserData(customerInfo: CustomerInfo) {
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
             val paymentMethod = savedStateHandle.get<PaymentMethod>("paymentType") ?: return@launch
             val result = telecashRepo.sendUserData(customerInfo, paymentMethod)
             result.onSuccess { info ->
-                _uiState.update { info.formUrl }
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        formUrl = info.formUrl,
+                        deletePreAuthUrl = it.deletePreAuthUrl
+                    )
+                }
+            }.onFailure {
+                _uiState.update { it.copy(isLoading = false, showError = true) }
             }
-            // TBI: On error?
         }
+    }
+
+    fun errorHandled() {
+        _uiState.update { it.copy(showError = false) }
     }
 
     companion object {
@@ -46,3 +58,10 @@ internal class TelecashViewModel(
         }
     }
 }
+
+data class UiState(
+    val isLoading: Boolean = false,
+    val formUrl: String? = null,
+    val deletePreAuthUrl: String? = null,
+    val showError: Boolean = false
+)

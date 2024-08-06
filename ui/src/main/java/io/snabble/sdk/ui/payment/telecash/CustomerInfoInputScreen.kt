@@ -9,6 +9,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -18,12 +19,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import io.snabble.sdk.BuildConfig
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.shoppingcart.utils.rememberTextFieldManager
 import io.snabble.sdk.ui.payment.telecash.domain.Address
@@ -46,17 +47,6 @@ fun CustomerInfoInputScreen(
     var city by remember { mutableStateOf("") }
     var state by remember { mutableStateOf("") }
     var country by remember { mutableStateOf("") }
-
-    if (BuildConfig.DEBUG) {
-        name = "Max Mustermann"
-        phoneNumber = "+491729973186"
-        email = "max.mustermann@example.com123"
-        street = "Fakestr. 123"
-        zip = "12345"
-        city = "Bonn"
-        state = "NRW"
-        country = "DE"
-    }
 
     val textFieldManager = rememberTextFieldManager()
 
@@ -82,7 +72,10 @@ fun CustomerInfoInputScreen(
         TextInput(
             modifier = Modifier.fillMaxWidth(),
             value = name,
-            onValueChanged = { name = it },
+            onValueChanged = {
+                name = it
+                if (showError) onErrorProcessed()
+            },
             label = stringResource(R.string.Snabble_Payment_CustomerInfo_fullName),
             keyboardActions = KeyboardActions(
                 onNext = { textFieldManager.moveFocusToNext() }
@@ -91,7 +84,10 @@ fun CustomerInfoInputScreen(
         TextInput(
             modifier = Modifier.fillMaxWidth(),
             value = phoneNumber,
-            onValueChanged = { phoneNumber = it },
+            onValueChanged = {
+                phoneNumber = it
+                if (showError) onErrorProcessed()
+            },
             label = stringResource(R.string.Snabble_Payment_CustomerInfo_phoneNumber),
             keyboardActions = KeyboardActions(
                 onNext = { textFieldManager.moveFocusToNext() }
@@ -104,7 +100,10 @@ fun CustomerInfoInputScreen(
         TextInput(
             modifier = Modifier.fillMaxWidth(),
             value = email,
-            onValueChanged = { email = it },
+            onValueChanged = {
+                email = it
+                if (showError) onErrorProcessed()
+            },
             label = stringResource(R.string.Snabble_Payment_CustomerInfo_email),
             keyboardActions = KeyboardActions(
                 onNext = { textFieldManager.moveFocusToNext() }
@@ -113,7 +112,10 @@ fun CustomerInfoInputScreen(
         TextInput(
             modifier = Modifier.fillMaxWidth(),
             value = street,
-            onValueChanged = { street = it },
+            onValueChanged = {
+                street = it
+                if (showError) onErrorProcessed()
+            },
             label = stringResource(R.string.Snabble_Payment_CustomerInfo_street),
             keyboardActions = KeyboardActions(
                 onNext = { textFieldManager.moveFocusToNext() }
@@ -122,7 +124,10 @@ fun CustomerInfoInputScreen(
         TextInput(
             modifier = Modifier.fillMaxWidth(),
             value = zip,
-            onValueChanged = { zip = it },
+            onValueChanged = {
+                zip = it
+                if (showError) onErrorProcessed()
+            },
             label = stringResource(R.string.Snabble_Payment_CustomerInfo_zip),
             keyboardActions = KeyboardActions(
                 onNext = { textFieldManager.moveFocusToNext() }
@@ -131,7 +136,10 @@ fun CustomerInfoInputScreen(
         TextInput(
             modifier = Modifier.fillMaxWidth(),
             value = city,
-            onValueChanged = { city = it },
+            onValueChanged = {
+                city = it
+                if (showError) onErrorProcessed()
+            },
             label = stringResource(R.string.Snabble_Payment_CustomerInfo_city),
             keyboardActions = KeyboardActions(
                 onNext = { textFieldManager.moveFocusToNext() }
@@ -140,7 +148,10 @@ fun CustomerInfoInputScreen(
         TextInput(
             modifier = Modifier.fillMaxWidth(),
             value = state,
-            onValueChanged = { state = it },
+            onValueChanged = {
+                state = it
+                if (showError) onErrorProcessed()
+            },
             label = stringResource(R.string.Snabble_Payment_CustomerInfo_state),
             keyboardActions = KeyboardActions(
                 onNext = { textFieldManager.moveFocusToNext() }
@@ -149,7 +160,10 @@ fun CustomerInfoInputScreen(
         TextInput(
             modifier = Modifier.fillMaxWidth(),
             value = country,
-            onValueChanged = { country = it },
+            onValueChanged = {
+                country = it
+                if (showError) onErrorProcessed()
+            },
             label = stringResource(R.string.Snabble_Payment_CustomerInfo_country),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Send,
@@ -162,11 +176,24 @@ fun CustomerInfoInputScreen(
                 }
             )
         )
-        Button(
+        Column(
             modifier = Modifier.fillMaxWidth(),
-            onClick = { onSendAction(createCustomerInfo()) }
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            Text(stringResource(R.string.Snabble_Payment_CustomerInfo_next))
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { onSendAction(createCustomerInfo()) },
+                enabled = !isLoading
+            ) {
+                Text(stringResource(R.string.Snabble_Payment_CustomerInfo_next))
+            }
+            if (showError) {
+                Text(
+                    stringResource(R.string.Snabble_Payment_CustomerInfo_error),
+                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.Red),
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
         }
         TextButton(
             modifier = Modifier.fillMaxWidth(),

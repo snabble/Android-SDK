@@ -39,21 +39,21 @@ class CustomerInfoInputFragment : Fragment() {
                 val uiState = viewModel.uiState.collectAsStateWithLifecycle().value // TBI: It's currently only the url
 
                 when {
-                    uiState.isEmpty() ->
+                    uiState.formUrl == null ->
                         ThemeWrapper {
                             CustomerInfoInputScreen(
-                                onErrorProcessed = {},
-                                isLoading = false,
+                                onErrorProcessed = { viewModel.errorHandled() },
+                                isLoading = uiState.isLoading,
                                 onSendAction = { viewModel.sendUserData(it) },
-                                showError = false,
+                                showError = uiState.showError,
                                 onBackNavigationClick = { activity?.onBackPressed() }
                             )
                         }
 
-                    uiState.isNotEmpty() -> AndroidView(
+                    else -> AndroidView(
                         factory = { context ->
                             CreditCardInputView(context)
-                                .apply { load(Snabble.checkedInProject.value?.id,paymentMethod, uiState) }
+                                .apply { load(Snabble.checkedInProject.value?.id, paymentMethod, uiState.formUrl) }
                         }
                     )
                 }
