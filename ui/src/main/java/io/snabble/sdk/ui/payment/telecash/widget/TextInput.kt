@@ -71,6 +71,7 @@ fun TextFieldDefaults.defaultColors() = colors(
     unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurface,
     focusedLabelColor = MaterialTheme.colorScheme.primary,
     errorContainerColor = MaterialTheme.colorScheme.background,
+    unfocusedLabelColor = MaterialTheme.colorScheme.onSurface,
     errorCursorColor = Color.Red,
     errorIndicatorColor = Color.Red,
     errorLabelColor = Color.Red
