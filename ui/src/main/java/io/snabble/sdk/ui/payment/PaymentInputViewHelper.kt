@@ -10,8 +10,9 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
-import io.snabble.sdk.ui.payment.externalbilling.ExternalBillingFragment.Companion.ARG_PROJECT_ID
+import io.snabble.sdk.ui.payment.creditcard.datatrans.ui.DatatransFragment
 import io.snabble.sdk.ui.payment.creditcard.fiserv.FiservInputView
+import io.snabble.sdk.ui.payment.externalbilling.ExternalBillingFragment.Companion.ARG_PROJECT_ID
 import io.snabble.sdk.ui.utils.KeyguardUtils
 import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.utils.Logger
@@ -36,13 +37,18 @@ object PaymentInputViewHelper {
             val args = Bundle()
 
             when {
-                useDatatrans -> Datatrans.registerCard(activity, project, paymentMethod)
+                useDatatrans -> {
+                    args.putString(DatatransFragment.ARG_PROJECT_ID, projectId)
+                    args.putSerializable(DatatransFragment.ARG_PAYMENT_TYPE, paymentMethod)
+                    SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_DATATRANS_INPUT, args)
+                }
                 usePayone -> Payone.registerCard(activity, project, paymentMethod, Snabble.formPrefillData)
                 useFiserv -> {
-                    args.putString(io.snabble.sdk.ui.payment.creditcard.fiserv.FiservInputView.ARG_PROJECT_ID, projectId)
-                    args.putSerializable(io.snabble.sdk.ui.payment.creditcard.fiserv.FiservInputView.ARG_PAYMENT_TYPE, paymentMethod)
+                    args.putString(FiservInputView.ARG_PROJECT_ID, projectId)
+                    args.putSerializable(FiservInputView.ARG_PAYMENT_TYPE, paymentMethod)
                     SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_FISERV_INPUT, args)
                 }
+
                 paymentMethod == PaymentMethod.EXTERNAL_BILLING -> {
                     args.putString(ARG_PROJECT_ID, projectId)
                     SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_EXTERNAL_BILLING, args)

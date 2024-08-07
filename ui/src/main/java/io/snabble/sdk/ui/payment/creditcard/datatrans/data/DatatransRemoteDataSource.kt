@@ -29,7 +29,7 @@ internal interface DatatransRemoteDataSource {
 internal class DatatransRemoteDataSourceImpl(
     private val snabble: Snabble = Snabble,
     private val gson: Gson = GsonHolder.get(),
-) : io.snabble.sdk.ui.payment.creditcard.datatrans.data.DatatransRemoteDataSource {
+) : DatatransRemoteDataSource {
 
     override suspend fun sendUserData(
         datatransTokenizationRequest: DatatransTokenizationRequestDto,

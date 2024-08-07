@@ -12,7 +12,7 @@ import io.snabble.sdk.ui.payment.creditcard.datatrans.domain.model.DatatransToke
 import java.util.Locale
 
 internal class DatatransRepositoryImpl(
-    private val datatransRemoteDataSource: io.snabble.sdk.ui.payment.creditcard.datatrans.data.DatatransRemoteDataSource = io.snabble.sdk.ui.payment.creditcard.datatrans.data.DatatransRemoteDataSourceImpl(),
+    private val datatransRemoteDataSource: DatatransRemoteDataSource = DatatransRemoteDataSourceImpl(),
 ) : DatatransRepository {
 
     override suspend fun sendUserData(

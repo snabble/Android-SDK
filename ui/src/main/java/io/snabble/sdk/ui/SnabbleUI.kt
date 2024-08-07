@@ -40,6 +40,7 @@ import io.snabble.sdk.ui.payment.PaymentOptionsActivity
 import io.snabble.sdk.ui.payment.PayoneInputActivity
 import io.snabble.sdk.ui.payment.ProjectPaymentOptionsActivity
 import io.snabble.sdk.ui.payment.SEPACardInputActivity
+import io.snabble.sdk.ui.payment.creditcard.datatrans.ui.DatatransActivity
 import io.snabble.sdk.ui.payment.creditcard.fiserv.FiservInputActivity
 import io.snabble.sdk.ui.payment.externalbilling.ExternalBillingActivity
 import io.snabble.sdk.ui.payment.payone.sepa.form.PayoneSepaActivity
@@ -67,6 +68,7 @@ object SnabbleUI {
         SHOW_SEPA_CARD_INPUT,
         SHOW_PAYONE_SEPA,
         SHOW_FISERV_INPUT,
+        SHOW_DATATRANS_INPUT,
         SHOW_PAYONE_INPUT,
         SHOW_GIROPAY_INPUT,
         SHOW_EXTERNAL_BILLING,
@@ -177,6 +179,9 @@ object SnabbleUI {
                 SHOW_FISERV_INPUT ->
                     startActivity(context, FiservInputActivity::class.java, args, canGoBack = false)
 
+                Event.SHOW_DATATRANS_INPUT ->
+                    startActivity(context, DatatransActivity::class.java, args, canGoBack = false)
+
                 SHOW_PAYONE_INPUT -> startActivity(context, PayoneInputActivity::class.java, args, canGoBack = false)
 
                 SHOW_GIROPAY_INPUT ->
@@ -201,6 +206,7 @@ object SnabbleUI {
                 NOT_CHECKED_IN,
                 EXIT_TOKEN_AVAILABLE,
                 null -> Unit
+
             }
         }
     }
