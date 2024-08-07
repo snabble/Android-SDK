@@ -11,7 +11,7 @@ import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.payment.externalbilling.ExternalBillingFragment.Companion.ARG_PROJECT_ID
-import io.snabble.sdk.ui.payment.fiserv.FiservInputView
+import io.snabble.sdk.ui.payment.creditcard.fiserv.FiservInputView
 import io.snabble.sdk.ui.utils.KeyguardUtils
 import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.utils.Logger
@@ -39,8 +39,8 @@ object PaymentInputViewHelper {
                 useDatatrans -> Datatrans.registerCard(activity, project, paymentMethod)
                 usePayone -> Payone.registerCard(activity, project, paymentMethod, Snabble.formPrefillData)
                 useFiserv -> {
-                    args.putString(FiservInputView.ARG_PROJECT_ID, projectId)
-                    args.putSerializable(FiservInputView.ARG_PAYMENT_TYPE, paymentMethod)
+                    args.putString(io.snabble.sdk.ui.payment.creditcard.fiserv.FiservInputView.ARG_PROJECT_ID, projectId)
+                    args.putSerializable(io.snabble.sdk.ui.payment.creditcard.fiserv.FiservInputView.ARG_PAYMENT_TYPE, paymentMethod)
                     SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_FISERV_INPUT, args)
                 }
                 paymentMethod == PaymentMethod.EXTERNAL_BILLING -> {

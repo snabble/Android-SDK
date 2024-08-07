@@ -19,8 +19,8 @@ import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_BARCODE_SEARCH
 import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_CHECKOUT
 import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_CHECKOUT_DONE
 import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_COUPON_DETAILS
-import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_FISERV_INPUT
 import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_EXTERNAL_BILLING
+import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_FISERV_INPUT
 import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_GIROPAY_INPUT
 import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_PAYMENT_CREDENTIALS_LIST
 import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_PAYMENT_OPTIONS
@@ -34,13 +34,13 @@ import io.snabble.sdk.ui.cart.deprecated.ShoppingCartActivity
 import io.snabble.sdk.ui.checkout.CheckoutActivity
 import io.snabble.sdk.ui.coupon.CouponDetailActivity
 import io.snabble.sdk.ui.payment.AgeVerificationInputActivity
-import io.snabble.sdk.ui.payment.fiserv.FiservInputActivity
 import io.snabble.sdk.ui.payment.GiropayInputActivity
 import io.snabble.sdk.ui.payment.PaymentCredentialsListActivity
 import io.snabble.sdk.ui.payment.PaymentOptionsActivity
 import io.snabble.sdk.ui.payment.PayoneInputActivity
 import io.snabble.sdk.ui.payment.ProjectPaymentOptionsActivity
 import io.snabble.sdk.ui.payment.SEPACardInputActivity
+import io.snabble.sdk.ui.payment.creditcard.fiserv.FiservInputActivity
 import io.snabble.sdk.ui.payment.externalbilling.ExternalBillingActivity
 import io.snabble.sdk.ui.payment.payone.sepa.form.PayoneSepaActivity
 import io.snabble.sdk.ui.scanner.SelfScanningActivity
