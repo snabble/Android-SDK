@@ -20,7 +20,7 @@ internal class DatatransRepositoryImpl(
         paymentMethod: PaymentMethod
     ): Result<DatatransTokenizationResponse> {
         return datatransRemoteDataSource.sendUserData(createTokenizationRequest(customerInfo, paymentMethod))
-            .map { it.toRespnse() }
+            .map { it.toResponse() }
     }
 }
 
@@ -49,5 +49,5 @@ private fun CustomerInfo.toDto() = CustomerInfoDto(
     )
 )
 
-private fun DatatransTokenizationResponseDto.toRespnse() =
+private fun DatatransTokenizationResponseDto.toResponse() =
     DatatransTokenizationResponse(mobileToken = mobileToken, isTesting = isTesting)
