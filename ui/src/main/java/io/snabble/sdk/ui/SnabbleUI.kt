@@ -19,7 +19,7 @@ import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_BARCODE_SEARCH
 import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_CHECKOUT
 import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_CHECKOUT_DONE
 import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_COUPON_DETAILS
-import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT
+import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_FISERV_INPUT
 import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_EXTERNAL_BILLING
 import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_GIROPAY_INPUT
 import io.snabble.sdk.ui.SnabbleUI.Event.SHOW_PAYMENT_CREDENTIALS_LIST
@@ -66,7 +66,7 @@ object SnabbleUI {
         SHOW_BARCODE_SEARCH,
         SHOW_SEPA_CARD_INPUT,
         SHOW_PAYONE_SEPA,
-        SHOW_CREDIT_CARD_INPUT,
+        SHOW_FISERV_INPUT,
         SHOW_PAYONE_INPUT,
         SHOW_GIROPAY_INPUT,
         SHOW_EXTERNAL_BILLING,
@@ -174,7 +174,7 @@ object SnabbleUI {
                     canGoBack = true
                 )
 
-                SHOW_CREDIT_CARD_INPUT ->
+                SHOW_FISERV_INPUT ->
                     startActivity(context, FiservInputActivity::class.java, args, canGoBack = false)
 
                 SHOW_PAYONE_INPUT -> startActivity(context, PayoneInputActivity::class.java, args, canGoBack = false)

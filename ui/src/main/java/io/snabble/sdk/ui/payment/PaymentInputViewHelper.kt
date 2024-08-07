@@ -41,7 +41,7 @@ object PaymentInputViewHelper {
                 useFiserv -> {
                     args.putString(FiservInputView.ARG_PROJECT_ID, projectId)
                     args.putSerializable(FiservInputView.ARG_PAYMENT_TYPE, paymentMethod)
-                    SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT, args)
+                    SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_FISERV_INPUT, args)
                 }
                 paymentMethod == PaymentMethod.EXTERNAL_BILLING -> {
                     args.putString(ARG_PROJECT_ID, projectId)

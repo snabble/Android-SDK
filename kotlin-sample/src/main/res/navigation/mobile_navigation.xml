@@ -165,7 +165,7 @@
         android:label="Payone" />
 
     <fragment
-        android:id="@+id/user_details"
+        android:id="@+id/navigation_fiserv_input"
         android:name="io.snabble.sdk.ui.payment.fiserv.FiservInputFragment"
         android:label="" />
 
