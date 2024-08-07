@@ -108,7 +108,7 @@
   <string name="Snabble.Payment.CustomerInfo.fullName">Vor- und Nachname</string>
   <string name="Snabble.Payment.CustomerInfo.next">Weiter</string>
   <string name="Snabble.Payment.CustomerInfo.phoneNumber">Telefonnummer</string>
-  <string name="Snabble.Payment.CustomerInfo.state">Bundesland</string>
+  <string name="Snabble.Payment.CustomerInfo.state">Staat</string>
   <string name="Snabble.Payment.CustomerInfo.stateSelect">Bitte wählen</string>
   <string name="Snabble.Payment.CustomerInfo.street">Straße inkl. Hausnummer</string>
   <string name="Snabble.Payment.CustomerInfo.zip">Postleitzahl</string>
@@ -230,7 +230,7 @@
   <string name="Snabble.Payone.expireYear">Ablaufjahr (JJJJ)</string>
   <string name="Snabble.Payone.incompleteForm">Bitte fülle das Formular vollständig aus.</string>
   <string name="Snabble.Payone.lastname">Nachname</string>
-  <string name="Snabble.Payone.state">Bundesland</string>
+  <string name="Snabble.Payone.state">Staat</string>
   <string name="Snabble.Payone.stateHint">Bitte Staat auswählen</string>
   <string name="Snabble.Payone.street">Straße inkl. Hausnummer</string>
   <string name="Snabble.Payone.zip">Postleitzahl</string>

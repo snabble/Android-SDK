@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.75.0]
+### Changed
+* ui: update fiserv 3D's flow. The user now has to enter additional information to add a credit card.
+  * instead of using the CreditCardInput it is now required to use the FiservInput instead.
 ## [0.74.0]
 ### Added
 * core: add new and update existing user agent headers

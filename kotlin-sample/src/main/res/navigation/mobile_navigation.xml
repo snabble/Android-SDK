@@ -165,13 +165,8 @@
         android:label="Payone" />
 
     <fragment
-        android:id="@+id/navigation_credit_card_input"
-        android:name="io.snabble.sdk.ui.payment.CreditCardInputFragment"
-        android:label="Enter credit card" />
-
-    <fragment
-        android:id="@+id/user_details"
-        android:name="io.snabble.sdk.ui.payment.telecash.CustomerInfoInputFragment"
+        android:id="@+id/navigation_fiserv_input"
+        android:name="io.snabble.sdk.ui.payment.fiserv.FiservInputFragment"
         android:label="" />
 
     <fragment

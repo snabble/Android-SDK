@@ -38,9 +38,9 @@ fun setUpUiEvents(activity: AppCompatActivity, navController: NavController, bot
     }
     SnabbleUI.setUiAction(
         activity,
-        SnabbleUI.Event.SHOW_CREDIT_CARD_INPUT
+        SnabbleUI.Event.SHOW_FISERV_INPUT
     ) { _, args ->
-        navController.navigate(R.id.user_details, args)
+        navController.navigate(R.id.navigation_fiserv_input, args)
     }
     SnabbleUI.setUiAction(
         activity,
