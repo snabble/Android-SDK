@@ -53,7 +53,10 @@ internal fun CustomerInfoInputScreen(
 
     val textFieldManager = rememberTextFieldManager()
 
-    val isEnabled = listOf(name, phoneNumber, email, street, zip, city, country).all { it.isNotEmpty() }
+    val isRequiredStateSet =
+        if (!countryItems?.firstOrNull { it.code == country }?.stateItems.isNullOrEmpty()) state.isNotEmpty() else true
+    val areRequiredFieldsSet =
+        listOf(name, phoneNumber, email, street, zip, city, country).all { it.isNotEmpty() } && isRequiredStateSet
 
     val createCustomerInfo: () -> CustomerInfo = {
         CustomerInfo(
@@ -174,7 +177,7 @@ internal fun CustomerInfoInputScreen(
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = { onSendAction(createCustomerInfo()) },
-                enabled = !isLoading && isEnabled
+                enabled = !isLoading && areRequiredFieldsSet
             ) {
                 Text(stringResource(R.string.Snabble_Payment_CustomerInfo_next))
             }
