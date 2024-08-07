@@ -113,6 +113,7 @@ internal fun CustomerInfoInputScreen(
             keyboardActions = KeyboardActions(
                 onNext = { textFieldManager.moveFocusToNext() }
             ),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
         )
         TextInput(
             modifier = Modifier.fillMaxWidth(),
@@ -137,6 +138,7 @@ internal fun CustomerInfoInputScreen(
             keyboardActions = KeyboardActions(
                 onNext = { textFieldManager.moveFocusToNext() }
             ),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
         )
         TextInput(
             modifier = Modifier.fillMaxWidth(),
