@@ -26,7 +26,7 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".payment.CreditCardInputActivity"
+            android:name=".payment.fiserv.FiservInputActivity"
             android:exported="false" />
         <activity
             android:name=".payment.PaymentOptionsActivity"

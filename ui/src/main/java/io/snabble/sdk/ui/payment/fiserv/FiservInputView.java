@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment;
+package io.snabble.sdk.ui.payment.fiserv;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -24,6 +24,7 @@ import androidx.lifecycle.Lifecycle;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Currency;
@@ -36,14 +37,15 @@ import io.snabble.sdk.ui.Keyguard;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.payment.creditcard.data.CreditCardInfo;
-import io.snabble.sdk.ui.payment.creditcard.data.CreditCardUrlBuilder;
+import io.snabble.sdk.ui.payment.creditcard.data.SnabbleCreditCardUrlCreator;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.utils.Dispatch;
 import io.snabble.sdk.utils.Logger;
 import io.snabble.sdk.utils.SimpleActivityLifecycleCallbacks;
+import okhttp3.Request;
 
-public class CreditCardInputView extends RelativeLayout {
+public class FiservInputView extends RelativeLayout {
     public static final String ARG_PROJECT_ID = "projectId";
     public static final String ARG_PAYMENT_TYPE = "paymentType";
 
@@ -56,18 +58,20 @@ public class CreditCardInputView extends RelativeLayout {
 
     private PaymentMethod paymentType;
     private String projectId;
+    private String formUrl;
+    private String deleteUrl;
     private TextView threeDHint;
     private boolean isLoaded;
 
-    public CreditCardInputView(Context context) {
+    public FiservInputView(Context context) {
         super(context);
     }
 
-    public CreditCardInputView(Context context, AttributeSet attrs) {
+    public FiservInputView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public CreditCardInputView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public FiservInputView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -162,10 +166,11 @@ public class CreditCardInputView extends RelativeLayout {
         }
     }
 
-    public void load(String projectId, PaymentMethod paymentType) {
-        this.projectId = projectId;
+    public void load(String projectId, PaymentMethod paymentType, String formUrl, String deletePreAuthUrl) {
         this.paymentType = paymentType;
-
+        this.projectId = projectId;
+        this.formUrl = Snabble.getInstance().absoluteUrl(formUrl);
+        this.deleteUrl = Snabble.getInstance().absoluteUrl(deletePreAuthUrl);
         inflateView();
     }
 
@@ -190,9 +195,8 @@ public class CreditCardInputView extends RelativeLayout {
     }
 
     private void loadUrl() {
-        CreditCardUrlBuilder builder = new CreditCardUrlBuilder();
-        String url = builder.createUrlFor(projectId, paymentType);
-        webView.loadUrl(url);
+        final String formUrl = SnabbleCreditCardUrlCreator.createCreditCardUrlFor(paymentType, this.formUrl);
+        webView.loadUrl(formUrl);
     }
 
     private void authenticateAndSave(final CreditCardInfo creditCardInfo) {
@@ -257,7 +261,21 @@ public class CreditCardInputView extends RelativeLayout {
     }
 
     private void finish() {
+        deletePreAuth();
         SnabbleUI.executeAction(getContext(), SnabbleUI.Event.GO_BACK);
+    }
+
+    private void deletePreAuth() {
+        Dispatch.io(() -> {
+            final Request request = new Request.Builder().url(deleteUrl).delete().build();
+            try {
+                final Project project = getProject();
+                if (project != null) {
+                    project.getOkHttpClient().newCall(request).execute();
+                }
+            } catch (final IOException ignored) {
+            }
+        });
     }
 
     private void finishWithError(String failReason) {
@@ -363,7 +381,7 @@ public class CreditCardInputView extends RelativeLayout {
 
         @JavascriptInterface
         public void abort() {
-            Dispatch.mainThread(CreditCardInputView.this::finish);
+            Dispatch.mainThread(FiservInputView.this::finish);
         }
 
         @JavascriptInterface

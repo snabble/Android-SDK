@@ -101,6 +101,17 @@
   <string name="Snabble.Payment.CancelError.title">Error cancelling payment</string>
   <string name="Snabble.Payment.CreditCard.error">There was an error processing your credit card</string>
   <string name="Snabble.Payment.CreditCard.expireDate">Expires: %s</string>
+  <string name="Snabble.Payment.CustomerInfo.city">City</string>
+  <string name="Snabble.Payment.CustomerInfo.country">Country</string>
+  <string name="Snabble.Payment.CustomerInfo.email">Email</string>
+  <string name="Snabble.Payment.CustomerInfo.error">Please check your entries and try again</string>
+  <string name="Snabble.Payment.CustomerInfo.fullName">Full name</string>
+  <string name="Snabble.Payment.CustomerInfo.next">Continue</string>
+  <string name="Snabble.Payment.CustomerInfo.phoneNumber">Phone number</string>
+  <string name="Snabble.Payment.CustomerInfo.state">State</string>
+  <string name="Snabble.Payment.CustomerInfo.stateSelect">Pick one</string>
+  <string name="Snabble.Payment.CustomerInfo.street">Street</string>
+  <string name="Snabble.Payment.CustomerInfo.zip">ZIP code</string>
   <string name="Snabble.Payment.Delete.message">Are you sure you want to remove this payment method?</string>
   <string name="Snabble.Payment.EmptyState.add">Add payment method</string>
   <string name="Snabble.Payment.EmptyState.message">You don\'t have any payment methods added yet.</string>
