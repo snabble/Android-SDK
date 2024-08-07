@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.shoppingcart.utils.rememberTextFieldManager
@@ -31,6 +30,7 @@ import io.snabble.sdk.ui.payment.creditcard.shared.domain.models.Address
 import io.snabble.sdk.ui.payment.creditcard.shared.domain.models.CountryItem
 import io.snabble.sdk.ui.payment.creditcard.shared.domain.models.CustomerInfo
 import io.snabble.sdk.ui.payment.creditcard.shared.widget.CountrySelectionMenu
+import io.snabble.sdk.ui.payment.creditcard.shared.widget.PhoneNumberInput
 import io.snabble.sdk.ui.payment.creditcard.shared.widget.TextInput
 
 @Composable
@@ -43,6 +43,7 @@ internal fun CustomerInfoInputScreen(
     onBackNavigationClick: () -> Unit,
 ) {
     var name by remember { mutableStateOf("") }
+    var intCallingCode by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var street by remember { mutableStateOf("") }
@@ -55,12 +56,21 @@ internal fun CustomerInfoInputScreen(
 
     val isRequiredStateSet =
         if (!countryItems?.firstOrNull { it.code == country }?.stateItems.isNullOrEmpty()) state.isNotEmpty() else true
-    val areRequiredFieldsSet =
-        listOf(name, phoneNumber, email, street, zip, city, country).all { it.isNotEmpty() } && isRequiredStateSet
+    val areRequiredFieldsSet = listOf(
+        name,
+        intCallingCode,
+        phoneNumber,
+        email,
+        street,
+        zip,
+        city,
+        country
+    ).all { it.isNotEmpty() } && isRequiredStateSet
 
     val createCustomerInfo: () -> CustomerInfo = {
         CustomerInfo(
             name = name,
+            intCallingCode = intCallingCode,
             phoneNumber = phoneNumber,
             email = email,
             address = Address(
@@ -89,21 +99,13 @@ internal fun CustomerInfoInputScreen(
                 onNext = { textFieldManager.moveFocusToNext() }
             )
         )
-        TextInput(
-            modifier = Modifier.fillMaxWidth(),
-            value = phoneNumber,
-            onValueChanged = {
-                phoneNumber = it
-                if (showError) onErrorProcessed()
-            },
-            label = stringResource(R.string.Snabble_Payment_CustomerInfo_phoneNumber),
-            keyboardActions = KeyboardActions(
-                onNext = { textFieldManager.moveFocusToNext() }
-            ),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Phone,
-                imeAction = ImeAction.Next
-            )
+        PhoneNumberInput(
+            callingCode = intCallingCode,
+            onCallingCodeChanged = { callingCode -> intCallingCode = callingCode },
+            phoneNumber = phoneNumber,
+            onPhoneNumberChanged = { number -> phoneNumber = number },
+            onKeyboardAction = { textFieldManager.moveFocusToNext() },
+            onErrorProcessed = onErrorProcessed,
         )
         TextInput(
             modifier = Modifier.fillMaxWidth(),

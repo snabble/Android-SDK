@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.google.gson.reflect.TypeToken
 import io.snabble.sdk.ui.payment.creditcard.datatrans.data.DatatransRepositoryImpl
 import io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto.DatatransCountryDto
+import io.snabble.sdk.ui.payment.creditcard.fiserv.data.dto.FiservCountryDto
 import io.snabble.sdk.ui.payment.creditcard.shared.data.CountryItemsRepositoryImpl
 import io.snabble.sdk.ui.payment.creditcard.shared.data.country.LocalCountryItemsDataSourceImpl
 import io.snabble.sdk.ui.payment.creditcard.shared.data.displayName
@@ -29,6 +31,7 @@ class DatatransViewModelFactory(private val context: Context) : ViewModelProvide
                 localCountryItemsDataSource = LocalCountryItemsDataSourceImpl<DatatransCountryDto>(
                     assetManager = context.assets,
                     gson = GsonHolder.get(),
+                    clazz = DatatransCountryDto::class.java,
                     mapFrom = { dto ->
                         CountryItem(
                             displayName = dto.countryCode.displayName,

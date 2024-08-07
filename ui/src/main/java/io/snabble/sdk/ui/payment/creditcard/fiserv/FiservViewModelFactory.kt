@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.google.gson.reflect.TypeToken
 import io.snabble.sdk.ui.payment.creditcard.fiserv.data.FiservRepositoryImpl
 import io.snabble.sdk.ui.payment.creditcard.fiserv.data.dto.FiservCountryDto
 import io.snabble.sdk.ui.payment.creditcard.shared.data.CountryItemsRepositoryImpl
@@ -26,9 +27,10 @@ class FiservViewModelFactory(private val context: Context) : ViewModelProvider.F
         return FiservViewModel(
             fiservRepo = FiservRepositoryImpl(),
             countryItemsRepo = CountryItemsRepositoryImpl(
-                localCountryItemsDataSource = LocalCountryItemsDataSourceImpl<FiservCountryDto>(
+                localCountryItemsDataSource = LocalCountryItemsDataSourceImpl(
                     assetManager = context.assets,
                     gson = GsonHolder.get(),
+                    clazz = FiservCountryDto::class.java,
                     mapFrom = { dto ->
                         CountryItem(
                             displayName = dto.countryCode.displayName,

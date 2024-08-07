@@ -101,7 +101,7 @@ dependencies {
     implementation(libs.koltin.reflect)
     implementation(libs.rekisoftLazyWorker)
     implementation(libs.relex.circleindicator)
-
+    implementation(libs.snabble.phoneAuth.countryCodePicker)
 
     implementation(libs.bundles.camera)
     implementation(libs.bundles.navigation)

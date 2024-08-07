@@ -166,7 +166,7 @@
 
     <fragment
         android:id="@+id/navigation_fiserv_input"
-        android:name="io.snabble.sdk.ui.payment.fiserv.FiservInputFragment"
+        android:name="io.snabble.sdk.ui.payment.creditcard.fiserv.FiservInputFragment"
         android:label="" />
 
     <fragment

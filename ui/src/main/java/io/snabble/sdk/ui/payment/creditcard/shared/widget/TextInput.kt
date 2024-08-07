@@ -50,7 +50,7 @@ internal fun TextInput(
             label = {
                 Text(
                     text = label,
-                    fontSize = 17.sp
+                    fontSize = 17.sp,
                 )
             },
             keyboardOptions = keyboardOptions,
@@ -64,7 +64,7 @@ internal fun TextInput(
 }
 
 @Composable
-private fun TextFieldDefaults.defaultColors() = colors(
+internal fun TextFieldDefaults.defaultColors() = colors(
     focusedContainerColor = MaterialTheme.colorScheme.background,
     unfocusedContainerColor = MaterialTheme.colorScheme.background,
     focusedIndicatorColor = MaterialTheme.colorScheme.primary,
