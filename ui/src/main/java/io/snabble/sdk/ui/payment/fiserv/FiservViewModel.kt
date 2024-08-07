@@ -17,19 +17,21 @@ import kotlinx.coroutines.launch
 internal class FiservViewModel(
     private val fiservRepo: FiservRepository,
     countryItemsRepo: CountryItemsRepository,
-    private val savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UiState(countryItems = countryItemsRepo.loadCountryItems()))
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
+    private val paymentMethod = savedStateHandle.get<PaymentMethod>(FiservInputView.ARG_PAYMENT_TYPE)
+
     fun sendUserData(customerInfo: CustomerInfo) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            val paymentMethod =
-                savedStateHandle.get<PaymentMethod>(FiservInputView.ARG_PAYMENT_TYPE) ?: return@launch
-            val result = fiservRepo.sendUserData(customerInfo, paymentMethod)
-            result
+            paymentMethod ?: return@launch
+
+            _uiState.update { it.copy(isLoading = true, showError = false) }
+
+            fiservRepo.sendUserData(customerInfo, paymentMethod)
                 .onSuccess { info ->
                     _uiState.update {
                         it.copy(
