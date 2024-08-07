@@ -6,6 +6,7 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.ui.payment.fiserv.data.dto.CustomerInfoDto
 import io.snabble.sdk.utils.GsonHolder
 import okhttp3.Call
 import okhttp3.Callback

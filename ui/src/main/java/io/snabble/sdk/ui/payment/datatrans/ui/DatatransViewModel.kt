@@ -7,8 +7,8 @@ import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.ui.payment.datatrans.domain.DatatransRepository
 import io.snabble.sdk.ui.payment.datatrans.domain.model.CustomerInfo
 import io.snabble.sdk.ui.payment.fiserv.FiservInputView
-import io.snabble.sdk.ui.payment.fiserv.domain.CountryItemsRepository
-import io.snabble.sdk.ui.payment.fiserv.domain.model.country.CountryItem
+import io.snabble.sdk.ui.payment.shared.domain.CountryItemsRepository
+import io.snabble.sdk.ui.payment.shared.domain.models.CountryItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

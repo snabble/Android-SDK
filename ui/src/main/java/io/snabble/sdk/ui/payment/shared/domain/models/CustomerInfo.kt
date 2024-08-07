@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment.fiserv.domain
+package io.snabble.sdk.ui.payment.shared.domain.models
 
 data class CustomerInfo(
     val name: String,

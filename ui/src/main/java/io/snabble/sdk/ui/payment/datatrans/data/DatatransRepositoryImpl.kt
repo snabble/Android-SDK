@@ -12,7 +12,7 @@ import io.snabble.sdk.ui.payment.datatrans.domain.model.DatatransTokenizationRes
 import java.util.Locale
 
 internal class DatatransRepositoryImpl(
-    private val datatransRemoteDataSource: DatatransRemoteDataSource = DatatransRemoteDataSourceImpl()
+    private val datatransRemoteDataSource: DatatransRemoteDataSource = DatatransRemoteDataSourceImpl(),
 ) : DatatransRepository {
 
     override suspend fun sendUserData(
@@ -43,9 +43,9 @@ private fun CustomerInfo.toDto() = CustomerInfoDto(
         state = address.state,
         zip = address.zip
     ),
-    phoneNumberDto = PhoneNumberDto(
-        countryCode = countryCode,
-        subscriber = subscriber
+    phoneNumber = PhoneNumberDto(
+        intCallingCode = countryCode,
+        number = subscriber
     )
 )
 

@@ -10,10 +10,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.snabble.sdk.PaymentMethod
-import io.snabble.sdk.ui.payment.Datatrans
 import io.snabble.sdk.ui.payment.PaymentMethodMetaDataHelper
-import io.snabble.sdk.ui.payment.fiserv.CustomerInfoInputScreen
 import io.snabble.sdk.ui.payment.fiserv.FiservInputView
+import io.snabble.sdk.ui.payment.shared.CustomerInfoInputScreen
 import io.snabble.sdk.ui.utils.ThemeWrapper
 import io.snabble.sdk.ui.utils.serializableExtra
 
@@ -51,6 +50,7 @@ class DatatransFragment : Fragment() {
                                 onBackNavigationClick = { activity?.onBackPressed() }
                             )
                         }
+
                         else -> {
                             // TBI: start datatrans transaction
                         }

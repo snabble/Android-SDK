@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment.fiserv.widget
+package io.snabble.sdk.ui.payment.shared.widget
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

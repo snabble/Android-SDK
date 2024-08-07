@@ -1,8 +1,10 @@
 package io.snabble.sdk.ui.payment.fiserv.data
 
 import io.snabble.sdk.PaymentMethod
-import io.snabble.sdk.ui.payment.fiserv.domain.CustomerInfo
+import io.snabble.sdk.ui.payment.fiserv.data.dto.AddressDto
+import io.snabble.sdk.ui.payment.fiserv.data.dto.CustomerInfoDto
 import io.snabble.sdk.ui.payment.fiserv.domain.FiservRepository
+import io.snabble.sdk.ui.payment.shared.domain.models.CustomerInfo
 
 internal class FiservRepositoryImpl(
     private val remoteDataSource: FiservRemoteDataSource = FiservRemoteDataSourceImpl()

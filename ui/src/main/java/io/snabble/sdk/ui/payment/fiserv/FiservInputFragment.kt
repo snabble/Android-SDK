@@ -13,6 +13,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.payment.PaymentMethodMetaDataHelper
+import io.snabble.sdk.ui.payment.shared.CustomerInfoInputScreen
 import io.snabble.sdk.ui.utils.ThemeWrapper
 import io.snabble.sdk.ui.utils.serializableExtra
 

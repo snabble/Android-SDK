@@ -4,10 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.snabble.sdk.PaymentMethod
-import io.snabble.sdk.ui.payment.fiserv.domain.CountryItemsRepository
-import io.snabble.sdk.ui.payment.fiserv.domain.CustomerInfo
 import io.snabble.sdk.ui.payment.fiserv.domain.FiservRepository
-import io.snabble.sdk.ui.payment.fiserv.domain.model.country.CountryItem
+import io.snabble.sdk.ui.payment.shared.domain.CountryItemsRepository
+import io.snabble.sdk.ui.payment.shared.domain.models.CountryItem
+import io.snabble.sdk.ui.payment.shared.domain.models.CustomerInfo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

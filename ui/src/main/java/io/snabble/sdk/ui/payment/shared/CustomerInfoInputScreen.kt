@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment.fiserv
+package io.snabble.sdk.ui.payment.shared
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
@@ -27,11 +27,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.shoppingcart.utils.rememberTextFieldManager
-import io.snabble.sdk.ui.payment.fiserv.domain.Address
-import io.snabble.sdk.ui.payment.fiserv.domain.CustomerInfo
-import io.snabble.sdk.ui.payment.fiserv.domain.model.country.CountryItem
-import io.snabble.sdk.ui.payment.fiserv.widget.CountrySelectionMenu
-import io.snabble.sdk.ui.payment.fiserv.widget.TextInput
+import io.snabble.sdk.ui.payment.shared.domain.models.Address
+import io.snabble.sdk.ui.payment.shared.domain.models.CountryItem
+import io.snabble.sdk.ui.payment.shared.domain.models.CustomerInfo
+import io.snabble.sdk.ui.payment.shared.widget.CountrySelectionMenu
+import io.snabble.sdk.ui.payment.shared.widget.TextInput
 
 @Composable
 internal fun CustomerInfoInputScreen(

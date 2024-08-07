@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment.fiserv.widget
+package io.snabble.sdk.ui.payment.shared.widget
 
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
@@ -11,10 +11,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
-import io.snabble.sdk.ui.payment.fiserv.domain.model.country.StateItem
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.payment.fiserv.data.country.displayName
-import io.snabble.sdk.ui.payment.fiserv.domain.model.country.CountryItem
+import io.snabble.sdk.ui.payment.shared.data.country.displayName
+import io.snabble.sdk.ui.payment.shared.domain.models.CountryItem
+import io.snabble.sdk.ui.payment.shared.domain.models.StateItem
 import java.util.Locale
 
 @Composable

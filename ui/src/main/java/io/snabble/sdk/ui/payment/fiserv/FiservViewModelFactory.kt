@@ -5,9 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
-import io.snabble.sdk.ui.payment.fiserv.data.CountryItemsRepositoryImpl
 import io.snabble.sdk.ui.payment.fiserv.data.FiservRepositoryImpl
-import io.snabble.sdk.ui.payment.fiserv.data.country.LocalCountryItemsDataSourceImpl
+import io.snabble.sdk.ui.payment.fiserv.data.dto.FiservCountryDto
+import io.snabble.sdk.ui.payment.shared.data.CountryItemsRepositoryImpl
+import io.snabble.sdk.ui.payment.shared.data.country.LocalCountryItemsDataSourceImpl
+import io.snabble.sdk.ui.payment.shared.data.displayName
+import io.snabble.sdk.ui.payment.shared.domain.models.CountryItem
+import io.snabble.sdk.ui.payment.shared.domain.models.StateItem
 import io.snabble.sdk.utils.GsonHolder
 
 class FiservViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
@@ -22,9 +26,16 @@ class FiservViewModelFactory(private val context: Context) : ViewModelProvider.F
         return FiservViewModel(
             fiservRepo = FiservRepositoryImpl(),
             countryItemsRepo = CountryItemsRepositoryImpl(
-                localCountryItemsDataSource = LocalCountryItemsDataSourceImpl(
+                localCountryItemsDataSource = LocalCountryItemsDataSourceImpl<FiservCountryDto>(
                     assetManager = context.assets,
-                    gson = GsonHolder.get()
+                    gson = GsonHolder.get(),
+                    mapFrom = { dto ->
+                        CountryItem(
+                            displayName = dto.countryCode.displayName,
+                            code = dto.countryCode,
+                            stateItems = dto.states?.map { StateItem.from(it) }
+                        )
+                    }
                 )
             ),
             savedStateHandle = savedStateHandle

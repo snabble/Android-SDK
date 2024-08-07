@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment.fiserv.data.dto.country
+package io.snabble.sdk.ui.payment.shared.data.country
 
 import com.google.gson.annotations.SerializedName
 

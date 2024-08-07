@@ -8,7 +8,7 @@ internal data class CustomerInfoDto(
     @SerialName("name") val name: String,
     @SerialName("email") val email: String,
     @SerialName("address") val address: AddressDto,
-    @SerialName("phoneNumber") val phoneNumberDto: PhoneNumberDto,
+    @SerialName("phoneNumber") val phoneNumber: PhoneNumberDto,
 )
 
 @Serializable
@@ -22,6 +22,6 @@ internal data class AddressDto(
 
 @Serializable
 internal data class PhoneNumberDto(
-    @SerialName("subscriber") val subscriber: String,
-    @SerialName("countryCode") val countryCode: String,
+    @SerialName("subscriber") val number: String,
+    @SerialName("countryCode") val intCallingCode: String,
 )

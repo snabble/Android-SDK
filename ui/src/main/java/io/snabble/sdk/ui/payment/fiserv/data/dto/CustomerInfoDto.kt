@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment.fiserv.data
+package io.snabble.sdk.ui.payment.fiserv.data.dto
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
