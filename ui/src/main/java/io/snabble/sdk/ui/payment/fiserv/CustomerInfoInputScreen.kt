@@ -1,5 +1,6 @@
 package io.snabble.sdk.ui.payment.fiserv
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -175,7 +176,7 @@ internal fun CustomerInfoInputScreen(
             ) {
                 Text(stringResource(R.string.Snabble_Payment_CustomerInfo_next))
             }
-            if (showError) {
+            AnimatedVisibility(visible = showError) {
                 Text(
                     stringResource(R.string.Snabble_Payment_CustomerInfo_error),
                     modifier = Modifier.padding(horizontal = 16.dp),
