@@ -15,11 +15,11 @@ import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.ui.payment.creditcard.datatrans.domain.DatatransRepository
-import io.snabble.sdk.ui.payment.creditcard.datatrans.domain.model.CustomerInfo
 import io.snabble.sdk.ui.payment.creditcard.datatrans.ui.DatatransFragment.Companion.ARG_PAYMENT_TYPE
 import io.snabble.sdk.ui.payment.creditcard.datatrans.ui.DatatransFragment.Companion.ARG_PROJECT_ID
 import io.snabble.sdk.ui.payment.creditcard.shared.domain.CountryItemsRepository
 import io.snabble.sdk.ui.payment.creditcard.shared.domain.models.CountryItem
+import io.snabble.sdk.ui.payment.creditcard.shared.domain.models.CustomerInfo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

@@ -46,7 +46,6 @@ class DatatransFragment : Fragment() {
                 val uiState: UiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
                 ThemeWrapper {
-                    //TBI: Rewrite so that we can provide Customerinfo (datatrans need the phonenumber as sperarate instance see CustomerinfoDto)
                     CustomerInfoInputScreen(
                         onErrorProcessed = { viewModel.errorHandled() },
                         isLoading = uiState.isLoading,
@@ -56,7 +55,6 @@ class DatatransFragment : Fragment() {
                         onBackNavigationClick = { activity?.onBackPressed() }
                     )
                 }
-
             }
         }
 

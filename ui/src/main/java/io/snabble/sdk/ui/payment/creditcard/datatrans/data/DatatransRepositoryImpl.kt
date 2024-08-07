@@ -7,8 +7,8 @@ import io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto.DatatransTokeniza
 import io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto.DatatransTokenizationResponseDto
 import io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto.PhoneNumberDto
 import io.snabble.sdk.ui.payment.creditcard.datatrans.domain.DatatransRepository
-import io.snabble.sdk.ui.payment.creditcard.datatrans.domain.model.CustomerInfo
 import io.snabble.sdk.ui.payment.creditcard.datatrans.domain.model.DatatransTokenizationResponse
+import io.snabble.sdk.ui.payment.creditcard.shared.domain.models.CustomerInfo
 import java.util.Locale
 
 internal class DatatransRepositoryImpl(

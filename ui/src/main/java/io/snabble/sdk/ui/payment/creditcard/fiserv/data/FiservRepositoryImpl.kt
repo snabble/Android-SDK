@@ -21,7 +21,7 @@ internal class FiservRepositoryImpl(
 
 private fun CustomerInfo.toDto() = CustomerInfoDto(
     name = name,
-    phoneNumber = phoneNumber,
+    phoneNumber = "$intCallingCode$phoneNumber",
     email = email,
     address = AddressDto(
         street = address.street,
