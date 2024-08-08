@@ -50,7 +50,7 @@ internal fun TextInput(
             label = {
                 Text(
                     text = label,
-                    fontSize = 17.sp,
+                    fontSize = 17.sp
                 )
             },
             keyboardOptions = keyboardOptions,
