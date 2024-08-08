@@ -29,6 +29,6 @@ private fun CustomerInfo.toDto() = CustomerInfoDto(
         zip = address.zip,
         city = address.city,
         state = address.state.ifEmpty { null },
-        country = address.country
+        country = address.country.code
     ),
 )

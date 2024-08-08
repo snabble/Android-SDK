@@ -13,5 +13,5 @@ internal data class Address(
     val zip: String,
     val city: String,
     val state: String,
-    val country: String
+    val country: CountryItem
 )

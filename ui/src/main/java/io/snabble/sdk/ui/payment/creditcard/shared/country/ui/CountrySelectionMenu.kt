@@ -12,16 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.payment.creditcard.shared.country.displayName
 import io.snabble.sdk.ui.payment.creditcard.shared.country.domain.models.CountryItem
 import io.snabble.sdk.ui.payment.creditcard.shared.country.domain.models.StateItem
-import java.util.Locale
 
 @Composable
 internal fun CountrySelectionMenu(
     modifier: Modifier = Modifier,
-    countryItems: List<CountryItem>?,
-    selectedCountryCode: String? = null,
+    countryItems: List<CountryItem>,
+    selectedCountryCode: CountryItem,
     selectedStateCode: String? = null,
     onCountrySelected: (CountryItem, StateItem?) -> Unit,
 ) {
@@ -31,13 +29,7 @@ internal fun CountrySelectionMenu(
     var showStateList by remember { mutableStateOf(false) }
     var dismissStateList by remember { mutableStateOf(true) }
 
-    var currentCountryItem by remember {
-        mutableStateOf(
-            selectedCountryCode?.let { countryCode -> countryItems?.firstOrNull { it.code == countryCode } }
-                ?: countryItems.loadDefaultCountry()
-                    .also { country -> onCountrySelected(country, null) }
-        )
-    }
+    var currentCountryItem by remember { mutableStateOf(selectedCountryCode) }
 
     var currentStateItem by remember {
         mutableStateOf(
@@ -112,12 +104,3 @@ internal fun CountrySelectionMenu(
         }
     }
 }
-
-private fun List<CountryItem>?.loadDefaultCountry(): CountryItem =
-    this?.firstOrNull { it.displayName == Locale.getDefault().country.displayName }
-        ?: this?.firstOrNull { it.code == Locale.GERMANY.displayCountry }
-        ?: CountryItem(
-            displayName = Locale.GERMANY.country.displayName,
-            code = Locale.GERMANY.country,
-            stateItems = null
-        )

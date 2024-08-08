@@ -39,7 +39,7 @@ private fun CustomerInfo.toDto() = CustomerInfoDto(
     address = AddressDto(
         street = address.street,
         city = address.city,
-        country = address.country,
+        country = address.country.numericCode,
         state = address.state,
         zip = address.zip
     ),

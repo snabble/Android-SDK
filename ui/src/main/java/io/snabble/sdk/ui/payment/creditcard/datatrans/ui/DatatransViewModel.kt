@@ -32,7 +32,8 @@ internal class DatatransViewModel(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(UiState(countryItems = countryItemsRepo.loadCountryItems()))
+    private val _uiState =
+        MutableStateFlow(UiState(countryItems = countryItemsRepo.loadCountryItems()))
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     private val _event: MutableStateFlow<Event?> = MutableStateFlow(null)
@@ -61,10 +62,7 @@ internal class DatatransViewModel(
                 val datatransToken = when (val savedPaymentMethod = result.savedPaymentMethod) {
                     is SavedPostFinanceCard -> DatatransToken(savedPaymentMethod, savedPaymentMethod.cardExpiryDate)
 
-                    is SavedCard -> DatatransToken(
-                        savedPaymentMethod,
-                        savedPaymentMethod.cardExpiryDate
-                    )
+                    is SavedCard -> DatatransToken(savedPaymentMethod, savedPaymentMethod.cardExpiryDate)
 
                     else -> {
                         if (savedPaymentMethod != null) DatatransToken(savedPaymentMethod)
@@ -72,7 +70,10 @@ internal class DatatransViewModel(
                     }
                 }
                 when {
-                    datatransToken != null -> _event.update { Event.TransActionSucceeded(datatransToken) }
+                    datatransToken != null -> _event.update {
+                        Event.TransActionSucceeded(datatransToken)
+                    }
+
                     else -> _event.update { Event.TransactionFailed }
                 }
             }
@@ -118,7 +119,7 @@ internal sealed interface Event {
     data object TransactionFailed : Event
     data class TransActionCreated(val transaction: Transaction) : Event
     data class TransActionSucceeded(val datatransToken: DatatransToken) : Event
-    data object Finish: Event
+    data object Finish : Event
 }
 
 internal data class DatatransToken(
