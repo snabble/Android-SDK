@@ -66,7 +66,7 @@ internal class DatatransRemoteDataSourceImpl(
                             val tokenizationResponse: DatatransTokenizationResponseDto? = try {
                                 gson.fromJson(body, DatatransTokenizationResponseDto::class.java)
                             } catch (e: JsonSyntaxException) {
-                                Log.e("Fiserv", "Error parsing pre-registration response", e)
+                                Log.e("Datatrans", "Error parsing pre-registration response", e)
                                 null
                             }
 

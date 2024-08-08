@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
-import com.google.gson.reflect.TypeToken
 import io.snabble.sdk.ui.payment.creditcard.fiserv.data.FiservRepositoryImpl
 import io.snabble.sdk.ui.payment.creditcard.fiserv.data.dto.FiservCountryDto
 import io.snabble.sdk.ui.payment.creditcard.shared.data.CountryItemsRepositoryImpl
@@ -15,7 +14,7 @@ import io.snabble.sdk.ui.payment.creditcard.shared.domain.models.CountryItem
 import io.snabble.sdk.ui.payment.creditcard.shared.domain.models.StateItem
 import io.snabble.sdk.utils.GsonHolder
 
-class FiservViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
+internal class FiservViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
         if (!modelClass.isAssignableFrom(FiservViewModel::class.java)) {

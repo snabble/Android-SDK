@@ -65,7 +65,6 @@ class DatatransFragment : Fragment() {
 
     private fun handleEvents() {
         lifecycleScope.launch {
-
             viewModel.event
                 .filterNotNull()
                 .flowWithLifecycle(lifecycle)
@@ -103,7 +102,6 @@ class DatatransFragment : Fragment() {
 
                         Event.Finish -> activity?.onBackPressed()
                     }
-
                 }
         }
     }

@@ -1,6 +1,6 @@
 package io.snabble.sdk.ui.payment.creditcard.shared.domain.models
 
-data class CustomerInfo(
+internal data class CustomerInfo(
     val name: String,
     val intCallingCode: String,
     val phoneNumber: String,
@@ -8,7 +8,7 @@ data class CustomerInfo(
     val address: Address,
 )
 
-data class Address(
+internal data class Address(
     val street: String,
     val zip: String,
     val city: String,

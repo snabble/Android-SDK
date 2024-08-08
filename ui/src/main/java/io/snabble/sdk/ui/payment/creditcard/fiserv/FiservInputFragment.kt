@@ -27,7 +27,7 @@ class FiservInputFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         paymentMethod =
-            arguments?.serializableExtra<PaymentMethod>(io.snabble.sdk.ui.payment.creditcard.fiserv.FiservInputView.ARG_PAYMENT_TYPE)
+            arguments?.serializableExtra<PaymentMethod>(FiservInputView.ARG_PAYMENT_TYPE)
                 ?: kotlin.run { activity?.onBackPressed(); return }
 
         (requireActivity() as? AppCompatActivity)?.supportActionBar?.title =
@@ -54,7 +54,7 @@ class FiservInputFragment : Fragment() {
 
                     else -> AndroidView(
                         factory = { context ->
-                            io.snabble.sdk.ui.payment.creditcard.fiserv.FiservInputView(context)
+                            FiservInputView(context)
                                 .apply {
                                     load(
                                         Snabble.checkedInProject.value?.id,
