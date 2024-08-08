@@ -1,27 +1,23 @@
 package io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.google.gson.annotations.SerializedName
 
-@Serializable
 internal data class CustomerInfoDto(
-    @SerialName("name") val name: String,
-    @SerialName("email") val email: String,
-    @SerialName("address") val address: AddressDto,
-    @SerialName("phoneNumber") val phoneNumber: PhoneNumberDto,
+    @SerializedName("name") val name: String,
+    @SerializedName("email") val email: String,
+    @SerializedName("address") val address: AddressDto,
+    @SerializedName("phoneNumber") val phoneNumber: PhoneNumberDto,
 )
 
-@Serializable
 internal data class AddressDto(
-    @SerialName("street") val street: String,
-    @SerialName("zip") val zip: String,
-    @SerialName("city") val city: String,
-    @SerialName("state") val state: String?,
-    @SerialName("country") val country: String,
+    @SerializedName("street") val street: String,
+    @SerializedName("zip") val zip: String,
+    @SerializedName("city") val city: String,
+    @SerializedName("state") val state: String?,
+    @SerializedName("country") val country: String,
 )
 
-@Serializable
 internal data class PhoneNumberDto(
-    @SerialName("subscriber") val number: String,
-    @SerialName("countryCode") val intCallingCode: String,
+    @SerializedName("subscriber") val number: String,
+    @SerializedName("countryCode") val intCallingCode: String,
 )
