@@ -33,6 +33,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven(url = "https://raw.githubusercontent.com/snabble/maven-repository/releases")
         maven(url = "https://datatrans.jfrog.io/artifactory/mobile-sdk/")
         maven(url = "https://jitpack.io")
     }
