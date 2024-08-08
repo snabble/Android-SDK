@@ -6,6 +6,7 @@ import com.google.gson.JsonSyntaxException
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto.DatatransTokenizationRequestDto
 import io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto.DatatransTokenizationResponseDto
+import io.snabble.sdk.ui.payment.creditcard.shared.getTokenizationUrlFor
 import io.snabble.sdk.utils.GsonHolder
 import okhttp3.Call
 import okhttp3.Callback
@@ -36,13 +37,9 @@ internal class DatatransRemoteDataSourceImpl(
     ): Result<DatatransTokenizationResponseDto> {
         val project = snabble.checkedInProject.value ?: return Result.failure(Exception("Missing projectId"))
 
-        val customerInfoPostUrl = project.paymentMethodDescriptors
-            .firstOrNull { it.paymentMethod == datatransTokenizationRequest.paymentMethod }
-            ?.links
-            ?.get("tokenization")
-            ?.href
-            ?.let(snabble::absoluteUrl)
-            ?: return Result.failure(Exception("Missing link to send customer info to"))
+        val customerInfoPostUrl =
+            project.paymentMethodDescriptors.getTokenizationUrlFor(datatransTokenizationRequest.paymentMethod)
+                ?: return Result.failure(Exception("Missing link to send customer info to"))
 
         val requestBody: RequestBody =
             gson.toJson(datatransTokenizationRequest).toRequestBody("application/json".toMediaType())
