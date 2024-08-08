@@ -94,8 +94,11 @@ class DatatransFragment : Fragment() {
                                 }
 
                                 override fun error() {
-                                    Toast.makeText(activity, R.string.Snabble_SEPA_encryptionError, Toast.LENGTH_LONG)
+                                    Toast
+                                        .makeText(activity, R.string.Snabble_SEPA_encryptionError, Toast.LENGTH_LONG)
                                         .show()
+
+                                    activity?.onBackPressed()
                                 }
                             })
                         }
