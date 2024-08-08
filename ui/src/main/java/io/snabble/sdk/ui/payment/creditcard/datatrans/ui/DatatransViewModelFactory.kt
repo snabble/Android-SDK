@@ -26,7 +26,7 @@ internal class DatatransViewModelFactory(private val context: Context) : ViewMod
         return DatatransViewModel(
             datatransRepository = DatatransRepositoryImpl(),
             countryItemsRepo = CountryItemsRepositoryImpl(
-                localCountryItemsDataSource = LocalCountryItemsDataSourceImpl<DatatransCountryDto>(
+                localCountryItemsDataSource = LocalCountryItemsDataSourceImpl(
                     assetManager = context.assets,
                     gson = GsonHolder.get(),
                     clazz = DatatransCountryDto::class.java,

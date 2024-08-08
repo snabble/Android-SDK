@@ -2,10 +2,10 @@ package io.snabble.sdk.ui.payment.creditcard.datatrans.data
 
 import com.google.gson.Gson
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto.CustomerDataDto
 import io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto.AuthDataDto
-import io.snabble.sdk.ui.payment.creditcard.shared.ProviderRemoteDataSource
+import io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto.CustomerDataDto
 import io.snabble.sdk.ui.payment.creditcard.shared.getTokenizationUrlFor
+import io.snabble.sdk.ui.payment.creditcard.shared.post
 import io.snabble.sdk.utils.GsonHolder
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
@@ -20,13 +20,13 @@ internal interface DatatransRemoteDataSource {
 internal class DatatransRemoteDataSourceImpl(
     private val snabble: Snabble = Snabble,
     private val gson: Gson = GsonHolder.get(),
-) : ProviderRemoteDataSource<AuthDataDto>(gson),
-    DatatransRemoteDataSource {
+) : DatatransRemoteDataSource {
 
     override suspend fun sendUserData(
         customerDataDto: CustomerDataDto,
     ): Result<AuthDataDto> {
-        val project = snabble.checkedInProject.value ?: return Result.failure(Exception("Missing projectId"))
+        val project =
+            snabble.checkedInProject.value ?: return Result.failure(Exception("Missing projectId"))
 
         val customerInfoPostUrl =
             project.paymentMethodDescriptors.getTokenizationUrlFor(customerDataDto.paymentMethod)
@@ -39,6 +39,6 @@ internal class DatatransRemoteDataSourceImpl(
             .post(requestBody)
             .build()
 
-        return project.okHttpClient.post(request)
+        return project.okHttpClient.post(request, gson)
     }
 }
