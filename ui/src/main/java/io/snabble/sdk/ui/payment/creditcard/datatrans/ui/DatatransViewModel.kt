@@ -100,6 +100,7 @@ internal class DatatransViewModel(
             projectId,
         )
         Snabble.paymentCredentialsStore.add(credentials)
+        _event.update { Event.Finish }
     }
 }
 
@@ -117,6 +118,7 @@ internal sealed interface Event {
     data object TransactionFailed : Event
     data class TransActionCreated(val transaction: Transaction) : Event
     data class TransActionSucceeded(val datatransToken: DatatransToken) : Event
+    data object Finish: Event
 }
 
 internal data class DatatransToken(

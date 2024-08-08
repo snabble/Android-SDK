@@ -100,6 +100,8 @@ class DatatransFragment : Fragment() {
                                 }
                             })
                         }
+
+                        Event.Finish -> activity?.onBackPressed()
                     }
 
                 }
