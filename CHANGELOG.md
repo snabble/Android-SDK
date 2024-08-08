@@ -10,7 +10,11 @@ All notable changes to this project will be documented in this file.
 ## [0.75.0]
 ### Changed
 * ui: update fiserv 3D's flow. The user now has to enter additional information to add a credit card.
-  * instead of using the CreditCardInput it is now required to use the FiservInput instead.
+  * instead of using the `CreditCardInput` it is now required to use the `FiservInput` instead.
+* ui: update datatrans 3D's flow. The user now has to enter additional information to add a credit card.
+  * the new flow can be integrated via the new `SnabbleUi.Event` `SHOW_DATATRANS_INPUT`
+    * u can directly integrate the `DatatransFragment` as navigation target for this event
+
 ## [0.74.0]
 ### Added
 * core: add new and update existing user agent headers
