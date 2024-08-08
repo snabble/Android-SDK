@@ -2,9 +2,9 @@ package io.snabble.sdk.ui.payment.creditcard.datatrans.data
 
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto.AddressDto
-import io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto.CustomerInfoDto
-import io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto.CustomerDataDto
 import io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto.AuthDataDto
+import io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto.CustomerDataDto
+import io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto.CustomerInfoDto
 import io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto.PhoneNumberDto
 import io.snabble.sdk.ui.payment.creditcard.datatrans.domain.DatatransRepository
 import io.snabble.sdk.ui.payment.creditcard.datatrans.domain.model.AuthData
