@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment.creditcard.shared.domain.models
+package io.snabble.sdk.ui.payment.creditcard.shared.country.domain.models
 
 internal data class CustomerInfo(
     val name: String,

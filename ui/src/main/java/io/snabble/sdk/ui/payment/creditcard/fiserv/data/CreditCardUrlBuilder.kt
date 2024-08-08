@@ -1,6 +1,6 @@
 @file:JvmName("SnabbleCreditCardUrlCreator")
 
-package io.snabble.sdk.ui.payment.creditcard.fiserv
+package io.snabble.sdk.ui.payment.creditcard.fiserv.data
 
 import android.net.Uri
 import io.snabble.sdk.PaymentMethod

@@ -1,6 +1,6 @@
-package io.snabble.sdk.ui.payment.creditcard.shared.domain.models
+package io.snabble.sdk.ui.payment.creditcard.shared.country.domain.models
 
-import io.snabble.sdk.ui.payment.creditcard.shared.data.country.StateDto
+import io.snabble.sdk.ui.payment.creditcard.shared.country.data.dto.StateDto
 
 internal data class StateItem(val displayName: String, val code: String) {
 

@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment.creditcard.shared.widget
+package io.snabble.sdk.ui.payment.creditcard.shared.country.ui
 
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
+import io.snabble.sdk.ui.payment.creditcard.shared.widget.defaultColors
 
 @Composable
 internal fun OutlinedCountryCodeField(

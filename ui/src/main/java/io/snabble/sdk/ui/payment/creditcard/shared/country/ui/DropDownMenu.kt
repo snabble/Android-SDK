@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment.creditcard.shared.widget
+package io.snabble.sdk.ui.payment.creditcard.shared.country.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

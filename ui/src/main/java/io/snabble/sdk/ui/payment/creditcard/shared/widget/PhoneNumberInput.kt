@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.snabble.countrycodepicker.ui.CountryCodePickerDialog
 import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.payment.creditcard.shared.country.ui.OutlinedCountryCodeField
 
 @Composable
 internal fun PhoneNumberInput(

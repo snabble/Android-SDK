@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment.creditcard.shared.widget
+package io.snabble.sdk.ui.payment.creditcard.shared.country.ui
 
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
@@ -12,9 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.payment.creditcard.shared.data.displayName
-import io.snabble.sdk.ui.payment.creditcard.shared.domain.models.CountryItem
-import io.snabble.sdk.ui.payment.creditcard.shared.domain.models.StateItem
+import io.snabble.sdk.ui.payment.creditcard.shared.country.displayName
+import io.snabble.sdk.ui.payment.creditcard.shared.country.domain.models.CountryItem
+import io.snabble.sdk.ui.payment.creditcard.shared.country.domain.models.StateItem
 import java.util.Locale
 
 @Composable

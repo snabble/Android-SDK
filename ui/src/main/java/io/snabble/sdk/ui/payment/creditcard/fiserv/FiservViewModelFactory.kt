@@ -7,11 +7,11 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import io.snabble.sdk.ui.payment.creditcard.fiserv.data.FiservRepositoryImpl
 import io.snabble.sdk.ui.payment.creditcard.fiserv.data.dto.FiservCountryDto
-import io.snabble.sdk.ui.payment.creditcard.shared.data.CountryItemsRepositoryImpl
-import io.snabble.sdk.ui.payment.creditcard.shared.data.country.LocalCountryItemsDataSourceImpl
-import io.snabble.sdk.ui.payment.creditcard.shared.data.displayName
-import io.snabble.sdk.ui.payment.creditcard.shared.domain.models.CountryItem
-import io.snabble.sdk.ui.payment.creditcard.shared.domain.models.StateItem
+import io.snabble.sdk.ui.payment.creditcard.shared.country.data.CountryItemsRepositoryImpl
+import io.snabble.sdk.ui.payment.creditcard.shared.country.data.source.LocalCountryItemsDataSourceImpl
+import io.snabble.sdk.ui.payment.creditcard.shared.country.displayName
+import io.snabble.sdk.ui.payment.creditcard.shared.country.domain.models.CountryItem
+import io.snabble.sdk.ui.payment.creditcard.shared.country.domain.models.StateItem
 import io.snabble.sdk.utils.GsonHolder
 
 internal class FiservViewModelFactory(private val context: Context) : ViewModelProvider.Factory {

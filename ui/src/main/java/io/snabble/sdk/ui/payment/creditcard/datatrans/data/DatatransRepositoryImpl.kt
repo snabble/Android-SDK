@@ -3,12 +3,12 @@ package io.snabble.sdk.ui.payment.creditcard.datatrans.data
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto.AddressDto
 import io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto.CustomerInfoDto
-import io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto.DatatransTokenizationRequestDto
-import io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto.DatatransTokenizationResponseDto
+import io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto.CustomerDataDto
+import io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto.AuthDataDto
 import io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto.PhoneNumberDto
 import io.snabble.sdk.ui.payment.creditcard.datatrans.domain.DatatransRepository
-import io.snabble.sdk.ui.payment.creditcard.datatrans.domain.model.DatatransTokenizationResponse
-import io.snabble.sdk.ui.payment.creditcard.shared.domain.models.CustomerInfo
+import io.snabble.sdk.ui.payment.creditcard.datatrans.domain.model.AuthData
+import io.snabble.sdk.ui.payment.creditcard.shared.country.domain.models.CustomerInfo
 import java.util.Locale
 
 internal class DatatransRepositoryImpl(
@@ -18,7 +18,7 @@ internal class DatatransRepositoryImpl(
     override suspend fun sendUserData(
         customerInfo: CustomerInfo,
         paymentMethod: PaymentMethod
-    ): Result<DatatransTokenizationResponse> {
+    ): Result<AuthData> {
         return datatransRemoteDataSource.sendUserData(createTokenizationRequest(customerInfo, paymentMethod))
             .map { it.toResponse() }
     }
@@ -27,7 +27,7 @@ internal class DatatransRepositoryImpl(
 private fun createTokenizationRequest(
     customerInfo: CustomerInfo,
     paymentMethod: PaymentMethod
-) = DatatransTokenizationRequestDto(
+) = CustomerDataDto(
     paymentMethod = paymentMethod,
     language = Locale.getDefault().language,
     cardOwner = customerInfo.toDto()
@@ -49,5 +49,5 @@ private fun CustomerInfo.toDto() = CustomerInfoDto(
     )
 )
 
-private fun DatatransTokenizationResponseDto.toResponse() =
-    DatatransTokenizationResponse(mobileToken = mobileToken, isTesting = isTesting)
+private fun AuthDataDto.toResponse() =
+    AuthData(mobileToken = mobileToken, isTesting = isTesting)

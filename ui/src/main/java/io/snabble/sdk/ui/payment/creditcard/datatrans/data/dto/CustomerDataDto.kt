@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import io.snabble.sdk.PaymentMethod
 import java.util.Locale
 
-internal data class DatatransTokenizationRequestDto(
+internal data class CustomerDataDto(
     @SerializedName("paymentMethod") val paymentMethod: PaymentMethod,
     @SerializedName("language") val language: String = Locale.getDefault().language,
     @SerializedName("cardOwner") val cardOwner: CustomerInfoDto

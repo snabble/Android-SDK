@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment.creditcard.fiserv
+package io.snabble.sdk.ui.payment.creditcard.fiserv.data
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

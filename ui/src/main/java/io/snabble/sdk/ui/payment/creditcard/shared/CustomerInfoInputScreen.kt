@@ -26,10 +26,10 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.shoppingcart.utils.rememberTextFieldManager
-import io.snabble.sdk.ui.payment.creditcard.shared.domain.models.Address
-import io.snabble.sdk.ui.payment.creditcard.shared.domain.models.CountryItem
-import io.snabble.sdk.ui.payment.creditcard.shared.domain.models.CustomerInfo
-import io.snabble.sdk.ui.payment.creditcard.shared.widget.CountrySelectionMenu
+import io.snabble.sdk.ui.payment.creditcard.shared.country.domain.models.Address
+import io.snabble.sdk.ui.payment.creditcard.shared.country.domain.models.CountryItem
+import io.snabble.sdk.ui.payment.creditcard.shared.country.domain.models.CustomerInfo
+import io.snabble.sdk.ui.payment.creditcard.shared.country.ui.CountrySelectionMenu
 import io.snabble.sdk.ui.payment.creditcard.shared.widget.PhoneNumberInput
 import io.snabble.sdk.ui.payment.creditcard.shared.widget.TextInput
 

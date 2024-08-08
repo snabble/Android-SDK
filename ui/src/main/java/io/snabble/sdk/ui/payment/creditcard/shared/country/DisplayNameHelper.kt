@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment.creditcard.shared.data
+package io.snabble.sdk.ui.payment.creditcard.shared.country
 
 import java.util.Locale
 

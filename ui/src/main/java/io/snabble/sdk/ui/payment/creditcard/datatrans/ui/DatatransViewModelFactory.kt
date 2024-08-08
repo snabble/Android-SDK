@@ -7,11 +7,11 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import io.snabble.sdk.ui.payment.creditcard.datatrans.data.DatatransRepositoryImpl
 import io.snabble.sdk.ui.payment.creditcard.datatrans.data.dto.DatatransCountryDto
-import io.snabble.sdk.ui.payment.creditcard.shared.data.CountryItemsRepositoryImpl
-import io.snabble.sdk.ui.payment.creditcard.shared.data.country.LocalCountryItemsDataSourceImpl
-import io.snabble.sdk.ui.payment.creditcard.shared.data.displayName
-import io.snabble.sdk.ui.payment.creditcard.shared.domain.models.CountryItem
-import io.snabble.sdk.ui.payment.creditcard.shared.domain.models.StateItem
+import io.snabble.sdk.ui.payment.creditcard.shared.country.data.CountryItemsRepositoryImpl
+import io.snabble.sdk.ui.payment.creditcard.shared.country.data.source.LocalCountryItemsDataSourceImpl
+import io.snabble.sdk.ui.payment.creditcard.shared.country.displayName
+import io.snabble.sdk.ui.payment.creditcard.shared.country.domain.models.CountryItem
+import io.snabble.sdk.ui.payment.creditcard.shared.country.domain.models.StateItem
 import io.snabble.sdk.utils.GsonHolder
 
 internal class DatatransViewModelFactory(private val context: Context) : ViewModelProvider.Factory {

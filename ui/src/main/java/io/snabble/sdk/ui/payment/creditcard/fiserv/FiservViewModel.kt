@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.ui.payment.creditcard.fiserv.domain.FiservRepository
-import io.snabble.sdk.ui.payment.creditcard.shared.domain.CountryItemsRepository
-import io.snabble.sdk.ui.payment.creditcard.shared.domain.models.CountryItem
-import io.snabble.sdk.ui.payment.creditcard.shared.domain.models.CustomerInfo
+import io.snabble.sdk.ui.payment.creditcard.shared.country.domain.CountryItemsRepository
+import io.snabble.sdk.ui.payment.creditcard.shared.country.domain.models.CountryItem
+import io.snabble.sdk.ui.payment.creditcard.shared.country.domain.models.CustomerInfo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

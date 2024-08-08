@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment.creditcard.shared.data
+package io.snabble.sdk.ui.payment.creditcard.shared
 
 import android.util.Log
 import com.google.gson.Gson
@@ -13,7 +13,7 @@ import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-internal abstract class ProviderRemoteDataSourceImpl<T>(private val gson: Gson) {
+internal abstract class ProviderRemoteDataSource<T>(private val gson: Gson) {
 
     internal suspend fun OkHttpClient.post(request: Request) = suspendCoroutine<Result<T>> {
         newCall(request).enqueue(object : Callback {

@@ -1,9 +1,9 @@
-package io.snabble.sdk.ui.payment.creditcard.shared.data.country
+package io.snabble.sdk.ui.payment.creditcard.shared.country.data.source
 
 import android.content.res.AssetManager
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import io.snabble.sdk.ui.payment.creditcard.shared.domain.models.CountryItem
+import io.snabble.sdk.ui.payment.creditcard.shared.country.domain.models.CountryItem
 import java.io.InputStreamReader
 import java.lang.reflect.Type
 

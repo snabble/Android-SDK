@@ -1,4 +1,4 @@
-package io.snabble.sdk.ui.payment.creditcard.shared.data.country
+package io.snabble.sdk.ui.payment.creditcard.shared.country.data.dto
 
 internal interface CountryDto {
 
