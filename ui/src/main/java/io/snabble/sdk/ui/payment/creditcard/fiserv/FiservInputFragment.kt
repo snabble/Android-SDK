@@ -17,7 +17,7 @@ import io.snabble.sdk.ui.payment.creditcard.shared.CustomerInfoInputScreen
 import io.snabble.sdk.ui.utils.ThemeWrapper
 import io.snabble.sdk.ui.utils.serializableExtra
 
-class FiservInputFragment : Fragment() {
+open class FiservInputFragment : Fragment() {
 
     private val viewModel: FiservViewModel by viewModels { FiservViewModelFactory(requireContext()) }
 
