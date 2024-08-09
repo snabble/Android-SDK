@@ -7,7 +7,11 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
-## [0.75.0]
+## [0.75.2]
+### Fixed
+* ui: crash due to missing project id when adding a credit card
+
+## [0.75.1]
 ### Added
 * ui: add function `updateCart()` to update the cart manually for the `ShoppingCartScreen`
 
