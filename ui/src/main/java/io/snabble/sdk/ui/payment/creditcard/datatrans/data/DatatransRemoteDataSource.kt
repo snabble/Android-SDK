@@ -14,7 +14,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 
 internal interface DatatransRemoteDataSource {
 
-    suspend fun sendUserData(customerDataDto: CustomerDataDto): Result<AuthDataDto>
+    suspend fun sendUserData(customerDataDto: CustomerDataDto, projectId: String): Result<AuthDataDto>
 }
 
 internal class DatatransRemoteDataSourceImpl(
@@ -24,9 +24,10 @@ internal class DatatransRemoteDataSourceImpl(
 
     override suspend fun sendUserData(
         customerDataDto: CustomerDataDto,
+        projectId: String
     ): Result<AuthDataDto> {
-        val project =
-            snabble.checkedInProject.value ?: return Result.failure(Exception("Missing projectId"))
+        val project = snabble.projects.find { it.id == projectId }
+            ?: return Result.failure(Exception("Missing projectId"))
 
         val customerInfoPostUrl =
             project.paymentMethodDescriptors.getTokenizationUrlFor(customerDataDto.paymentMethod)

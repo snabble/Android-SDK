@@ -17,7 +17,8 @@ internal interface FiservRemoteDataSource {
 
     suspend fun sendUserData(
         customerInfo: CustomerInfoDto,
-        paymentMethod: PaymentMethod
+        paymentMethod: PaymentMethod,
+        projectId: String
     ): Result<AuthDataDto>
 }
 
@@ -28,10 +29,11 @@ internal class FiservRemoteDataSourceImpl(
 
     override suspend fun sendUserData(
         customerInfo: CustomerInfoDto,
-        paymentMethod: PaymentMethod
+        paymentMethod: PaymentMethod,
+        projectId: String
     ): Result<AuthDataDto> {
-        val project =
-            snabble.checkedInProject.value ?: return Result.failure(Exception("Missing projectId"))
+        val project = snabble.projects.find { it.id == projectId }
+            ?: return Result.failure(Exception("Missing projectId"))
 
         val customerInfoPostUrl =
             project.paymentMethodDescriptors.getTokenizationUrlFor(paymentMethod)

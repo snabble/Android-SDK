@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.snabble.sdk.PaymentMethod
-import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.payment.PaymentMethodMetaDataHelper
 import io.snabble.sdk.ui.payment.creditcard.shared.CustomerInfoInputScreen
 import io.snabble.sdk.ui.utils.ThemeWrapper
@@ -22,6 +21,7 @@ open class FiservInputFragment : Fragment() {
     private val viewModel: FiservViewModel by viewModels { FiservViewModelFactory(requireContext()) }
 
     private lateinit var paymentMethod: PaymentMethod
+    private lateinit var projectId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +29,9 @@ open class FiservInputFragment : Fragment() {
         paymentMethod =
             arguments?.serializableExtra<PaymentMethod>(FiservInputView.ARG_PAYMENT_TYPE)
                 ?: kotlin.run { activity?.onBackPressed(); return }
+
+        projectId = arguments?.serializableExtra<String>(FiservInputView.ARG_PROJECT_ID)
+            ?: kotlin.run { activity?.onBackPressed(); return }
 
         (requireActivity() as? AppCompatActivity)?.supportActionBar?.title =
             PaymentMethodMetaDataHelper(requireContext()).labelFor(paymentMethod)
@@ -57,7 +60,7 @@ open class FiservInputFragment : Fragment() {
                             FiservInputView(context)
                                 .apply {
                                     load(
-                                        Snabble.checkedInProject.value?.id,
+                                        projectId,
                                         paymentMethod,
                                         uiState.formUrl,
                                         uiState.deletePreAuthUrl
