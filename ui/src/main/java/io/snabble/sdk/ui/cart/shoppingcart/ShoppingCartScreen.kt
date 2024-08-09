@@ -1,12 +1,10 @@
 package io.snabble.sdk.ui.cart.shoppingcart
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -138,7 +136,9 @@ private fun CardWithUserWeightedItems() {
         items = listOf(
             ProductItem(
                 ShoppingCart.Item(ShoppingCart(), LineItem(name = "Cold brew Coffee"))
-                    .apply { product = Product.Builder().setType(Product.Type.UserWeighed).build() },
+                    .apply {
+                        product = Product.Builder().setType(Product.Type.UserWeighed).build()
+                    },
                 name = "Apple",
                 quantity = 1,
                 editable = true,
