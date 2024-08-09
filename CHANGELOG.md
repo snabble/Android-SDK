@@ -8,6 +8,10 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 ## [0.75.0]
+### Added
+* ui: add function `updateCart()` to update the cart manually for the `ShoppingCartScreen`
+
+## [0.75.0]
 ### Changed
 * ui: update fiserv 3D's flow. The user now has to enter additional information to add a credit card.
   * instead of using the `CreditCardInput` it is now required to use the `FiservInput` instead.
