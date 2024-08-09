@@ -30,6 +30,10 @@ class ShoppingCartViewModel : ViewModel() {
         }
     }
 
+    fun updateCart() {
+        updateUiState(cachedCart)
+    }
+
     init {
         val project = Snabble.checkedInProject.value
         val cart = Snabble.checkedInProject.value?.shoppingCart
