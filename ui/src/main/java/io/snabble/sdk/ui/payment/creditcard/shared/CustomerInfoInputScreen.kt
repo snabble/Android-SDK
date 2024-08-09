@@ -209,6 +209,6 @@ private fun List<CountryItem>?.loadDefaultCountry(): CountryItem =
         ?: CountryItem(
             displayName = Locale.GERMANY.country.displayName,
             code = Locale.GERMANY.country,
-            numericCode = "",
+            numericCode = "276",
             stateItems = null
         )
