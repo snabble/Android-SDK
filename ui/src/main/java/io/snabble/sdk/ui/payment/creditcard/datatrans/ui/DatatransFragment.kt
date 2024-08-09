@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
-class DatatransFragment : Fragment() {
+open class DatatransFragment : Fragment() {
 
     private val viewModel: DatatransViewModel by viewModels { DatatransViewModelFactory(requireContext()) }
 

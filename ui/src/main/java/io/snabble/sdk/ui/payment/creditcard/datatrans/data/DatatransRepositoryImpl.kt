@@ -17,14 +17,15 @@ internal class DatatransRepositoryImpl(
 
     override suspend fun sendUserData(
         customerInfo: CustomerInfo,
-        paymentMethod: PaymentMethod
+        paymentMethod: PaymentMethod,
+        projectId: String
     ): Result<AuthData> {
-        return datatransRemoteDataSource.sendUserData(createTokenizationRequest(customerInfo, paymentMethod))
+        return datatransRemoteDataSource.sendUserData(createCustomerData(customerInfo, paymentMethod), projectId)
             .map { it.toResponse() }
     }
 }
 
-private fun createTokenizationRequest(
+private fun createCustomerData(
     customerInfo: CustomerInfo,
     paymentMethod: PaymentMethod
 ) = CustomerDataDto(

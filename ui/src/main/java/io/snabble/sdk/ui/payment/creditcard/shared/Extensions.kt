@@ -39,6 +39,7 @@ internal suspend inline fun <reified T> OkHttpClient.post(request: Request, gson
                     }
 
                     val result = if (data == null) {
+                        Log.e("Payment", body ?: "Unkown cause")
                         Result.failure(Exception("Missing content"))
                     } else {
                         Result.success(data)
@@ -47,13 +48,15 @@ internal suspend inline fun <reified T> OkHttpClient.post(request: Request, gson
                 }
 
                 else -> {
-                    response.body?.string()
+                    val body = response.body?.string()
+                    Log.e("Payment", body ?: "Unkown cause")
                     it.resume(Result.failure(Exception(response.message)))
                 }
             }
         }
 
         override fun onFailure(call: Call, e: IOException) {
+            Log.e("Payment", e.localizedMessage ?: "Unkown cause")
             it.resume(Result.failure(e))
         }
     })

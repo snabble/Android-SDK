@@ -45,7 +45,9 @@ internal class DatatransViewModel(
     fun sendUserData(customerInfo: CustomerInfo) {
         viewModelScope.launch {
             paymentMethod ?: return@launch
-            datatransRepository.sendUserData(customerInfo, paymentMethod)
+            projectId ?: return@launch
+
+            datatransRepository.sendUserData(customerInfo, paymentMethod, projectId)
                 .onSuccess { info ->
                     _uiState.update { it.copy(isLoading = false) }
                     _event.update { Event.TransActionCreated(createTransaction(info.mobileToken, info.isTesting)) }

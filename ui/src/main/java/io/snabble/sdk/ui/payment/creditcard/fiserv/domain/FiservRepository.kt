@@ -8,6 +8,7 @@ internal interface FiservRepository {
 
     suspend fun sendUserData(
         customerInfo: CustomerInfo,
-        paymentMethod: PaymentMethod
+        paymentMethod: PaymentMethod,
+        projectId: String
     ): Result<AuthData>
 }

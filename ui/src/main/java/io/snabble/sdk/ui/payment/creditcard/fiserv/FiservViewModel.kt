@@ -20,18 +20,22 @@ internal class FiservViewModel(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(UiState(countryItems = countryItemsRepo.loadCountryItems()))
+    private val _uiState =
+        MutableStateFlow(UiState(countryItems = countryItemsRepo.loadCountryItems()))
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    private val paymentMethod = savedStateHandle.get<PaymentMethod>(FiservInputView.ARG_PAYMENT_TYPE)
+    private val paymentMethod =
+        savedStateHandle.get<PaymentMethod>(FiservInputView.ARG_PAYMENT_TYPE)
+    private val projectId = savedStateHandle.get<String>(FiservInputView.ARG_PROJECT_ID)
 
     fun sendUserData(customerInfo: CustomerInfo) {
         viewModelScope.launch {
             paymentMethod ?: return@launch
+            projectId ?: return@launch
 
             _uiState.update { it.copy(isLoading = true, showError = false) }
 
-            fiservRepo.sendUserData(customerInfo, paymentMethod)
+            fiservRepo.sendUserData(customerInfo, paymentMethod, projectId)
                 .onSuccess { info ->
                     _uiState.update {
                         it.copy(
