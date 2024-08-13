@@ -25,7 +25,7 @@ internal class FiservViewModel(
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     private val paymentMethod =
-        savedStateHandle.get<PaymentMethod>(FiservInputView.ARG_PAYMENT_TYPE)
+        savedStateHandle.get<String>(FiservInputView.ARG_PAYMENT_TYPE)?.let { PaymentMethod.valueOf(it) }
     private val projectId = savedStateHandle.get<String>(FiservInputView.ARG_PROJECT_ID)
 
     fun sendUserData(customerInfo: CustomerInfo) {

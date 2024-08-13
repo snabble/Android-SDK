@@ -45,7 +45,7 @@ object PaymentInputViewHelper {
                 usePayone -> Payone.registerCard(activity, project, paymentMethod, Snabble.formPrefillData)
                 useFiserv -> {
                     args.putString(FiservInputView.ARG_PROJECT_ID, projectId)
-                    args.putSerializable(FiservInputView.ARG_PAYMENT_TYPE, paymentMethod)
+                    args.putSerializable(FiservInputView.ARG_PAYMENT_TYPE, paymentMethod.name)
                     SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_FISERV_INPUT, args)
                 }
 
