@@ -1,5 +1,7 @@
 package io.snabble.sdk;
 
+import androidx.annotation.NonNull;
+
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
@@ -195,7 +197,7 @@ public enum Unit {
      * <p>
      * Returns the same value if a conversion is not possible. (e.g. KILOGRAM -> MILLIMETER)
      */
-    public static BigDecimal convert(BigDecimal value, Unit from, Unit to) {
+    public static @NonNull BigDecimal convert(@NonNull BigDecimal value, @NonNull Unit from, @NonNull Unit to) {
         if (from == to) return value;
 
         for (Conversion conversion : conversions) {

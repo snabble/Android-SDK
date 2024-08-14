@@ -9,8 +9,8 @@ import java.math.RoundingMode
 
 fun PriceModifier.convertPriceModifier(
     amount: Int,
-    weightedUnit: String?,
-    referencedUnit: String?
+    weightedUnit: String,
+    referencedUnit: String
 ): Int {
     val convertedValue = convert(BigDecimal(amount), fromString(weightedUnit), fromString(referencedUnit))
     val mode = Snabble.checkedInProject.value?.roundingMode ?: RoundingMode.HALF_UP
