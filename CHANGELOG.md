@@ -7,6 +7,14 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.75.4]
+### Added
+* Provide integration ready Fiserv composable
+
+## [0.75.3]
+### Added
+* Add empty implementation for the ShoppingCartListener #201
+
 ## [0.75.2]
 ### Fixed
 * ui: crash due to missing project id when adding a credit card
