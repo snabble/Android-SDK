@@ -32,9 +32,17 @@ internal data class ProductItem(
         // price modifiers on top of the total price to get the unmodified total price.
         // In the other case we can directly work with the total price.
         val depositPrice = deposit?.depositPrice ?: 0
-        val sumOfModifierPriceDiscounts = item.lineItem?.priceModifiers.orEmpty()
-            .sumOf { it.convertPriceModifier(quantity, unit, item.lineItem?.referenceUnit) }
-            .let(::abs)
+        val weightUnit = item.lineItem?.weightUnit
+        val referenceUnit = item.lineItem?.referenceUnit
+        val sumOfModifierPriceDiscounts = if (weightUnit != null && referenceUnit != null) {
+            item.lineItem?.priceModifiers.orEmpty()
+                .sumOf { it.convertPriceModifier(quantity, weightUnit, referenceUnit) }
+                .let(::abs)
+        } else {
+            item.lineItem?.priceModifiers.orEmpty()
+                .sumOf { it.price * quantity }
+                .let(::abs)
+        }
         return totalPrice + depositPrice + sumOfModifierPriceDiscounts
     }
 
