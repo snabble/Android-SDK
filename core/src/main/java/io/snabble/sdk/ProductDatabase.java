@@ -354,6 +354,7 @@ public class ProductDatabase {
             tempDb.beginTransaction();
         } catch (SQLiteException e) {
             project.logErrorEvent("Could not apply delta update: Could not access temp database");
+            tempDb.close();
             throw new IOException();
         }
 
@@ -390,6 +391,7 @@ public class ProductDatabase {
             tempDb.endTransaction();
         } catch (SQLiteException e) {
             project.logErrorEvent("Could not apply delta update: Could not finish transaction on temp database");
+            tempDb.close();
             throw new IOException();
         }
 
@@ -400,6 +402,7 @@ public class ProductDatabase {
             tempDb.execSQL("VACUUM");
         } catch (SQLiteException e) {
             project.logErrorEvent("Could not apply delta update: %s", e.getMessage());
+            tempDb.close();
             deleteDatabase(tempDbFile);
             throw new IOException();
         }
@@ -413,6 +416,7 @@ public class ProductDatabase {
             swap(tempDbFile);
         } catch (IOException e) {
             project.logErrorEvent("Could not apply delta update: %s", e.getMessage());
+            tempDb.close();
             throw new IOException();
         }
 
