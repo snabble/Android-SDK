@@ -250,6 +250,7 @@ public class FiservInputView extends RelativeLayout {
                     .show();
         } else {
             Snabble.getInstance().getPaymentCredentialsStore().add(pc);
+            deletePreAuth();
             Telemetry.event(Telemetry.Event.PaymentMethodAdded, pc.getType().name());
         }
 
@@ -261,7 +262,6 @@ public class FiservInputView extends RelativeLayout {
     }
 
     private void finish() {
-        deletePreAuth();
         SnabbleUI.executeAction(getContext(), SnabbleUI.Event.GO_BACK);
     }
 
