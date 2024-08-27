@@ -28,7 +28,7 @@
         android:layout_below="@+id/search_bar_layout"
         android:id="@+id/recycler_view" />
 
-    <com.google.android.material.button.MaterialButton
+    <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
         android:id="@+id/add_code_as_is"
         style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"

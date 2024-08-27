@@ -129,7 +129,7 @@
                     android:textAlignment="center"
                     tools:text="Bornheimer Straße 162\n53119 Bonn" />
 
-                <com.google.android.material.button.MaterialButton
+                <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
                     android:id="@+id/start_scanner"
                     style="?attr/materialButtonStyle"
                     android:layout_width="match_parent"

@@ -99,7 +99,7 @@
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/input_iban_layout">
 
-            <com.google.android.material.button.MaterialButton
+            <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
                 android:id="@+id/save"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

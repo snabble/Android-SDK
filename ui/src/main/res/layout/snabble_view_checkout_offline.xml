@@ -82,7 +82,7 @@
         android:layout_marginTop="4dp"
         android:layout_above="@+id/paid"/>
 
-    <com.google.android.material.button.MaterialButton
+    <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
         android:id="@+id/paid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

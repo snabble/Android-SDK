@@ -65,7 +65,7 @@
                     android:textAppearance="?attr/textAppearanceBodyLarge"
                     android:text="@string/Snabble.Shoppingcart.EmptyState.description" />
 
-                <com.google.android.material.button.MaterialButton
+                <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
                     style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
                     android:id="@+id/scan_products"
                     android:layout_width="wrap_content"
@@ -74,7 +74,7 @@
                     android:gravity="center"
                     android:text="@string/Snabble.Shoppingcart.EmptyState.buttonTitle" />
 
-                <com.google.android.material.button.MaterialButton
+                <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
                     style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
                     android:id="@+id/restore"
                     android:layout_width="wrap_content"

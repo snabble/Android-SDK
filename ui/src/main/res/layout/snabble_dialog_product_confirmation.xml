@@ -64,7 +64,7 @@
         android:textAppearance="?attr/textAppearanceBodySmall"
         tools:text="+ 0,45 € deposit" />
 
-    <com.google.android.material.button.MaterialButton
+    <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
         android:id="@+id/enterReducedPrice"
         style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
@@ -99,7 +99,7 @@
                 android:src="@drawable/snabble_ic_minus_content"
                 app:tint="?attr/colorOnSurface" />
 
-            <com.google.android.material.button.MaterialButton
+            <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
                 android:id="@+id/minus"
                 style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
                 android:layout_width="48dp"
@@ -153,7 +153,7 @@
                 android:src="@drawable/snabble_ic_plus_content"
                 app:tint="?attr/colorOnSurface" />
 
-            <com.google.android.material.button.MaterialButton
+            <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
                 android:id="@+id/plus"
                 style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
                 android:layout_width="48dp"
@@ -165,7 +165,7 @@
     </LinearLayout>
 
 
-    <com.google.android.material.button.MaterialButton
+    <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
         android:id="@+id/addToCart"
         style="@style/Snabble.Widget.MaterialComponents.Button"
         android:layout_width="match_parent"
