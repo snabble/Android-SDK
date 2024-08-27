@@ -1,7 +1,10 @@
 package io.snabble.sdk
 
+import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import com.google.gson.JsonSyntaxException
+import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor
 import io.snabble.sdk.checkout.Checkout
@@ -23,13 +26,22 @@ import io.snabble.sdk.utils.getIntOpt
 import io.snabble.sdk.utils.getString
 import io.snabble.sdk.utils.getStringListOpt
 import io.snabble.sdk.utils.getStringOpt
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.Call
+import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.Response
 import org.apache.commons.lang3.LocaleUtils
 import java.io.File
+import java.io.IOException
 import java.math.RoundingMode
 import java.util.Currency
 import java.util.Locale
@@ -39,7 +51,10 @@ import java.util.concurrent.CopyOnWriteArrayList
  * A project contains configuration information and backend api urls needed for a
  * retailer.
  */
-class Project internal constructor(jsonObject: JsonObject) {
+class Project internal constructor(
+    private val gson: Gson = GsonHolder.get(),
+    jsonObject: JsonObject
+) {
 
     /**
      * The unique identifier of the Project
@@ -164,7 +179,8 @@ class Project internal constructor(jsonObject: JsonObject) {
 
             // refresh encoded codes options for encoded codes that contain customer cards
             if (encodedCodesJsonObject != null) {
-                encodedCodesOptions = EncodedCodesOptions.fromJsonObject(this, encodedCodesJsonObject)
+                encodedCodesOptions =
+                    EncodedCodesOptions.fromJsonObject(this, encodedCodesJsonObject)
             }
         }
 
@@ -340,6 +356,10 @@ class Project internal constructor(jsonObject: JsonObject) {
     lateinit var assets: Assets
         private set
 
+    var appTheme: AppTheme? = null
+
+    private val scope = CoroutineScope(Job() + Dispatchers.IO)
+
     init {
         parse(jsonObject)
     }
@@ -415,7 +435,8 @@ class Project internal constructor(jsonObject: JsonObject) {
 
         paymentMethodDescriptors = jsonObject["paymentMethodDescriptors"]?.let {
             val typeToken = object : TypeToken<List<PaymentMethodDescriptor?>?>() {}.type
-            val paymentMethodDescriptors = GsonHolder.get().fromJson<List<PaymentMethodDescriptor>>(it, typeToken)
+            val paymentMethodDescriptors =
+                gson.fromJson<List<PaymentMethodDescriptor>>(it, typeToken)
             paymentMethodDescriptors.filter { desc ->
                 PaymentMethod.fromString(desc.id) != null
             }
@@ -428,12 +449,13 @@ class Project internal constructor(jsonObject: JsonObject) {
         }
 
         if (jsonObject.has("company")) {
-            company = GsonHolder.get().fromJson(jsonObject["company"], Company::class.java)
+            company = gson.fromJson(jsonObject["company"], Company::class.java)
         }
 
-        val codeTemplates = jsonObject["codeTemplates"]?.asJsonObject?.entrySet()?.map { (name, pattern) ->
-            CodeTemplate(name, pattern.asString)
-        }?.toMutableList() ?: mutableListOf()
+        val codeTemplates =
+            jsonObject["codeTemplates"]?.asJsonObject?.entrySet()?.map { (name, pattern) ->
+                CodeTemplate(name, pattern.asString)
+            }?.toMutableList() ?: mutableListOf()
 
         val hasDefaultTemplate = codeTemplates.any { it.name == "default" }
         if (!hasDefaultTemplate) {
@@ -451,7 +473,8 @@ class Project internal constructor(jsonObject: JsonObject) {
                 )
                 var matchingTemplate: CodeTemplate? = null
                 if (priceOverride.has("transmissionTemplate")) {
-                    matchingTemplate = getCodeTemplate(priceOverride["transmissionTemplate"].asString)
+                    matchingTemplate =
+                        getCodeTemplate(priceOverride["transmissionTemplate"].asString)
                 }
                 val priceOverrideTemplate = PriceOverrideTemplate(
                     codeTemplate,
@@ -494,7 +517,7 @@ class Project internal constructor(jsonObject: JsonObject) {
             if (jsonObject.has("coupons")) {
                 val couponsJsonObject = jsonObject["coupons"]
                 val couponsType = object : TypeToken<List<Coupon?>?>() {}.type
-                couponList = GsonHolder.get().fromJson(couponsJsonObject, couponsType)
+                couponList = gson.fromJson(couponsJsonObject, couponsType)
             }
         } catch (e: Exception) {
             Logger.e("Could not parse coupons")
@@ -508,13 +531,22 @@ class Project internal constructor(jsonObject: JsonObject) {
             .addInterceptor(AcceptedLanguageInterceptor())
             .build()
 
+        scope.launch {
+            loadAppAppearance()
+        }
+
         _shoppingCart.tryEmit(ShoppingCart(this))
 
         shoppingCartStorage = ShoppingCartStorage(this)
 
         checkout = Checkout(this, shoppingCartFlow.value)
 
-        productDatabase = ProductDatabase(this, shoppingCartFlow.value, "$id.sqlite3", Snabble.config.generateSearchIndex)
+        productDatabase = ProductDatabase(
+            this,
+            shoppingCartFlow.value,
+            "$id.sqlite3",
+            Snabble.config.generateSearchIndex
+        )
 
         events = Events(this, shoppingCartFlow.value)
 
@@ -534,6 +566,35 @@ class Project internal constructor(jsonObject: JsonObject) {
         coupons.update()
 
         notifyUpdate()
+    }
+
+    private suspend fun loadAppAppearance() = withContext(Dispatchers.IO) {
+        val path = urls["customizationConfig"] ?: return@withContext
+        val request = Request.Builder().get().url(Snabble.absoluteUrl(path)).build()
+
+        okHttpClient.newCall(request).enqueue(object : Callback {
+
+            override fun onResponse(call: Call, response: Response) {
+                when (response.code) {
+                    HTTTP_STATUS_OK -> {
+                        try {
+                            appTheme = gson.fromJson(response.body?.string(), AppTheme::class.java)
+                            Logger.d("AppTheme for $id loaded: $appTheme")
+                        } catch (e: JsonSyntaxException) {
+                            Logger.e(e.message)
+                        }
+                    }
+
+                    else -> {
+                        Logger.d("No remote theme provided")
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call, e: IOException) {
+                Logger.e("Failed to load remote theme: ${e.message}")
+            }
+        })
     }
 
     var googlePayHelper = paymentMethodDescriptors
@@ -659,3 +720,10 @@ class Project internal constructor(jsonObject: JsonObject) {
         fun onProjectUpdated(project: Project?)
     }
 }
+
+private const val HTTTP_STATUS_OK = 200
+
+data class AppTheme(
+    @SerializedName("colorPrimary") val primaryColor: String,
+    @SerializedName("colorSecondary") val secondaryColor: String
+)
