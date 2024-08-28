@@ -6,7 +6,7 @@ import com.google.android.material.button.MaterialButton
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.R
 
-class SnabblePrimaryButton @JvmOverloads constructor(
+class SnabbleSecondaryButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.materialButtonStyle,
@@ -18,6 +18,6 @@ class SnabblePrimaryButton @JvmOverloads constructor(
 
     private fun init() {
         val project = Snabble.checkedInProject.value
-        setBackgroundColor(context.getPrimaryColorForProject(project))
+        setTextColor(context.getPrimaryColorForProject(project))
     }
 }
