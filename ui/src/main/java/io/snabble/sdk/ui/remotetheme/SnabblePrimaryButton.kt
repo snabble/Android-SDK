@@ -21,7 +21,6 @@ class SnabblePrimaryButton @JvmOverloads constructor(
         Snabble.checkedInProject.observeForever {
             it?.appTheme?.let { appTheme ->
                 setBackgroundColor(appTheme.primaryColor.asColor())
-                setTextColor(appTheme.secondaryColor.asColor())
             }
         }
     }
