@@ -27,4 +27,4 @@ class SnabblePrimaryButton @JvmOverloads constructor(
     }
 }
 
-private fun String.asColor() = Color.parseColor(this)
+fun String.asColor() = Color.parseColor(this)
