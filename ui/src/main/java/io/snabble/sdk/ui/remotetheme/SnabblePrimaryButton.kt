@@ -1,7 +1,6 @@
 package io.snabble.sdk.ui.remotetheme
 
 import android.content.Context
-import android.graphics.Color
 import android.util.AttributeSet
 import com.google.android.material.button.MaterialButton
 import io.snabble.sdk.Snabble
@@ -18,12 +17,7 @@ class SnabblePrimaryButton @JvmOverloads constructor(
     }
 
     private fun init() {
-        Snabble.checkedInProject.observeForever {
-            it?.appTheme?.let { appTheme ->
-                setBackgroundColor(appTheme.primaryColor.asColor())
-            }
-        }
+        val project = Snabble.checkedInProject.value
+        setBackgroundColor(context.getPrimaryColorForProject(project))
     }
 }
-
-fun String.asColor() = Color.parseColor(this)
