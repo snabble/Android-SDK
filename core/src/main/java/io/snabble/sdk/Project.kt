@@ -576,7 +576,7 @@ class Project internal constructor(
 
             override fun onResponse(call: Call, response: Response) {
                 when (response.code) {
-                    HTTTP_STATUS_OK -> {
+                    HTTP_STATUS_OK -> {
                         try {
                             appTheme = gson.fromJson(response.body?.string(), AppTheme::class.java)
                             Logger.d("AppTheme for $id loaded: $appTheme")
@@ -721,7 +721,7 @@ class Project internal constructor(
     }
 }
 
-private const val HTTTP_STATUS_OK = 200
+private const val HTTP_STATUS_OK = 200
 
 data class AppTheme(
     @SerializedName("colorPrimary") val primaryColor: String,
