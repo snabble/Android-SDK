@@ -84,6 +84,7 @@ dependencies {
     implementation(libs.androidx.cardview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.gridlayout)
+    implementation(libs.androidx.lifecycleLiveData)
     implementation(libs.android.material)
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.startupRuntime)
@@ -102,7 +103,6 @@ dependencies {
     implementation(libs.rekisoftLazyWorker)
     implementation(libs.relex.circleindicator)
     implementation(libs.snabble.phoneAuth.countryCodePicker)
-
     implementation(libs.bundles.camera)
     implementation(libs.bundles.navigation)
 
