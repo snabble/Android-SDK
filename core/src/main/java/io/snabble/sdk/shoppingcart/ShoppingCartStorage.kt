@@ -57,7 +57,8 @@ internal class ShoppingCartStorage(val project: Project) {
         val env = Snabble.environment?.name?.lowercase() ?: "unknown"
         Dispatch.mainThread {
             project.shops.forEach {
-                fileMap[it.id] = File(project.internalStorageDirectory, "cart/$env/${it.id}/shoppingCart.json")
+                fileMap[it.id] =
+                    File(project.internalStorageDirectory, "cart/$env/${it.id}/shoppingCart.json")
             }
         }
     }
@@ -65,9 +66,16 @@ internal class ShoppingCartStorage(val project: Project) {
     private fun load() {
         try {
             if (currentFile?.exists() == true) {
-                val contents = IOUtils.toString(FileInputStream(currentFile), Charset.forName("UTF-8"))
-                val shoppingCartData = GsonHolder.get().fromJson(contents, ShoppingCartData::class.java)
-                project.shoppingCart.initWithData(shoppingCartData)
+                val contents: String? =
+                    IOUtils.toString(FileInputStream(currentFile), Charset.forName("UTF-8"))
+                val shoppingCartData: ShoppingCartData? =
+                    GsonHolder.get().fromJson(contents, ShoppingCartData::class.java)
+                if (shoppingCartData != null) {
+                    project.shoppingCart.initWithData(shoppingCartData)
+                } else {
+                    //shopping cart could not be read, create a new one.
+                    project.shoppingCart.initWithData(ShoppingCartData())
+                }
             } else {
                 project.shoppingCart.initWithData(ShoppingCartData())
             }
@@ -76,7 +84,9 @@ internal class ShoppingCartStorage(val project: Project) {
             Logger.e("Could not load shopping list from: " + currentFile?.absolutePath + ", creating a new one.")
             project.shoppingCart.initWithData(ShoppingCartData())
         } catch (e: JsonSyntaxException) {
+            //shopping cart could not be read, create a new one.
             Logger.e("Could not parse shopping list due to: ${e.message}")
+            project.shoppingCart.initWithData(ShoppingCartData())
         }
     }
 
