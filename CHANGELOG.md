@@ -4,9 +4,23 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 ### Added
 ### Changed
-* Replace items depositText w/ local i18n text
 ### Removed
 ### Fixed
+
+## [0.75.7]
+### Fixed
+* Handle npe when loading the shopping cart data and restore from it
+
+## [0.75.6]
+### Changed
+* Replace items depositText w/ local i18n text
+* Switch to only delete a pre auth if a card was successfully saved
+### Fixed
+* Fix SQLiteDatabaseLockedException
+
+## [0.75.5]
+### Fixed
+* Fix npe while calculating the modified price
 
 ## [0.75.4]
 ### Added
