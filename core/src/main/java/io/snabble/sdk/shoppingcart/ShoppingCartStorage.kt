@@ -2,7 +2,6 @@ package io.snabble.sdk.shoppingcart
 
 import android.os.Handler
 import android.os.Looper
-import com.google.gson.JsonSyntaxException
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
@@ -63,6 +62,7 @@ internal class ShoppingCartStorage(val project: Project) {
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private fun load() {
         try {
             if (currentFile?.exists() == true) {
@@ -81,11 +81,11 @@ internal class ShoppingCartStorage(val project: Project) {
             }
         } catch (e: IOException) {
             //shopping cart could not be read, create a new one.
-            Logger.e("Could not load shopping list from: " + currentFile?.absolutePath + ", creating a new one.")
+            Logger.e("Could not load shopping list from: ${currentFile?.absolutePath}, creating a new one.")
             project.shoppingCart.initWithData(ShoppingCartData())
-        } catch (e: JsonSyntaxException) {
+        } catch (e: RuntimeException) {
             //shopping cart could not be read, create a new one.
-            Logger.e("Could not parse shopping list due to: ${e.message}")
+            Logger.e("Could not load shopping list from ${currentFile?.absolutePath}:  ${e.message}")
             project.shoppingCart.initWithData(ShoppingCartData())
         }
     }
