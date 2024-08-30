@@ -357,9 +357,7 @@ class Project internal constructor(
         private set
 
     var appTheme: AppTheme? = null
-
-    private val scope = CoroutineScope(Job() + Dispatchers.IO)
-
+    
     init {
         parse(jsonObject)
     }
@@ -380,6 +378,13 @@ class Project internal constructor(
         val links = jsonObject["links"].asJsonObject
         links.entrySet().forEach {
             urls[it.key] = Snabble.absoluteUrl(it.value.asJsonObject["href"].asString)
+        }
+        val customizationConfig = jsonObject["appCustomizationConfig"].asJsonObject
+        try {
+            appTheme = gson.fromJson(customizationConfig, AppTheme::class.java)
+            Logger.d("AppTheme for $id loaded: $appTheme")
+        } catch (e: JsonSyntaxException) {
+            Logger.e(e.message)
         }
         this.urls = urls
 
@@ -531,10 +536,6 @@ class Project internal constructor(
             .addInterceptor(AcceptedLanguageInterceptor())
             .build()
 
-        scope.launch {
-            loadAppAppearance()
-        }
-
         _shoppingCart.tryEmit(ShoppingCart(this))
 
         shoppingCartStorage = ShoppingCartStorage(this)
@@ -566,35 +567,6 @@ class Project internal constructor(
         coupons.update()
 
         notifyUpdate()
-    }
-
-    private suspend fun loadAppAppearance() = withContext(Dispatchers.IO) {
-        val path = urls["customizationConfig"] ?: return@withContext
-        val request = Request.Builder().get().url(Snabble.absoluteUrl(path)).build()
-
-        okHttpClient.newCall(request).enqueue(object : Callback {
-
-            override fun onResponse(call: Call, response: Response) {
-                when (response.code) {
-                    HTTP_STATUS_OK -> {
-                        try {
-                            appTheme = gson.fromJson(response.body?.string(), AppTheme::class.java)
-                            Logger.d("AppTheme for $id loaded: $appTheme")
-                        } catch (e: JsonSyntaxException) {
-                            Logger.e(e.message)
-                        }
-                    }
-
-                    else -> {
-                        Logger.d("No remote theme provided")
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call, e: IOException) {
-                Logger.e("Failed to load remote theme: ${e.message}")
-            }
-        })
     }
 
     var googlePayHelper = paymentMethodDescriptors
