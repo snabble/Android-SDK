@@ -379,7 +379,7 @@ class Project internal constructor(
         links.entrySet().forEach {
             urls[it.key] = Snabble.absoluteUrl(it.value.asJsonObject["href"].asString)
         }
-        val customizationConfig = jsonObject["appCustomizationConfig"].asJsonObject
+        val customizationConfig : JsonElement? = jsonObject["appCustomizationConfig"]
         try {
             appTheme = gson.fromJson(customizationConfig, AppTheme::class.java)
             Logger.d("AppTheme for $id loaded: $appTheme")
