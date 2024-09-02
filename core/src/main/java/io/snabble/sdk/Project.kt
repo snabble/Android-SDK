@@ -26,22 +26,13 @@ import io.snabble.sdk.utils.getIntOpt
 import io.snabble.sdk.utils.getString
 import io.snabble.sdk.utils.getStringListOpt
 import io.snabble.sdk.utils.getStringOpt
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import okhttp3.Call
-import okhttp3.Callback
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.Response
 import org.apache.commons.lang3.LocaleUtils
 import java.io.File
-import java.io.IOException
 import java.math.RoundingMode
 import java.util.Currency
 import java.util.Locale
@@ -357,7 +348,7 @@ class Project internal constructor(
         private set
 
     var appTheme: AppTheme? = null
-    
+
     init {
         parse(jsonObject)
     }
@@ -379,9 +370,11 @@ class Project internal constructor(
         links.entrySet().forEach {
             urls[it.key] = Snabble.absoluteUrl(it.value.asJsonObject["href"].asString)
         }
-        val customizationConfig : JsonElement? = jsonObject["appCustomizationConfig"]
+        val customizationConfig: JsonElement? = jsonObject["appCustomizationConfig"]
         try {
-            appTheme = gson.fromJson(customizationConfig, AppTheme::class.java)
+            val lightMode: LightMode? = gson.fromJson(customizationConfig, LightMode::class.java)
+            val darkMode: DarkMode? = gson.fromJson(customizationConfig, DarkMode::class.java)
+            appTheme = AppTheme(lightMode, darkMode)
             Logger.d("AppTheme for $id loaded: $appTheme")
         } catch (e: JsonSyntaxException) {
             Logger.e(e.message)
@@ -693,9 +686,21 @@ class Project internal constructor(
     }
 }
 
-private const val HTTP_STATUS_OK = 200
-
 data class AppTheme(
-    @SerializedName("colorPrimary") val primaryColor: String,
-    @SerializedName("colorSecondary") val secondaryColor: String
+    val lightModeColors: LightMode? = null,
+    val darkMode: DarkMode? = null,
+)
+
+data class LightMode(
+    @SerializedName("colorPrimary_light") val primaryColor: String,
+    @SerializedName("colorOnPrimary_light") val onPrimaryColor: String,
+    @SerializedName("colorSecondary_light") val secondaryColor: String,
+    @SerializedName("colorOnSecondary_light") val onSecondaryColor: String
+)
+
+data class DarkMode(
+    @SerializedName("colorPrimary_dark") val primaryColor: String,
+    @SerializedName("colorOnPrimary_dark") val onPrimaryColor: String,
+    @SerializedName("colorSecondary_dark") val secondaryColor: String,
+    @SerializedName("colorOnSecondary_dark") val onSecondaryColor: String
 )
