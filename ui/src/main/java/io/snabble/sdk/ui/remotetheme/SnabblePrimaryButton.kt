@@ -19,5 +19,6 @@ class SnabblePrimaryButton @JvmOverloads constructor(
     private fun init() {
         val project = Snabble.checkedInProject.value
         setBackgroundColor(context.getPrimaryColorForProject(project))
+        setTextColor(context.getOnPrimaryColorForProject(project))
     }
 }
