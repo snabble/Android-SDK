@@ -687,7 +687,7 @@ class Project internal constructor(
 }
 
 data class AppTheme(
-    val lightModeColors: LightMode? = null,
+    val lightMode: LightMode? = null,
     val darkMode: DarkMode? = null,
 )
 
