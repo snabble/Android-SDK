@@ -7,8 +7,8 @@ import io.snabble.sdk.ui.R
 import io.snabble.sdk.utils.getColorByAttribute
 
 fun Context.getPrimaryColorForProject(project: Project?): Int {
-    val lightColor = project?.appTheme?.lightMode?.primaryColor?.asColor()
-    val darkColor = project?.appTheme?.darkMode?.primaryColor?.asColor()
+    val lightColor = project?.appTheme?.lightModeColors?.primaryColor?.asColor()
+    val darkColor = project?.appTheme?.darkModeColors?.primaryColor?.asColor()
     return when {
         isDarkMode() -> darkColor ?: lightColor ?: getColorByAttribute(R.attr.colorPrimary)
         else -> lightColor ?: getColorByAttribute(R.attr.colorPrimary)
@@ -16,8 +16,8 @@ fun Context.getPrimaryColorForProject(project: Project?): Int {
 }
 
 fun Context.getOnPrimaryColorForProject(project: Project?): Int {
-    val lightColor = project?.appTheme?.lightMode?.onPrimaryColor?.asColor()
-    val darkColor = project?.appTheme?.darkMode?.onPrimaryColor?.asColor()
+    val lightColor = project?.appTheme?.lightModeColors?.onPrimaryColor?.asColor()
+    val darkColor = project?.appTheme?.darkModeColors?.onPrimaryColor?.asColor()
     return when {
         isDarkMode() -> darkColor ?: lightColor ?: getColorByAttribute(R.attr.colorOnPrimary)
         else -> lightColor ?: getColorByAttribute(R.attr.colorOnPrimary)
@@ -25,8 +25,8 @@ fun Context.getOnPrimaryColorForProject(project: Project?): Int {
 }
 
 fun Context.getSecondaryColorForProject(project: Project?): Int {
-    val lightColor = project?.appTheme?.lightMode?.secondaryColor?.asColor()
-    val darkColor = project?.appTheme?.darkMode?.secondaryColor?.asColor()
+    val lightColor = project?.appTheme?.lightModeColors?.secondaryColor?.asColor()
+    val darkColor = project?.appTheme?.darkModeColors?.secondaryColor?.asColor()
     return when {
         isDarkMode() -> darkColor ?: lightColor ?: getColorByAttribute(R.attr.colorSecondary)
         else -> lightColor ?: getColorByAttribute(R.attr.colorSecondary)
@@ -34,8 +34,8 @@ fun Context.getSecondaryColorForProject(project: Project?): Int {
 }
 
 fun Context.getOnSecondaryColorForProject(project: Project?): Int {
-    val lightColor = project?.appTheme?.lightMode?.onSecondaryColor?.asColor()
-    val darkColor = project?.appTheme?.darkMode?.onSecondaryColor?.asColor()
+    val lightColor = project?.appTheme?.lightModeColors?.onSecondaryColor?.asColor()
+    val darkColor = project?.appTheme?.darkModeColors?.onSecondaryColor?.asColor()
     return when {
         isDarkMode() -> darkColor ?: lightColor ?: getColorByAttribute(R.attr.colorOnSecondary)
         else -> lightColor ?: getColorByAttribute(R.attr.colorOnSecondary)

@@ -372,9 +372,9 @@ class Project internal constructor(
         }
         val customizationConfig: JsonElement? = jsonObject["appCustomizationConfig"]
         try {
-            val lightMode: LightMode? = gson.fromJson(customizationConfig, LightMode::class.java)
-            val darkMode: DarkMode? = gson.fromJson(customizationConfig, DarkMode::class.java)
-            appTheme = AppTheme(lightMode, darkMode)
+            val lightModeColors: LightModeColors? = gson.fromJson(customizationConfig, LightModeColors::class.java)
+            val darkModeColors: DarkModeColors? = gson.fromJson(customizationConfig, DarkModeColors::class.java)
+            appTheme = AppTheme(lightModeColors, darkModeColors)
             Logger.d("AppTheme for $id loaded: $appTheme")
         } catch (e: JsonSyntaxException) {
             Logger.e(e.message)
@@ -687,18 +687,18 @@ class Project internal constructor(
 }
 
 data class AppTheme(
-    val lightMode: LightMode? = null,
-    val darkMode: DarkMode? = null,
+    val lightModeColors: LightModeColors? = null,
+    val darkModeColors: DarkModeColors? = null,
 )
 
-data class LightMode(
+data class LightModeColors(
     @SerializedName("colorPrimary_light") val primaryColor: String,
     @SerializedName("colorOnPrimary_light") val onPrimaryColor: String,
     @SerializedName("colorSecondary_light") val secondaryColor: String,
     @SerializedName("colorOnSecondary_light") val onSecondaryColor: String
 )
 
-data class DarkMode(
+data class DarkModeColors(
     @SerializedName("colorPrimary_dark") val primaryColor: String,
     @SerializedName("colorOnPrimary_dark") val onPrimaryColor: String,
     @SerializedName("colorSecondary_dark") val secondaryColor: String,
