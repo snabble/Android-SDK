@@ -1,29 +1,39 @@
 package io.snabble.sdk.ui.search
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.AttributeSet
-import android.view.KeyEvent
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
+import io.snabble.sdk.extensions.xx
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.ui.cart.shoppingcart.utils.rememberTextFieldManager
+import io.snabble.sdk.ui.payment.creditcard.shared.widget.TextInput
 import io.snabble.sdk.ui.telemetry.Telemetry
+import io.snabble.sdk.ui.utils.ThemeWrapper
 import io.snabble.sdk.ui.utils.isNotNullOrBlank
 
 open class ProductSearchView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr) {
     private val searchableProductAdapter: SearchableProductAdapter
-    private val searchBar: TextInputEditText
-    private val searchBarTextInputLayout: TextInputLayout
+    private val composeContainer: ComposeView
     private val addCodeAsIs: TextView
     private var lastSearchQuery: String? = null
 
@@ -31,12 +41,12 @@ open class ProductSearchView @JvmOverloads constructor(context: Context, attrs: 
         set(value) {
             field = value
             if (value) {
-                searchBarTextInputLayout.visibility = VISIBLE
+                composeContainer.visibility = VISIBLE
             } else {
-                searchBarTextInputLayout.visibility = GONE
+                composeContainer.visibility = GONE
                 val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(searchBarTextInputLayout.windowToken, 0)
-                searchBarTextInputLayout.clearFocus()
+                imm.hideSoftInputFromWindow(composeContainer.windowToken, 0)
+                composeContainer.clearFocus()
             }
         }
 
@@ -54,37 +64,50 @@ open class ProductSearchView @JvmOverloads constructor(context: Context, attrs: 
             field = value
             searchableProductAdapter.showBarcode = value
         }
-    var inputType: Int
-        get() = searchBar.inputType
-        set(value) {
-            searchBar.inputType = value
-        }
 
     init {
         inflate(context, R.layout.snabble_view_search_product, this)
         val recyclerView: RecyclerView = findViewById(R.id.recycler_view)
 
-        searchBarTextInputLayout = findViewById(R.id.search_bar_layout)
-        searchBar = findViewById(R.id.search_bar)
-        searchBar.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable) {
-                if (searchBarEnabled) {
-                    search(s.toString())
+        composeContainer = findViewById(R.id.compose_container)
+        composeContainer.setContent {
+            ThemeWrapper {
+                "Using wrapper".xx()
+                val textFieldManager = rememberTextFieldManager()
+                val focusRequester = remember { FocusRequester() }
+
+                var searchedCode by remember { mutableStateOf("") }
+
+                LaunchedEffect(Unit) {
+                    focusRequester.requestFocus()
+                    textFieldManager.showKeyboard()
                 }
+                TextInput(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester),
+                    value = searchedCode,
+                    label = stringResource(id = R.string.Snabble_Scanner_enterBarcode),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Send
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onSend = {
+                            textFieldManager.clearFocusAndHideKeyboard()
+                            showScannerWithCode(searchedCode)
+                        }
+                    ),
+                    onValueChanged = { value ->
+                        if (searchBarEnabled) {
+                            searchedCode = value
+                            search(value)
+                        }
+                    }
+                )
+
             }
-        })
-        searchBar.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_DONE || (event.action == KeyEvent.ACTION_DOWN && event.keyCode == KeyEvent.KEYCODE_ENTER)) {
-                searchBar.text?.let { text ->
-                    showScannerWithCode(text.toString())
-                }
-                return@OnEditorActionListener true
-            }
-            false
-        })
-        searchBarTextInputLayout.requestFocus()
+        }
         addCodeAsIs = findViewById(R.id.add_code_as_is)
         recyclerView.layoutManager = LinearLayoutManager(context)
         searchableProductAdapter = SearchableProductAdapter()
@@ -112,9 +135,6 @@ open class ProductSearchView @JvmOverloads constructor(context: Context, attrs: 
     }
 
     fun search(searchQuery: String) {
-        if (searchBarEnabled && searchBar.text.toString() != searchQuery) {
-            searchBar.setText(searchQuery)
-        }
         if (lastSearchQuery == null || lastSearchQuery != searchQuery) {
             lastSearchQuery = searchQuery
             searchableProductAdapter.search(searchQuery)
@@ -129,17 +149,6 @@ open class ProductSearchView @JvmOverloads constructor(context: Context, attrs: 
             addCodeAsIs.visibility = GONE
         }
     }
-
-    fun focusTextInputAndShowKeyboard() {
-        val handler = Handler(Looper.getMainLooper())
-        handler.postDelayed({
-            searchBar.requestFocus()
-            val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.showSoftInput(searchBar, 0)
-        }, 100)
-    }
-
-    fun focusTextInput() = searchBarTextInputLayout.requestFocus()
 
     /** allows for overriding the default action (calling SnabbleUICallback)  */
     fun setOnProductSelectedListener(listener: OnProductSelectedListener) {
