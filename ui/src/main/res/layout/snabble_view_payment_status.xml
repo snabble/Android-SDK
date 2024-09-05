@@ -161,7 +161,7 @@
                         android:text="@string/Snabble.PaymentStatus.AddDebitCard.message"
                         android:textAppearance="?attr/textAppearanceBodyLarge" />
 
-                    <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
+                    <io.snabble.sdk.ui.remotetheme.SnabbleSecondaryButton
                         android:id="@+id/add_iban_button"
                         style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
                         android:layout_width="wrap_content"
