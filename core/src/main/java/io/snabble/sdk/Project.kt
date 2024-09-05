@@ -16,6 +16,9 @@ import io.snabble.sdk.coupons.Coupons
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions
 import io.snabble.sdk.events.Events
 import io.snabble.sdk.googlepay.GooglePayHelper
+import io.snabble.sdk.remoteTheme.AppTheme
+import io.snabble.sdk.remoteTheme.DarkModeColors
+import io.snabble.sdk.remoteTheme.LightModeColors
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.shoppingcart.ShoppingCartStorage
 import io.snabble.sdk.utils.GsonHolder
@@ -365,11 +368,6 @@ class Project internal constructor(
             brand = Snabble.brands[brandId]
         }
 
-        val urls = mutableMapOf<String, String>()
-        val links = jsonObject["links"].asJsonObject
-        links.entrySet().forEach {
-            urls[it.key] = Snabble.absoluteUrl(it.value.asJsonObject["href"].asString)
-        }
         val customizationConfig: JsonElement? = jsonObject["appCustomizationConfig"]
         try {
             val lightModeColors: LightModeColors? = gson.fromJson(customizationConfig, LightModeColors::class.java)
@@ -379,6 +377,13 @@ class Project internal constructor(
         } catch (e: JsonSyntaxException) {
             Logger.e(e.message)
         }
+
+        val urls = mutableMapOf<String, String>()
+        val links = jsonObject["links"].asJsonObject
+        links.entrySet().forEach {
+            urls[it.key] = Snabble.absoluteUrl(it.value.asJsonObject["href"].asString)
+        }
+
         this.urls = urls
 
         tokensUrl = "${urls["tokens"]}?role=retailerApp"
@@ -433,8 +438,7 @@ class Project internal constructor(
 
         paymentMethodDescriptors = jsonObject["paymentMethodDescriptors"]?.let {
             val typeToken = object : TypeToken<List<PaymentMethodDescriptor?>?>() {}.type
-            val paymentMethodDescriptors =
-                gson.fromJson<List<PaymentMethodDescriptor>>(it, typeToken)
+            val paymentMethodDescriptors = gson.fromJson<List<PaymentMethodDescriptor>>(it, typeToken)
             paymentMethodDescriptors.filter { desc ->
                 PaymentMethod.fromString(desc.id) != null
             }
@@ -471,8 +475,7 @@ class Project internal constructor(
                 )
                 var matchingTemplate: CodeTemplate? = null
                 if (priceOverride.has("transmissionTemplate")) {
-                    matchingTemplate =
-                        getCodeTemplate(priceOverride["transmissionTemplate"].asString)
+                    matchingTemplate = getCodeTemplate(priceOverride["transmissionTemplate"].asString)
                 }
                 val priceOverrideTemplate = PriceOverrideTemplate(
                     codeTemplate,
@@ -685,22 +688,3 @@ class Project internal constructor(
         fun onProjectUpdated(project: Project?)
     }
 }
-
-data class AppTheme(
-    val lightModeColors: LightModeColors? = null,
-    val darkModeColors: DarkModeColors? = null,
-)
-
-data class LightModeColors(
-    @SerializedName("colorPrimary_light") val primaryColor: String,
-    @SerializedName("colorOnPrimary_light") val onPrimaryColor: String,
-    @SerializedName("colorSecondary_light") val secondaryColor: String,
-    @SerializedName("colorOnSecondary_light") val onSecondaryColor: String
-)
-
-data class DarkModeColors(
-    @SerializedName("colorPrimary_dark") val primaryColor: String,
-    @SerializedName("colorOnPrimary_dark") val onPrimaryColor: String,
-    @SerializedName("colorSecondary_dark") val secondaryColor: String,
-    @SerializedName("colorOnSecondary_dark") val onSecondaryColor: String
-)
