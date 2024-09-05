@@ -7,12 +7,14 @@ import androidx.fragment.app.FragmentActivity
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.Snabble.instance
 import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.payment.creditcard.datatrans.ui.DatatransFragment
 import io.snabble.sdk.ui.payment.creditcard.fiserv.FiservInputView
 import io.snabble.sdk.ui.payment.externalbilling.ExternalBillingFragment.Companion.ARG_PROJECT_ID
+import io.snabble.sdk.ui.remotetheme.getPrimaryColorForProject
 import io.snabble.sdk.ui.utils.KeyguardUtils
 import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.utils.Logger
@@ -29,7 +31,8 @@ object PaymentInputViewHelper {
             }
             val acceptedOriginTypes = project.paymentMethodDescriptors
                 .firstOrNull { it.paymentMethod == paymentMethod }?.acceptedOriginTypes.orEmpty()
-            val useDatatrans = acceptedOriginTypes.any { it == "datatransAlias" || it == "datatransCreditCardAlias" }
+            val useDatatrans =
+                acceptedOriginTypes.any { it == "datatransAlias" || it == "datatransCreditCardAlias" }
             val usePayone = acceptedOriginTypes.any { it == "payonePseudoCardPAN" }
             val useFiserv = acceptedOriginTypes.any { it == "ipgHostedDataID" }
 
@@ -42,7 +45,14 @@ object PaymentInputViewHelper {
                     args.putSerializable(DatatransFragment.ARG_PAYMENT_TYPE, paymentMethod)
                     SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_DATATRANS_INPUT, args)
                 }
-                usePayone -> Payone.registerCard(activity, project, paymentMethod, Snabble.formPrefillData)
+
+                usePayone -> Payone.registerCard(
+                    activity,
+                    project,
+                    paymentMethod,
+                    Snabble.formPrefillData
+                )
+
                 useFiserv -> {
                     args.putString(FiservInputView.ARG_PROJECT_ID, projectId)
                     args.putSerializable(FiservInputView.ARG_PAYMENT_TYPE, paymentMethod.name)
@@ -66,11 +76,21 @@ object PaymentInputViewHelper {
                 }
             }
         } else {
-            AlertDialog.Builder(context)
+            val alertDialog = AlertDialog.Builder(context)
                 .setMessage(R.string.Snabble_Keyguard_requireScreenLock)
                 .setPositiveButton(R.string.Snabble_ok, null)
                 .setCancelable(false)
-                .show()
+                .create()
+
+            val primaryColor: Int =
+                context.getPrimaryColorForProject(instance.checkedInProject.value)
+
+            alertDialog.setOnShowListener {
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(primaryColor)
+            }
+
+            alertDialog.show()
+
         }
     }
 
