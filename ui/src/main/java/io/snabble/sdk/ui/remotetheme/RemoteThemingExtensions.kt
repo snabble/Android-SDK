@@ -44,7 +44,6 @@ fun Context.getOnSecondaryColorForProject(project: Project?): Int {
 
 fun String.asColor() = Color.parseColor(this)
 
-
 fun Context.isDarkMode(): Boolean {
     val currentNightMode =
         resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK
