@@ -13,10 +13,10 @@ class SnabblePrimaryButton @JvmOverloads constructor(
 ) : MaterialButton(context, attrs, defStyleAttr) {
 
     init {
-        init()
+        setProjectAppTheme()
     }
 
-    private fun init() {
+    private fun setProjectAppTheme() {
         val project = Snabble.checkedInProject.value
         setBackgroundColor(context.getPrimaryColorForProject(project))
         setTextColor(context.getOnPrimaryColorForProject(project))
