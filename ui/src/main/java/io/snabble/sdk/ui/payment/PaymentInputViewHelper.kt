@@ -31,8 +31,7 @@ object PaymentInputViewHelper {
             }
             val acceptedOriginTypes = project.paymentMethodDescriptors
                 .firstOrNull { it.paymentMethod == paymentMethod }?.acceptedOriginTypes.orEmpty()
-            val useDatatrans =
-                acceptedOriginTypes.any { it == "datatransAlias" || it == "datatransCreditCardAlias" }
+            val useDatatrans = acceptedOriginTypes.any { it == "datatransAlias" || it == "datatransCreditCardAlias" }
             val usePayone = acceptedOriginTypes.any { it == "payonePseudoCardPAN" }
             val useFiserv = acceptedOriginTypes.any { it == "ipgHostedDataID" }
 
@@ -46,12 +45,7 @@ object PaymentInputViewHelper {
                     SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_DATATRANS_INPUT, args)
                 }
 
-                usePayone -> Payone.registerCard(
-                    activity,
-                    project,
-                    paymentMethod,
-                    Snabble.formPrefillData
-                )
+                usePayone -> Payone.registerCard(activity, project, paymentMethod, Snabble.formPrefillData)
 
                 useFiserv -> {
                     args.putString(FiservInputView.ARG_PROJECT_ID, projectId)
@@ -82,15 +76,13 @@ object PaymentInputViewHelper {
                 .setCancelable(false)
                 .create()
 
-            val primaryColor: Int =
-                context.getPrimaryColorForProject(instance.checkedInProject.value)
+            val primaryColor: Int = context.getPrimaryColorForProject(instance.checkedInProject.value)
 
             alertDialog.setOnShowListener {
                 alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(primaryColor)
             }
 
             alertDialog.show()
-
         }
     }
 
