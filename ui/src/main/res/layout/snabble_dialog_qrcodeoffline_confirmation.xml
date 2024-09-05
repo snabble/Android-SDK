@@ -21,7 +21,7 @@
         app:rowOrderPreserved="false"
         app:alignmentMode="alignBounds"
         app:useDefaultMargins="true">
-        <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/ok"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
             app:layout_gravity="fill_horizontal"
             android:text="@string/Snabble.QRCode.DidPayDialog.ok"/>
 
-        <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/cancel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
