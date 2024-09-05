@@ -64,7 +64,7 @@
         android:textAppearance="?attr/textAppearanceBodySmall"
         tools:text="+ 0,45 € deposit" />
 
-    <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/enterReducedPrice"
         style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
@@ -99,7 +99,7 @@
                 android:src="@drawable/snabble_ic_minus_content"
                 app:tint="?attr/colorOnSurface" />
 
-            <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/minus"
                 style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
                 android:layout_width="48dp"
@@ -153,7 +153,7 @@
                 android:src="@drawable/snabble_ic_plus_content"
                 app:tint="?attr/colorOnSurface" />
 
-            <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/plus"
                 style="@style/Snabble.Widget.MaterialComponents.Button.OutlinedButton.Icon"
                 android:layout_width="48dp"
