@@ -2,7 +2,6 @@ package io.snabble.sdk.ui.search
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,7 +21,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import io.snabble.sdk.extensions.xx
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.cart.shoppingcart.utils.rememberTextFieldManager
@@ -31,7 +29,11 @@ import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.ThemeWrapper
 import io.snabble.sdk.ui.utils.isNotNullOrBlank
 
-open class ProductSearchView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr) {
+open class ProductSearchView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : FrameLayout(context, attrs, defStyleAttr) {
     private val searchableProductAdapter: SearchableProductAdapter
     private val composeContainer: ComposeView
     private val addCodeAsIs: TextView
@@ -44,9 +46,6 @@ open class ProductSearchView @JvmOverloads constructor(context: Context, attrs: 
                 composeContainer.visibility = VISIBLE
             } else {
                 composeContainer.visibility = GONE
-                val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(composeContainer.windowToken, 0)
-                composeContainer.clearFocus()
             }
         }
 
@@ -72,7 +71,6 @@ open class ProductSearchView @JvmOverloads constructor(context: Context, attrs: 
         composeContainer = findViewById(R.id.compose_container)
         composeContainer.setContent {
             ThemeWrapper {
-                "Using wrapper".xx()
                 val textFieldManager = rememberTextFieldManager()
                 val focusRequester = remember { FocusRequester() }
 
@@ -114,7 +112,8 @@ open class ProductSearchView @JvmOverloads constructor(context: Context, attrs: 
         searchableProductAdapter.showBarcode = true
         searchableProductAdapter.showSku = showSku
         searchableProductAdapter.setOnProductSelectedListener(::showScannerWithCode)
-        searchableProductAdapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+        searchableProductAdapter.registerAdapterDataObserver(object :
+            RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
                 onSearchUpdated()
                 requestLayout()

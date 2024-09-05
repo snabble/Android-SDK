@@ -15,8 +15,8 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.themeadapter.material3.createMdc3Theme
-import io.snabble.sdk.AppTheme
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.remoteTheme.AppTheme
 import io.snabble.sdk.ui.remotetheme.asColor
 
 @Composable
