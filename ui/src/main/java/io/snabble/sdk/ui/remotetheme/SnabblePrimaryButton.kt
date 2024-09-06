@@ -6,6 +6,10 @@ import com.google.android.material.button.MaterialButton
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.R
 
+/**
+ * A default Materialbutton which automatically sets the remote theme colors of the
+ * current checked in project.
+ */
 class SnabblePrimaryButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
