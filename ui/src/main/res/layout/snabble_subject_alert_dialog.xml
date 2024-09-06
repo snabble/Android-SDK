@@ -55,7 +55,7 @@
         android:layout_width="match_parent"
         android:layout_height="4dp" />
 
-    <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
+    <io.snabble.sdk.ui.remotetheme.SnabbleSecondaryButton
         android:id="@+id/subject_skip"
         style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
         android:layout_width="match_parent"
