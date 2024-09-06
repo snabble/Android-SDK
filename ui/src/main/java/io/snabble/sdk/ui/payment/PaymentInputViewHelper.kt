@@ -7,7 +7,6 @@ import androidx.fragment.app.FragmentActivity
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.Snabble.instance
 import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
@@ -76,7 +75,7 @@ object PaymentInputViewHelper {
                 .setCancelable(false)
                 .create()
 
-            val primaryColor: Int = context.getPrimaryColorForProject(instance.checkedInProject.value)
+            val primaryColor: Int = context.getPrimaryColorForProject(Snabble.instance.checkedInProject.value)
 
             alertDialog.setOnShowListener {
                 alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(primaryColor)
