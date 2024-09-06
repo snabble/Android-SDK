@@ -26,7 +26,7 @@
             android:gravity="center"
             android:text="@string/Snabble.Shop.Details.MapDisabled.title" />
 
-        <io.snabble.sdk.ui.remotetheme.SnabbleSecondaryButton
+        <Button
             android:id="@+id/activate_map"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
