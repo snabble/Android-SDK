@@ -338,6 +338,7 @@ public class SelfScanningView extends FrameLayout {
                     getContext(),
                     Snabble.getInstance().getCheckedInProject().getLatestValue()
             );
+
             alertDialog.setOnShowListener(dialog -> {
                 alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(primaryColor);
                 alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(primaryColor);
