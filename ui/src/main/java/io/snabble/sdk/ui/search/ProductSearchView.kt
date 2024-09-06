@@ -4,7 +4,9 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.LaunchedEffect
@@ -19,6 +21,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.snabble.sdk.ui.R
@@ -80,29 +83,31 @@ open class ProductSearchView @JvmOverloads constructor(
                     focusRequester.requestFocus()
                     textFieldManager.showKeyboard()
                 }
-                TextInput(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .focusRequester(focusRequester),
-                    value = searchedCode,
-                    label = stringResource(id = R.string.Snabble_Scanner_enterBarcode),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Send
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onSend = {
-                            textFieldManager.clearFocusAndHideKeyboard()
-                            showScannerWithCode(searchedCode)
+                Box(modifier = Modifier.padding(8.dp)) {
+                    TextInput(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester),
+                        value = searchedCode,
+                        label = stringResource(id = R.string.Snabble_Scanner_enterBarcode),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                textFieldManager.clearFocusAndHideKeyboard()
+                                showScannerWithCode(searchedCode)
+                            }
+                        ),
+                        onValueChanged = { value ->
+                            if (searchBarEnabled) {
+                                searchedCode = value
+                                search(value)
+                            }
                         }
-                    ),
-                    onValueChanged = { value ->
-                        if (searchBarEnabled) {
-                            searchedCode = value
-                            search(value)
-                        }
-                    }
-                )
+                    )
+                }
 
             }
         }
