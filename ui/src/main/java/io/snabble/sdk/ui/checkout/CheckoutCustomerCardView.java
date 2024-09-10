@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -18,7 +17,6 @@ import io.snabble.sdk.Project;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.codes.EAN13;
 import io.snabble.sdk.ui.R;
-import io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton;
 import io.snabble.sdk.ui.scanner.BarcodeView;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.I18nUtils;
@@ -58,7 +56,7 @@ public class CheckoutCustomerCardView extends FrameLayout {
     }
 
     private void update() {
-        SnabblePrimaryButton paidButton = findViewById(R.id.paid);
+        Button paidButton = findViewById(R.id.paid);
         paidButton.setOnClickListener(new OneShotClickListener() {
             @Override
             public void click() {

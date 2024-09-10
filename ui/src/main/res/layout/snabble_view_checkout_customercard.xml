@@ -52,7 +52,7 @@
                 android:format="EAN_13"/>
         </LinearLayout>
     </FrameLayout>
-    <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/paid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
