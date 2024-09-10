@@ -47,6 +47,7 @@ import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.checkout.ViolationNotificationUtils;
 import io.snabble.sdk.ui.remotetheme.RemoteThemingExtensionsKt;
+import io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.I18nUtils;
@@ -62,7 +63,7 @@ public class SelfScanningView extends FrameLayout {
     private BarcodeScannerView barcodeScanner;
     private ProductDatabase productDatabase;
     private boolean isInitialized;
-    private Button goToCart;
+    private SnabblePrimaryButton goToCart;
     private View noPermission;
     private boolean isRunning;
 
