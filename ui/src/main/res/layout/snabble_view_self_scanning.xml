@@ -39,7 +39,7 @@
         android:layout_marginBottom="16dp"
         android:id="@+id/bottom_bar">
 
-        <com.google.android.material.button.MaterialButton
+        <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
             style="@style/Snabble.Widget.MaterialComponents.Button"
             android:id="@+id/goto_cart"
             android:layout_width="match_parent"

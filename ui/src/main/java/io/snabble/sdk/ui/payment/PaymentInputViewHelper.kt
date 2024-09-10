@@ -13,6 +13,7 @@ import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.payment.creditcard.datatrans.ui.DatatransFragment
 import io.snabble.sdk.ui.payment.creditcard.fiserv.FiservInputView
 import io.snabble.sdk.ui.payment.externalbilling.ExternalBillingFragment.Companion.ARG_PROJECT_ID
+import io.snabble.sdk.ui.remotetheme.getPrimaryColorForProject
 import io.snabble.sdk.ui.utils.KeyguardUtils
 import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.utils.Logger
@@ -42,7 +43,9 @@ object PaymentInputViewHelper {
                     args.putSerializable(DatatransFragment.ARG_PAYMENT_TYPE, paymentMethod)
                     SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_DATATRANS_INPUT, args)
                 }
+
                 usePayone -> Payone.registerCard(activity, project, paymentMethod, Snabble.formPrefillData)
+
                 useFiserv -> {
                     args.putString(FiservInputView.ARG_PROJECT_ID, projectId)
                     args.putSerializable(FiservInputView.ARG_PAYMENT_TYPE, paymentMethod.name)
@@ -66,11 +69,19 @@ object PaymentInputViewHelper {
                 }
             }
         } else {
-            AlertDialog.Builder(context)
+            val alertDialog = AlertDialog.Builder(context)
                 .setMessage(R.string.Snabble_Keyguard_requireScreenLock)
                 .setPositiveButton(R.string.Snabble_ok, null)
                 .setCancelable(false)
-                .show()
+                .create()
+
+            val primaryColor: Int = context.getPrimaryColorForProject(Snabble.instance.checkedInProject.value)
+
+            alertDialog.setOnShowListener {
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(primaryColor)
+            }
+
+            alertDialog.show()
         }
     }
 

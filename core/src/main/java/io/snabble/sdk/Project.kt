@@ -1,7 +1,10 @@
 package io.snabble.sdk
 
+import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import com.google.gson.JsonSyntaxException
+import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor
 import io.snabble.sdk.checkout.Checkout
@@ -13,6 +16,9 @@ import io.snabble.sdk.coupons.Coupons
 import io.snabble.sdk.encodedcodes.EncodedCodesOptions
 import io.snabble.sdk.events.Events
 import io.snabble.sdk.googlepay.GooglePayHelper
+import io.snabble.sdk.remoteTheme.AppTheme
+import io.snabble.sdk.remoteTheme.DarkModeColors
+import io.snabble.sdk.remoteTheme.LightModeColors
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.shoppingcart.ShoppingCartStorage
 import io.snabble.sdk.utils.GsonHolder
@@ -39,7 +45,10 @@ import java.util.concurrent.CopyOnWriteArrayList
  * A project contains configuration information and backend api urls needed for a
  * retailer.
  */
-class Project internal constructor(jsonObject: JsonObject) {
+class Project internal constructor(
+    private val gson: Gson = GsonHolder.get(),
+    jsonObject: JsonObject
+) {
 
     /**
      * The unique identifier of the Project
@@ -164,7 +173,8 @@ class Project internal constructor(jsonObject: JsonObject) {
 
             // refresh encoded codes options for encoded codes that contain customer cards
             if (encodedCodesJsonObject != null) {
-                encodedCodesOptions = EncodedCodesOptions.fromJsonObject(this, encodedCodesJsonObject)
+                encodedCodesOptions =
+                    EncodedCodesOptions.fromJsonObject(this, encodedCodesJsonObject)
             }
         }
 
@@ -340,6 +350,8 @@ class Project internal constructor(jsonObject: JsonObject) {
     lateinit var assets: Assets
         private set
 
+    var appTheme: AppTheme? = null
+
     init {
         parse(jsonObject)
     }
@@ -356,11 +368,22 @@ class Project internal constructor(jsonObject: JsonObject) {
             brand = Snabble.brands[brandId]
         }
 
+        val customizationConfig: JsonElement? = jsonObject["appCustomizationConfig"]
+        try {
+            val lightModeColors: LightModeColors? = gson.fromJson(customizationConfig, LightModeColors::class.java)
+            val darkModeColors: DarkModeColors? = gson.fromJson(customizationConfig, DarkModeColors::class.java)
+            appTheme = AppTheme(lightModeColors, darkModeColors)
+            Logger.d("AppTheme for $id loaded: $appTheme")
+        } catch (e: JsonSyntaxException) {
+            Logger.e(e.message)
+        }
+
         val urls = mutableMapOf<String, String>()
         val links = jsonObject["links"].asJsonObject
         links.entrySet().forEach {
             urls[it.key] = Snabble.absoluteUrl(it.value.asJsonObject["href"].asString)
         }
+
         this.urls = urls
 
         tokensUrl = "${urls["tokens"]}?role=retailerApp"
@@ -415,7 +438,7 @@ class Project internal constructor(jsonObject: JsonObject) {
 
         paymentMethodDescriptors = jsonObject["paymentMethodDescriptors"]?.let {
             val typeToken = object : TypeToken<List<PaymentMethodDescriptor?>?>() {}.type
-            val paymentMethodDescriptors = GsonHolder.get().fromJson<List<PaymentMethodDescriptor>>(it, typeToken)
+            val paymentMethodDescriptors = gson.fromJson<List<PaymentMethodDescriptor>>(it, typeToken)
             paymentMethodDescriptors.filter { desc ->
                 PaymentMethod.fromString(desc.id) != null
             }
@@ -428,12 +451,13 @@ class Project internal constructor(jsonObject: JsonObject) {
         }
 
         if (jsonObject.has("company")) {
-            company = GsonHolder.get().fromJson(jsonObject["company"], Company::class.java)
+            company = gson.fromJson(jsonObject["company"], Company::class.java)
         }
 
-        val codeTemplates = jsonObject["codeTemplates"]?.asJsonObject?.entrySet()?.map { (name, pattern) ->
-            CodeTemplate(name, pattern.asString)
-        }?.toMutableList() ?: mutableListOf()
+        val codeTemplates =
+            jsonObject["codeTemplates"]?.asJsonObject?.entrySet()?.map { (name, pattern) ->
+                CodeTemplate(name, pattern.asString)
+            }?.toMutableList() ?: mutableListOf()
 
         val hasDefaultTemplate = codeTemplates.any { it.name == "default" }
         if (!hasDefaultTemplate) {
@@ -494,7 +518,7 @@ class Project internal constructor(jsonObject: JsonObject) {
             if (jsonObject.has("coupons")) {
                 val couponsJsonObject = jsonObject["coupons"]
                 val couponsType = object : TypeToken<List<Coupon?>?>() {}.type
-                couponList = GsonHolder.get().fromJson(couponsJsonObject, couponsType)
+                couponList = gson.fromJson(couponsJsonObject, couponsType)
             }
         } catch (e: Exception) {
             Logger.e("Could not parse coupons")
@@ -514,7 +538,12 @@ class Project internal constructor(jsonObject: JsonObject) {
 
         checkout = Checkout(this, shoppingCartFlow.value)
 
-        productDatabase = ProductDatabase(this, shoppingCartFlow.value, "$id.sqlite3", Snabble.config.generateSearchIndex)
+        productDatabase = ProductDatabase(
+            this,
+            shoppingCartFlow.value,
+            "$id.sqlite3",
+            Snabble.config.generateSearchIndex
+        )
 
         events = Events(this, shoppingCartFlow.value)
 

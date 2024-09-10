@@ -620,7 +620,7 @@ object Snabble {
                 // if it does not exist, add it
                 if (!updated) {
                     try {
-                        val project = Project(jsonProject)
+                        val project = Project(jsonObject = jsonProject)
                         newProjects.add(project)
                     } catch (e: IllegalArgumentException) {
                         Logger.d(e.message)

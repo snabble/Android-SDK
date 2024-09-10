@@ -16,6 +16,10 @@ internal class TextFieldManager(
         focusManager.clearFocus()
         keyboardController?.hide()
     }
+    
+    fun showKeyboard(){
+        keyboardController?.show()
+    }
 
     fun moveFocusToNext() {
         focusManager.moveFocus(FocusDirection.Next)

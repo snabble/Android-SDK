@@ -86,7 +86,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true">
 
-        <com.google.android.material.button.MaterialButton
+        <io.snabble.sdk.ui.remotetheme.SnabbleSecondaryButton
             android:id="@+id/cancel"
             style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"

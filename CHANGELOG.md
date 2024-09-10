@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 ## [0.75.7]
+### Added
+* Add views to handle and apply the remote theme automatically 
 ### Fixed
 * Handle npe when loading the shopping cart data and restore from it
 

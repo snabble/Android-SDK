@@ -5,35 +5,24 @@
     android:layout_height="match_parent"
     android:clipChildren="true">
 
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/compose_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:id="@+id/search_bar_layout">
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/search_bar"
-            android:hint="@string/Snabble.Scanner.enterBarcode"
-            android:inputType="number"
-            android:imeOptions="flagNoExtractUi|actionDone"
-            android:maxLines="1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </com.google.android.material.textfield.TextInputLayout>
-
+        />
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/search_bar_layout"
+        android:layout_below="@+id/compose_container"
         android:id="@+id/recycler_view" />
 
-    <com.google.android.material.button.MaterialButton
+    <io.snabble.sdk.ui.remotetheme.SnabbleSecondaryButton
         android:id="@+id/add_code_as_is"
         style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/search_bar_layout"
+        android:layout_below="@+id/compose_container"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="56dp"
         android:gravity="center"

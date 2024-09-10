@@ -34,18 +34,19 @@ import io.snabble.sdk.Product;
 import io.snabble.sdk.ProductDatabase;
 import io.snabble.sdk.Project;
 import io.snabble.sdk.Shop;
-import io.snabble.sdk.shoppingcart.ShoppingCart;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ViolationNotification;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.coupons.Coupon;
 import io.snabble.sdk.coupons.CouponCode;
 import io.snabble.sdk.coupons.CouponType;
+import io.snabble.sdk.shoppingcart.ShoppingCart;
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener;
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.checkout.ViolationNotificationUtils;
+import io.snabble.sdk.ui.remotetheme.RemoteThemingExtensionsKt;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.I18nUtils;
@@ -325,19 +326,30 @@ public class SelfScanningView extends FrameLayout {
             input.setLayoutParams(lp);
             input.setInputType(InputType.TYPE_CLASS_NUMBER);
 
-            new AlertDialog.Builder(getContext())
+            final AlertDialog alertDialog = new AlertDialog.Builder(getContext())
                     .setView(input)
                     .setTitle(R.string.Snabble_Scanner_enterBarcode)
                     .setPositiveButton(R.string.Snabble_done, (dialog, which) -> lookupAndShowProduct(ScannedCode.parse(project, input.getText().toString())))
                     .setNegativeButton(R.string.Snabble_cancel, null)
                     .setOnDismissListener(dialog -> resumeBarcodeScanner())
-                    .create()
-                    .show();
+                    .create();
+
+            final int primaryColor = RemoteThemingExtensionsKt.getPrimaryColorForProject(
+                    getContext(),
+                    Snabble.getInstance().getCheckedInProject().getLatestValue()
+            );
+
+            alertDialog.setOnShowListener(dialog -> {
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(primaryColor);
+                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(primaryColor);
+            });
+
+            alertDialog.show();
 
             input.requestFocus();
 
             Dispatch.mainThread(() -> {
-                InputMethodManager inputMethodManager = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMethodManager.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
             });
         }
@@ -427,7 +439,7 @@ public class SelfScanningView extends FrameLayout {
     /**
      * Setting this to true, makes you the controller of the camera,
      * with the use of startScanning and stopScanning.
-     *
+     * <p>
      * Default is false which means the view controls the camera by itself
      * when it attached and detaches itself of the window
      */
