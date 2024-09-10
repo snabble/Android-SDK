@@ -26,6 +26,7 @@ import io.snabble.sdk.Snabble;
 import io.snabble.sdk.Users;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 
 public class AgeVerificationInputView extends FrameLayout {
@@ -79,7 +80,7 @@ public class AgeVerificationInputView extends FrameLayout {
                     return false;
                 });
 
-        Button save = findViewById(R.id.save);
+        SnabblePrimaryButton save = findViewById(R.id.save);
         save.setOnClickListener(view -> handleInput());
     }
 
