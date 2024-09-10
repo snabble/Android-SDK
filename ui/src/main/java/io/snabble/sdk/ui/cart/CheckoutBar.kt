@@ -11,7 +11,6 @@ import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -23,7 +22,6 @@ import androidx.fragment.app.FragmentActivity
 import io.snabble.accessibility.accessibility
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
-import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.Snabble.instance
 import io.snabble.sdk.checkout.Checkout
@@ -31,6 +29,7 @@ import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.config.ExternalBillingSubjectLength
 import io.snabble.sdk.config.ProjectId
 import io.snabble.sdk.extensions.getApplicationInfoCompat
+import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
 import io.snabble.sdk.ui.Keyguard
@@ -41,6 +40,7 @@ import io.snabble.sdk.ui.payment.PaymentInputViewHelper
 import io.snabble.sdk.ui.payment.SEPALegalInfoHelper
 import io.snabble.sdk.ui.payment.SelectPaymentMethodFragment
 import io.snabble.sdk.ui.payment.externalbilling.ui.widgets.SubjectAlertDialog
+import io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.DelayedProgressDialog
 import io.snabble.sdk.ui.utils.I18nUtils
@@ -63,7 +63,7 @@ open class CheckoutBar @JvmOverloads constructor(
 
     private val paymentSelectorButton = findViewById<View>(R.id.payment_selector_button)
     private val paymentSelectorButtonBig = findViewById<View>(R.id.payment_selector_button_big)
-    private val payButton = findViewById<Button>(R.id.pay)
+    private val payButton = findViewById<SnabblePrimaryButton>(R.id.pay)
     private val priceSum = findViewById<TextView>(R.id.price_sum)
     private val sumContainer = findViewById<View>(R.id.sum_container)
     private val googlePayButtonLayout = findViewById<View>(R.id.google_pay_button_layout)

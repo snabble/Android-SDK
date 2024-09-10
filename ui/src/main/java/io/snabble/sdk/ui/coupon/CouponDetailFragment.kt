@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -12,6 +11,7 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.coupons.CouponType
 import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
 import io.snabble.sdk.ui.utils.loadImage
 import io.snabble.sdk.ui.utils.parcelableExtra
 import io.snabble.sdk.ui.utils.setTextOrHide
@@ -46,8 +46,8 @@ open class CouponDetailFragment : Fragment() {
     private lateinit var description: TextView
     private lateinit var discount: TextView
     private lateinit var expire: TextView
-    private lateinit var activateCoupon: Button
-    private lateinit var appliedCoupon: Button
+    private lateinit var activateCoupon: SnabblePrimaryButton
+    private lateinit var appliedCoupon: SnabblePrimaryButton
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -110,7 +110,6 @@ open class CouponDetailFragment : Fragment() {
             item.coupon?.let {
                 removeCoupon(it)
             }
-
         }
     }
 
