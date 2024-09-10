@@ -15,7 +15,6 @@ import android.view.animation.TranslateAnimation
 import android.view.animation.CycleInterpolator
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
-import androidx.appcompat.widget.AppCompatButton
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
@@ -24,6 +23,7 @@ import com.google.android.material.textfield.TextInputLayout
 import io.snabble.accessibility.accessibility
 import io.snabble.sdk.*
 import io.snabble.sdk.shoppingcart.ShoppingCart
+import io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
 import io.snabble.sdk.ui.utils.*
 import io.snabble.sdk.utils.Dispatch
 import java.lang.NumberFormatException
@@ -39,7 +39,7 @@ class DefaultProductConfirmationDialog : DialogFragment(), ProductConfirmationDi
     private lateinit var price: TextView
     private lateinit var originalPrice: TextView
     private lateinit var depositPrice: TextView
-    private lateinit var addToCart: AppCompatButton
+    private lateinit var addToCart: SnabblePrimaryButton
     private lateinit var plusLayout: View
     private lateinit var minusLayout: View
     private lateinit var enterReducedPrice: Button
