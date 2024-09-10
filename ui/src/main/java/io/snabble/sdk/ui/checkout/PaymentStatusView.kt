@@ -42,6 +42,7 @@ import io.snabble.sdk.ui.checkout.PaymentOriginCandidateHelper.PaymentOriginCand
 import io.snabble.sdk.ui.checkout.PaymentOriginCandidateHelper.PaymentOriginCandidateAvailableListener
 import io.snabble.sdk.ui.payment.SEPACardInputActivity
 import io.snabble.sdk.ui.payment.payone.sepa.form.PayoneSepaActivity
+import io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
 import io.snabble.sdk.ui.scanner.BarcodeView
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.executeUiAction
@@ -60,9 +61,9 @@ class PaymentStatusView @JvmOverloads constructor(
     }
 
     private val image = findViewById<ImageView>(R.id.image)
-    private val back = findViewById<MaterialButton>(R.id.back)
+    private val back = findViewById<SnabblePrimaryButton>(R.id.back)
     private var selectedRating = ""
-    private val sendFeedback: View? = findViewById(R.id.send_feedback)
+    private val sendFeedback: SnabblePrimaryButton? = findViewById(R.id.send_feedback)
     private val successAnimation: LottieAnimationView = findViewById(R.id.success_animation)
     private val inputBadRatingLayout = findViewById<TextInputLayout>(R.id.input_bad_rating_layout)
     private var addIbanLayout = findViewById<LinearLayout>(R.id.add_iban_layout)
@@ -124,7 +125,7 @@ class PaymentStatusView @JvmOverloads constructor(
         paymentOriginCandidateHelper = PaymentOriginCandidateHelper(project)
         paymentOriginCandidateHelper.addPaymentOriginCandidateAvailableListener(this)
 
-        back.text = resources.getString(R.string.Snabble_cancel)
+        back.setText(R.string.Snabble_cancel)
         back.setOnClickListener {
             val state = lastState
 
@@ -267,7 +268,7 @@ class PaymentStatusView @JvmOverloads constructor(
                 } else {
                     receipt.state = PaymentStatusItemView.State.NOT_EXECUTED
                 }
-                back.text = resources.getString(R.string.Snabble_PaymentStatus_close)
+                back.setText(R.string.Snabble_PaymentStatus_close)
                 backPressedCallback.isEnabled = false
                 ratingCardLayout.isVisible = true
                 paymentOriginCandidateHelper.startPollingIfLinkIsAvailable(checkout?.checkoutProcess)

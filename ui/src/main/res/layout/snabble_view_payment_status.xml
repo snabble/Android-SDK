@@ -286,7 +286,6 @@
 
                 <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
                     android:id="@+id/send_feedback"
-                    style="@style/Widget.Material3.Button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -326,7 +325,6 @@
 
         <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
             android:id="@+id/back"
-            style="@style/Widget.Material3.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
