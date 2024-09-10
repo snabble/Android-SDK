@@ -16,7 +16,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.snabble.sdk.extensions.xx
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.utils.ThemeWrapper
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -72,7 +71,7 @@ class SnabblePrimaryButton @JvmOverloads constructor(
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         if (layoutParams.height != ViewGroup.LayoutParams.WRAP_CONTENT) {
-            setHeight.value = pxToDp(context, layoutParams.height).dp.xx()
+            setHeight.value = pxToDp(context, layoutParams.height).dp
         }
     }
 
@@ -86,7 +85,7 @@ class SnabblePrimaryButton @JvmOverloads constructor(
 
     override fun setEnabled(enabled: Boolean) {
         super.setEnabled(enabled)
-        isButtonEnabled.value = enabled.xx("set it")
+        isButtonEnabled.value = enabled
     }
 
     private fun pxToDp(context: Context, px: Int): Float {
