@@ -13,6 +13,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -36,21 +37,24 @@ class SnabblePrimaryButton @JvmOverloads constructor(
 
     private fun init() {
         inflate(context, R.layout.snabble_primary_button, this).apply {
+            val container = findViewById<ComposeView>(R.id.button_container)
+            container.apply {
+                setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    ThemeWrapper {
+                        val isEnable = isButtonEnabled.collectAsStateWithLifecycle().value
+                        val text = textRes.collectAsStateWithLifecycle().value
+                        val height = setHeight.collectAsStateWithLifecycle().value
 
-            findViewById<ComposeView>(R.id.button_container).setContent {
-                ThemeWrapper {
-                    val isEnable = isButtonEnabled.collectAsStateWithLifecycle().value
-                    val text = textRes.collectAsStateWithLifecycle().value
-                    val height = setHeight.collectAsStateWithLifecycle().value
-
-                    Button(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(height ?: ButtonDefaults.MinHeight),
-                        onClick = { callOnClick() },
-                        enabled = isEnable
-                    ) {
-                        Text(text = text)
+                        Button(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(height ?: ButtonDefaults.MinHeight),
+                            onClick = { callOnClick() },
+                            enabled = isEnable
+                        ) {
+                            Text(text = text)
+                        }
                     }
                 }
             }
