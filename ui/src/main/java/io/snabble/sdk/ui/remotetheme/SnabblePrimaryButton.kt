@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLif
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import io.snabble.sdk.extensions.xx
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.utils.ThemeWrapper
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +31,8 @@ class SnabblePrimaryButton @JvmOverloads constructor(
     private var isButtonEnabled = MutableStateFlow(isEnabled)
     private var textRes: MutableStateFlow<String> = MutableStateFlow(getDefaultString(attrs))
     private var setHeight: MutableStateFlow<Dp?> = MutableStateFlow(null)
+
+    private var clickListener: OnClickListener? = null
 
     init {
         init()
@@ -50,7 +53,7 @@ class SnabblePrimaryButton @JvmOverloads constructor(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(height ?: ButtonDefaults.MinHeight),
-                            onClick = { callOnClick() },
+                            onClick = { clickListener?.onClick(this) },
                             enabled = isEnable
                         ) {
                             Text(text = text)
@@ -59,6 +62,10 @@ class SnabblePrimaryButton @JvmOverloads constructor(
                 }
             }
         }
+    }
+
+    override fun setOnClickListener(l: OnClickListener?) {
+        clickListener = l
     }
 
     private fun getDefaultString(attrs: AttributeSet?): String {
