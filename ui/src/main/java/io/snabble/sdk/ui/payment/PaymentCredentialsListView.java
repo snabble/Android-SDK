@@ -111,8 +111,6 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                     }
                 } else {
 
-                    final int primaryColor = RemoteThemingExtensionsKt.getPrimaryColorForProject(getContext(), currentProject);
-
                     final AlertDialog alertDialog = new AlertDialog.Builder(getContext())
                             .setMessage(R.string.Snabble_Keyguard_requireScreenLock)
                             .setPositiveButton(R.string.Snabble_ok, null)
