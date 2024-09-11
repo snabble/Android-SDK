@@ -35,8 +35,7 @@ class SnabblePrimaryButton @JvmOverloads constructor(
     private var isButtonEnabled: MutableStateFlow<Boolean> = MutableStateFlow(isEnabled)
     private var buttonLabel: MutableStateFlow<String> = MutableStateFlow(getDefaultString(attrs))
     private var buttonHeight: MutableStateFlow<Dp?> = MutableStateFlow(null)
-    private var buttonFontSize: MutableStateFlow<Float?> =
-        MutableStateFlow(getFontSize(attrs)?.let(::pxToSp))
+    private var buttonFontSize: MutableStateFlow<Float?> = MutableStateFlow(getFontSize(attrs)?.let(::pxToSp))
 
     private var clickListener: OnClickListener? = null
 
