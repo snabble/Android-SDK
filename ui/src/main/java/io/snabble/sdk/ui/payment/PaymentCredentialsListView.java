@@ -80,10 +80,10 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
 
         FloatingActionButton fab = findViewById(R.id.fab);
         final Project currentProject = Snabble.getInstance().getCheckedInProject().getLatestValue();
-        final int secondaryColor = RemoteThemingExtensionsKt.getPrimaryColorForProject(getContext(), currentProject);
-        final int onSecondaryColor = RemoteThemingExtensionsKt.getOnPrimaryColorForProject(getContext(), currentProject);
-        fab.setBackgroundTintList(ColorStateList.valueOf(secondaryColor));
-        fab.setImageTintList(ColorStateList.valueOf(onSecondaryColor));
+        final int primaryColor = RemoteThemingExtensionsKt.getPrimaryColorForProject(getContext(), currentProject);
+        final int onPrimaryColor = RemoteThemingExtensionsKt.getOnPrimaryColorForProject(getContext(), currentProject);
+        fab.setBackgroundTintList(ColorStateList.valueOf(primaryColor));
+        fab.setImageTintList(ColorStateList.valueOf(onPrimaryColor));
 
         fab.setOnClickListener(new OneShotClickListener() {
             @Override
