@@ -19,6 +19,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.core.view.marginTop
 import androidx.fragment.app.FragmentActivity
+import com.google.android.material.button.MaterialButton
 import io.snabble.accessibility.accessibility
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
@@ -41,6 +42,8 @@ import io.snabble.sdk.ui.payment.SEPALegalInfoHelper
 import io.snabble.sdk.ui.payment.SelectPaymentMethodFragment
 import io.snabble.sdk.ui.payment.externalbilling.ui.widgets.SubjectAlertDialog
 import io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
+import io.snabble.sdk.ui.remotetheme.getOnPrimaryColorForProject
+import io.snabble.sdk.ui.remotetheme.getPrimaryColorForProject
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.DelayedProgressDialog
 import io.snabble.sdk.ui.utils.I18nUtils
@@ -62,7 +65,7 @@ open class CheckoutBar @JvmOverloads constructor(
     }
 
     private val paymentSelectorButton = findViewById<View>(R.id.payment_selector_button)
-    private val paymentSelectorButtonBig = findViewById<View>(R.id.payment_selector_button_big)
+    private val paymentSelectorButtonBig = findViewById<MaterialButton>(R.id.payment_selector_button_big)
     private val payButton = findViewById<SnabblePrimaryButton>(R.id.pay)
     private val priceSum = findViewById<TextView>(R.id.price_sum)
     private val sumContainer = findViewById<View>(R.id.sum_container)
@@ -128,7 +131,10 @@ open class CheckoutBar @JvmOverloads constructor(
         googlePayButtonLayout.setOneShotClickListener {
             val packageName = "com.google.android.apps.walletnfcrel"
             try {
-                context.packageManager.getApplicationInfoCompat(packageName, PackageManager.GET_ACTIVITIES)
+                context.packageManager.getApplicationInfoCompat(
+                    packageName,
+                    PackageManager.GET_ACTIVITIES
+                )
                 handleButtonClick()
             } catch (ignored: PackageManager.NameNotFoundException) {
                 try {
@@ -167,6 +173,11 @@ open class CheckoutBar @JvmOverloads constructor(
         project.checkout.state.observeView(this, ::onStateChanged)
     }
 
+    fun applyProjectTheme(){
+        paymentSelectorButtonBig.setBackgroundColor(context.getPrimaryColorForProject(project))
+        paymentSelectorButtonBig.setTextColor(context.getOnPrimaryColorForProject(project))
+    }
+
     private fun handleButtonClick() {
         if (cart.isRestorable) {
             cart.restore()
@@ -198,7 +209,10 @@ open class CheckoutBar @JvmOverloads constructor(
             paymentSelector.isVisible = !isHidden
             paymentIcon.setImageResource(entry.iconResId)
             paymentSelectorButton.contentDescription =
-                resources.getString(R.string.Snabble_Shoppingcart_Accessibility_paymentMethod, entry.text)
+                resources.getString(
+                    R.string.Snabble_Shoppingcart_Accessibility_paymentMethod,
+                    entry.text
+                )
             paymentSelectorButton.accessibility {
                 setClickAction(R.string.Snabble_Shoppingcart_BuyProducts_selectPaymentMethod)
             }
@@ -209,7 +223,8 @@ open class CheckoutBar @JvmOverloads constructor(
         cart.let { cart ->
             val quantity = cart.totalQuantity
             val price = cart.totalPrice
-            val articlesText = resources.getQuantityText(R.plurals.Snabble_Shoppingcart_numberOfItems, quantity)
+            val articlesText =
+                resources.getQuantityText(R.plurals.Snabble_Shoppingcart_numberOfItems, quantity)
             articleCount.text = String.format(articlesText.toString(), quantity)
             priceSum.text = project.priceFormatter.format(price)
 
@@ -266,7 +281,11 @@ open class CheckoutBar @JvmOverloads constructor(
             val entry = paymentSelectionHelper.selectedEntry.value
             if (entry != null) {
                 if (entry.paymentMethod.isRequiringCredentials && entry.paymentCredentials == null) {
-                    PaymentInputViewHelper.openPaymentInputView(context, entry.paymentMethod, project.id)
+                    PaymentInputViewHelper.openPaymentInputView(
+                        context,
+                        entry.paymentMethod,
+                        project.id
+                    )
                 } else {
                     Telemetry.event(Telemetry.Event.ClickCheckout)
                     SEPALegalInfoHelper.showSEPALegalInfoIfNeeded(context,
@@ -299,7 +318,11 @@ open class CheckoutBar @JvmOverloads constructor(
                         dialogFragment.show(activity.supportFragmentManager, null)
                     }
                 } else {
-                    Toast.makeText(context, R.string.Snabble_Payment_errorStarting, Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        context,
+                        R.string.Snabble_Payment_errorStarting,
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }
@@ -315,7 +338,11 @@ open class CheckoutBar @JvmOverloads constructor(
                 val entry = paymentSelectionHelper.selectedEntry.value
                 if (entry == null) {
                     progressDialog.dismiss()
-                    Toast.makeText(context, R.string.Snabble_Payment_errorStarting, Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        context,
+                        R.string.Snabble_Payment_errorStarting,
+                        Toast.LENGTH_LONG
+                    ).show()
                     return
                 }
                 if (entry.paymentCredentials != null) {
@@ -339,17 +366,22 @@ open class CheckoutBar @JvmOverloads constructor(
                             }
                             .show()
                     } else {
-                        Keyguard.unlock(UIUtils.getHostFragmentActivity(context), object : Keyguard.Callback {
-                            override fun success() {
-                                progressDialog.showAfterDelay(300)
-                                project.checkout.pay(entry.paymentMethod, entry.paymentCredentials)
-                            }
+                        Keyguard.unlock(
+                            UIUtils.getHostFragmentActivity(context),
+                            object : Keyguard.Callback {
+                                override fun success() {
+                                    progressDialog.showAfterDelay(300)
+                                    project.checkout.pay(
+                                        entry.paymentMethod,
+                                        entry.paymentCredentials
+                                    )
+                                }
 
-                            override fun error() {
-                                progressDialog.dismiss()
-                                project.checkout.reset()
-                            }
-                        })
+                                override fun error() {
+                                    progressDialog.dismiss()
+                                    project.checkout.reset()
+                                }
+                            })
                     }
                 } else {
                     progressDialog.showAfterDelay(300)
@@ -391,7 +423,12 @@ open class CheckoutBar @JvmOverloads constructor(
                     val res = resources
                     val sb = StringBuilder()
                     if (invalidProducts.size == 1) {
-                        sb.append(I18nUtils.getIdentifier(res, R.string.Snabble_SaleStop_ErrorMsg_one))
+                        sb.append(
+                            I18nUtils.getIdentifier(
+                                res,
+                                R.string.Snabble_SaleStop_ErrorMsg_one
+                            )
+                        )
                     } else {
                         sb.append(I18nUtils.getIdentifier(res, R.string.Snabble_SaleStop_errorMsg))
                     }
@@ -406,12 +443,21 @@ open class CheckoutBar @JvmOverloads constructor(
                     }
                     AlertDialog.Builder(context)
                         .setCancelable(false)
-                        .setTitle(I18nUtils.getIdentifier(resources, R.string.Snabble_SaleStop_ErrorMsg_title))
+                        .setTitle(
+                            I18nUtils.getIdentifier(
+                                resources,
+                                R.string.Snabble_SaleStop_ErrorMsg_title
+                            )
+                        )
                         .setMessage(sb.toString())
                         .setPositiveButton(R.string.Snabble_ok, null)
                         .show()
                 } else {
-                    SnackbarUtils.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
+                    SnackbarUtils.make(
+                        this,
+                        R.string.Snabble_Payment_errorStarting,
+                        UIUtils.SNACKBAR_LENGTH_VERY_LONG
+                    )
                         .show()
                 }
                 progressDialog.dismiss()
@@ -421,7 +467,11 @@ open class CheckoutBar @JvmOverloads constructor(
             CheckoutState.NO_SHOP,
             CheckoutState.PAYMENT_PROCESSING_ERROR -> {
                 if (isAttachedToWindow) {
-                    SnackbarUtils.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
+                    SnackbarUtils.make(
+                        this,
+                        R.string.Snabble_Payment_errorStarting,
+                        UIUtils.SNACKBAR_LENGTH_VERY_LONG
+                    )
                         .show()
                     progressDialog.dismiss()
                 }
@@ -432,14 +482,22 @@ open class CheckoutBar @JvmOverloads constructor(
             }
 
             CheckoutState.REQUEST_VERIFY_AGE -> {
-                SnabbleUI.executeAction(requireFragmentActivity(), SnabbleUI.Event.SHOW_AGE_VERIFICATION)
+                SnabbleUI.executeAction(
+                    requireFragmentActivity(),
+                    SnabbleUI.Event.SHOW_AGE_VERIFICATION
+                )
                 progressDialog.dismiss()
             }
 
             CheckoutState.REQUEST_TAXATION -> {
                 progressDialog.dismiss()
                 AlertDialog.Builder(context)
-                    .setTitle(I18nUtils.getIdentifier(context.resources, R.string.Snabble_Taxation_consumeWhere))
+                    .setTitle(
+                        I18nUtils.getIdentifier(
+                            context.resources,
+                            R.string.Snabble_Taxation_consumeWhere
+                        )
+                    )
                     .setAdapter(
                         ArrayAdapter(
                             context, R.layout.snabble_item_taxation, listOf(
@@ -463,12 +521,23 @@ open class CheckoutBar @JvmOverloads constructor(
             CheckoutState.NO_PAYMENT_METHOD_AVAILABLE -> {
                 AlertDialog.Builder(context)
                     .setCancelable(false)
-                    .setTitle(I18nUtils.getIdentifier(resources, R.string.Snabble_SaleStop_ErrorMsg_title))
-                    .setMessage(I18nUtils.getIdentifier(resources, R.string.Snabble_Payment_noMethodAvailable))
+                    .setTitle(
+                        I18nUtils.getIdentifier(
+                            resources,
+                            R.string.Snabble_SaleStop_ErrorMsg_title
+                        )
+                    )
+                    .setMessage(
+                        I18nUtils.getIdentifier(
+                            resources,
+                            R.string.Snabble_Payment_noMethodAvailable
+                        )
+                    )
                     .setPositiveButton(R.string.Snabble_ok, null)
                     .show()
                 progressDialog.dismiss()
             }
+
             else -> {
                 Logger.d("Unhandled event in CheckoutBar: $state")
             }
