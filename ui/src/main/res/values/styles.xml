@@ -10,6 +10,8 @@
         <item name="cornerSize">32dp</item>
     </style>
 
+    <style name="Snabble.Primary.Button" parent="" />
+
     <style name="Snabble.Widget.MaterialComponents.Button" parent="Widget.Material3.Button" />
 
     <style name="Snabble.Widget.MaterialComponents.Button.Passive" parent="Snabble.Widget.MaterialComponents.Button">
