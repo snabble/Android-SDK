@@ -37,6 +37,7 @@
                 android:text="@string/Snabble.Scanner.Camera.allowAccess"/>
 
             <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
+                style="@style/Snabble.Primary.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/open_settings"
