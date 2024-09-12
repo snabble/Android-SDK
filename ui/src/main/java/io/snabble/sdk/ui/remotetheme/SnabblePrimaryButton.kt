@@ -1,10 +1,11 @@
 package io.snabble.sdk.ui.remotetheme
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.util.AttributeSet
 import com.google.android.material.button.MaterialButton
+import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.ui.R
 
 /**
  * A default Materialbutton which automatically sets the remote theme colors of the
@@ -13,7 +14,7 @@ import io.snabble.sdk.ui.R
 class SnabblePrimaryButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = R.attr.materialButtonStyle,
+    defStyleAttr: Int = 0,
 ) : MaterialButton(context, attrs, defStyleAttr) {
 
     init {
@@ -21,8 +22,68 @@ class SnabblePrimaryButton @JvmOverloads constructor(
     }
 
     private fun setProjectAppTheme() {
+
         val project = Snabble.checkedInProject.value
-        setBackgroundColor(context.getPrimaryColorForProject(project))
-        setTextColor(context.getOnPrimaryColorForProject(project))
+
+        setBackgroundColorFor(project)
+        setTextColorFor(project)
+    }
+
+    private fun setBackgroundColorFor(project: Project?) {
+        // Get the existing ColorStateList for the button's background tint
+        val defaultBackgroundTintList = backgroundTintList
+
+        // Fallback to current background color if there's no existing tint list
+        val currentBackgroundColor = backgroundTintList?.defaultColor ?: currentTextColor
+
+        // Extract the default disabled and pressed colors
+        val defaultDisabledBackgroundColor = defaultBackgroundTintList?.getColorForState(
+            intArrayOf(-android.R.attr.state_enabled),
+            currentBackgroundColor
+        )
+        val defaultPressedBackgroundColor = defaultBackgroundTintList?.getColorForState(
+            intArrayOf(android.R.attr.state_pressed),
+            currentBackgroundColor
+        )
+
+        val states = arrayOf(
+            intArrayOf(-android.R.attr.state_enabled),
+            intArrayOf(android.R.attr.state_pressed),
+            intArrayOf(android.R.attr.state_enabled)
+        )
+
+        val colors = intArrayOf(
+            defaultDisabledBackgroundColor ?: currentBackgroundColor,
+            defaultPressedBackgroundColor ?: currentBackgroundColor,
+            context.getPrimaryColorForProject(project)
+        )
+
+        val colorStateList = ColorStateList(states, colors)
+        backgroundTintList = colorStateList
+    }
+
+    private fun setTextColorFor(project: Project?){
+        val defaultTextColorStateList = textColors
+
+        // Extract the default disabled and pressed colors
+        val defaultDisabledTextColor =
+            defaultTextColorStateList.getColorForState(intArrayOf(-android.R.attr.state_enabled), currentTextColor)
+        val defaultPressedTextColor =
+            defaultTextColorStateList.getColorForState(intArrayOf(android.R.attr.state_pressed), currentTextColor)
+
+        val states2 = arrayOf(
+            intArrayOf(-android.R.attr.state_enabled),
+            intArrayOf(android.R.attr.state_pressed),
+            intArrayOf(android.R.attr.state_enabled)
+        )
+
+        val colors2 = intArrayOf(
+            defaultDisabledTextColor,
+            defaultPressedTextColor,
+            context.getOnPrimaryColorForProject(project)
+        )
+
+        val colorStateList2 = ColorStateList(states2, colors2)
+        setTextColor(colorStateList2)
     }
 }
