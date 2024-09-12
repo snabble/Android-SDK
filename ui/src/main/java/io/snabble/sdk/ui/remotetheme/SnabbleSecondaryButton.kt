@@ -17,7 +17,7 @@ import io.snabble.sdk.ui.R
 class SnabbleSecondaryButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = R.attr.materialButtonStyle,
+    defStyleAttr: Int = R.attr.buttonStyle,
 ) : MaterialButton(context, attrs, defStyleAttr) {
 
     init {
