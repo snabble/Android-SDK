@@ -41,8 +41,11 @@ internal class PurchasesRepositoryImpl(
         }
     }
 
-    private fun Array<ReceiptInfo>.mapToPurchases(count: Int): List<Purchase> =
-        this.filter { it.pdfUrl != null }
+    private fun Array<ReceiptInfo>.mapToPurchases(count: Int): List<Purchase> {
+        val purchases = filter { it.pdfUrl != null }
+        if (purchases.isEmpty()) return emptyList()
+        return purchases
             .slice(0 until size.coerceAtMost(count))
             .map { it.toPurchase(timeFormatter) }
+    }
 }
