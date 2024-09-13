@@ -41,20 +41,14 @@ class SnabblePrimaryButton @JvmOverloads constructor(
             intArrayOf(-android.R.attr.state_enabled),
             currentBackgroundColor
         )
-        val defaultPressedBackgroundColor = defaultBackgroundTintList?.getColorForState(
-            intArrayOf(android.R.attr.state_pressed),
-            currentBackgroundColor
-        )
 
         val states = arrayOf(
             intArrayOf(-android.R.attr.state_enabled),
-            intArrayOf(android.R.attr.state_pressed),
             intArrayOf(android.R.attr.state_enabled)
         )
 
         val colors = intArrayOf(
             defaultDisabledBackgroundColor ?: currentBackgroundColor,
-            defaultPressedBackgroundColor ?: currentBackgroundColor,
             context.getPrimaryColorForProject(project)
         )
 
@@ -68,18 +62,14 @@ class SnabblePrimaryButton @JvmOverloads constructor(
         // Extract the default disabled and pressed colors
         val defaultDisabledTextColor =
             defaultTextColorStateList.getColorForState(intArrayOf(-android.R.attr.state_enabled), currentTextColor)
-        val defaultPressedTextColor =
-            defaultTextColorStateList.getColorForState(intArrayOf(android.R.attr.state_pressed), currentTextColor)
 
         val states2 = arrayOf(
             intArrayOf(-android.R.attr.state_enabled),
-            intArrayOf(android.R.attr.state_pressed),
             intArrayOf(android.R.attr.state_enabled)
         )
 
         val colors2 = intArrayOf(
             defaultDisabledTextColor,
-            defaultPressedTextColor,
             context.getOnPrimaryColorForProject(project)
         )
 
