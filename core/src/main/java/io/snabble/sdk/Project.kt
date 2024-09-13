@@ -350,6 +350,7 @@ class Project internal constructor(
         private set
 
     var appTheme: AppTheme? = null
+        private set
 
     var customizationConfig: JsonElement? = null
         private set
