@@ -27,6 +27,7 @@ io.snabble.sdk.payment.data
 io.snabble.sdk.payment.externalbilling
 io.snabble.sdk.payment.externalbilling.data
 io.snabble.sdk.payment.payone.sepa
+io.snabble.sdk.remoteTheme
 io.snabble.sdk.shoppingcart
 io.snabble.sdk.shoppingcart.data
 io.snabble.sdk.shoppingcart.data.cart
@@ -57,6 +58,7 @@ io.snabble.sdk.ui.payment.payone.sepa.form.ui.widget
 io.snabble.sdk.ui.payment.payone.sepa.form.viewmodel
 io.snabble.sdk.ui.payment.payone.sepa.mandate
 io.snabble.sdk.ui.payment.payone.sepa.mandate.viewmodel
+io.snabble.sdk.ui.remotetheme
 io.snabble.sdk.ui.scanner
 io.snabble.sdk.ui.scanner.combined
 io.snabble.sdk.ui.search
