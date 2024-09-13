@@ -335,7 +335,10 @@ public class SelfScanningView extends FrameLayout {
                     .create();
 
             final Project currentProject = Snabble.getInstance().getCheckedInProject().getLatestValue();
-            RemoteThemingExtensionsKt.setButtonColorFor(alertDialog,currentProject).show();
+
+            RemoteThemingExtensionsKt
+                    .setButtonColorFor(alertDialog,currentProject)
+                    .show();
 
             input.requestFocus();
 
