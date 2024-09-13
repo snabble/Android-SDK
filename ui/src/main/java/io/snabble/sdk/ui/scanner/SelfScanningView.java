@@ -334,17 +334,11 @@ public class SelfScanningView extends FrameLayout {
                     .setOnDismissListener(dialog -> resumeBarcodeScanner())
                     .create();
 
-            final int primaryColor = RemoteThemingExtensionsKt.getPrimaryColorForProject(
-                    getContext(),
-                    Snabble.getInstance().getCheckedInProject().getLatestValue()
-            );
+            final Project currentProject = Snabble.getInstance().getCheckedInProject().getLatestValue();
 
-            alertDialog.setOnShowListener(dialog -> {
-                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(primaryColor);
-                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(primaryColor);
-            });
-
-            alertDialog.show();
+            RemoteThemingExtensionsKt
+                    .setButtonColorFor(alertDialog,currentProject)
+                    .show();
 
             input.requestFocus();
 

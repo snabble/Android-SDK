@@ -2,6 +2,7 @@ package io.snabble.sdk.ui.remotetheme
 
 import android.content.Context
 import android.graphics.Color
+import androidx.appcompat.app.AlertDialog
 import io.snabble.sdk.Project
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.utils.getColorByAttribute
@@ -48,4 +49,13 @@ fun Context.isDarkMode(): Boolean {
     val currentNightMode =
         resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK
     return currentNightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES
+}
+
+fun AlertDialog.setButtonColorFor(project: Project?): AlertDialog {
+    val primaryColor = context.getPrimaryColorForProject(project)
+    setOnShowListener {
+        getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(primaryColor);
+        getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(primaryColor);
+    }
+    return this
 }
