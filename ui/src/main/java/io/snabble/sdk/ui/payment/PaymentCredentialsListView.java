@@ -79,9 +79,11 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         recyclerView.setItemAnimator(null);
 
         FloatingActionButton fab = findViewById(R.id.fab);
+
         final Project currentProject = Snabble.getInstance().getCheckedInProject().getLatestValue();
         final int primaryColor = RemoteThemingExtensionsKt.getPrimaryColorForProject(getContext(), currentProject);
         final int onPrimaryColor = RemoteThemingExtensionsKt.getOnPrimaryColorForProject(getContext(), currentProject);
+
         fab.setBackgroundTintList(ColorStateList.valueOf(primaryColor));
         fab.setImageTintList(ColorStateList.valueOf(onPrimaryColor));
 
@@ -110,18 +112,15 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                         throw new RuntimeException("Host activity must be a Fragment Activity");
                     }
                 } else {
-
                     final AlertDialog alertDialog = new AlertDialog.Builder(getContext())
                             .setMessage(R.string.Snabble_Keyguard_requireScreenLock)
                             .setPositiveButton(R.string.Snabble_ok, null)
                             .setCancelable(false)
-                            .create();
+                            .show();
 
-                    alertDialog.setOnShowListener(dialog -> {
-                        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(primaryColor);
-                    });
-
-                    alertDialog.show();
+                    RemoteThemingExtensionsKt
+                            .setButtonColorFor(alertDialog, currentProject)
+                            .show();
                 }
             }
         });
@@ -300,23 +299,16 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
 
             if (e.paymentCredentials != null) {
                 vh.delete.setOnClickListener(view -> {
-                    final int primaryColor = RemoteThemingExtensionsKt.getPrimaryColorForProject(
-                            getContext(),
-                            Snabble.getInstance().getCheckedInProject().getLatestValue()
-                    );
-
                     final AlertDialog alertDialog = new AlertDialog.Builder(getContext())
                             .setMessage(R.string.Snabble_Payment_Delete_message)
                             .setPositiveButton(R.string.Snabble_yes, (dialog, which) -> paymentCredentialsStore.remove(e.paymentCredentials))
                             .setNegativeButton(R.string.Snabble_no, null)
                             .create();
+                    final Project currentProject = Snabble.getInstance().getCheckedInProject().getLatestValue();
 
-                    alertDialog.setOnShowListener(dialog -> {
-                        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(primaryColor);
-                        alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(primaryColor);
-                    });
-
-                    alertDialog.show();
+                    RemoteThemingExtensionsKt
+                            .setButtonColorFor(alertDialog, currentProject)
+                            .show();
 
                     Telemetry.event(Telemetry.Event.PaymentMethodDeleted, e.paymentCredentials.getType());
                 });

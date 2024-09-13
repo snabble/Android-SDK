@@ -115,7 +115,7 @@
                 layout="@layout/snabble_buy_with_googlepay_button_no_shadow"/>
         </LinearLayout>
 
-        <com.google.android.material.button.MaterialButton
+        <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
             style="@style/Snabble.Widget.MaterialComponents.Button.Passive"
             android:id="@+id/payment_selector_button_big"
             android:layout_width="match_parent"

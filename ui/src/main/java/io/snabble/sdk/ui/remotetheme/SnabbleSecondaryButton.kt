@@ -1,8 +1,10 @@
 package io.snabble.sdk.ui.remotetheme
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.util.AttributeSet
 import com.google.android.material.button.MaterialButton
+import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.R
 
@@ -24,6 +26,28 @@ class SnabbleSecondaryButton @JvmOverloads constructor(
 
     private fun setProjectAppTheme() {
         val project = Snabble.checkedInProject.value
-        setTextColor(context.getPrimaryColorForProject(project))
+        setTextColorFor(project)
+    }
+
+    private fun setTextColorFor(project: Project?) {
+        val defaultTextColorStateList = textColors
+
+        // Extract the default disabled color
+        val defaultDisabledTextColor = defaultTextColorStateList.getColorForState(
+                intArrayOf(-android.R.attr.state_enabled),
+                currentTextColor
+            )
+
+        val states = arrayOf(
+            intArrayOf(-android.R.attr.state_enabled),
+            intArrayOf(android.R.attr.state_enabled)
+        )
+
+        val colors = intArrayOf(
+            defaultDisabledTextColor,
+            context.getPrimaryColorForProject(project)
+        )
+
+        setTextColor(ColorStateList(states, colors))
     }
 }
