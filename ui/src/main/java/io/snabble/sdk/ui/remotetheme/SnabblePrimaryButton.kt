@@ -36,7 +36,7 @@ class SnabblePrimaryButton @JvmOverloads constructor(
         // Fallback to current background color if there's no existing tint list
         val currentBackgroundColor = backgroundTintList?.defaultColor ?: currentTextColor
 
-        // Extract the default disabled and pressed colors
+        // Extract the default disabled color
         val defaultDisabledBackgroundColor = defaultBackgroundTintList?.getColorForState(
             intArrayOf(-android.R.attr.state_enabled),
             currentBackgroundColor
@@ -52,8 +52,7 @@ class SnabblePrimaryButton @JvmOverloads constructor(
             context.getPrimaryColorForProject(project)
         )
 
-        val colorStateList = ColorStateList(states, colors)
-        backgroundTintList = colorStateList
+        backgroundTintList = ColorStateList(states, colors)
     }
 
     private fun setTextColorFor(project: Project?){
