@@ -9,7 +9,8 @@ All notable changes to this project will be documented in this file.
 
 ## [0.75.7]
 ### Added
-* Add views to handle and apply the remote theme automatically 
+* Add views to handle and apply the remote theme automatically
+* Add `customizationConig` to project to load remote assets
 ### Fixed
 * Handle npe when loading the shopping cart data and restore from it
 
