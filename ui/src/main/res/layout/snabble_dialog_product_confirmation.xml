@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/colorSurface"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:gravity="center"
+    android:background="?attr/colorSurface"
     android:minWidth="350dp"
     android:orientation="vertical">
 
@@ -167,7 +167,7 @@
 
     <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
         android:id="@+id/addToCart"
-        style="@style/Snabble.Primary.Button"
+        style="@style/Snabble.Widget.MaterialComponents.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"

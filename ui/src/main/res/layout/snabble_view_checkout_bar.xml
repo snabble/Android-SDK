@@ -93,7 +93,7 @@
             </FrameLayout>
 
             <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
-                style="@style/Snabble.Primary.Button"
+                style="@style/Snabble.Widget.MaterialComponents.Button"
                 android:id="@+id/pay"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"

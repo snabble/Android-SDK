@@ -33,7 +33,6 @@ import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.ui.AccessibilityPreferences
 import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
 import io.snabble.sdk.ui.search.SearchHelper
 import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.utils.Dispatch
@@ -44,7 +43,7 @@ open class SelfScanningFragment : BaseFragment(), MenuProvider {
     var selfScanningView: SelfScanningView? = null
     protected lateinit var rootView: ViewGroup
     private lateinit var permissionContainer: View
-    private lateinit var askForPermission: SnabblePrimaryButton
+    private lateinit var askForPermission: Button
     private var canAskAgain = false
     private var isStart = false
     var allowShowingHints = false
@@ -81,7 +80,7 @@ open class SelfScanningFragment : BaseFragment(), MenuProvider {
         rootView = view as ViewGroup
         selfScanningView = null
         permissionContainer = rootView.findViewById(R.id.permission_denied_container)
-        askForPermission = view.findViewById(R.id.open_settings)
+        askForPermission = rootView.findViewById(R.id.open_settings)
 
         if (isPermissionGranted) {
             createSelfScanningView()
@@ -171,12 +170,12 @@ open class SelfScanningFragment : BaseFragment(), MenuProvider {
     private fun showPermissionRationale() {
         permissionContainer.visibility = View.VISIBLE
         if (canAskAgain) {
-            askForPermission.setText(R.string.Snabble_askForPermission)
+            askForPermission.text = getString(R.string.Snabble_askForPermission)
             askForPermission.setOneShotClickListener {
                 activityResultLauncher.launch(Manifest.permission.CAMERA)
             }
         } else {
-            askForPermission.setText(R.string.Snabble_goToSettings)
+            askForPermission.text = getString(R.string.Snabble_goToSettings)
             askForPermission.setOneShotClickListener {
                 goToSettings()
             }

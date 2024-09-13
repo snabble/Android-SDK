@@ -43,7 +43,7 @@
         android:layout_width="match_parent"
         android:layout_height="24dp" />
 
-    <com.google.android.material.button.MaterialButton
+    <io.snabble.sdk.ui.remotetheme.SnabbleSecondaryButton
         android:id="@+id/subject_add"
         style="@style/Snabble.ShapeAppearanceOverlay.RoundedCorners.Big"
         android:layout_width="match_parent"
@@ -55,7 +55,7 @@
         android:layout_width="match_parent"
         android:layout_height="4dp" />
 
-    <com.google.android.material.button.MaterialButton
+    <io.snabble.sdk.ui.remotetheme.SnabbleSecondaryButton
         android:id="@+id/subject_skip"
         style="@style/Snabble.Widget.MaterialComponents.Button.TextButton"
         android:layout_width="match_parent"
