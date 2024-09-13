@@ -6,10 +6,13 @@ import android.util.AttributeSet
 import com.google.android.material.button.MaterialButton
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.ui.R
 
 /**
  * A default Materialbutton which automatically sets the remote theme colors of the
  * current checked in project.
+ *
+ * To disable this behaviour override the given style and set `usePrimaryColors` to `false`
  */
 class SnabblePrimaryButton @JvmOverloads constructor(
     context: Context,
@@ -18,7 +21,9 @@ class SnabblePrimaryButton @JvmOverloads constructor(
 ) : MaterialButton(context, attrs, defStyleAttr) {
 
     init {
-        setProjectAppTheme()
+        if (useProjectColors(attrs)) {
+            setProjectAppTheme()
+        }
     }
 
     private fun setProjectAppTheme() {
@@ -27,6 +32,21 @@ class SnabblePrimaryButton @JvmOverloads constructor(
 
         setBackgroundColorFor(project)
         setTextColorFor(project)
+    }
+
+    private fun useProjectColors(attrs: AttributeSet?): Boolean {
+        context.theme.obtainStyledAttributes(
+            attrs,
+            R.styleable.SnabblePrimaryButton,
+            0,
+            0
+        ).apply {
+            return try {
+                getBoolean(R.styleable.SnabblePrimaryButton_usePrimaryColors, true)
+            } finally {
+                recycle()
+            }
+        }
     }
 
     private fun setBackgroundColorFor(project: Project?) {
@@ -55,7 +75,7 @@ class SnabblePrimaryButton @JvmOverloads constructor(
         backgroundTintList = ColorStateList(states, colors)
     }
 
-    private fun setTextColorFor(project: Project?){
+    private fun setTextColorFor(project: Project?) {
         val defaultTextColorStateList = textColors
 
         // Extract the default disabled and pressed colors

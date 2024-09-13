@@ -7,6 +7,10 @@
         <attr name="animateBarcode" format="boolean" />
     </declare-styleable>
 
+    <declare-styleable name="SnabblePrimaryButton">
+        <attr name="usePrimaryColors" format="boolean" />
+    </declare-styleable>
+
     <attr name="snabbleToolbarStyle" format="reference" />
 
     <bool name="showToolbarInCheckout">false</bool>
