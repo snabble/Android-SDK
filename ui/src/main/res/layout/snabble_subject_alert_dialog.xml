@@ -43,7 +43,7 @@
         android:layout_width="match_parent"
         android:layout_height="24dp" />
 
-    <io.snabble.sdk.ui.remotetheme.SnabbleSecondaryButton
+    <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
         android:id="@+id/subject_add"
         style="@style/Snabble.ShapeAppearanceOverlay.RoundedCorners.Big"
         android:layout_width="match_parent"
