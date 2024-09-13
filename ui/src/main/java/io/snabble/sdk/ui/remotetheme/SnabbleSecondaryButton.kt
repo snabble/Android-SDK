@@ -32,23 +32,22 @@ class SnabbleSecondaryButton @JvmOverloads constructor(
     private fun setTextColorFor(project: Project?) {
         val defaultTextColorStateList = textColors
 
-        // Extract the default disabled and pressed colors
+        // Extract the default disabled color
         val defaultDisabledTextColor = defaultTextColorStateList.getColorForState(
                 intArrayOf(-android.R.attr.state_enabled),
                 currentTextColor
             )
 
-        val states2 = arrayOf(
+        val states = arrayOf(
             intArrayOf(-android.R.attr.state_enabled),
             intArrayOf(android.R.attr.state_enabled)
         )
 
-        val colors2 = intArrayOf(
+        val colors = intArrayOf(
             defaultDisabledTextColor,
             context.getPrimaryColorForProject(project)
         )
 
-        val colorStateList2 = ColorStateList(states2, colors2)
-        setTextColor(colorStateList2)
+        setTextColor(ColorStateList(states, colors))
     }
 }
