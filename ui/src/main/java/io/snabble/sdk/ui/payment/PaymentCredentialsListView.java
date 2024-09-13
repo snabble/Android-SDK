@@ -79,9 +79,11 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         recyclerView.setItemAnimator(null);
 
         FloatingActionButton fab = findViewById(R.id.fab);
+
         final Project currentProject = Snabble.getInstance().getCheckedInProject().getLatestValue();
         final int primaryColor = RemoteThemingExtensionsKt.getPrimaryColorForProject(getContext(), currentProject);
         final int onPrimaryColor = RemoteThemingExtensionsKt.getOnPrimaryColorForProject(getContext(), currentProject);
+
         fab.setBackgroundTintList(ColorStateList.valueOf(primaryColor));
         fab.setImageTintList(ColorStateList.valueOf(onPrimaryColor));
 
@@ -116,7 +118,9 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                             .setCancelable(false)
                             .show();
 
-                    RemoteThemingExtensionsKt.setButtonColorFor(alertDialog, currentProject).show();
+                    RemoteThemingExtensionsKt
+                            .setButtonColorFor(alertDialog, currentProject)
+                            .show();
                 }
             }
         });
@@ -301,7 +305,10 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                             .setNegativeButton(R.string.Snabble_no, null)
                             .create();
                     final Project currentProject = Snabble.getInstance().getCheckedInProject().getLatestValue();
-                    RemoteThemingExtensionsKt.setButtonColorFor(alertDialog, currentProject).show();
+
+                    RemoteThemingExtensionsKt
+                            .setButtonColorFor(alertDialog, currentProject)
+                            .show();
 
                     Telemetry.event(Telemetry.Event.PaymentMethodDeleted, e.paymentCredentials.getType());
                 });
