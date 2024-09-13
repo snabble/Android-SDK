@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
-import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor
 import io.snabble.sdk.checkout.Checkout
@@ -351,6 +350,10 @@ class Project internal constructor(
         private set
 
     var appTheme: AppTheme? = null
+        private set
+
+    var customizationConfig: JsonElement? = null
+        private set
 
     init {
         parse(jsonObject)
@@ -368,7 +371,7 @@ class Project internal constructor(
             brand = Snabble.brands[brandId]
         }
 
-        val customizationConfig: JsonElement? = jsonObject["appCustomizationConfig"]
+        customizationConfig = jsonObject["appCustomizationConfig"]
         try {
             val lightModeColors: LightModeColors? = gson.fromJson(customizationConfig, LightModeColors::class.java)
             val darkModeColors: DarkModeColors? = gson.fromJson(customizationConfig, DarkModeColors::class.java)
