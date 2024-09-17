@@ -1,3 +1,5 @@
+@file:JvmName("RemoteThemingHelper")
+
 package io.snabble.sdk.ui.remotetheme
 
 import android.content.Context
@@ -16,31 +18,42 @@ fun Context.getPrimaryColorForProject(project: Project?): Int {
     }
 }
 
-fun Context.getOnPrimaryColorForProject(project: Project?): Int {
+@JvmOverloads
+fun Context.primaryColorForProject(project: Project?, action: ((Int) -> Unit)? = null): Int {
+    val lightColor = project?.appTheme?.lightModeColors?.primaryColor?.asColor()
+    val darkColor = project?.appTheme?.darkModeColors?.primaryColor?.asColor()
+    return when {
+        isDarkMode() -> darkColor ?: lightColor ?: getColorByAttribute(R.attr.colorPrimary)
+        else -> lightColor ?: getColorByAttribute(R.attr.colorPrimary)
+    }.also { action?.invoke(it) }
+}
+
+@JvmOverloads
+fun Context.onPrimaryColorForProject(project: Project?, action: ((Int) -> Unit)? = null): Int {
     val lightColor = project?.appTheme?.lightModeColors?.onPrimaryColor?.asColor()
     val darkColor = project?.appTheme?.darkModeColors?.onPrimaryColor?.asColor()
     return when {
         isDarkMode() -> darkColor ?: lightColor ?: getColorByAttribute(R.attr.colorOnPrimary)
         else -> lightColor ?: getColorByAttribute(R.attr.colorOnPrimary)
-    }
+    }.also { action?.invoke(it) }
 }
 
-fun Context.getSecondaryColorForProject(project: Project?): Int {
+fun Context.secondaryColorForProject(project: Project?, action: ((Int) -> Unit)? = null): Int {
     val lightColor = project?.appTheme?.lightModeColors?.secondaryColor?.asColor()
     val darkColor = project?.appTheme?.darkModeColors?.secondaryColor?.asColor()
     return when {
         isDarkMode() -> darkColor ?: lightColor ?: getColorByAttribute(R.attr.colorSecondary)
         else -> lightColor ?: getColorByAttribute(R.attr.colorSecondary)
-    }
+    }.also { action?.invoke(it) }
 }
 
-fun Context.getOnSecondaryColorForProject(project: Project?): Int {
+fun Context.onSecondaryColorForProject(project: Project?, action: ((Int) -> Unit)? = null): Int {
     val lightColor = project?.appTheme?.lightModeColors?.onSecondaryColor?.asColor()
     val darkColor = project?.appTheme?.darkModeColors?.onSecondaryColor?.asColor()
     return when {
         isDarkMode() -> darkColor ?: lightColor ?: getColorByAttribute(R.attr.colorOnSecondary)
         else -> lightColor ?: getColorByAttribute(R.attr.colorOnSecondary)
-    }
+    }.also { action?.invoke(it) }
 }
 
 fun String.asColor() = Color.parseColor(this)
@@ -51,11 +64,11 @@ fun Context.isDarkMode(): Boolean {
     return currentNightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES
 }
 
-fun AlertDialog.setButtonColorFor(project: Project?): AlertDialog {
-    val primaryColor = context.getPrimaryColorForProject(project)
+fun AlertDialog.changeButtonColorFor(project: Project?): AlertDialog {
+    val primaryColor = context.primaryColorForProject(project)
     setOnShowListener {
-        getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(primaryColor);
-        getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(primaryColor);
+        getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(primaryColor)
+        getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(primaryColor)
     }
     return this
 }

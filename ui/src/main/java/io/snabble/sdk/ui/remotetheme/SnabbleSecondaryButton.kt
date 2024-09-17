@@ -45,7 +45,7 @@ class SnabbleSecondaryButton @JvmOverloads constructor(
 
         val colors = intArrayOf(
             defaultDisabledTextColor,
-            context.getPrimaryColorForProject(project)
+            context.primaryColorForProject(project)
         )
 
         setTextColor(ColorStateList(states, colors))

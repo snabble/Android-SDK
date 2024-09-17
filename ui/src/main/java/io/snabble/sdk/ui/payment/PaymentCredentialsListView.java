@@ -33,7 +33,7 @@ import io.snabble.sdk.Snabble;
 import io.snabble.sdk.payment.PaymentCredentials;
 import io.snabble.sdk.payment.PaymentCredentialsStore;
 import io.snabble.sdk.ui.R;
-import io.snabble.sdk.ui.remotetheme.RemoteThemingExtensionsKt;
+import io.snabble.sdk.ui.remotetheme.RemoteThemingHelper;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.KeyguardUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
@@ -81,8 +81,8 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         FloatingActionButton fab = findViewById(R.id.fab);
 
         final Project currentProject = Snabble.getInstance().getCheckedInProject().getLatestValue();
-        final int primaryColor = RemoteThemingExtensionsKt.getPrimaryColorForProject(getContext(), currentProject);
-        final int onPrimaryColor = RemoteThemingExtensionsKt.getOnPrimaryColorForProject(getContext(), currentProject);
+        final int primaryColor = RemoteThemingHelper.primaryColorForProject(getContext(), currentProject);
+        final int onPrimaryColor = RemoteThemingHelper.onPrimaryColorForProject(getContext(), currentProject);
 
         fab.setBackgroundTintList(ColorStateList.valueOf(primaryColor));
         fab.setImageTintList(ColorStateList.valueOf(onPrimaryColor));
@@ -118,8 +118,8 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                             .setCancelable(false)
                             .show();
 
-                    RemoteThemingExtensionsKt
-                            .setButtonColorFor(alertDialog, currentProject)
+                    RemoteThemingHelper
+                            .changeButtonColorFor(alertDialog, currentProject)
                             .show();
                 }
             }
@@ -306,8 +306,8 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                             .create();
                     final Project currentProject = Snabble.getInstance().getCheckedInProject().getLatestValue();
 
-                    RemoteThemingExtensionsKt
-                            .setButtonColorFor(alertDialog, currentProject)
+                    RemoteThemingHelper
+                            .changeButtonColorFor(alertDialog, currentProject)
                             .show();
 
                     Telemetry.event(Telemetry.Event.PaymentMethodDeleted, e.paymentCredentials.getType());

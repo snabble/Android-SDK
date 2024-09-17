@@ -46,7 +46,7 @@ import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
 import io.snabble.sdk.ui.checkout.ViolationNotificationUtils;
-import io.snabble.sdk.ui.remotetheme.RemoteThemingExtensionsKt;
+import io.snabble.sdk.ui.remotetheme.RemoteThemingHelper;
 import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.I18nUtils;
@@ -336,8 +336,8 @@ public class SelfScanningView extends FrameLayout {
 
             final Project currentProject = Snabble.getInstance().getCheckedInProject().getLatestValue();
 
-            RemoteThemingExtensionsKt
-                    .setButtonColorFor(alertDialog,currentProject)
+            RemoteThemingHelper
+                    .changeButtonColorFor(alertDialog,currentProject)
                     .show();
 
             input.requestFocus();

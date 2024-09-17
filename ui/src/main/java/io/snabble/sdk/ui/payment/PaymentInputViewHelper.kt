@@ -13,7 +13,7 @@ import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.payment.creditcard.datatrans.ui.DatatransFragment
 import io.snabble.sdk.ui.payment.creditcard.fiserv.FiservInputView
 import io.snabble.sdk.ui.payment.externalbilling.ExternalBillingFragment.Companion.ARG_PROJECT_ID
-import io.snabble.sdk.ui.remotetheme.setButtonColorFor
+import io.snabble.sdk.ui.remotetheme.changeButtonColorFor
 import io.snabble.sdk.ui.utils.KeyguardUtils
 import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.utils.Logger
@@ -78,7 +78,7 @@ object PaymentInputViewHelper {
             val currentProject = Snabble.instance.checkedInProject.value
 
             alertDialog
-                .setButtonColorFor(currentProject)
+                .changeButtonColorFor(currentProject)
                 .show()
         }
     }
