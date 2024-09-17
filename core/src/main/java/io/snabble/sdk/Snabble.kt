@@ -575,7 +575,7 @@ object Snabble {
                 }
                 if (shop != null) {
                     Logger.d("Restoring last checked in shop " + shop.id + ", " + shop.name)
-                    checkedInShop = shop
+                    checkInManager.shop = shop
                     break;
                 }
             }
