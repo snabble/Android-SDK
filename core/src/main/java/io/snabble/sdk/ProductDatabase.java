@@ -6,7 +6,6 @@ import android.content.ContentValues;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteCantOpenDatabaseException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.CancellationSignal;
@@ -336,92 +335,94 @@ public class ProductDatabase {
         }
         final SQLiteDatabase tempDb;
 
-        try {
-            tempDb = SQLiteDatabase.openOrCreateDatabase(tempDbFile, null);
-        } catch (SQLiteException e) {
-            project.logErrorEvent("Could not open or create db: %s", e.getMessage());
-            throw new IOException("Could not open or create db", e);
-        }
-
-        Scanner scanner = new Scanner(inputStream, "UTF-8");
-
-        //delta update statements are split by ;\n\n - occurrences of ;\n\n in strings are
-        //escaped replaced by the backend - splitting by just ; is not enough because of eventual
-        //occurrences in database rows
-        scanner.useDelimiter(";\n\n");
-
-        try {
-            tempDb.beginTransaction();
-        } catch (SQLiteException e) {
-            project.logErrorEvent("Could not apply delta update: Could not access temp database");
-            tempDb.close();
-            throw new IOException();
-        }
-
-        while (scanner.hasNext()) {
+        if (tempDbFile.canRead() && tempDbFile.canWrite()) {
             try {
-                String line = scanner.next();
-
-                //Scanner catches IOExceptions and stores the last thrown exception in ioException()
-                //because we want to handle possible IOExceptions we throw them here again if they
-                //occurred
-                IOException lastException = scanner.ioException();
-                if (lastException != null) {
-                    project.logErrorEvent("Could not apply delta update: %s", lastException.getMessage());
-                    tempDb.close();
-                    deleteDatabase(tempDbFile);
-                    throw lastException;
-                }
-
-                tempDb.execSQL(line);
+                tempDb = SQLiteDatabase.openOrCreateDatabase(tempDbFile, null);
             } catch (SQLiteException e) {
-                //code 0 = "not an error" - statements like empty strings are causing that exception
-                //which we want to allow
-                if (!e.getMessage().contains("code 0")) {
-                    project.logErrorEvent("Could not apply delta update: %s", e.getMessage());
-                    tempDb.close();
-                    deleteDatabase(tempDbFile);
-                    throw new IOException();
+                project.logErrorEvent("Could not open or create db: %s", e.getMessage());
+                throw new IOException("Could not open or create db", e);
+            }
+
+            Scanner scanner = new Scanner(inputStream, "UTF-8");
+
+            //delta update statements are split by ;\n\n - occurrences of ;\n\n in strings are
+            //escaped replaced by the backend - splitting by just ; is not enough because of eventual
+            //occurrences in database rows
+            scanner.useDelimiter(";\n\n");
+
+            try {
+                tempDb.beginTransaction();
+            } catch (SQLiteException e) {
+                project.logErrorEvent("Could not apply delta update: Could not access temp database");
+                tempDb.close();
+                throw new IOException();
+            }
+
+            while (scanner.hasNext()) {
+                try {
+                    String line = scanner.next();
+
+                    //Scanner catches IOExceptions and stores the last thrown exception in ioException()
+                    //because we want to handle possible IOExceptions we throw them here again if they
+                    //occurred
+                    IOException lastException = scanner.ioException();
+                    if (lastException != null) {
+                        project.logErrorEvent("Could not apply delta update: %s", lastException.getMessage());
+                        tempDb.close();
+                        deleteDatabase(tempDbFile);
+                        throw lastException;
+                    }
+
+                    tempDb.execSQL(line);
+                } catch (SQLiteException e) {
+                    //code 0 = "not an error" - statements like empty strings are causing that exception
+                    //which we want to allow
+                    if (!e.getMessage().contains("code 0")) {
+                        project.logErrorEvent("Could not apply delta update: %s", e.getMessage());
+                        tempDb.close();
+                        deleteDatabase(tempDbFile);
+                        throw new IOException();
+                    }
                 }
             }
-        }
 
-        try {
-            tempDb.setTransactionSuccessful();
-            tempDb.endTransaction();
-        } catch (SQLiteException e) {
-            project.logErrorEvent("Could not apply delta update: Could not finish transaction on temp database");
+            try {
+                tempDb.setTransactionSuccessful();
+                tempDb.endTransaction();
+            } catch (SQLiteException e) {
+                project.logErrorEvent("Could not apply delta update: Could not finish transaction on temp database");
+                tempDb.close();
+                throw new IOException();
+            }
+
+            //delta updates are making the database grow larger and larger, so we vacuum here
+            //to keep the database as small as possible
+            long vacuumTime = SystemClock.elapsedRealtime();
+            try {
+                tempDb.execSQL("VACUUM");
+            } catch (SQLiteException e) {
+                project.logErrorEvent("Could not apply delta update: %s", e.getMessage());
+                tempDb.close();
+                deleteDatabase(tempDbFile);
+                throw new IOException();
+            }
+
+            long vacuumTime2 = SystemClock.elapsedRealtime() - vacuumTime;
+            Logger.d("VACUUM took %d ms", vacuumTime2);
+
             tempDb.close();
-            throw new IOException();
+
+            try {
+                swap(tempDbFile);
+            } catch (IOException e) {
+                project.logErrorEvent("Could not apply delta update: %s", e.getMessage());
+                tempDb.close();
+                throw new IOException();
+            }
+
+            long time2 = SystemClock.elapsedRealtime() - time;
+            Logger.d("Delta update (%d -> %d) took %d ms", fromRevisionId, getRevisionId(), time2);
         }
-
-        //delta updates are making the database grow larger and larger, so we vacuum here
-        //to keep the database as small as possible
-        long vacuumTime = SystemClock.elapsedRealtime();
-        try {
-            tempDb.execSQL("VACUUM");
-        } catch (SQLiteException e) {
-            project.logErrorEvent("Could not apply delta update: %s", e.getMessage());
-            tempDb.close();
-            deleteDatabase(tempDbFile);
-            throw new IOException();
-        }
-
-        long vacuumTime2 = SystemClock.elapsedRealtime() - vacuumTime;
-        Logger.d("VACUUM took %d ms", vacuumTime2);
-
-        tempDb.close();
-
-        try {
-            swap(tempDbFile);
-        } catch (IOException e) {
-            project.logErrorEvent("Could not apply delta update: %s", e.getMessage());
-            tempDb.close();
-            throw new IOException();
-        }
-
-        long time2 = SystemClock.elapsedRealtime() - time;
-        Logger.d("Delta update (%d -> %d) took %d ms", fromRevisionId, getRevisionId(), time2);
     }
 
     /**
