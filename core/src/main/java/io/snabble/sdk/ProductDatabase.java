@@ -338,7 +338,7 @@ public class ProductDatabase {
 
         try {
             tempDb = SQLiteDatabase.openOrCreateDatabase(tempDbFile, null);
-        } catch (SQLiteCantOpenDatabaseException e) {
+        } catch (SQLiteException e) {
             project.logErrorEvent("Could not open or create db: %s", e.getMessage());
             throw new IOException("Could not open or create db", e);
         }
