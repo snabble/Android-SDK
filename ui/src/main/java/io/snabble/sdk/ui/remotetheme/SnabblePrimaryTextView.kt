@@ -22,6 +22,6 @@ class SnabblePrimaryTextView @JvmOverloads constructor(
 
     private fun setProjectAppTheme() {
         val project = Snabble.checkedInProject.value
-        setTextColor(context.getPrimaryColorForProject(project))
+        setTextColor(context.primaryColorForProject(project))
     }
 }

@@ -69,7 +69,7 @@ class SnabblePrimaryButton @JvmOverloads constructor(
 
         val colors = intArrayOf(
             defaultDisabledBackgroundColor ?: currentBackgroundColor,
-            context.getPrimaryColorForProject(project)
+            context.primaryColorForProject(project)
         )
 
         backgroundTintList = ColorStateList(states, colors)
@@ -89,7 +89,7 @@ class SnabblePrimaryButton @JvmOverloads constructor(
 
         val colors = intArrayOf(
             defaultDisabledTextColor,
-            context.getOnPrimaryColorForProject(project)
+            context.onPrimaryColorForProject(project)
         )
 
         setTextColor(ColorStateList(states, colors))
