@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 ### Removed
 ### Fixed
+ui: external billing icon works with dark mode now
 
 ## [0.75.7]
 ### Added
