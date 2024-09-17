@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 ### Removed
 ### Fixed
+* ui: subject dialog for external billing now works in dark mode
 
 ## [0.75.7]
 ### Added
