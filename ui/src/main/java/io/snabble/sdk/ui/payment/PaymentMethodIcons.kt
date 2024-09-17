@@ -21,7 +21,7 @@ val PaymentMethodDescriptor.icon: Int
         PaymentMethod.GOOGLE_PAY.id -> R.drawable.snabble_ic_payment_select_gpay
         "externalBilling" -> when (acceptedOriginTypes?.first()) {
             "tegutEmployeeID" -> R.drawable.snabble_ic_payment_select_tegut
-            "contactPersonCredentials" -> R.drawable.ic_snabble_external_billing
+            "contactPersonCredentials" -> R.drawable.snabble_ic_external_billing
             else -> 0
         }
 
