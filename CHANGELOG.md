@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 * ui: subject dialog for external billing now works in dark mode
 * ui: external billing icon works with dark mode now
+* core: prevent SQLiteLockedException and recover from it on product database update
 
 ## [0.75.7]
 ### Added
