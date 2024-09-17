@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 * ui: subject dialog for external billing now works in dark mode
+* ui: external billing icon works with dark mode now
+* core: prevent SQLiteLockedException and recover from it on product database update
 * core: Fix theming related bug by setting restored shop in CheckInManager
 
 ## [0.75.7]

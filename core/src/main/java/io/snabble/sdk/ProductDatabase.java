@@ -6,7 +6,6 @@ import android.content.ContentValues;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteCantOpenDatabaseException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.CancellationSignal;
@@ -336,9 +335,12 @@ public class ProductDatabase {
         }
         final SQLiteDatabase tempDb;
 
+        if (!tempDbFile.canRead() || !tempDbFile.canWrite())
+            throw new IOException("TempDbFile cannot be read and/or written.");
+
         try {
             tempDb = SQLiteDatabase.openOrCreateDatabase(tempDbFile, null);
-        } catch (SQLiteCantOpenDatabaseException e) {
+        } catch (SQLiteException e) {
             project.logErrorEvent("Could not open or create db: %s", e.getMessage());
             throw new IOException("Could not open or create db", e);
         }
