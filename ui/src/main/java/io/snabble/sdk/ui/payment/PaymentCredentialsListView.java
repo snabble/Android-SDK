@@ -118,8 +118,8 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                             .setCancelable(false)
                             .show();
 
-                    RemoteThemingExtensionsKt
-                            .setButtonColorFor(alertDialog, currentProject)
+                    RemoteThemingHelper
+                            .changeButtonColorFor(alertDialog, currentProject)
                             .show();
                 }
             }
