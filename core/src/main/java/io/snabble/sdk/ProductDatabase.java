@@ -335,7 +335,8 @@ public class ProductDatabase {
         }
         final SQLiteDatabase tempDb;
 
-        if (!tempDbFile.canRead() || !tempDbFile.canWrite()) return;
+        if (!tempDbFile.canRead() || !tempDbFile.canWrite())
+            throw new IOException("TempDbFile cannot be read and/or written.");
 
         try {
             tempDb = SQLiteDatabase.openOrCreateDatabase(tempDbFile, null);
