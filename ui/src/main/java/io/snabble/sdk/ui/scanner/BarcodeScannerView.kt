@@ -22,6 +22,9 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.core.TorchState
+import androidx.camera.core.resolutionselector.AspectRatioStrategy
+import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
@@ -149,13 +152,22 @@ open class BarcodeScannerView @JvmOverloads constructor(
 
         val imageSize = Size(IMAGE_WIDTH, IMAGE_HEIGHT)
 
+        val resolutionSelector = ResolutionSelector.Builder()
+            .setResolutionStrategy(
+                ResolutionStrategy(
+                    imageSize,
+                    ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER
+                )
+            )
+            .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY).build()
+
         this.preview = Preview.Builder()
-            .setTargetResolution(imageSize)
+            .setResolutionSelector(resolutionSelector)
             .setTargetRotation(rotation)
             .build()
 
         val imageAnalyzer = ImageAnalysis.Builder()
-            .setTargetResolution(imageSize)
+            .setResolutionSelector(resolutionSelector)
             .setTargetRotation(rotation)
             .setImageQueueDepth(1)
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
