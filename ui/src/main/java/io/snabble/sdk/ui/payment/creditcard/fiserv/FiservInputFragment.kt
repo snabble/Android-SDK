@@ -28,10 +28,10 @@ open class FiservInputFragment : Fragment() {
 
         paymentMethod =
             arguments?.serializableExtra<String>(FiservInputView.ARG_PAYMENT_TYPE)
-                ?: kotlin.run { activity?.onBackPressed(); return }
+                ?: kotlin.run { activity?.onBackPressedDispatcher?.onBackPressed(); return }
 
         projectId = arguments?.serializableExtra<String>(FiservInputView.ARG_PROJECT_ID)
-            ?: kotlin.run { activity?.onBackPressed(); return }
+            ?: kotlin.run { activity?.onBackPressedDispatcher?.onBackPressed(); return }
 
         (requireActivity() as? AppCompatActivity)?.supportActionBar?.title =
             PaymentMethodMetaDataHelper(requireContext()).labelFor(PaymentMethod.valueOf(paymentMethod))
@@ -43,7 +43,7 @@ open class FiservInputFragment : Fragment() {
                 FiservScreen(
                     projectId = projectId,
                     paymentMethod = PaymentMethod.valueOf(paymentMethod),
-                    onBackNavigationClick = { activity?.onBackPressed() }
+                    onBackNavigationClick = { activity?.onBackPressedDispatcher?.onBackPressed(); }
                 )
             }
         }

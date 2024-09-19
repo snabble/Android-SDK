@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -68,6 +69,13 @@ class CheckoutActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        onBackPressedDispatcher.addCallback(this) {
+            if (checkout?.state?.value == CheckoutState.PAYMENT_APPROVED) {
+                checkout?.reset()
+                finish()
+            }
+        }
+
         if (Snabble.initializationState.value != InitializationState.INITIALIZED) {
             Snabble.setup(application)
         }
@@ -114,6 +122,7 @@ class CheckoutActivity : FragmentActivity() {
                         navController.graph = navGraph
                     }
                 }
+
                 InitializationState.UNINITIALIZED,
                 InitializationState.INITIALIZING,
                 null -> Unit // ignore
@@ -146,9 +155,11 @@ class CheckoutActivity : FragmentActivity() {
             CheckoutState.WAIT_FOR_GATEKEEPER -> {
                 R.id.snabble_nav_routing_gatekeeper
             }
+
             CheckoutState.WAIT_FOR_SUPERVISOR -> {
                 R.id.snabble_nav_routing_supervisor
             }
+
             CheckoutState.WAIT_FOR_APPROVAL -> {
                 val selectedPaymentMethod = checkout.selectedPaymentMethod
                 selectedPaymentMethod?.let {
@@ -156,19 +167,23 @@ class CheckoutActivity : FragmentActivity() {
                         PaymentMethod.CUSTOMERCARD_POS -> {
                             R.id.snabble_nav_checkout_customercard
                         }
+
                         PaymentMethod.QRCODE_POS -> {
                             R.id.snabble_nav_checkout_pos
                         }
+
                         else -> {
                             R.id.snabble_nav_payment_status
                         }
                     }
                 }
             }
+
             CheckoutState.PAYMENT_ABORTED -> {
                 finish()
                 null
             }
+
             CheckoutState.PAYMENT_ABORT_FAILED -> {
                 AlertDialog.Builder(this)
                     .setTitle(R.string.Snabble_Payment_CancelError_title)
@@ -181,13 +196,16 @@ class CheckoutActivity : FragmentActivity() {
                     .show()
                 null
             }
+
             CheckoutState.PAYMENT_APPROVED -> {
                 R.id.snabble_nav_payment_status
             }
+
             CheckoutState.NONE -> {
                 finish()
                 null
             }
+
             CheckoutState.PAYONE_SEPA_MANDATE_REQUIRED -> {
                 R.id.snabble_nav_payment_payone_sepa_mandate
             }
@@ -228,14 +246,6 @@ class CheckoutActivity : FragmentActivity() {
             }
 
             windowInsets.inset(insets.left, insets.top, insets.right, insets.bottom)
-        }
-    }
-
-    override fun onBackPressed() {
-        // prevent user from backing out while checkout is in progress
-        if (checkout?.state?.value == CheckoutState.PAYMENT_APPROVED) {
-            checkout?.reset()
-            finish()
         }
     }
 
