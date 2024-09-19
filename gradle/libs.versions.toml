@@ -31,7 +31,7 @@ androidx-camera-extension = { module = "androidx.camera:camera-extensions", vers
 androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "androidx-camera" }
 androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "androidx-camera" }
 androidx-cardview = "androidx.cardview:cardview:1.0.0"
-androidx-core-ktx = "androidx.core:core-ktx:1.9.0"
+androidx-core-ktx = "androidx.core:core-ktx:1.13.1"
 androidx-constraintlayout = "androidx.constraintlayout:constraintlayout:2.1.4"
 androidx-constraintlayoutCompose = "androidx.constraintlayout:constraintlayout-compose:1.0.1"
 # Compose previews won't work w/o this: https://issuetracker.google.com/issues/227767363

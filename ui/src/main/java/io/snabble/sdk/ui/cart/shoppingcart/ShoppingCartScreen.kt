@@ -67,7 +67,7 @@ private fun ShoppingCartScreen(
             when (cartItem) {
                 is ProductItem -> {
                     DeletableProduct(
-                        modifier = Modifier.animateItemPlacement(),
+                        modifier = Modifier.animateItem(),
                         item = cartItem,
                         onItemDeleted = { onItemDeleted(cartItem.item) },
                         onQuantityChanged = { quantity ->
