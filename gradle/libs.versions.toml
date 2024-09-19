@@ -46,7 +46,7 @@ androidx-lifecycle-process = {module = "androidx.lifecycle:lifecycle-process", v
 androidx-lifecycleRuntimeKtx = {module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "android-lifecycle"}
 androidx-lifecycleRuntimeCompose = {module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "android-lifecycle"}
 androidx-lifecycleViewmodelCompose = {module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "android-lifecycle"}
-android-material = "com.google.android.material:material:1.9.0"
+android-material = "com.google.android.material:material:1.12.0"
 androidx-navigation-fragmentKtx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigation" }
 androidx-navigation-runtimeKtx = { module = "androidx.navigation:navigation-runtime-ktx", version.ref = "navigation" }
 androidx-navigation-uiKtx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigation" }
