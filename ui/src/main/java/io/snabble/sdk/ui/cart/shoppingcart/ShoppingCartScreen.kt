@@ -51,7 +51,6 @@ fun ShoppingCartScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ShoppingCartScreen(
     uiState: UiState,
