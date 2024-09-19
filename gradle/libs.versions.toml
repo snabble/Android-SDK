@@ -9,7 +9,7 @@ okhttpVersion = "4.10.0"
 kotlin = "2.0.20"
 # @pin always, manually updated to ensure overall dependency support
 compose-compiler = "1.5.11"
-navigation = "2.6.0"
+navigation = "2.8.1"
 # @pin
 compose_version = "1.2.1"
 snabbleSdk = "0.69.6"
