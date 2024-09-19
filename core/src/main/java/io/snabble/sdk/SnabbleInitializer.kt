@@ -14,6 +14,7 @@ import java.util.Properties
  * Initializer for the snabble SDK using androidx.startup
  */
 class SnabbleInitializer : Initializer<Snabble> {
+
     override fun create(context: Context): Snabble {
         val app = context.applicationContext as Application
 
@@ -35,24 +36,30 @@ class SnabbleInitializer : Initializer<Snabble> {
                     }
                 }
                 bundledMetadataAssetPath = assetPath
-                bundledMetadataRawResId = context.resources.getIdentifier("snabble_${env}_metadata", "raw", app.packageName)
+                bundledMetadataRawResId =
+                    context.resources.getIdentifier("snabble_${env}_metadata", "raw", app.packageName)
                 generateSearchIndex = properties.getBoolean("generateSearchIndex", generateSearchIndex)
                 maxProductDatabaseAge = properties.getLong("maxProductDatabaseAge", maxProductDatabaseAge)
                 maxShoppingCartAge = properties.getLong("maxShoppingCartAge", maxShoppingCartAge)
-                disableCertificatePinning = properties.getBoolean("disableCertificatePinning", disableCertificatePinning)
-                vibrateToConfirmCartFilled = properties.getBoolean("vibrateToConfirmCartFilled", vibrateToConfirmCartFilled)
+                disableCertificatePinning =
+                    properties.getBoolean("disableCertificatePinning", disableCertificatePinning)
+                vibrateToConfirmCartFilled =
+                    properties.getBoolean("vibrateToConfirmCartFilled", vibrateToConfirmCartFilled)
                 loadActiveShops = properties.getBoolean("loadActiveShops", loadActiveShops)
                 checkInRadius = properties.getFloat("checkInRadius", checkInRadius)
                 checkOutRadius = properties.getFloat("checkOutRadius", checkOutRadius)
                 lastSeenThreshold = properties.getLong("lastSeenThreshold", lastSeenThreshold)
                 networkInterceptor =
                     try {
-                        Class.forName(properties.getProperty("networkInterceptor", null))?.newInstance() as Interceptor?
+                        Class.forName(properties.getProperty("networkInterceptor", null))
+                            ?.getDeclaredConstructor()
+                            ?.newInstance() as Interceptor?
                     } catch (e: Throwable) {
                         Logger.w("Could not instantiate network interceptor", e.message)
                         null
                     }
-                manualProductDatabaseUpdates = properties.getBoolean("manualProductDatabaseUpdates", manualProductDatabaseUpdates)
+                manualProductDatabaseUpdates =
+                    properties.getBoolean("manualProductDatabaseUpdates", manualProductDatabaseUpdates)
             }
 
             if (config.appId == null || config.secret == null) {
@@ -79,24 +86,30 @@ class SnabbleInitializer : Initializer<Snabble> {
                 maxProductDatabaseAge = getLong("snabble_max_product_database_age", maxProductDatabaseAge)
                 maxShoppingCartAge = getLong("snabble_max_shopping_cart_age", maxShoppingCartAge)
                 disableCertificatePinning = getBoolean("snabble_disable_certificate_pinning")
-                vibrateToConfirmCartFilled = getBoolean("snabble_vibrate_to_confirm_cart_filled", vibrateToConfirmCartFilled)
+                vibrateToConfirmCartFilled =
+                    getBoolean("snabble_vibrate_to_confirm_cart_filled", vibrateToConfirmCartFilled)
                 loadActiveShops = getBoolean("snabble_load_active_shops", loadActiveShops)
                 checkInRadius = getFloat("snabble_check_in_radius", checkInRadius)
                 checkOutRadius = getFloat("snabble_check_out_radius", checkOutRadius)
                 lastSeenThreshold = getLong("snabble_last_seen_threshold", lastSeenThreshold)
                 networkInterceptor =
                     try {
-                        Class.forName(getString("snabble_network_interceptor", null))?.newInstance() as Interceptor?
+                        Class.forName(getString("snabble_network_interceptor", null))
+                            ?.getDeclaredConstructor()
+                            ?.newInstance() as Interceptor?
                     } catch (e: Throwable) {
                         Logger.w("Could not instantiate network interceptor", e.message)
                         null
                     }
-                manualProductDatabaseUpdates = getBoolean("snabble_manual_product_database_updates", manualProductDatabaseUpdates)
+                manualProductDatabaseUpdates =
+                    getBoolean("snabble_manual_product_database_updates", manualProductDatabaseUpdates)
             }
 
             if (config.appId == null || config.secret == null) {
-                Logger.w("To initialize the SDK either set 'snabble_app_id' and 'snabble_secret' or use Snabble.setup. " +
-                        "To disable this warning set 'snabble_auto_initialization_disabled' to true.")
+                Logger.w(
+                    "To initialize the SDK either set 'snabble_app_id' and 'snabble_secret' or use Snabble.setup. " +
+                            "To disable this warning set 'snabble_auto_initialization_disabled' to true."
+                )
             } else {
                 Snabble.setup(app, config)
             }
