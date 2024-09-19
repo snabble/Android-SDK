@@ -46,7 +46,7 @@ object ReceiptManager {
             val json = sharedPreferences.getString(KEY_RECEIPTS, null)
             if (json != null) {
                 val typeToken: TypeToken<List<ReceiptInfo>> = object : TypeToken<List<ReceiptInfo>>() {}
-                val newReceiptInfo = GsonHolder.get().fromJson<List<ReceiptInfo>>(json, typeToken.type)
+                val newReceiptInfo: List<ReceiptInfo> = GsonHolder.get().fromJson<List<ReceiptInfo>>(json, typeToken.type) ?: emptyList()
                 receiptInfo.postValue(newReceiptInfo)
             } else {
                 receiptInfo.postValue(ArrayList())
