@@ -6,6 +6,7 @@ import java.net.URI
     alias(libs.plugins.benManesVersions)
     alias(libs.plugins.versionCatalogUpdate)
     alias(libs.plugins.dokka)
+    alias(libs.plugins.compose.compiler) apply false
     id("maven-publish")
 }
 

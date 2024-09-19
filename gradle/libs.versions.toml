@@ -6,7 +6,7 @@ gradlePlugin = "8.6.1"
 desugarVersion = "1.1.5"
 okhttpVersion = "4.10.0"
 # @pin always, manually updated to ensure overall dependency support
-kotlin = "1.9.23"
+kotlin = "2.0.20"
 # @pin always, manually updated to ensure overall dependency support
 compose-compiler = "1.5.11"
 navigation = "2.6.0"
@@ -165,3 +165,4 @@ snabbleSetup = "io.snabble.setup:1.0.1"
 unmock = "de.mobilej.unmock:0.7.9"
 benManesVersions = "com.github.ben-manes.versions:0.47.0"
 versionCatalogUpdate = "nl.littlerobots.version-catalog-update:0.8.0"
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
