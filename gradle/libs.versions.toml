@@ -18,7 +18,7 @@ androidx-compose-ui = "1.7.2"
 com-squareup-okhttp3 = "4.11.0"
 io-kotest = "5.6.2"
 org-jetbrains-dokka = "1.8.20"
-androidx-compose-material = "1.4.3"
+androidx-compose-material = "1.7.2"
 
 [libraries]
 airbnb-lottie = "com.airbnb.android:lottie:6.0.1"

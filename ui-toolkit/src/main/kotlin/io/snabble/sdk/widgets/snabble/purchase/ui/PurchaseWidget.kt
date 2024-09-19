@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material.ripple
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -115,7 +115,7 @@ fun Purchases(
                 .padding(PaddingValues(horizontal = model.padding.start.dp + MaterialTheme.padding.small))
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
-                    indication = rememberRipple(
+                    indication = ripple(
                         bounded = false,
                         color = MaterialTheme.colorScheme.primary
                     ),
