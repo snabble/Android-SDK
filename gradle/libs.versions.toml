@@ -109,9 +109,9 @@ roboletric-androidAll = "org.robolectric:android-all:13-robolectric-9030017"
 # @pin
 sebaslogen-resaca = "com.github.sebaslogen.resaca:resaca:2.3.3"
 squareup-okhttp3-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "com-squareup-okhttp3" }
-test-espressoCore = "androidx.test.espresso:espresso-core:3.5.1"
-test-ext-junit = "androidx.test.ext:junit:1.1.5"
-test-runner = "androidx.test:runner:1.5.2"
+test-espressoCore = "androidx.test.espresso:espresso-core:3.6.1"
+test-ext-junit = "androidx.test.ext:junit:1.2.1"
+test-runner = "androidx.test:runner:1.6.2"
 # Classpath dependencies
 classpath-androidGradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "gradlePlugin" }
 classpath-kotlinAndroidPlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
