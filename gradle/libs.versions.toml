@@ -70,7 +70,7 @@ compose-uiTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "
 compose-uiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "androidx-compose-ui" }
 compose-uiUtil = { module = "androidx.compose.ui:ui-util", version.ref = "androidx-compose-ui" }
 compose-uiViewBinding = { module = "androidx.compose.ui:ui-viewbinding", version.ref = "androidx-compose-ui" }
-commonsIo = "commons-io:commons-io:2.5"
+commonsIo = "commons-io:commons-io:2.16.1"
 datatrans-androidSdk = "ch.datatrans:android-sdk:3.2.0"
 desugarJdkLibsNio = "com.android.tools:desugar_jdk_libs_nio:2.0.4"
 glide-compose = "com.github.bumptech.glide:compose:1.0.0-beta01"
