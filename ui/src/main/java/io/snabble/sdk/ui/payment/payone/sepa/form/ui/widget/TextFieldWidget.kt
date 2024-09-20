@@ -3,7 +3,6 @@ package io.snabble.sdk.ui.payment.payone.sepa.form.ui.widget
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -27,7 +26,6 @@ fun TextFieldWidget(
     enabled: Boolean = true,
     canSend: Boolean = false,
 ) {
-    @OptIn(ExperimentalMaterial3Api::class)
     OutlinedTextField(
         value = value,
         onValueChange = { input ->
