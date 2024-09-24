@@ -40,7 +40,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-open class BarcodeScannerView @JvmOverloads constructor(
+class BarcodeScannerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
@@ -154,12 +154,10 @@ open class BarcodeScannerView @JvmOverloads constructor(
 
         val resolutionSelector = ResolutionSelector.Builder()
             .setResolutionStrategy(
-                ResolutionStrategy(
-                    imageSize,
-                    ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER
-                )
+                ResolutionStrategy(imageSize, ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER)
             )
-            .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY).build()
+            .setAspectRatioStrategy(AspectRatioStrategy.RATIO_16_9_FALLBACK_AUTO_STRATEGY)
+            .build()
 
         this.preview = Preview.Builder()
             .setResolutionSelector(resolutionSelector)
