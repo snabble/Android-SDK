@@ -3,7 +3,7 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import java.net.URI
 import java.util.Locale
 
-@Suppress("DSL_SCOPE_VIOLATION") plugins {
+plugins {
     alias(libs.plugins.benManesVersions)
     alias(libs.plugins.versionCatalogUpdate)
     alias(libs.plugins.dokka)

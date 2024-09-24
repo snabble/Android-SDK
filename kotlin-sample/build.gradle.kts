@@ -1,6 +1,4 @@
-@file:Suppress("UnstableApiUsage")
-
-@Suppress("DSL_SCOPE_VIOLATION") plugins {
+plugins {
     id(libs.plugins.androidApplication.get().pluginId)
     id(libs.plugins.kotlin.android.get().pluginId)
     alias(libs.plugins.snabbleSetup)
