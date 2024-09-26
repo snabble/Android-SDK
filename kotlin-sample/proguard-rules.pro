@@ -22,7 +22,3 @@
 -dontwarn com.klarna.**
 -keep,allowobfuscation,allowshrinking class com.google.gson.reflect.TypeToken
 -keep,allowobfuscation,allowshrinking class * extends com.google.gson.reflect.TypeToken
-
-# The sample app cannot be built as release variant if these warning are not ignored
--dontwarn org.koin.androidx.compose.ViewModelInternalsKt
--dontwarn org.koin.androidx.viewmodel.GetViewModelKt

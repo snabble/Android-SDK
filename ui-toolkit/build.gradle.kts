@@ -103,5 +103,5 @@ dependencies {
 
     testImplementation(libs.kotest.assertionsCore)
     testImplementation(libs.kotest.runnerJunit)
-    testImplementation(libs.mock)
+    testImplementation(libs.mockk)
 }

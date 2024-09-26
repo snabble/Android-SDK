@@ -190,12 +190,14 @@ class GooglePayHelper(
     /**
      * Starts a payment data request to google pay
      */
+    @SuppressWarnings("deprecation")
     fun loadPaymentData(priceToPay: String, activity: Activity, requestCode: Int): Boolean {
         val paymentDataRequestJson = getPaymentDataRequest(priceToPay)
 
         val request = PaymentDataRequest.fromJson(GsonHolder.get().toJson(paymentDataRequestJson))
         val googlePayClient = googlePayClient
         val task = googlePayClient.loadPaymentData(request)
+        // TODO: https://github.com/Adyen/adyen-android/issues/771#issuecomment-1640221564
         AutoResolveHelper.resolveTask(task, activity, requestCode)
         return true
     }

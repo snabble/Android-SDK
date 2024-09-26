@@ -106,7 +106,7 @@ dependencies {
 
     testImplementation(libs.kotest.assertionsCore)
     testImplementation(libs.kotest.runnerJunit)
-    testImplementation(libs.mock)
+    testImplementation(libs.mockk)
     androidTestImplementation(libs.test.espressoCore)
     androidTestImplementation(libs.test.runner)
 }
