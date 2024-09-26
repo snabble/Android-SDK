@@ -1,9 +1,8 @@
-@file:Suppress("UnstableApiUsage")
-
-@Suppress("DSL_SCOPE_VIOLATION") plugins {
+plugins {
     id(libs.plugins.androidApplication.get().pluginId)
     id(libs.plugins.kotlin.android.get().pluginId)
     alias(libs.plugins.snabbleSetup)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -44,14 +43,8 @@ android {
         jvmTarget = "17"
     }
 
-
     buildFeatures {
         buildConfig = true
-        compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 }
 

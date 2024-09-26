@@ -207,7 +207,7 @@ object InterceptorSerializer : JsonSerializer<Interceptor?>, JsonDeserializer<In
         val cls = json?.asString
         return if (cls != null) {
             val clazz = Class.forName(cls)
-            clazz.newInstance() as Interceptor
+            clazz.getDeclaredConstructor().newInstance() as Interceptor
         } else {
             null
         }

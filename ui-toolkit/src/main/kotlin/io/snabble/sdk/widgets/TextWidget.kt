@@ -7,9 +7,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Text
-import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material.ripple
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -28,13 +28,13 @@ fun TextWidget(
     model: TextItem,
     modifier: Modifier = Modifier,
     onAction: OnDynamicAction,
-    indication: Indication? = rememberRipple(),
+    indication: Indication? = ripple(),
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(
-                interactionSource = remember { MutableInteractionSource()  },
+                interactionSource = remember { MutableInteractionSource() },
                 indication = indication,
             ) {
                 onAction(DynamicAction(model))

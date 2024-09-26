@@ -5,8 +5,8 @@ import io.snabble.sdk.widgets.snabble.locationpermission.usecases.HasLocationPer
 import io.snabble.sdk.widgets.snabble.locationpermission.usecases.UpdateCheckInManagerUseCase
 import io.snabble.sdk.widgets.snabble.locationpermission.usecases.UpdateCheckInManagerUseCaseImpl
 import io.snabble.sdk.widgets.snabble.locationpermission.viewmodel.LocationPermissionViewModel
-import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 

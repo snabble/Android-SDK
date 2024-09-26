@@ -5,11 +5,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,7 +26,6 @@ fun IbanFieldWidget(
     onIbanChange: (String) -> Unit,
     focusManager: FocusManager? = null,
 ) {
-    @OptIn(ExperimentalMaterial3Api::class)
     Row(
         modifier = Modifier
             .fillMaxWidth(),
@@ -41,7 +39,7 @@ fun IbanFieldWidget(
             readOnly = true,
             textStyle = MaterialTheme.typography.bodyLarge,
             enabled = false,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
+            colors = OutlinedTextFieldDefaults.colors(
                 disabledLabelColor = MaterialTheme.colorScheme.onSurface,
                 disabledTextColor = MaterialTheme.colorScheme.onSurface,
             ),

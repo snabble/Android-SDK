@@ -1,11 +1,12 @@
 @file:Suppress("UnstableApiUsage")
 
-@Suppress("DSL_SCOPE_VIOLATION") plugins {
+plugins {
     id(libs.plugins.androidLibrary.get().pluginId)
     id(libs.plugins.kotlin.android.get().pluginId)
     id(libs.plugins.dokka.get().pluginId)
     id(libs.plugins.kotlin.parcelize.get().pluginId)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.compose.compiler)
 }
 
 apply {
@@ -21,9 +22,11 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
-        @Suppress("Deprecation")
-        targetSdk = libs.versions.targetSdk.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    lint {
+        targetSdk = libs.versions.targetSdk.get().toInt()
     }
 
     buildTypes {
@@ -59,11 +62,6 @@ android {
 
     buildFeatures {
         buildConfig = true
-        compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 
     lint {
@@ -105,5 +103,5 @@ dependencies {
 
     testImplementation(libs.kotest.assertionsCore)
     testImplementation(libs.kotest.runnerJunit)
-    testImplementation(libs.mock)
+    testImplementation(libs.mockk)
 }

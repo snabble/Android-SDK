@@ -34,7 +34,7 @@ open class DatatransFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         paymentMethod = arguments?.serializableExtra<PaymentMethod>(ARG_PAYMENT_TYPE)
-            ?: kotlin.run { activity?.onBackPressed(); return }
+            ?: kotlin.run { activity?.onBackPressedDispatcher?.onBackPressed(); return }
 
         (requireActivity() as? AppCompatActivity)?.supportActionBar?.title =
             PaymentMethodMetaDataHelper(requireContext()).labelFor(paymentMethod)
@@ -52,7 +52,7 @@ open class DatatransFragment : Fragment() {
                         onSendAction = { viewModel.sendUserData(it) },
                         showError = uiState.showError,
                         countryItems = uiState.countryItems,
-                        onBackNavigationClick = { activity?.onBackPressed() }
+                        onBackNavigationClick = { activity?.onBackPressedDispatcher?.onBackPressed() }
                     )
                 }
             }
@@ -98,12 +98,12 @@ open class DatatransFragment : Fragment() {
                                         .makeText(activity, R.string.Snabble_SEPA_encryptionError, Toast.LENGTH_LONG)
                                         .show()
 
-                                    activity?.onBackPressed()
+                                    activity?.onBackPressedDispatcher?.onBackPressed()
                                 }
                             })
                         }
 
-                        Event.Finish -> activity?.onBackPressed()
+                        Event.Finish -> activity?.onBackPressedDispatcher?.onBackPressed()
                     }
                 }
         }

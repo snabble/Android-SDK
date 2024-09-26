@@ -14,6 +14,7 @@ import java.util.Properties
  * Initializer for the snabble SDK using androidx.startup
  */
 class SnabbleInitializer : Initializer<Snabble> {
+
     override fun create(context: Context): Snabble {
         val app = context.applicationContext as Application
 
@@ -47,7 +48,9 @@ class SnabbleInitializer : Initializer<Snabble> {
                 lastSeenThreshold = properties.getLong("lastSeenThreshold", lastSeenThreshold)
                 networkInterceptor =
                     try {
-                        Class.forName(properties.getProperty("networkInterceptor", null))?.newInstance() as Interceptor?
+                        Class.forName(properties.getProperty("networkInterceptor", null))
+                            ?.getDeclaredConstructor()
+                            ?.newInstance() as Interceptor?
                     } catch (e: Throwable) {
                         Logger.w("Could not instantiate network interceptor", e.message)
                         null
@@ -86,7 +89,9 @@ class SnabbleInitializer : Initializer<Snabble> {
                 lastSeenThreshold = getLong("snabble_last_seen_threshold", lastSeenThreshold)
                 networkInterceptor =
                     try {
-                        Class.forName(getString("snabble_network_interceptor", null))?.newInstance() as Interceptor?
+                        Class.forName(getString("snabble_network_interceptor", null))
+                            ?.getDeclaredConstructor()
+                            ?.newInstance() as Interceptor?
                     } catch (e: Throwable) {
                         Logger.w("Could not instantiate network interceptor", e.message)
                         null

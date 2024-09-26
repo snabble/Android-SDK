@@ -1,6 +1,5 @@
 package io.snabble.sdk.ui.cart.shoppingcart
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -51,7 +50,6 @@ fun ShoppingCartScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ShoppingCartScreen(
     uiState: UiState,
@@ -67,7 +65,7 @@ private fun ShoppingCartScreen(
             when (cartItem) {
                 is ProductItem -> {
                     DeletableProduct(
-                        modifier = Modifier.animateItemPlacement(),
+                        modifier = Modifier.animateItem(),
                         item = cartItem,
                         onItemDeleted = { onItemDeleted(cartItem.item) },
                         onQuantityChanged = { quantity ->

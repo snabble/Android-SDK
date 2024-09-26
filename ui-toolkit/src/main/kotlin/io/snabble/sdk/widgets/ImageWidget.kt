@@ -7,7 +7,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -28,7 +28,7 @@ fun ImageWidget(
     model: ImageItem,
     contentScale: ContentScale = ContentScale.Fit,
     onAction: OnDynamicAction,
-    indication: Indication? = rememberRipple(),
+    indication: Indication? = ripple(),
 ) {
     Column(
         modifier = Modifier
@@ -41,7 +41,7 @@ fun ImageWidget(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(
-                        interactionSource = remember { MutableInteractionSource()  },
+                        interactionSource = remember { MutableInteractionSource() },
                         indication = indication,
                     ) { onAction(DynamicAction(model)) }
                     .then(modifier),

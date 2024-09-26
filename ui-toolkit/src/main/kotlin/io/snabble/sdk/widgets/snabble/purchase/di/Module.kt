@@ -7,8 +7,8 @@ import io.snabble.sdk.widgets.snabble.purchase.repository.PurchasesRepositoryImp
 import io.snabble.sdk.widgets.snabble.purchase.usecases.GetPurchasesUseCase
 import io.snabble.sdk.widgets.snabble.purchase.usecases.GetPurchasesUseCaseImpl
 import io.snabble.sdk.widgets.snabble.purchase.viewmodel.PurchaseViewModel
-import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 

@@ -182,7 +182,7 @@ private fun ShoppingCartTextField(
                 else -> contentPaddingWithLabel()
             }
         ) {
-            OutlinedTextFieldDefaults.ContainerBox(
+            OutlinedTextFieldDefaults.Container(
                 enabled = true,
                 isError = false,
                 interactionSource = interactionSource,
