@@ -1,9 +1,11 @@
 <!doctype html>
-<html>
+<html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>io.snabble.sdk.ui.utils</title>
-<link href="../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../";</script>    <script>const storage = localStorage.getItem("dokka-dark-mode")
+<link href="../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
     if (storage == null) {
         const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
         if (osDarkSchemePreferred === true) {
@@ -16,12 +18,13 @@
         }
     }
     </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
 <script type="text/javascript" src="../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../styles/style.css" rel="Stylesheet">
-<link href="../../styles/jetbrains-mono.css" rel="Stylesheet">
 <link href="../../styles/main.css" rel="Stylesheet">
 <link href="../../styles/prism.css" rel="Stylesheet">
 <link href="../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../styles/font-jb-sans-auto.css" rel="Stylesheet">
 <script type="text/javascript" src="../../scripts/clipboard.js" async></script>
 <script type="text/javascript" src="../../scripts/navigation-loader.js" async></script>
 <script type="text/javascript" src="../../scripts/platform-content-handler.js" async></script>
@@ -29,26 +32,32 @@
 <script type="text/javascript" src="../../scripts/prism.js" async></script>
 <script type="text/javascript" src="../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
 <body>
-<div class="navigation-wrapper" id="navigation-wrapper">
-    <div id="leftToggler"><span class="icon-toggler"></span></div>
-    <div class="library-name">
-<a href="../../index.html">
-<span>snabble Android SDK API Documentation</span>            </a>    </div>
-    <div>
-    </div>
-    <div class="pull-right d-flex">
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../index.html">
+                            snabble Android SDK API Documentation
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
         <div class="filter-section" id="filter-section">
                 <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":ui:dokkaHtmlPartial/release">androidJvm</button>
         </div>
-        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
-        <div id="searchBar"></div>
     </div>
-</div>
-<div id="container">
-    <div id="leftColumn">
-        <div id="sideMenu"></div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
     </div>
-    <div id="main">
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
 <div class="main-content" data-page-type="package" id="content" pageids="ui::io.snabble.sdk.ui.utils////PointingToDeclaration//-587146753">
   <div class="breadcrumbs"><a href="../index.html">ui</a><span class="delimiter">/</span><span class="current">io.snabble.sdk.ui.utils</span></div>
   <div class="cover ">
@@ -229,7 +238,7 @@
       <div data-togglable="EXTENSION_PROPERTY">
         <h2 class="">Properties</h2>
         <div class="table"><a data-name="-483839518%2FProperties%2F-587146753" anchor-label="behavior" id="-483839518%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_PROPERTY" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="behavior.html"><span><span>behavior</span></span></a></div>
@@ -238,13 +247,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">var </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a><span class="token punctuation">.</span><a href="behavior.html">behavior</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/coordinatorlayout/widget/CoordinatorLayout.Behavior.html">CoordinatorLayout.Behavior</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">?</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a><span class="token punctuation">.</span><a href="behavior.html">behavior</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/coordinatorlayout/widget/CoordinatorLayout.Behavior.html">CoordinatorLayout.Behavior</a><span class="token operator">&lt;</span><span class="token operator">*</span><span class="token operator">&gt;</span><span class="token operator">?</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="-269463325%2FProperties%2F-587146753" anchor-label="dp" id="-269463325%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_PROPERTY" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="dp.html"><span><span>dp</span></span></a></div>
@@ -253,13 +262,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-number/index.html">Number</a><span class="token punctuation">.</span><a href="dp.html">dp</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-number/index.html">Number</a><span class="token punctuation">.</span><a href="dp.html">dp</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="-1885448624%2FProperties%2F-587146753" anchor-label="dpInPx" id="-1885448624%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_PROPERTY" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="dp-in-px.html"><span>dp</span><wbr><span>In</span><wbr><span><span>Px</span></span></a></div>
@@ -268,13 +277,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-number/index.html">Number</a><span class="token punctuation">.</span><a href="dp-in-px.html">dpInPx</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-number/index.html">Number</a><span class="token punctuation">.</span><a href="dp-in-px.html">dpInPx</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="1015506262%2FProperties%2F-587146753" anchor-label="idName" id="1015506262%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_PROPERTY" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="id-name.html"><span>id</span><wbr><span><span>Name</span></span></a></div>
@@ -283,13 +292,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a><span class="token punctuation">.</span><a href="id-name.html">idName</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a><span class="token punctuation">.</span><a href="id-name.html">idName</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="2071147198%2FProperties%2F-587146753" anchor-label="margin" id="2071147198%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_PROPERTY" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="margin.html"><span><span>margin</span></span></a></div>
@@ -298,13 +307,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a><span class="token punctuation">.</span><a href="margin.html">margin</a><span class="token operator">: </span><a href="-sides/index.html">Sides</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a><span class="token punctuation">.</span><a href="margin.html">margin</a><span class="token operator">: </span><a href="-sides/index.html">Sides</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="1823947869%2FProperties%2F-587146753" anchor-label="padding" id="1823947869%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_PROPERTY" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="padding.html"><span><span>padding</span></span></a></div>
@@ -313,13 +322,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a><span class="token punctuation">.</span><a href="padding.html">padding</a><span class="token operator">: </span><a href="-sides/index.html">Sides</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a><span class="token punctuation">.</span><a href="padding.html">padding</a><span class="token operator">: </span><a href="-sides/index.html">Sides</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="179400180%2FProperties%2F-587146753" anchor-label="sp" id="179400180%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_PROPERTY" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="sp.html"><span><span>sp</span></span></a></div>
@@ -328,13 +337,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-number/index.html">Number</a><span class="token punctuation">.</span><a href="sp.html">sp</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-number/index.html">Number</a><span class="token punctuation">.</span><a href="sp.html">sp</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html">Float</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="-75988255%2FProperties%2F-587146753" anchor-label="spInPx" id="-75988255%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_PROPERTY" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="sp-in-px.html"><span>sp</span><wbr><span>In</span><wbr><span><span>Px</span></span></a></div>
@@ -343,13 +352,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-number/index.html">Number</a><span class="token punctuation">.</span><a href="sp-in-px.html">spInPx</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-number/index.html">Number</a><span class="token punctuation">.</span><a href="sp-in-px.html">spInPx</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="1783227349%2FProperties%2F-587146753" anchor-label="vibrator" id="1783227349%2FProperties%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_PROPERTY" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="vibrator.html"><span><span>vibrator</span></span></a></div>
@@ -358,7 +367,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">.</span><a href="vibrator.html">vibrator</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Vibrator.html">Vibrator</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">.</span><a href="vibrator.html">vibrator</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Vibrator.html">Vibrator</a></div></div></div>
                 </div>
               </div>
             </div>
@@ -368,7 +377,7 @@
       <div data-togglable="EXTENSION_FUNCTION">
         <h2 class="">Functions</h2>
         <div class="table"><a data-name="-1748139325%2FFunctions%2F-587146753" anchor-label="bindContentDescription" id="-1748139325%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="bind-content-description.html"><span>bind</span><wbr><span>Content</span><wbr><span><span>Description</span></span></a></div>
@@ -377,13 +386,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/widget/TextView.html">TextView</a><span class="token punctuation">.</span><a href="bind-content-description.html"><span class="token function">bindContentDescription</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">source<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Extension function to bind a LiveData String to the context description of a TextView (or its derived classes like Button)</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/widget/TextView.html">TextView</a><span class="token punctuation">.</span><a href="bind-content-description.html"><span class="token function">bindContentDescription</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">source<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Extension function to bind a LiveData String to the context description of a TextView (or its derived classes like Button)</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="-839060353%2FFunctions%2F-587146753" anchor-label="bindEnabledState" id="-839060353%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="bind-enabled-state.html"><span>bind</span><wbr><span>Enabled</span><wbr><span><span>State</span></span></a></div>
@@ -392,13 +401,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a><span class="token punctuation">.</span><a href="bind-enabled-state.html"><span class="token function">bindEnabledState</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">source<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Extension function to bind a LiveData Boolean to the enabled state of any View.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a><span class="token punctuation">.</span><a href="bind-enabled-state.html"><span class="token function">bindEnabledState</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">source<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Extension function to bind a LiveData Boolean to the enabled state of any View.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="-479821843%2FFunctions%2F-587146753" anchor-label="bindText" id="-479821843%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="bind-text.html"><span>bind</span><wbr><span><span>Text</span></span></a></div>
@@ -407,13 +416,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/widget/TextView.html">TextView</a><span class="token punctuation">.</span><a href="bind-text.html"><span class="token function">bindText</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">source<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Extension function to bind a LiveData String to the text of a TextView (or its derived classes like Button)</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/widget/TextView.html">TextView</a><span class="token punctuation">.</span><a href="bind-text.html"><span class="token function">bindText</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">source<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Extension function to bind a LiveData String to the text of a TextView (or its derived classes like Button)</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="1643481071%2FFunctions%2F-587146753" anchor-label="bindTextOrHide" id="1643481071%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="bind-text-or-hide.html"><span>bind</span><wbr><span>Text</span><wbr><span>Or</span><wbr><span><span>Hide</span></span></a></div>
@@ -422,13 +431,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/widget/TextView.html">TextView</a><span class="token punctuation">.</span><a href="bind-text-or-hide.html"><span class="token function">bindTextOrHide</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">source<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html">CharSequence</a><span class="token operator">?</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Extension function to bind a LiveData String to the text of a TextView (or its derived classes like Button), when the String is null or empty the view will be hidden.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/widget/TextView.html">TextView</a><span class="token punctuation">.</span><a href="bind-text-or-hide.html"><span class="token function">bindTextOrHide</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">source<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html">CharSequence</a><span class="token operator">?</span><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Extension function to bind a LiveData String to the text of a TextView (or its derived classes like Button), when the String is null or empty the view will be hidden.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="2010614973%2FFunctions%2F-587146753" anchor-label="bindVisibility" id="2010614973%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="bind-visibility.html"><span>bind</span><wbr><span><span>Visibility</span></span></a></div>
@@ -437,13 +446,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a><span class="token punctuation">.</span><a href="bind-visibility.html"><span class="token function">bindVisibility</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">source<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Extension function to bind a LiveData Boolean to the visibility of any View.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a><span class="token punctuation">.</span><a href="bind-visibility.html"><span class="token function">bindVisibility</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">source<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Extension function to bind a LiveData Boolean to the visibility of any View.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="-1114357472%2FFunctions%2F-587146753" anchor-label="enableDarkModeCompat" id="-1114357472%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="enable-dark-mode-compat.html"><span>enable</span><wbr><span>Dark</span><wbr><span>Mode</span><wbr><span><span>Compat</span></span></a></div>
@@ -452,13 +461,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/webkit/WebSettings.html">WebSettings</a><span class="token punctuation">.</span><a href="enable-dark-mode-compat.html"><span class="token function">enableDarkModeCompat</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/webkit/WebSettings.html">WebSettings</a><span class="token punctuation">.</span><a href="enable-dark-mode-compat.html"><span class="token function">enableDarkModeCompat</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="-901271674%2FFunctions%2F-587146753" anchor-label="executeUiAction" id="-901271674%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="execute-ui-action.html"><span>execute</span><wbr><span>Ui</span><wbr><span><span>Action</span></span></a></div>
@@ -467,13 +476,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a><span class="token punctuation">.</span><a href="execute-ui-action.html"><span class="token function">executeUiAction</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">event<span class="token operator">: </span><a href="../io.snabble.sdk.ui/-snabble-u-i/-event/index.html">SnabbleUI.Event</a><span class="token punctuation">, </span></span><span class="parameter ">args<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Bundle.html">Bundle</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a><span class="token punctuation">.</span><a href="execute-ui-action.html"><span class="token function">executeUiAction</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">event<span class="token operator">: </span><a href="../io.snabble.sdk.ui/-snabble-u-i/-event/index.html">SnabbleUI.Event</a><span class="token punctuation">, </span></span><span class="parameter ">args<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Bundle.html">Bundle</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="-1821288734%2FFunctions%2F-587146753" anchor-label="getFragmentActivity" id="-1821288734%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="get-fragment-activity.html"><span>get</span><wbr><span>Fragment</span><wbr><span><span>Activity</span></span></a></div>
@@ -482,13 +491,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">.</span><a href="get-fragment-activity.html"><span class="token function">getFragmentActivity</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentActivity.html">FragmentActivity</a><span class="token operator">?</span></div><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a><span class="token punctuation">.</span><a href="get-fragment-activity.html"><span class="token function">getFragmentActivity</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentActivity.html">FragmentActivity</a><span class="token operator">?</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">.</span><a href="get-fragment-activity.html"><span class="token function">getFragmentActivity</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentActivity.html">FragmentActivity</a><span class="token operator">?</span></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a><span class="token punctuation">.</span><a href="get-fragment-activity.html"><span class="token function">getFragmentActivity</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentActivity.html">FragmentActivity</a><span class="token operator">?</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="1915280323%2FFunctions%2F-587146753" anchor-label="getString" id="1915280323%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="get-string.html"><span>get</span><wbr><span><span>String</span></span></a></div>
@@ -497,13 +506,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/RecyclerView.ViewHolder.html">RecyclerView.ViewHolder</a><span class="token punctuation">.</span><a href="get-string.html"><span class="token function">getString</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/StringRes.html"><span class="token annotation builtin">StringRes</span></a>&nbsp;</span>string<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">vararg </span>args<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/RecyclerView.ViewHolder.html">RecyclerView.ViewHolder</a><span class="token punctuation">.</span><a href="get-string.html"><span class="token function">getString</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/StringRes.html"><span class="token annotation builtin">StringRes</span></a>&nbsp;</span>string<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">vararg </span>args<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html">Any</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="-1726374635%2FFunctions%2F-587146753" anchor-label="highlight" id="-1726374635%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="highlight.html"><span><span>highlight</span></span></a></div>
@@ -512,13 +521,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">.</span><a href="highlight.html"><span class="token function">highlight</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">query<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/text/SpannableString.html">SpannableString</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">.</span><a href="highlight.html"><span class="token function">highlight</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">query<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/text/SpannableString.html">SpannableString</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="1130459402%2FFunctions%2F-587146753" anchor-label="inflate" id="1130459402%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="inflate.html"><span><span>inflate</span></span></a></div>
@@ -527,13 +536,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/view/ViewGroup.html">ViewGroup</a><span class="token punctuation">.</span><a href="inflate.html"><span class="token function">inflate</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/LayoutRes.html"><span class="token annotation builtin">LayoutRes</span></a>&nbsp;</span>resource<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">root<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/view/ViewGroup.html">ViewGroup</a><span class="token operator">?</span><span class="token operator"> = </span>this<span class="token punctuation">, </span></span><span class="parameter ">attachToRoot<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/view/ViewGroup.html">ViewGroup</a><span class="token punctuation">.</span><a href="inflate.html"><span class="token function">inflate</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/LayoutRes.html"><span class="token annotation builtin">LayoutRes</span></a>&nbsp;</span>resource<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token punctuation">, </span></span><span class="parameter ">root<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/view/ViewGroup.html">ViewGroup</a><span class="token operator">?</span><span class="token operator"> = </span>this<span class="token punctuation">, </span></span><span class="parameter ">attachToRoot<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="-865569163%2FFunctions%2F-587146753" anchor-label="isNotNullOrBlank" id="-865569163%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="is-not-null-or-blank.html"><span>is</span><wbr><span>Not</span><wbr><span>Null</span><wbr><span>Or</span><wbr><span><span>Blank</span></span></a></div>
@@ -542,13 +551,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html">CharSequence</a><span class="token operator">?</span><span class="token punctuation">.</span><a href="is-not-null-or-blank.html"><span class="token function">isNotNullOrBlank</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html">CharSequence</a><span class="token operator">?</span><span class="token punctuation">.</span><a href="is-not-null-or-blank.html"><span class="token function">isNotNullOrBlank</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="1168328239%2FFunctions%2F-587146753" anchor-label="loadAsset" id="1168328239%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="load-asset.html"><span>load</span><wbr><span><span>Asset</span></span></a></div>
@@ -557,13 +566,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/widget/ImageView.html">ImageView</a><span class="token punctuation">.</span><a href="load-asset.html"><span class="token function">loadAsset</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">assets<span class="token operator">: </span><a href="../../core/io.snabble.sdk/-assets/index.html">Assets</a><span class="token punctuation">, </span></span><span class="parameter ">name<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/widget/ImageView.html">ImageView</a><span class="token punctuation">.</span><a href="load-asset.html"><span class="token function">loadAsset</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">assets<span class="token operator">: </span><a href="../../core/io.snabble.sdk/-assets/index.html">Assets</a><span class="token punctuation">, </span></span><span class="parameter ">name<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="1221924222%2FFunctions%2F-587146753" anchor-label="loadImage" id="1221924222%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="load-image.html"><span>load</span><wbr><span><span>Image</span></span></a></div>
@@ -572,13 +581,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/widget/ImageView.html">ImageView</a><span class="token punctuation">.</span><a href="load-image.html"><span class="token function">loadImage</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">url<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">?</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/widget/ImageView.html">ImageView</a><span class="token punctuation">.</span><a href="load-image.html"><span class="token function">loadImage</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">url<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">?</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="-1393647158%2FFunctions%2F-587146753" anchor-label="observeView" id="-1393647158%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="observe-view.html"><span>observe</span><wbr><span><span>View</span></span></a></div>
@@ -587,13 +596,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="observe-view.html">T</a><span class="token operator">&gt; </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="observe-view.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="observe-view.html"><span class="token function">observeView</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">view<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a><span class="token punctuation">, </span></span><span class="parameter ">observer<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/Observer.html">Observer</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="observe-view.html">T</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="observe-view.html">T</a><span class="token operator">&gt; </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><a href="observe-view.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="observe-view.html"><span class="token function">observeView</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">view<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a><span class="token punctuation">, </span></span><span class="parameter ">observer<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/Observer.html">Observer</a><span class="token operator">&lt;</span><a href="observe-view.html">T</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="699067565%2FFunctions%2F-587146753" anchor-label="parcelableExtra" id="699067565%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="parcelable-extra.html"><span>parcelable</span><wbr><span><span>Extra</span></span></a></div>
@@ -602,13 +611,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="parcelable-extra.html">T</a><span class="token operator"> : </span><a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a><span class="token operator">&gt; </span><a href="https://developer.android.com/reference/kotlin/android/os/Bundle.html">Bundle</a><span class="token punctuation">.</span><a href="parcelable-extra.html"><span class="token function">parcelableExtra</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="parcelable-extra.html">T</a><span class="token operator">?</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="parcelable-extra.html">T</a><span class="token operator"> : </span><a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a><span class="token operator">&gt; </span><a href="https://developer.android.com/reference/kotlin/android/os/Bundle.html">Bundle</a><span class="token punctuation">.</span><a href="parcelable-extra.html"><span class="token function">parcelableExtra</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="parcelable-extra.html">T</a><span class="token operator">?</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="1571152966%2FFunctions%2F-587146753" anchor-label="postWhenChanged" id="1571152966%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="post-when-changed.html"><span>post</span><wbr><span>When</span><wbr><span><span>Changed</span></span></a></div>
@@ -617,13 +626,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="post-when-changed.html">T</a><span class="token operator">&gt; </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/MutableLiveData.html">MutableLiveData</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="post-when-changed.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="post-when-changed.html"><span class="token function">postWhenChanged</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="post-when-changed.html">T</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Post value only when the value has changed to avoid loops, be aware that a pending update is ignored.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="post-when-changed.html">T</a><span class="token operator">&gt; </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/MutableLiveData.html">MutableLiveData</a><span class="token operator">&lt;</span><a href="post-when-changed.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">.</span><a href="post-when-changed.html"><span class="token function">postWhenChanged</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">value<span class="token operator">: </span><a href="post-when-changed.html">T</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Post value only when the value has changed to avoid loops, be aware that a pending update is ignored.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="1030475088%2FFunctions%2F-587146753" anchor-label="readParcelableCompat" id="1030475088%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="read-parcelable-compat.html"><span>read</span><wbr><span>Parcelable</span><wbr><span><span>Compat</span></span></a></div>
@@ -632,13 +641,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="read-parcelable-compat.html">T</a><span class="token operator"> : </span><a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a><span class="token operator">&gt; </span><a href="https://developer.android.com/reference/kotlin/android/os/Parcel.html">Parcel</a><span class="token punctuation">.</span><a href="read-parcelable-compat.html"><span class="token function">readParcelableCompat</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="read-parcelable-compat.html">T</a><span class="token operator">?</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="read-parcelable-compat.html">T</a><span class="token operator"> : </span><a href="https://developer.android.com/reference/kotlin/android/os/Parcelable.html">Parcelable</a><span class="token operator">&gt; </span><a href="https://developer.android.com/reference/kotlin/android/os/Parcel.html">Parcel</a><span class="token punctuation">.</span><a href="read-parcelable-compat.html"><span class="token function">readParcelableCompat</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="read-parcelable-compat.html">T</a><span class="token operator">?</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="-1404160192%2FFunctions%2F-587146753" anchor-label="requireFragmentActivity" id="-1404160192%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="require-fragment-activity.html"><span>require</span><wbr><span>Fragment</span><wbr><span><span>Activity</span></span></a></div>
@@ -647,13 +656,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">.</span><a href="require-fragment-activity.html"><span class="token function">requireFragmentActivity</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentActivity.html">FragmentActivity</a></div><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a><span class="token punctuation">.</span><a href="require-fragment-activity.html"><span class="token function">requireFragmentActivity</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentActivity.html">FragmentActivity</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a><span class="token punctuation">.</span><a href="require-fragment-activity.html"><span class="token function">requireFragmentActivity</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentActivity.html">FragmentActivity</a></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a><span class="token punctuation">.</span><a href="require-fragment-activity.html"><span class="token function">requireFragmentActivity</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/fragment/app/FragmentActivity.html">FragmentActivity</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="937898299%2FFunctions%2F-587146753" anchor-label="resolveImageOrHide" id="937898299%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="resolve-image-or-hide.html"><span>resolve</span><wbr><span>Image</span><wbr><span>Or</span><wbr><span><span>Hide</span></span></a></div>
@@ -662,13 +671,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/widget/ImageView.html">ImageView</a><span class="token punctuation">.</span><a href="resolve-image-or-hide.html"><span class="token function">resolveImageOrHide</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">data<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Resolves the string and loads it into either an <a href="https://developer.android.com/reference/kotlin/android/widget/ImageView.html">ImageView</a> or <a href="https://developer.android.com/reference/kotlin/android/widget/TextView.html">TextView</a> based on the given string. When the <a href="resolve-image-or-hide.html">data</a> matches an http(s) url or a resource id it will be loaded into the <a href="https://developer.android.com/reference/kotlin/android/widget/ImageView.html">ImageView</a>. When the <a href="resolve-image-or-hide.html">data</a> matches a string id can be resolved the localized string will be displayed inside the <a href="https://developer.android.com/reference/kotlin/android/widget/TextView.html">TextView</a> otherwise the plain text will be displayed. When <a href="resolve-image-or-hide.html">data</a> is <code class="lang-kotlin">null</code> the view will be hidden.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/widget/ImageView.html">ImageView</a><span class="token punctuation">.</span><a href="resolve-image-or-hide.html"><span class="token function">resolveImageOrHide</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">data<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Resolves the string and loads it into either an <a href="https://developer.android.com/reference/kotlin/android/widget/ImageView.html">ImageView</a> or <a href="https://developer.android.com/reference/kotlin/android/widget/TextView.html">TextView</a> based on the given string. When the <a href="resolve-image-or-hide.html">data</a> matches an http(s) url or a resource id it will be loaded into the <a href="https://developer.android.com/reference/kotlin/android/widget/ImageView.html">ImageView</a>. When the <a href="resolve-image-or-hide.html">data</a> matches a string id can be resolved the localized string will be displayed inside the <a href="https://developer.android.com/reference/kotlin/android/widget/TextView.html">TextView</a> otherwise the plain text will be displayed. When <a href="resolve-image-or-hide.html">data</a> is <code class="lang-kotlin">null</code> the view will be hidden.</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="126701999%2FFunctions%2F-587146753" anchor-label="serializableExtra" id="126701999%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="serializable-extra.html"><span>serializable</span><wbr><span><span>Extra</span></span></a></div>
@@ -677,13 +686,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="serializable-extra.html">T</a><span class="token operator"> : </span><a href="https://developer.android.com/reference/kotlin/java/io/Serializable.html">Serializable</a><span class="token operator">&gt; </span><a href="https://developer.android.com/reference/kotlin/android/content/Intent.html">Intent</a><span class="token punctuation">.</span><a href="serializable-extra.html"><span class="token function">serializableExtra</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="serializable-extra.html">T</a><span class="token operator">?</span></div><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="serializable-extra.html">T</a><span class="token operator"> : </span><a href="https://developer.android.com/reference/kotlin/java/io/Serializable.html">Serializable</a><span class="token operator">&gt; </span><a href="https://developer.android.com/reference/kotlin/android/os/Bundle.html">Bundle</a><span class="token punctuation">.</span><a href="serializable-extra.html"><span class="token function">serializableExtra</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="serializable-extra.html">T</a><span class="token operator">?</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="serializable-extra.html">T</a><span class="token operator"> : </span><a href="https://developer.android.com/reference/kotlin/java/io/Serializable.html">Serializable</a><span class="token operator">&gt; </span><a href="https://developer.android.com/reference/kotlin/android/content/Intent.html">Intent</a><span class="token punctuation">.</span><a href="serializable-extra.html"><span class="token function">serializableExtra</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="serializable-extra.html">T</a><span class="token operator">?</span></div><div class="symbol monospace"><span class="token keyword">inline </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="serializable-extra.html">T</a><span class="token operator"> : </span><a href="https://developer.android.com/reference/kotlin/java/io/Serializable.html">Serializable</a><span class="token operator">&gt; </span><a href="https://developer.android.com/reference/kotlin/android/os/Bundle.html">Bundle</a><span class="token punctuation">.</span><a href="serializable-extra.html"><span class="token function">serializableExtra</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">key<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="serializable-extra.html">T</a><span class="token operator">?</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="1892831424%2FFunctions%2F-587146753" anchor-label="setBackgroundColor" id="1892831424%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="set-background-color.html"><span>set</span><wbr><span>Background</span><wbr><span><span>Color</span></span></a></div>
@@ -692,13 +701,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><span data-unresolved-link="com.google.android.material.snackbar/Snackbar///PointingToDeclaration/">Snackbar</span><span class="token punctuation">.</span><a href="set-background-color.html"><span class="token function">setBackgroundColor</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/ColorRes.html"><span class="token annotation builtin">ColorRes</span></a>&nbsp;</span>color<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.google.android.material.snackbar/Snackbar///PointingToDeclaration/">Snackbar</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span data-unresolved-link="com.google.android.material.snackbar/Snackbar///PointingToDeclaration/">Snackbar</span><span class="token punctuation">.</span><a href="set-background-color.html"><span class="token function">setBackgroundColor</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/ColorRes.html"><span class="token annotation builtin">ColorRes</span></a>&nbsp;</span>color<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.google.android.material.snackbar/Snackbar///PointingToDeclaration/">Snackbar</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="-1295920583%2FFunctions%2F-587146753" anchor-label="setGravity" id="-1295920583%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="set-gravity.html"><span>set</span><wbr><span><span>Gravity</span></span></a></div>
@@ -707,13 +716,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><span data-unresolved-link="com.google.android.material.snackbar/Snackbar///PointingToDeclaration/">Snackbar</span><span class="token punctuation">.</span><a href="set-gravity.html"><span class="token function">setGravity</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">gravity<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.google.android.material.snackbar/Snackbar///PointingToDeclaration/">Snackbar</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span data-unresolved-link="com.google.android.material.snackbar/Snackbar///PointingToDeclaration/">Snackbar</span><span class="token punctuation">.</span><a href="set-gravity.html"><span class="token function">setGravity</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">gravity<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.google.android.material.snackbar/Snackbar///PointingToDeclaration/">Snackbar</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="-1263561951%2FFunctions%2F-587146753" anchor-label="setImageResourceOrHide" id="-1263561951%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="set-image-resource-or-hide.html"><span>set</span><wbr><span>Image</span><wbr><span>Resource</span><wbr><span>Or</span><wbr><span><span>Hide</span></span></a></div>
@@ -722,13 +731,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/widget/ImageView.html">ImageView</a><span class="token punctuation">.</span><a href="set-image-resource-or-hide.html"><span class="token function">setImageResourceOrHide</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">resId<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/widget/ImageView.html">ImageView</a><span class="token punctuation">.</span><a href="set-image-resource-or-hide.html"><span class="token function">setImageResourceOrHide</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">resId<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="-108313412%2FFunctions%2F-587146753" anchor-label="setOneShotClickListener" id="-108313412%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="set-one-shot-click-listener.html"><span>set</span><wbr><span>One</span><wbr><span>Shot</span><wbr><span>Click</span><wbr><span><span>Listener</span></span></a></div>
@@ -737,13 +746,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a><span class="token punctuation">.</span><a href="set-one-shot-click-listener.html"><span class="token function">setOneShotClickListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">callback<span class="token operator">: </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a><span class="token punctuation">.</span><a href="set-one-shot-click-listener.html"><span class="token function">setOneShotClickListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">callback<span class="token operator">: </span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="-1242747185%2FFunctions%2F-587146753" anchor-label="setPriority" id="-1242747185%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="set-priority.html"><span>set</span><wbr><span><span>Priority</span></span></a></div>
@@ -752,13 +761,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><span data-unresolved-link="com.google.android.material.snackbar/Snackbar///PointingToDeclaration/">Snackbar</span><span class="token punctuation">.</span><a href="set-priority.html"><span class="token function">setPriority</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">level<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.google.android.material.snackbar/Snackbar///PointingToDeclaration/">Snackbar</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><span data-unresolved-link="com.google.android.material.snackbar/Snackbar///PointingToDeclaration/">Snackbar</span><span class="token punctuation">.</span><a href="set-priority.html"><span class="token function">setPriority</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">level<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span data-unresolved-link="com.google.android.material.snackbar/Snackbar///PointingToDeclaration/">Snackbar</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="-570800269%2FFunctions%2F-587146753" anchor-label="setTextOrHide" id="-570800269%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="set-text-or-hide.html"><span>set</span><wbr><span>Text</span><wbr><span>Or</span><wbr><span><span>Hide</span></span></a></div>
@@ -767,13 +776,13 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/widget/TextView.html">TextView</a><span class="token punctuation">.</span><a href="set-text-or-hide.html"><span class="token function">setTextOrHide</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">text<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html">CharSequence</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/widget/TextView.html">TextView</a><span class="token punctuation">.</span><a href="set-text-or-hide.html"><span class="token function">setTextOrHide</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">text<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html">CharSequence</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
           </div>
 <a data-name="-745552633%2FFunctions%2F-587146753" anchor-label="vibrateCompat" id="-745552633%2FFunctions%2F-587146753" data-filterable-set=":ui:dokkaHtmlPartial/release"></a>
-          <div class="table-row" data-togglable="EXTENSION_FUNCTION" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
+          <div class="table-row" data-filterable-current=":ui:dokkaHtmlPartial/release" data-filterable-set=":ui:dokkaHtmlPartial/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="vibrate-compat.html"><span>vibrate</span><wbr><span><span>Compat</span></span></a></div>
@@ -782,7 +791,7 @@
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/os/Vibrator.html">Vibrator</a><span class="token punctuation">.</span><a href="vibrate-compat.html"><span class="token function">vibrateCompat</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">timeInMillis<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":ui:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="https://developer.android.com/reference/kotlin/android/os/Vibrator.html">Vibrator</a><span class="token punctuation">.</span><a href="vibrate-compat.html"><span class="token function">vibrateCompat</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">timeInMillis<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html">Long</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -795,8 +804,9 @@
       <div class="footer">
         <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2024 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
       </div>
+            </div>
+        </div>
     </div>
-</div>
 </body>
 </html>
 
