@@ -7,6 +7,13 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.77.0]
+### Added
+* core/ui: Add a feature to pass payment credentials w/o saving it into storage
+
+## [0.76.0]
+* Maintenance update w/ dependency updates
+
 ## [0.75.8]
 ### Changed
 * ui: Refactor RemoteThemingExtensions
