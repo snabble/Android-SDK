@@ -22,6 +22,7 @@ import androidx.core.view.ViewCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -48,6 +49,7 @@ import okhttp3.Request;
 public class FiservInputView extends RelativeLayout {
     public static final String ARG_PROJECT_ID = "projectId";
     public static final String ARG_PAYMENT_TYPE = "paymentType";
+    public static final String ARG_SAVE_PAYMENT_CREDENTIALS = "savePaymentCredentials";
 
     private boolean acceptedKeyguard;
     private WebView webView;
@@ -74,6 +76,8 @@ public class FiservInputView extends RelativeLayout {
     public FiservInputView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
+
+    private boolean savePaymentCredentials = true;
 
     @SuppressLint({"InlinedApi", "SetJavaScriptEnabled", "AddJavascriptInterface"})
     private void inflateView() {
@@ -200,6 +204,11 @@ public class FiservInputView extends RelativeLayout {
     }
 
     private void authenticateAndSave(final CreditCardInfo creditCardInfo) {
+        if (!savePaymentCredentials) {
+            justEmitCredentials(creditCardInfo);
+            return;
+        }
+
         Keyguard.unlock(UIUtils.getHostFragmentActivity(getContext()), new Keyguard.Callback() {
             @Override
             public void success() {
@@ -218,33 +227,7 @@ public class FiservInputView extends RelativeLayout {
     }
 
     private void save(CreditCardInfo info) {
-        PaymentCredentials.Brand ccBrand;
-
-        switch (info.getBrand()) {
-            case "VISA":
-                ccBrand = PaymentCredentials.Brand.VISA;
-                break;
-            case "MASTERCARD":
-                ccBrand = PaymentCredentials.Brand.MASTERCARD;
-                break;
-            case "AMEX":
-                ccBrand = PaymentCredentials.Brand.AMEX;
-                break;
-            default:
-                ccBrand = PaymentCredentials.Brand.UNKNOWN;
-                break;
-        }
-
-        final PaymentCredentials pc = PaymentCredentials.fromCreditCardData(info.getCardHolder(),
-                ccBrand,
-                projectId,
-                info.getObfuscatedCardNumber(),
-                info.getExpirationMonth(),
-                info.getExpirationYear(),
-                info.getHostedDataId(),
-                info.getSchemeTransactionId(),
-                info.getStoreId());
-
+        final PaymentCredentials pc = createPaymentCredentials(info);
         if (pc == null) {
             Toast.makeText(getContext(), "Could not verify payment credentials", Toast.LENGTH_LONG)
                     .show();
@@ -259,6 +242,43 @@ public class FiservInputView extends RelativeLayout {
         } else {
             acceptedKeyguard = true;
         }
+    }
+
+    private void justEmitCredentials(@NotNull CreditCardInfo info) {
+        final PaymentCredentials credentials = createPaymentCredentials(info);
+        if (credentials == null) {
+            Toast.makeText(getContext(), "Could not verify payment credentials", Toast.LENGTH_LONG).show();
+        } else {
+            Snabble.getInstance().getPaymentCredentialsStore().justEmitCredentials(credentials);
+            deletePreAuth();
+            Telemetry.event(Telemetry.Event.PaymentMethodAdded, credentials.getType().name());
+        }
+
+        if (isShown()) {
+            finish();
+        }
+    }
+
+    @Nullable
+    private PaymentCredentials createPaymentCredentials(@NotNull final CreditCardInfo info) {
+        final PaymentCredentials.Brand ccBrand = switch (info.getBrand()) {
+            case "VISA" -> PaymentCredentials.Brand.VISA;
+            case "MASTERCARD" -> PaymentCredentials.Brand.MASTERCARD;
+            case "AMEX" -> PaymentCredentials.Brand.AMEX;
+            default -> PaymentCredentials.Brand.UNKNOWN;
+        };
+
+        return PaymentCredentials.fromCreditCardData(
+                info.getCardHolder(),
+                ccBrand,
+                projectId,
+                info.getObfuscatedCardNumber(),
+                info.getExpirationMonth(),
+                info.getExpirationYear(),
+                info.getHostedDataId(),
+                info.getSchemeTransactionId(),
+                info.getStoreId()
+        );
     }
 
     private void finish() {
@@ -339,6 +359,10 @@ public class FiservInputView extends RelativeLayout {
                     isActivityResumed = false;
                 }
             };
+
+    public void setSavePaymentCredentials(boolean save) {
+        savePaymentCredentials = save;
+    }
 
     @Keep
     private class JsInterface {

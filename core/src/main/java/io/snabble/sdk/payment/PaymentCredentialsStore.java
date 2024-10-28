@@ -169,6 +169,10 @@ public class PaymentCredentialsStore {
         notifyChanged();
     }
 
+    public synchronized void justEmitCredentials(final PaymentCredentials credentials) {
+        ((MutableCredentialsFlow) PaymentCredentialsFlow.INSTANCE).tryEmitCredentials(credentials);
+    }
+
     /**
      * Remove and persist payment credentials
      */

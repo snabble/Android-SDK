@@ -20,8 +20,14 @@ import io.snabble.sdk.utils.Logger
 
 object PaymentInputViewHelper {
 
+    @JvmOverloads
     @JvmStatic
-    fun openPaymentInputView(context: Context, paymentMethod: PaymentMethod?, projectId: String) {
+    fun openPaymentInputView(
+        context: Context,
+        paymentMethod: PaymentMethod?,
+        projectId: String,
+        saveMethod: Boolean = true
+    ) {
         if (KeyguardUtils.isDeviceSecure()) {
             val project = Snabble.getProjectById(projectId) ?: return
             if (paymentMethod == null) {
@@ -44,11 +50,12 @@ object PaymentInputViewHelper {
                     SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_DATATRANS_INPUT, args)
                 }
 
-                usePayone -> Payone.registerCard(activity, project, paymentMethod, Snabble.formPrefillData)
+                usePayone -> Payone.registerCard(activity, project, paymentMethod, saveMethod, Snabble.formPrefillData)
 
                 useFiserv -> {
                     args.putString(FiservInputView.ARG_PROJECT_ID, projectId)
                     args.putSerializable(FiservInputView.ARG_PAYMENT_TYPE, paymentMethod.name)
+                    args.putBoolean(FiservInputView.ARG_SAVE_PAYMENT_CREDENTIALS, saveMethod)
                     SnabbleUI.executeAction(context, SnabbleUI.Event.SHOW_FISERV_INPUT, args)
                 }
 
