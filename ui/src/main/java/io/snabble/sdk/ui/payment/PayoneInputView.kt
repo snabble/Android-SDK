@@ -78,10 +78,17 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
                         when (it.status) {
                             Payone.AuthStatus.pending -> doLater(1000)
                             Payone.AuthStatus.successful -> {
-                                creditCardInfo?.let { cardInfo ->
+                                val cardInfo = creditCardInfo
+                                if (cardInfo != null) {
                                     cardInfo.userId = it.userID
-                                    authenticateAndSave(cardInfo)
-                                } ?: finishWithError()
+                                    if (savePaymentCredentials) {
+                                        authenticateAndSave(cardInfo)
+                                    } else {
+                                        justEmitCredentials(cardInfo)
+                                    }
+                                } else {
+                                    finishWithError()
+                                }
                             }
                             Payone.AuthStatus.failed -> finishWithError()
                         }
@@ -97,6 +104,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             })
         }
     }
+    private var savePaymentCredentials: Boolean = true
 
     @SuppressLint("InlinedApi", "SetJavaScriptEnabled", "AddJavascriptInterface")
     private fun inflateView() {
@@ -171,11 +179,13 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
     fun load(
         projectId: String,
         paymentType: PaymentMethod,
+        saveCredentials: Boolean,
         tokenizationData: PayoneTokenizationData,
         formPrefillData: FormPrefillData?
     ) {
         this.project = Snabble.projects.first { it.id == projectId }
         this.paymentType = paymentType
+        this.savePaymentCredentials = saveCredentials
         this.tokenizationData = tokenizationData
         this.formPrefillData = formPrefillData
         inflateView()
@@ -301,13 +311,38 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
 
     private fun save(info: CreditCardInfo) {
         creditCardInfo = null
+        val pc: PaymentCredentials? = createPaymentCredentials(info)
+        if (pc == null) {
+            Toast.makeText(context, "Could not verify payment credentials", Toast.LENGTH_LONG)
+                .show()
+        } else {
+            Snabble.paymentCredentialsStore.add(pc)
+            Telemetry.event(Telemetry.Event.PaymentMethodAdded, pc.type?.name)
+        }
+        finish()
+    }
+
+    private fun justEmitCredentials(info: CreditCardInfo) {
+        creditCardInfo = null
+        val credentials: PaymentCredentials? = createPaymentCredentials(info)
+        if (credentials == null) {
+            Toast.makeText(context, "Could not verify payment credentials", Toast.LENGTH_LONG)
+                .show()
+        } else {
+            Snabble.paymentCredentialsStore.justEmitCredentials(credentials)
+            Telemetry.event(Telemetry.Event.PaymentMethodAdded, credentials.type?.name)
+        }
+        finish()
+    }
+
+    private fun createPaymentCredentials(info: CreditCardInfo): PaymentCredentials? {
         val ccBrand = when (info.cardType) {
             "V" -> PaymentCredentials.Brand.VISA
             "M" -> PaymentCredentials.Brand.MASTERCARD
             "A" -> PaymentCredentials.Brand.AMEX
             else -> PaymentCredentials.Brand.UNKNOWN
         }
-        val pc: PaymentCredentials? = PaymentCredentials.fromPayone(
+        return PaymentCredentials.fromPayone(
             info.pseudoCardPan,
             info.truncatedCardPan,
             ccBrand,
@@ -322,14 +357,6 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
             info.userId,
             project.id
         )
-        if (pc == null) {
-            Toast.makeText(context, "Could not verify payment credentials", Toast.LENGTH_LONG)
-                .show()
-        } else {
-            Snabble.paymentCredentialsStore.add(pc)
-            Telemetry.event(Telemetry.Event.PaymentMethodAdded, pc.type?.name)
-        }
-        finish()
     }
 
     private fun finish() {
@@ -476,6 +503,7 @@ class PayoneInputView @JvmOverloads constructor(context: Context, attrs: Attribu
         const val ARG_PROJECT_ID = "projectId"
         const val ARG_PAYMENT_TYPE = "paymentType"
         const val ARG_TOKEN_DATA = "tokenData"
+        const val ARG_SAVE_PAYMENT_CREDENTIALS = "savePaymentCredentials"
         const val ARG_FORM_PREFILL_DATA = "formPrefillData"
     }
 }

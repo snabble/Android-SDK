@@ -23,6 +23,8 @@ open class FiservInputFragment : Fragment() {
     private lateinit var paymentMethod: String
     private lateinit var projectId: String
 
+    private var savePaymentCredentials: Boolean = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -32,6 +34,8 @@ open class FiservInputFragment : Fragment() {
 
         projectId = arguments?.serializableExtra<String>(FiservInputView.ARG_PROJECT_ID)
             ?: kotlin.run { activity?.onBackPressedDispatcher?.onBackPressed(); return }
+
+        savePaymentCredentials = arguments?.getBoolean(FiservInputView.ARG_SAVE_PAYMENT_CREDENTIALS, true) ?: true
 
         (requireActivity() as? AppCompatActivity)?.supportActionBar?.title =
             PaymentMethodMetaDataHelper(requireContext()).labelFor(PaymentMethod.valueOf(paymentMethod))
@@ -43,6 +47,7 @@ open class FiservInputFragment : Fragment() {
                 FiservScreen(
                     projectId = projectId,
                     paymentMethod = PaymentMethod.valueOf(paymentMethod),
+                    savePaymentCredentials = savePaymentCredentials,
                     onBackNavigationClick = { activity?.onBackPressedDispatcher?.onBackPressed(); }
                 )
             }
@@ -53,6 +58,7 @@ open class FiservInputFragment : Fragment() {
 fun FiservScreen(
     projectId: String,
     paymentMethod: PaymentMethod,
+    savePaymentCredentials: Boolean,
     onBackNavigationClick: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -76,6 +82,7 @@ fun FiservScreen(
             factory = { ctx ->
                 FiservInputView(ctx)
                     .apply {
+                        setSavePaymentCredentials(savePaymentCredentials)
                         load(
                             projectId,
                             paymentMethod,

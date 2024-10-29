@@ -1,8 +1,8 @@
 package io.snabble.sdk.ui.payment
 
-import android.os.Bundle
 import android.os.Parcelable
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentActivity
 import com.google.gson.annotations.SerializedName
 import io.snabble.sdk.PaymentMethod
@@ -11,6 +11,11 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.payment.data.FormPrefillData
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.SnabbleUI
+import io.snabble.sdk.ui.payment.PayoneInputView.Companion.ARG_FORM_PREFILL_DATA
+import io.snabble.sdk.ui.payment.PayoneInputView.Companion.ARG_PAYMENT_TYPE
+import io.snabble.sdk.ui.payment.PayoneInputView.Companion.ARG_PROJECT_ID
+import io.snabble.sdk.ui.payment.PayoneInputView.Companion.ARG_SAVE_PAYMENT_CREDENTIALS
+import io.snabble.sdk.ui.payment.PayoneInputView.Companion.ARG_TOKEN_DATA
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.Logger
 import io.snabble.sdk.utils.SimpleJsonCallback
@@ -77,6 +82,7 @@ object Payone {
         activity: FragmentActivity,
         project: Project,
         paymentMethod: PaymentMethod,
+        saveCredentials: Boolean,
         formPrefillData: FormPrefillData?
     ) {
         val descriptor = project.paymentMethodDescriptors.find { it.paymentMethod == paymentMethod }
@@ -108,11 +114,13 @@ object Payone {
         project.okHttpClient.newCall(request)
             .enqueue(object : SimpleJsonCallback<PayoneTokenizationData>(PayoneTokenizationData::class.java), Callback {
                 override fun success(response: PayoneTokenizationData) {
-                    val args = Bundle()
-                    args.putString(PayoneInputView.ARG_PROJECT_ID, project.id)
-                    args.putSerializable(PayoneInputView.ARG_PAYMENT_TYPE, paymentMethod)
-                    args.putParcelable(PayoneInputView.ARG_TOKEN_DATA, response)
-                    args.putParcelable(PayoneInputView.ARG_FORM_PREFILL_DATA, formPrefillData)
+                    val args = bundleOf(
+                        ARG_PROJECT_ID to project.id,
+                        ARG_SAVE_PAYMENT_CREDENTIALS to saveCredentials,
+                        ARG_PAYMENT_TYPE to paymentMethod,
+                        ARG_TOKEN_DATA to response,
+                        ARG_FORM_PREFILL_DATA to formPrefillData
+                    )
                     Dispatch.mainThread {
                         SnabbleUI.executeAction(activity, SnabbleUI.Event.SHOW_PAYONE_INPUT, args)
                     }
