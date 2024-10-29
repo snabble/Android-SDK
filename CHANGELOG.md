@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.77.1]
+### Changed
+* core: Change the PaymentCredentialsFlow's StateFlow to be a SharedFlow w/o replaying and state management
+
 ## [0.77.0]
 ### Added
 * core/ui: Add a feature to pass payment credentials w/o saving it into storage
