@@ -2,7 +2,8 @@
 
 package io.snabble.sdk.payment
 
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
@@ -20,7 +21,10 @@ internal interface MutableCredentialsFlow {
  */
 object PaymentCredentialsFlow : MutableCredentialsFlow {
 
-    private val _credentialsFlow = MutableStateFlow<PaymentCredentials?>(null)
+    private val _credentialsFlow = MutableSharedFlow<PaymentCredentials?>(
+        replay = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
 
     /**
      * Collect this flow to be notified if payment credentials has been created successfully.
