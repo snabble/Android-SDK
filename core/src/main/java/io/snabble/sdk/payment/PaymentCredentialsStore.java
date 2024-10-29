@@ -170,7 +170,7 @@ public class PaymentCredentialsStore {
     }
 
     public synchronized void justEmitCredentials(final PaymentCredentials credentials) {
-        ((MutableCredentialsFlow) PaymentCredentialsFlow.INSTANCE).tryEmitCredentials(credentials);
+        ((MutableCredentialsFlow) PaymentCredentialsFlow.INSTANCE).emitCredentials(credentials);
     }
 
     /**
