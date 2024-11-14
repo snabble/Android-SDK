@@ -37,6 +37,7 @@ public class ReceiptsApi {
         public String shopName;
         public int price;
         public Map<String, ApiLink> links;
+        public boolean isSuccessful;
     }
 
     /** Data class for api links **/
