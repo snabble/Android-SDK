@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.78.0]
+### Added
+* core: Add the `isSuccessful` state to orders/receipts
+
 ## [0.77.1]
 ### Changed
 * core: Change the PaymentCredentialsFlow's StateFlow to be a SharedFlow w/o replaying and state management
