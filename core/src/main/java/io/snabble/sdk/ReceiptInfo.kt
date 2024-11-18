@@ -33,5 +33,11 @@ data class ReceiptInfo(
      * Final price of the order
      */
     @JvmField
-    val price: String
+    val price: String,
+
+    /**
+     * State of the order
+     */
+    @JvmField
+    val isSuccessful: Boolean
 )

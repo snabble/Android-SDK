@@ -37,6 +37,7 @@ public class ReceiptsApi {
         public String shopName;
         public int price;
         public Map<String, ApiLink> links;
+        public boolean isSuccessful;
     }
 
     /** Data class for api links **/
@@ -149,7 +150,8 @@ public class ReceiptsApi {
                                         simpleDateFormat.parse(apiOrder.date).getTime(),
                                         url != null ? snabble.absoluteUrl(url) : null,
                                         apiOrder.shopName,
-                                        priceFormatter.format(apiOrder.price));
+                                        priceFormatter.format(apiOrder.price),
+                                        apiOrder.isSuccessful);
 
                                 result.add(receiptInfo);
                             } catch (ParseException e) {
