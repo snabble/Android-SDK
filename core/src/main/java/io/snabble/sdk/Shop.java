@@ -162,6 +162,8 @@ public class Shop implements Serializable, Parcelable {
     private CustomerNetwork[] customerNetworks;
     private OpeningHourSpecification[] openingHoursSpecification;
     private JsonElement external;
+    @SerializedName("shopServices")
+    private ShopServices[] shopServices;
 
     Shop() {
         // for gson
@@ -299,6 +301,14 @@ public class Shop implements Serializable, Parcelable {
         return external;
     }
 
+    /**
+     * Returns the shop related on-site services for the customer
+     */
+    @NonNull
+    public ShopServices[] getShopServices() {
+        return shopServices;
+    }
+
     static Shop[] fromJson(JsonElement json) {
         try {
             return GsonHolder.get().fromJson(json, Shop[].class);
@@ -329,7 +339,8 @@ public class Shop implements Serializable, Parcelable {
                 Objects.equals(links, shop.links) &&
                 Arrays.equals(customerNetworks, shop.customerNetworks) &&
                 Arrays.equals(openingHoursSpecification, shop.openingHoursSpecification) &&
-                Objects.equals(external, shop.external);
+                Objects.equals(external, shop.external) &&
+                Arrays.equals(shopServices, shop.shopServices);
     }
 
     @Override
@@ -338,6 +349,7 @@ public class Shop implements Serializable, Parcelable {
         result = 31 * result + Arrays.hashCode(services);
         result = 31 * result + Arrays.hashCode(customerNetworks);
         result = 31 * result + Arrays.hashCode(openingHoursSpecification);
+        result = 31 * result + Arrays.hashCode(shopServices);
         return result;
     }
 
@@ -369,6 +381,7 @@ public class Shop implements Serializable, Parcelable {
                 ", customerNetworks=" + Arrays.toString(customerNetworks) +
                 ", openingHoursSpecification=" + Arrays.toString(openingHoursSpecification) +
                 ", external=" + external +
+                ", shopServices=" + Arrays.toString(shopServices) +
                 '}';
     }
 
