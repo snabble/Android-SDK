@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.79.0]
+### Added
+* core: Add the shop services from meta data to Shop class
+
 ## [0.78.0]
 ### Added
 * core: Add the `isSuccessful` state to orders/receipts
