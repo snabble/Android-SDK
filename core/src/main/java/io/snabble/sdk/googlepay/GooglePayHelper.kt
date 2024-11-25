@@ -20,6 +20,7 @@ import com.google.gson.JsonObject
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.checkout.AuthorizePaymentRequest
 import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
 
@@ -219,7 +220,18 @@ class GooglePayHelper(
                             project.checkout.abortError()
                         } else {
                             val base64Token = String(Base64.encode(token.toByteArray(), Base64.NO_WRAP))
-                            project.checkout.authorizePayment(base64Token)
+                            val address: BillingAddress? = jsonPaymentData.get("paymentMethodData")
+                                ?.asJsonObject?.get("info")
+                                ?.asJsonObject?.get("billingAddress")
+                                ?.let { GsonHolder.get().fromJson(it, BillingAddress::class.java) }
+                            project.checkout.authorizePayment(
+                                AuthorizePaymentRequest(
+                                    encryptedOrigin = base64Token,
+                                    name = address?.name,
+                                    countryCode = address?.countryCode,
+                                    state = address?.administrativeArea
+                                )
+                            )
                         }
                     } catch (e: Exception) {
                         project.checkout.abortError()
@@ -239,6 +251,8 @@ class GooglePayHelper(
         }
     }
 }
+
+private data class BillingAddress(val name: String?, val countryCode: String?, val administrativeArea: String?)
 
 interface IsReadyToPayListener {
     fun isReadyToPay(isReadyToPay: Boolean)

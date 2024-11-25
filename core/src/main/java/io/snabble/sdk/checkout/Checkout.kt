@@ -391,10 +391,8 @@ class Checkout @JvmOverloads constructor(
     /**
      * Authorize a for one-time use payment requests, e.g. sending tokenized payment data of google pay.
      */
-    fun authorizePayment(encryptedOrigin: String?) {
-        val authorizePaymentRequest = AuthorizePaymentRequest(
-            encryptedOrigin = encryptedOrigin
-        )
+    fun authorizePayment(authPayRequest: AuthorizePaymentRequest?) {
+        val authorizePaymentRequest = authPayRequest ?: AuthorizePaymentRequest()
         storedAuthorizePaymentRequest = authorizePaymentRequest
         checkoutProcess?.let { checkoutProcess ->
             checkoutApi.authorizePayment(checkoutProcess,
@@ -528,11 +526,11 @@ class Checkout @JvmOverloads constructor(
             if (authorizePaymentUrl != null) {
                 if (authorizePaymentRequestFailed) {
                     authorizePaymentRequestFailed = false
-                    authorizePayment(storedAuthorizePaymentRequest?.encryptedOrigin)
+                    authorizePayment(storedAuthorizePaymentRequest)
                 } else {
                     val storedAuthorizePaymentRequest = storedAuthorizePaymentRequest
                     if (storedAuthorizePaymentRequest != null) {
-                        authorizePayment(storedAuthorizePaymentRequest.encryptedOrigin)
+                        authorizePayment(storedAuthorizePaymentRequest)
                     } else {
                         notifyStateChanged(CheckoutState.REQUEST_PAYMENT_AUTHORIZATION_TOKEN)
                     }
