@@ -10,8 +10,8 @@ import io.snabble.sdk.utils.*
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.logging.HttpLoggingInterceptor
 import java.io.IOException
-import java.lang.Exception
 import java.net.HttpURLConnection.HTTP_CONFLICT
 import java.net.HttpURLConnection.HTTP_FORBIDDEN
 import java.net.HttpURLConnection.HTTP_NOT_FOUND
@@ -22,7 +22,11 @@ import java.util.concurrent.TimeUnit
 class DefaultCheckoutApi(private val project: Project,
                          private val shoppingCart: ShoppingCart
 ) : CheckoutApi {
-    private val okHttpClient: OkHttpClient = project.okHttpClient
+
+    private val okHttpClient: OkHttpClient = project.okHttpClient.newBuilder()
+        .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
+        .build()
+
     private var call: Call? = null
 
     override fun cancel() {

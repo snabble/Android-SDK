@@ -93,4 +93,6 @@ dependencies {
     testImplementation(libs.squareup.okhttp3.mockwebserver)
     testImplementation(libs.koltin.reflect)
     testImplementation(libs.androidx.coreTesting)
+
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 }
