@@ -193,6 +193,13 @@ class Project internal constructor(
     var codeTemplates = emptyList<CodeTemplate>()
         private set
 
+    var depositReturnVoucherProviders = emptyList<DepositReturnVoucherProvider>()
+
+    data class DepositReturnVoucherProvider(
+        val id: String,
+        val templates: List<CodeTemplate>
+    )
+
     /**
      * List of code templates that are used when supplying an existing Product with a different
      * barcode which contains a reduced price
@@ -467,6 +474,22 @@ class Project internal constructor(
             codeTemplates.add(CodeTemplate("default", "{code:*}"))
         }
         this.codeTemplates = codeTemplates
+
+        depositReturnVoucherProviders = jsonObject["depositReturnVoucherProviders"]?.asJsonArray?.mapNotNull { drv ->
+            val id = drv.asJsonObject["id"].asString ?: return
+            val templates = drv.asJsonObject["templates"].asJsonArray?.mapNotNull {
+                it.asJsonObject["template"]?.let {template ->
+                    CodeTemplate(id, template.asString)
+                }
+            } ?: return
+
+            DepositReturnVoucherProvider(
+                id = id,
+                templates = templates
+            )
+        }.orEmpty()
+
+        depositReturnVoucherProviders.xx()
 
         val priceOverrideTemplates = mutableListOf<PriceOverrideTemplate>()
         jsonObject["priceOverrideCodes"]?.asJsonArray?.forEach {

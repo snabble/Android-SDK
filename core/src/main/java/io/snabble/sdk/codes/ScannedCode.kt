@@ -193,6 +193,15 @@ class ScannedCode private constructor() : Serializable {
                 }
             }
 
+            project.depositReturnVoucherProviders.forEach { drv ->
+                drv.templates.forEach {
+                    val scannedCode: ScannedCode? = it.match(code).buildCode()
+                    if (scannedCode != null) {
+                        matches.add(scannedCode)
+                    }
+                }
+            }
+
             project.priceOverrideTemplates.forEach { priceOverrideTemplate ->
                 val codeTemplate = priceOverrideTemplate.codeTemplate
                 val scannedCode = codeTemplate.match(code).buildCode()
