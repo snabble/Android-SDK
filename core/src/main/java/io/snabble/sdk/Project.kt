@@ -489,8 +489,6 @@ class Project internal constructor(
             )
         }.orEmpty()
 
-        depositReturnVoucherProviders.xx()
-
         val priceOverrideTemplates = mutableListOf<PriceOverrideTemplate>()
         jsonObject["priceOverrideCodes"]?.asJsonArray?.forEach {
             val priceOverride = it.asJsonObject
