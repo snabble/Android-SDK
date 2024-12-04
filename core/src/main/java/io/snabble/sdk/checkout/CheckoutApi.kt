@@ -111,7 +111,8 @@ enum class LineItemType {
     @SerializedName("default") DEFAULT,
     @SerializedName("deposit") DEPOSIT,
     @SerializedName("discount") DISCOUNT,
-    @SerializedName("coupon") COUPON
+    @SerializedName("coupon") COUPON,
+    @SerializedName("depositReturnVoucher") DEPOSIT_RETURN_VOUCHER
 }
 
 enum class CheckState {
@@ -235,6 +236,7 @@ data class LineItem(
     val referenceUnit: String? = null,
     val scannedCode: String? = null,
     val sku: String? = null,
+    @SerializedName("itemId") val itemId: String? = null,
     val totalPrice: Int = 0,
     val type: LineItemType? = null,
     val units: Int? = null,

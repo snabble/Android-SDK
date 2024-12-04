@@ -6,6 +6,7 @@ import androidx.annotation.RestrictTo
 data class BackendCartItem(
     val id: String? = null,
     val sku: String? = null,
+    val itemId: String? = null,
     @JvmField val scannedCode: String? = null,
     @JvmField val amount: Int = 0,
     @JvmField val weightUnit: String? = null,

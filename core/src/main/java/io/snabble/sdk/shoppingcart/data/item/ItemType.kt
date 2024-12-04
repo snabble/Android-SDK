@@ -5,5 +5,5 @@ package io.snabble.sdk.shoppingcart.data.item
  */
 enum class ItemType {
 
-    PRODUCT, LINE_ITEM, COUPON
+    PRODUCT, LINE_ITEM, COUPON, DEPOSIT_RETURN_VOUCHER
 }

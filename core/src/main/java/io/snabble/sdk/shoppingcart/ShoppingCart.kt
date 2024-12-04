@@ -612,6 +612,16 @@ class ShoppingCart(
                     )
                 }
 
+                ItemType.DEPOSIT_RETURN_VOUCHER ->
+                    items.add(
+                        BackendCartItem(
+                            id = cartItem.id,
+                            amount = 1,
+                            itemId = cartItem.lineItem?.itemId,
+                            scannedCode = cartItem.scannedCode?.code
+                        )
+                    )
+
                 else -> Unit
             }
         }
@@ -1040,7 +1050,11 @@ class ShoppingCart(
 
                 coupon != null -> ItemType.COUPON
 
-                lineItem != null -> ItemType.LINE_ITEM
+                lineItem != null -> if (lineItem?.type == LineItemType.DEPOSIT_RETURN_VOUCHER) {
+                    ItemType.DEPOSIT_RETURN_VOUCHER
+                } else {
+                    ItemType.LINE_ITEM
+                }
 
                 else -> null
             }
