@@ -626,7 +626,7 @@ class ShoppingCart(
                         BackendCartItem(
                             id = cartItem.id,
                             amount = depositReturnVoucher.amount,
-                            itemID = depositReturnVoucher.itemId,
+                            itemId = depositReturnVoucher.itemId,
                             scannedCode = depositReturnVoucher.scannedCode
                         )
                     )
