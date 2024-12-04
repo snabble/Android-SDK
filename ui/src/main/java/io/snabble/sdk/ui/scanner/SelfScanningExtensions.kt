@@ -1,30 +1,25 @@
 package io.snabble.sdk.ui.scanner
 
 import io.snabble.sdk.Project
-import io.snabble.sdk.checkout.LineItem
-import io.snabble.sdk.checkout.LineItemType
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.codes.templates.CodeTemplate
 import io.snabble.sdk.shoppingcart.ShoppingCart
-import java.util.UUID
+import io.snabble.sdk.shoppingcart.data.item.DepositReturnVoucher
 
-fun Project.containsReturnDepositVoucher(list: List<ScannedCode>): Pair<CodeTemplate, ScannedCode>? =
+fun Project.containsReturnDepositVoucher(list: List<ScannedCode>): Pair<CodeTemplate, String>? =
     depositReturnVoucherProviders
         .flatMap { it.templates }
-        .zip(list)
+        .zip(list.mapNotNull { it.code })
         .firstOrNull { (codeTemplates, scannedCodes) ->
-            scannedCodes.code?.startsWith(codeTemplates.pattern.substringBefore("{")) == true
+            scannedCodes.startsWith(codeTemplates.pattern.substringBefore("{"))
         }
 
-fun ShoppingCart.insertDepositReturnVoucherItem(codeTemplate: CodeTemplate, scannedCode: ScannedCode) {
+fun ShoppingCart.insertDepositReturnVoucherItem(codeTemplate: CodeTemplate, scannedCode: String) {
     add(
         newItem(
-            LineItem(
-                id = UUID.randomUUID().toString(),
-                amount = 1,
+            DepositReturnVoucher(
                 itemId = codeTemplate.name,
-                type = LineItemType.DEPOSIT_RETURN_VOUCHER,
-                scannedCode = scannedCode.code
+                scannedCode = scannedCode
             )
         )
     )

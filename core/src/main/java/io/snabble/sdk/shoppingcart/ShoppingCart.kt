@@ -21,6 +21,7 @@ import io.snabble.sdk.shoppingcart.data.cart.BackendCart
 import io.snabble.sdk.shoppingcart.data.cart.BackendCartCustomer
 import io.snabble.sdk.shoppingcart.data.cart.BackendCartRequiredInformation
 import io.snabble.sdk.shoppingcart.data.item.BackendCartItem
+import io.snabble.sdk.shoppingcart.data.item.DepositReturnVoucher
 import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.utils.Dispatch
@@ -85,6 +86,11 @@ class ShoppingCart(
      * Create a new cart item using a coupon and a scanned code
      */
     fun newItem(coupon: Coupon, scannedCode: ScannedCode?): Item = Item(this, coupon, scannedCode)
+
+    /**
+     * Create a new cart item using a depositReturnVoucher
+     */
+    fun newItem(depositReturnVoucher: DepositReturnVoucher): Item = Item(this, depositReturnVoucher)
 
     /**
      * Create a new cart item using a line item of a checkout info
@@ -612,15 +618,19 @@ class ShoppingCart(
                     )
                 }
 
-                ItemType.DEPOSIT_RETURN_VOUCHER ->
+                ItemType.DEPOSIT_RETURN_VOUCHER -> {
+
+                    val depositReturnVoucher = cartItem.depositReturnVoucher ?: return@forEach
+
                     items.add(
                         BackendCartItem(
                             id = cartItem.id,
-                            amount = 1,
-                            itemId = cartItem.lineItem?.itemId,
-                            scannedCode = cartItem.scannedCode?.code
+                            amount = depositReturnVoucher.amount,
+                            itemID = depositReturnVoucher.itemId,
+                            scannedCode = depositReturnVoucher.scannedCode
                         )
                     )
+                }
 
                 else -> Unit
             }
@@ -902,6 +912,7 @@ class ShoppingCart(
          */
         var id: String? = null
             private set
+
         private var isUsingSpecifiedQuantity = false
 
         @Transient
@@ -917,6 +928,11 @@ class ShoppingCart(
          * Gets the user associated coupon of this item
          */
         var coupon: Coupon? = null
+
+        /**
+         * Returns the depositReturnVoucher associated with the shopping cart item.
+         */
+        var depositReturnVoucher: DepositReturnVoucher? = null
 
         // The local generated UUID of a coupon which which will be used by the backend
         var backendCouponId: String? = null
@@ -969,6 +985,12 @@ class ShoppingCart(
             id = UUID.randomUUID().toString()
             this.cart = cart
             this.lineItem = lineItem
+        }
+
+        constructor(cart: ShoppingCart, depositReturnVoucher: DepositReturnVoucher) {
+            id = UUID.randomUUID().toString()
+            this.cart = cart
+            this.depositReturnVoucher = depositReturnVoucher
         }
 
         /**
@@ -1050,11 +1072,9 @@ class ShoppingCart(
 
                 coupon != null -> ItemType.COUPON
 
-                lineItem != null -> if (lineItem?.type == LineItemType.DEPOSIT_RETURN_VOUCHER) {
-                    ItemType.DEPOSIT_RETURN_VOUCHER
-                } else {
-                    ItemType.LINE_ITEM
-                }
+                lineItem != null -> ItemType.LINE_ITEM
+
+                depositReturnVoucher != null -> ItemType.DEPOSIT_RETURN_VOUCHER
 
                 else -> null
             }
