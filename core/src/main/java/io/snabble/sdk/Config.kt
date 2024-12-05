@@ -1,13 +1,18 @@
 package io.snabble.sdk
 
 import android.content.Context
-import com.google.gson.*
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
+import com.google.gson.JsonNull
+import com.google.gson.JsonPrimitive
+import com.google.gson.JsonSerializationContext
+import com.google.gson.JsonSerializer
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
 import okhttp3.Interceptor
 import java.io.File
-import java.lang.Exception
 import java.lang.reflect.Type
 import java.util.concurrent.TimeUnit
 
@@ -95,10 +100,6 @@ data class Config (
      */
     @JvmField
     var maxShoppingCartAge: Long  = TimeUnit.HOURS.toMillis(4),
-
-    /** If set to true, disables certificate pinning. Not recommended for production!  */
-    @JvmField
-    var disableCertificatePinning: Boolean = false,
 
     /** SQL queries that will get executed in order on the product database. */
     @JvmField

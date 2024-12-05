@@ -86,7 +86,6 @@ internal class DatatransViewModel(
         }
         options.appCallbackScheme = "snabble"
         options.isTesting = isTesting
-        options.useCertificatePinning = true
     }
 
     fun errorHandled() {
