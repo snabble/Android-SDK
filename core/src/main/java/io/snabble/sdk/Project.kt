@@ -9,6 +9,7 @@ import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.codes.templates.CodeTemplate
 import io.snabble.sdk.codes.templates.PriceOverrideTemplate
+import io.snabble.sdk.codes.templates.depositReturnVoucher.DepositReturnVoucherProvider
 import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.coupons.CouponSource
 import io.snabble.sdk.coupons.Coupons
@@ -194,11 +195,6 @@ class Project internal constructor(
         private set
 
     var depositReturnVoucherProviders = emptyList<DepositReturnVoucherProvider>()
-
-    data class DepositReturnVoucherProvider(
-        val id: String,
-        val templates: List<CodeTemplate>
-    )
 
     /**
      * List of code templates that are used when supplying an existing Product with a different
@@ -483,10 +479,7 @@ class Project internal constructor(
                 }
             } ?: return
 
-            DepositReturnVoucherProvider(
-                id = id,
-                templates = templates
-            )
+            DepositReturnVoucherProvider(id = id, templates = templates)
         }.orEmpty()
 
         val priceOverrideTemplates = mutableListOf<PriceOverrideTemplate>()
