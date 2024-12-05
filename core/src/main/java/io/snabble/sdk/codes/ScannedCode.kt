@@ -4,7 +4,6 @@ import io.snabble.sdk.Project
 import io.snabble.sdk.Unit
 import java.io.Serializable
 import java.math.BigDecimal
-import java.util.ArrayList
 
 // TODO: Kotlinify this class more, get rid of the "hasXX" methods and use optionals
 
@@ -12,6 +11,7 @@ import java.util.ArrayList
  * Class representing a scanned code, including its potentially embedded data
  */
 class ScannedCode private constructor() : Serializable {
+
     private var _embeddedData: Int? = null
     private var _embeddedDecimalData: BigDecimal? = null
     private var _price: Int? = null
@@ -110,6 +110,7 @@ class ScannedCode private constructor() : Serializable {
     }
 
     class Builder {
+
         var scannedCode: ScannedCode
 
         constructor(templateName: String?) {
@@ -170,6 +171,7 @@ class ScannedCode private constructor() : Serializable {
     }
 
     companion object {
+
         @JvmStatic
         fun parseDefault(project: Project, code: String?): ScannedCode? {
             project.codeTemplates.forEach { codeTemplate ->
@@ -192,15 +194,14 @@ class ScannedCode private constructor() : Serializable {
                     matches.add(scannedCode)
                 }
             }
-
-            project.depositReturnVoucherProviders.forEach { drv ->
-                drv.templates.forEach {
-                    val scannedCode: ScannedCode? = it.match(code).buildCode()
+            project.depositReturnVoucherProviders
+                .flatMap { it.templates }
+                .forEach { codeTemplate ->
+                    val scannedCode: ScannedCode? = codeTemplate.match(code).buildCode()
                     if (scannedCode != null) {
                         matches.add(scannedCode)
                     }
                 }
-            }
 
             project.priceOverrideTemplates.forEach { priceOverrideTemplate ->
                 val codeTemplate = priceOverrideTemplate.codeTemplate
