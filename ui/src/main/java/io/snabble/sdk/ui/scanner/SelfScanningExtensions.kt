@@ -11,7 +11,7 @@ fun Project.containsReturnDepositVoucher(list: List<ScannedCode>): Pair<CodeTemp
         .flatMap { it.templates }
         .zip(list.mapNotNull { it.code })
         .firstOrNull { (codeTemplates, scannedCodes) ->
-            scannedCodes.startsWith(codeTemplates.pattern.substringBefore("{"))
+            codeTemplates.match(scannedCodes).buildCode() != null
         }
 
 fun ShoppingCart.insertDepositReturnVoucherItem(codeTemplate: CodeTemplate, scannedCode: String) {
