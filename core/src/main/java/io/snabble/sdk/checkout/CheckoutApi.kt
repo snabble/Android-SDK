@@ -236,7 +236,6 @@ data class LineItem(
     val referenceUnit: String? = null,
     val scannedCode: String? = null,
     val sku: String? = null,
-    @SerializedName("itemId") val itemId: String? = null,
     val totalPrice: Int = 0,
     val type: LineItemType? = null,
     val units: Int? = null,
