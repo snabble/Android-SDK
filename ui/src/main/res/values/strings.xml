@@ -284,6 +284,7 @@
   <string name="Snabble.Scanner.BundleDialog.headline">Choose package</string>
   <string name="Snabble.Scanner.Camera.accessDenied">Camera access denied</string>
   <string name="Snabble.Scanner.Camera.allowAccess">Sorry, we\'ll need to access your camera to scan barcodes. Please allow this in the settings and return here.</string>
+  <string name="Snabble.Scanner.DepositReturnVoucher.Added">Deposit voucher added</string>
   <string name="Snabble.Scanner.GoToCart.empty">Cart</string>
   <string name="Snabble.Scanner.addCodeAsIs">Add %s as-is</string>
   <string name="Snabble.Scanner.addToCart">Add to cart</string>

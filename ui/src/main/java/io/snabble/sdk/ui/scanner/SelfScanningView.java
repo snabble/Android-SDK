@@ -243,7 +243,7 @@ public class SelfScanningView extends FrameLayout {
         final kotlin.Pair<CodeTemplate, String> codeTemplateScannedCodePair = SelfScanningExtensionsKt.containsReturnDepositVoucher(project, scannedCodes);
         if (codeTemplateScannedCodePair != null) {
             SelfScanningExtensionsKt.insertDepositReturnVoucherItem(shoppingCart, codeTemplateScannedCodePair.getFirst(), codeTemplateScannedCodePair.getSecond());
-            showInfo("Added");
+            showInfo(getResources().getString(R.string.Snabble_Scanner_DepositReturnVoucher_Added));
         }
     }
 
