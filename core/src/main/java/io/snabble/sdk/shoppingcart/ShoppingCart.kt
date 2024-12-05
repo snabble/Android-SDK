@@ -21,6 +21,7 @@ import io.snabble.sdk.shoppingcart.data.cart.BackendCart
 import io.snabble.sdk.shoppingcart.data.cart.BackendCartCustomer
 import io.snabble.sdk.shoppingcart.data.cart.BackendCartRequiredInformation
 import io.snabble.sdk.shoppingcart.data.item.BackendCartItem
+import io.snabble.sdk.shoppingcart.data.item.BackendCartItemType
 import io.snabble.sdk.shoppingcart.data.item.DepositReturnVoucher
 import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
@@ -626,6 +627,7 @@ class ShoppingCart(
                         BackendCartItem(
                             id = cartItem.id,
                             amount = depositReturnVoucher.amount,
+                            type = BackendCartItemType.DEPOSIT_RETURN_VOUCHER,
                             itemId = depositReturnVoucher.itemId,
                             scannedCode = depositReturnVoucher.scannedCode
                         )

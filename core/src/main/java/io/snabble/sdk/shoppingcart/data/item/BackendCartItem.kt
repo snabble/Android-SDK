@@ -2,14 +2,13 @@ package io.snabble.sdk.shoppingcart.data.item
 
 import androidx.annotation.RestrictTo
 import com.google.gson.annotations.SerializedName
-import io.snabble.sdk.checkout.LineItemType
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 data class BackendCartItem(
     val id: String? = null,
     val sku: String? = null,
     @JvmField @SerializedName("ItemID") val itemId: String? = null,
-    val type: LineItemType = LineItemType.DEPOSIT_RETURN_VOUCHER,
+    val type: BackendCartItemType? = null,
     @JvmField val scannedCode: String? = null,
     @JvmField val amount: Int = 0,
     @JvmField val weightUnit: String? = null,
@@ -19,3 +18,8 @@ data class BackendCartItem(
     val refersTo: String? = null,
     val couponID: String? = null
 )
+
+enum class BackendCartItemType {
+    @SerializedName("depositReturnVoucher")
+    DEPOSIT_RETURN_VOUCHER,
+}
