@@ -195,6 +195,7 @@ class Project internal constructor(
         private set
 
     var depositReturnVoucherProviders = emptyList<DepositReturnVoucherProvider>()
+        private set
 
     /**
      * List of code templates that are used when supplying an existing Product with a different
