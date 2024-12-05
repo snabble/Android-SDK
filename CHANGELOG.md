@@ -5,9 +5,12 @@ All notable changes to this project will be documented in this file.
 ### Added
 ### Changed
 ### Removed
+### Fixed
+
+## [0.80.0]
+### Removed
 * core: SSL Pinning has been removed
 * ui: Datatrans SSL Pinning has been deactivated
-### Fixed
 
 ## [0.79.0]
 ### Added
