@@ -194,6 +194,7 @@ class ScannedCode private constructor() : Serializable {
                     matches.add(scannedCode)
                 }
             }
+
             project.depositReturnVoucherProviders
                 .flatMap { it.templates }
                 .forEach { codeTemplate ->
