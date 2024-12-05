@@ -292,6 +292,9 @@ data class PaymentResult(
 
 data class AuthorizePaymentRequest(
     val encryptedOrigin: String? = null,
+    val name: String? = null,
+    val countryCode: String? = null,
+    val state: String? = null
 )
 
 data class Check(
