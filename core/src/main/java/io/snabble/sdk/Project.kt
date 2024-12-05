@@ -471,16 +471,8 @@ class Project internal constructor(
         }
         this.codeTemplates = codeTemplates
 
-        depositReturnVoucherProviders = jsonObject["depositReturnVoucherProviders"]?.asJsonArray?.mapNotNull { drv ->
-            val id = drv.asJsonObject["id"].asString ?: return
-            val templates = drv.asJsonObject["templates"].asJsonArray?.mapNotNull {
-                it.asJsonObject["template"]?.let {template ->
-                    CodeTemplate(id, template.asString)
-                }
-            } ?: return
-
-            DepositReturnVoucherProvider(id = id, templates = templates)
-        }.orEmpty()
+        depositReturnVoucherProviders = jsonObject["depositReturnVoucherProviders"]?.asJsonArray
+            ?.mapNotNull { drv -> DepositReturnVoucherProvider.fromJsonElement(drv) }.orEmpty()
 
         val priceOverrideTemplates = mutableListOf<PriceOverrideTemplate>()
         jsonObject["priceOverrideCodes"]?.asJsonArray?.forEach {
