@@ -284,6 +284,7 @@
   <string name="Snabble.Scanner.BundleDialog.headline">Verpackungseinheit auswählen</string>
   <string name="Snabble.Scanner.Camera.accessDenied">Kamerazugriff verweigert</string>
   <string name="Snabble.Scanner.Camera.allowAccess">Entschuldigung, wir benötigen Zugriff auf deine Kamera, um mit ihr Barcodes zu scannen. Bitte erlaube die Nutzung in den Einstellungen und kehre dann hierher zurück.</string>
+  <string name="Snabble.Scanner.DepositReturnVoucher.Added">Pfandbon hinzugefügt</string>
   <string name="Snabble.Scanner.GoToCart.empty">Warenkorb</string>
   <string name="Snabble.Scanner.addCodeAsIs">%s so hinzufügen</string>
   <string name="Snabble.Scanner.addToCart">In den Warenkorb</string>
