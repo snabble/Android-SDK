@@ -1074,9 +1074,9 @@ class ShoppingCart(
 
                 coupon != null -> ItemType.COUPON
 
-                lineItem != null -> ItemType.LINE_ITEM
-
                 depositReturnVoucher != null -> ItemType.DEPOSIT_RETURN_VOUCHER
+
+                lineItem != null -> ItemType.LINE_ITEM
 
                 else -> null
             }
