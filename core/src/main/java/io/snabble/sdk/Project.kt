@@ -194,6 +194,10 @@ class Project internal constructor(
     var codeTemplates = emptyList<CodeTemplate>()
         private set
 
+    /**
+     * List of providers for deposit return vouchers.
+     * Each provider contains an id and a list of code templates used for parsing return voucher specific barcodes.
+     */
     var depositReturnVoucherProviders = emptyList<DepositReturnVoucherProvider>()
         private set
 
