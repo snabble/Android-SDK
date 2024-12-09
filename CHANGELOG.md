@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.80.1]
+### Fixed
+* ui: fix adding TWINT
 ## [0.80.0]
 ### Removed
 * core: SSL Pinning has been removed
