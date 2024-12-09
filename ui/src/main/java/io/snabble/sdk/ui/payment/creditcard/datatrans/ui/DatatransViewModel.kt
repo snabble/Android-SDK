@@ -67,8 +67,11 @@ internal class DatatransViewModel(
                     is SavedCard -> DatatransToken(savedPaymentMethod, savedPaymentMethod.cardExpiryDate)
 
                     else -> {
-                        if (savedPaymentMethod != null) DatatransToken(savedPaymentMethod)
-                        null
+                        if (savedPaymentMethod != null) {
+                            DatatransToken(savedPaymentMethod)
+                        } else {
+                            null
+                        }
                     }
                 }
                 when {
