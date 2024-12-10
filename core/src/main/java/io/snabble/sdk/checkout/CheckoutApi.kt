@@ -91,7 +91,6 @@ interface CheckoutInfoResult {
     fun onNoShopFound()
     fun onInvalidProducts(products: List<Product>)
     fun onNoAvailablePaymentMethodFound()
-    fun onInvalidDepositReturnVoucher()
     fun onUnknownError()
     fun onConnectionError()
 }

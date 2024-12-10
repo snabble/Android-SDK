@@ -147,10 +147,6 @@ internal class CheckoutRetryer(project: Project, fallbackPaymentMethod: PaymentM
                         fail()
                     }
 
-                    override fun onInvalidDepositReturnVoucher() {
-                        fail()
-                    }
-
                     override fun onUnknownError() {
                         fail()
                     }

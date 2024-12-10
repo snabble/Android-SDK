@@ -136,7 +136,6 @@ class DefaultCheckoutApi(private val project: Project,
                         }
                         "no_available_method" -> checkoutInfoResult?.onNoAvailablePaymentMethodFound()
                         "bad_shop_id", "shop_not_found" -> checkoutInfoResult?.onNoShopFound()
-                        "invalid_deposit_return_voucher" -> checkoutInfoResult?.onInvalidDepositReturnVoucher()
                         else -> checkoutInfoResult?.onUnknownError()
                     }
                 } catch (e: Exception) {

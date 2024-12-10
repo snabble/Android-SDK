@@ -1405,7 +1405,6 @@ public class ProductDatabase {
         return productQuery("JOIN searchByName ns ON ns.sku = p.sku " +
                 "WHERE ns.foldedName MATCH ? " +
                 "AND p.weighing != " + Product.Type.PreWeighed.getDatabaseValue() + " " +
-                "AND p.weighing != " + Product.Type.DepositReturnVoucher.getDatabaseValue() + " " +
                 "AND p.isDeposit = 0 " +
                 "AND availability != 2 " +
                 "LIMIT 100", new String[]{
@@ -1439,8 +1438,6 @@ public class ProductDatabase {
 
         sb.append(") AND p.weighing != ");
         sb.append(Product.Type.PreWeighed.getDatabaseValue());
-        sb.append(" AND p.weighing != ");
-        sb.append(Product.Type.DepositReturnVoucher.getDatabaseValue());
         sb.append(" AND p.isDeposit = 0 ");
         sb.append(" AND availability != 2");
 
