@@ -111,7 +111,9 @@ enum class LineItemType {
     @SerializedName("default") DEFAULT,
     @SerializedName("deposit") DEPOSIT,
     @SerializedName("discount") DISCOUNT,
-    @SerializedName("coupon") COUPON
+    @SerializedName("coupon") COUPON,
+    @SerializedName("depositReturnVoucher") DEPOSIT_RETURN_VOUCHER,
+    @SerializedName("depositReturn") DEPOSIT_RETURN
 }
 
 enum class CheckState {

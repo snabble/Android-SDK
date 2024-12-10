@@ -34,6 +34,11 @@ fun List<ViolationNotification>.getMessage(context: Context) = joinToString("\n"
             ), it.name
         )
 
+        "deposit_return_voucher_duplicate" -> res.getString(R.string.Snabble_Violations_DepositReturnVoucher_duplicated)
+
+        "deposit_return_voucher_already_redeemed" ->
+            res.getString(R.string.Snabble_Violations_DepositReturnVoucher_alreadyRedeemed)
+
         else -> it.fallbackMessage.orEmpty()
     }
 }
