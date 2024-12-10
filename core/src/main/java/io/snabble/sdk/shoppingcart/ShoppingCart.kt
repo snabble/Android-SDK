@@ -16,6 +16,7 @@ import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.codes.templates.CodeTemplate
 import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.coupons.CouponType
+import io.snabble.sdk.extensions.xx
 import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.shoppingcart.data.cart.BackendCart
 import io.snabble.sdk.shoppingcart.data.cart.BackendCartCustomer
@@ -123,7 +124,7 @@ class ShoppingCart(
     fun insert(item: Item, index: Int, update: Boolean) {
         val itemIsMerged = insertIfMergeable(item, index, update)
         if (itemIsMerged) return
-        data.items.add(index, item)
+        data.items.add(index, item).xx("item added:")
         clearBackup()
         checkLimits()
         notifyItemAdded(this, item)
@@ -723,6 +724,44 @@ class ShoppingCart(
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun resolveViolations(violations: List<Violation>) {
+        handleCouponViolations(violations)
+        handleDepositReturnVoucherViolations(violations)
+        notifyViolations()
+        forEach {
+            it?.id.xx("after violation")
+            it?.type.xx("after violation")
+            it?.lineItem.xx("after violation")
+        }
+        "update after violation".xx()
+        updatePrices(debounce = false)
+    }
+
+    private fun handleDepositReturnVoucherViolations(violations: List<Violation>) {
+        resolveDuplicated(violations)
+    }
+
+    private fun resolveDuplicated(violations: List<Violation>) {
+        data.items.removeAll { it.isDuplicated(violations) }
+        violations
+            .filter { it.refersTo !in data.violationNotifications.map { notification -> notification.refersTo } }
+            .forEach { violation ->
+                data.violationNotifications.add(
+                    ViolationNotification(
+                        name = null,
+                        refersTo = violation.refersTo,
+                        type = violation.type,
+                        fallbackMessage = violation.message
+                    )
+                )
+            }
+    }
+
+    private fun Item.isDuplicated(
+        violations: List<Violation>,
+    ) = violations.filter { it.type == "deposit_return_voucher_duplicate" }
+        .any { it.refersTo == id }.xx("isduplicated :")
+
+    private fun handleCouponViolations(violations: List<Violation>) {
         violations.forEach { violation ->
             data.items
                 .filter { it.coupon != null }
@@ -747,8 +786,6 @@ class ShoppingCart(
                     }
                 }
         }
-        notifyViolations()
-        updatePrices(debounce = false)
     }
 
     /**
@@ -1096,12 +1133,12 @@ class ShoppingCart(
         val isEditableInDialog: Boolean
             get() = when {
                 lineItem != null -> (lineItem?.type == LineItemType.DEFAULT &&
-                        (scannedCode?.hasEmbeddedData() == false ||
-                                scannedCode?.embeddedData == 0))
+                    (scannedCode?.hasEmbeddedData() == false ||
+                        scannedCode?.embeddedData == 0))
 
                 else -> (scannedCode?.hasEmbeddedData() == false ||
-                        scannedCode?.embeddedData == 0) &&
-                        product?.getPrice(cart?.project?.customerCardId) != 0
+                    scannedCode?.embeddedData == 0) &&
+                    product?.getPrice(cart?.project?.customerCardId) != 0
             }
 
         /**
@@ -1117,10 +1154,10 @@ class ShoppingCart(
             get() {
                 if (product == null && lineItem != null || coupon != null) return false
                 return product?.type == Type.Article
-                        && unit != Unit.PIECE
-                        && product?.getPrice(cart?.project?.customerCardId) != 0
-                        && scannedCode?.embeddedData == 0
-                        && !isUsingSpecifiedQuantity
+                    && unit != Unit.PIECE
+                    && product?.getPrice(cart?.project?.customerCardId) != 0
+                    && scannedCode?.embeddedData == 0
+                    && !isUsingSpecifiedQuantity
             }
 
         /**
@@ -1301,8 +1338,8 @@ class ShoppingCart(
                             product != null
                             && unitsIsAtLeastOne
                             || (unit != Unit.PRICE
-                                    && (unit != Unit.PIECE || scannedCode?.embeddedData == 0)
-                                    && effectiveQuantity > 1)
+                                && (unit != Unit.PIECE || scannedCode?.embeddedData == 0)
+                                && effectiveQuantity > 1)
                         ) {
                             extendedPriceText
                         } else {
