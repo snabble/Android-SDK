@@ -17,6 +17,7 @@ import io.snabble.sdk.checkout.Price
 import io.snabble.sdk.checkout.SignedCheckoutInfo
 import io.snabble.sdk.checkout.Violation
 import io.snabble.sdk.codes.ScannedCode.Companion.parseDefault
+import io.snabble.sdk.extensions.xx
 import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
@@ -59,7 +60,7 @@ internal class ShoppingCartUpdater(
         }
 
         checkoutApi.createCheckoutInfo(
-            cart.toBackendCart(),
+            cart.toBackendCart().xx("create BackendCard"),
             object : CheckoutInfoResult {
 
                 override fun onSuccess(
@@ -67,6 +68,7 @@ internal class ShoppingCartUpdater(
                     onlinePrice: Int,
                     availablePaymentMethods: List<PaymentMethodInfo>
                 ) {
+                    signedCheckoutInfo.xx("Success: ")
                     // ignore when cart was modified mid request
                     if (cart.modCount != modCount) return
 
@@ -86,28 +88,35 @@ internal class ShoppingCartUpdater(
                 }
 
                 override fun onNoShopFound() {
+                    "no Shop".xx()
                     error(requestSucceeded = true)
                 }
 
                 override fun onInvalidProducts(products: List<Product>) {
+                    "invalid Product".xx()
                     cart.invalidProducts = products
                     error(requestSucceeded = true)
                 }
 
                 override fun onNoAvailablePaymentMethodFound() {
+                    "no PM".xx()
                     error(requestSucceeded = true)
                 }
 
                 override fun onInvalidDepositReturnVoucher() {
+                    "invalid DVR".xx()
                     cart.setInvalidDepositReturnVoucher(true)
                     error(requestSucceeded = true)
                 }
 
                 override fun onUnknownError() {
+
+                    "unknown".xx()
                     error(requestSucceeded = false)
                 }
 
                 override fun onConnectionError() {
+                    "connection error".xx()
                     error(requestSucceeded = false)
                 }
             },
@@ -153,7 +162,7 @@ internal class ShoppingCartUpdater(
 
             addLineItemsAsCartItems(filter { it.type == LineItemType.COUPON })
             addLineItemsAsCartItems(filter { it.type == LineItemType.DEPOSIT })
-            addLineItemsAsCartItems(filter { it.type == LineItemType.DEPOSIT_RETURN })
+            addLineItemsAsCartItems(filter { it.type == LineItemType.DEPOSIT_RETURN }.xx("new items"))
         }
 
         setOnlinePrice(price)
@@ -167,6 +176,11 @@ internal class ShoppingCartUpdater(
             invalidProducts = null
             checkLimits()
             notifyPriceUpdate(this)
+            forEach {
+                it?.id.xx("after update")
+                it?.type.xx("after update")
+                it?.lineItem.xx("after update")
+            }
         }
     }
 

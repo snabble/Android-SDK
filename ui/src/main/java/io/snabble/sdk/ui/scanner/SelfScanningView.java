@@ -12,6 +12,7 @@ import android.os.SystemClock;
 import android.os.Vibrator;
 import android.text.InputType;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -600,6 +601,7 @@ public class SelfScanningView extends FrameLayout {
 
         @Override
         public void onViolationDetected(@NonNull List<ViolationNotification> violations) {
+            Log.d("xx", "onViolationDetected: ");
             ViolationNotificationUtils.showNotificationOnce(violations, getContext(), shoppingCart);
         }
     };
