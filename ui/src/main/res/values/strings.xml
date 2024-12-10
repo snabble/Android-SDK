@@ -433,6 +433,8 @@
   <string name="Snabble.Taxation.pleaseChoose">Please choose</string>
   <string name="Snabble.Textfield.HidePassword.Accessibility">Hide password</string>
   <string name="Snabble.Textfield.ShowPassword.Accessibility">Show password</string>
+  <string name="Snabble.Violations.DepositReturnVoucher.alreadyRedeemed">This deposit voucher has already been redeemed.</string>
+  <string name="Snabble.Violations.DepositReturnVoucher.duplicated">This deposit voucher has already been added.</string>
   <string name="Snabble.Violations.couponAlreadyVoided">A coupon is already redeemed and will be removed from cart</string>
   <string name="Snabble.Violations.couponCurrentlyNotValid">A coupon is currently not valid and will be removed from cart</string>
   <string name="Snabble.Violations.couponInvalid">A coupon is invalid and will be removed from cart</string>
