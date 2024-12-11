@@ -16,8 +16,10 @@ import io.snabble.sdk.checkout.LineItem
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.CartDiscount
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.model.CartDiscountItem
+import io.snabble.sdk.ui.cart.shoppingcart.depositreturn.DepositReturn
 import io.snabble.sdk.ui.cart.shoppingcart.product.DeletableProduct
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DepositItem
+import io.snabble.sdk.ui.cart.shoppingcart.product.model.DepositReturnItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DiscountItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.ProductItem
 import io.snabble.sdk.ui.utils.ThemeWrapper
@@ -45,6 +47,9 @@ fun ShoppingCartScreen(
             },
             onQuantityChanged = { item, quantity ->
                 viewModel.onEvent(UpdateQuantity(item, quantity))
+            },
+            onDeleteDepositReturnClick = {
+                viewModel.onEvent(RemoveDepositReturn)
             }
         )
     }
@@ -55,6 +60,7 @@ private fun ShoppingCartScreen(
     uiState: UiState,
     modifier: Modifier = Modifier,
     onItemDeleted: (ShoppingCart.Item) -> Unit,
+    onDeleteDepositReturnClick: () -> Unit,
     onQuantityChanged: (ShoppingCart.Item, Int) -> Unit
 ) {
 
@@ -73,6 +79,11 @@ private fun ShoppingCartScreen(
                         }
                     )
                     HorizontalDivider()
+                }
+
+                is DepositReturnItem -> {
+                    val showHint = uiState.totalCartPrice != null && uiState.totalCartPrice < 0
+                    DepositReturn(item = cartItem, showHint = showHint, onDeleteClick = onDeleteDepositReturnClick)
                 }
 
                 is CartDiscountItem -> {
@@ -123,7 +134,8 @@ private fun CardWithDefaultItems() {
     ShoppingCartScreen(
         uiState = uiState,
         onItemDeleted = {},
-        onQuantityChanged = { _, _ -> }
+        onQuantityChanged = { _, _ -> },
+        onDeleteDepositReturnClick = {}
     )
 }
 
@@ -152,7 +164,8 @@ private fun CardWithUserWeightedItems() {
     ShoppingCartScreen(
         uiState = uiState,
         onItemDeleted = {},
-        onQuantityChanged = { _, _ -> }
+        onQuantityChanged = { _, _ -> },
+        onDeleteDepositReturnClick = {}
     )
 }
 
@@ -187,7 +200,8 @@ private fun CardWithDiscountItem() {
     ShoppingCartScreen(
         uiState = uiState,
         onItemDeleted = {},
-        onQuantityChanged = { _, _ -> }
+        onQuantityChanged = { _, _ -> },
+        onDeleteDepositReturnClick = {}
     )
 }
 
@@ -221,7 +235,8 @@ private fun CardWithDeposit() {
     ShoppingCartScreen(
         uiState = uiState,
         onItemDeleted = {},
-        onQuantityChanged = { _, _ -> }
+        onQuantityChanged = { _, _ -> },
+        onDeleteDepositReturnClick = {}
     )
 }
 
@@ -253,6 +268,7 @@ private fun CardWithCartDiscount() {
     ShoppingCartScreen(
         uiState = uiState,
         onItemDeleted = {},
-        onQuantityChanged = { _, _ -> }
+        onQuantityChanged = { _, _ -> },
+        onDeleteDepositReturnClick = {}
     )
 }

@@ -9,6 +9,7 @@ import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.model.CartDiscountItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DepositItem
+import io.snabble.sdk.ui.cart.shoppingcart.product.model.DepositReturnItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DiscountItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.ProductItem
 import io.snabble.sdk.ui.telemetry.Telemetry
@@ -30,6 +31,7 @@ class ShoppingCartViewModel : ViewModel() {
         }
     }
 
+    // used to update the cart remote -> do not delete it
     fun updateCart() {
         updateUiState(cachedCart)
     }
@@ -48,7 +50,23 @@ class ShoppingCartViewModel : ViewModel() {
         when (event) {
             is RemoveItem -> removeItemFromCart(event.item, event.onSuccess)
             is UpdateQuantity -> updateQuantity(event.item, event.quantity)
+            RemoveDepositReturn -> removeDepositReturnItems()
         }
+    }
+
+    private fun removeDepositReturnItems() {
+        cachedCart
+            .filter {
+                it?.lineItem?.type in listOf(
+                    LineItemType.DEPOSIT_RETURN,
+                    LineItemType.DEPOSIT_RETURN_VOUCHER
+                )
+            }.forEach {
+                val index = cachedCart.indexOf(it)
+                if (index != -1) {
+                    cachedCart.remove(index)
+                }
+            }
     }
 
     private fun removeItemFromCart(item: ShoppingCart.Item?, onSuccess: (index: Int) -> Unit) {
@@ -68,12 +86,11 @@ class ShoppingCartViewModel : ViewModel() {
     private fun updateUiState(cart: ShoppingCart) {
         cachedCart = cart
 
-        val filteredCart = cart.filterNotNull()
-
         val cartItems: MutableList<CartItem> = mutableListOf()
 
-        with(filteredCart) {
+        with(cart.filterNotNull()) {
             filter { it.type == ItemType.PRODUCT }.let { cartItems.addProducts(it) }
+            filter { it.lineItem?.type == LineItemType.DEPOSIT_RETURN }.let { cartItems.addDepositReturnItems(it) }
 
             filter { it.lineItem?.type == LineItemType.DEPOSIT }.let { cartItems.addDepositsToProducts(it) }
 
@@ -85,7 +102,16 @@ class ShoppingCartViewModel : ViewModel() {
         cartItems.updatePrices()
         cartItems.sortCartDiscountsToBottom()
 
-        _uiState.update { it.copy(items = cartItems) }
+        _uiState.update { it.copy(items = cartItems, totalCartPrice = cachedCart.totalPrice) }
+    }
+
+    private fun MutableList<CartItem>.addDepositReturnItems(depositReturns: List<ShoppingCart.Item>) {
+        val totalDepositReturn = depositReturns.mapNotNull { it.lineItem }.sumOf { it.totalPrice }
+        if (totalDepositReturn >= 0) return
+
+        add(
+            DepositReturnItem(totalDeposit = priceFormatter?.format(totalDepositReturn).orEmpty())
+        )
     }
 
     private fun MutableList<CartItem>.sortCartDiscountsToBottom() {
@@ -189,7 +215,7 @@ class ShoppingCartViewModel : ViewModel() {
             val name = item.displayName.orEmpty()
             val value = item.totalPrice
 
-            firstOrNull { it.item.id == item.lineItem?.refersTo }
+            firstOrNull { it.item?.id == item.lineItem?.refersTo }
                 ?.let {
                     remove(it)
                     val product = it as? ProductItem ?: return@forEach
@@ -200,7 +226,7 @@ class ShoppingCartViewModel : ViewModel() {
 
     private fun MutableList<CartItem>.addDepositsToProducts(deposit: List<ShoppingCart.Item>) =
         deposit.forEach { item ->
-            firstOrNull { it.item.id == item.lineItem?.refersTo }?.let {
+            firstOrNull { it.item?.id == item.lineItem?.refersTo }?.let {
                 remove(it)
                 val product = it as? ProductItem ?: return@forEach
                 add(
@@ -230,6 +256,9 @@ class ShoppingCartViewModel : ViewModel() {
 }
 
 sealed interface Event
+
+data object RemoveDepositReturn : Event
+
 internal data class RemoveItem(
     val item: ShoppingCart.Item,
     val onSuccess: (index: Int) -> Unit
@@ -242,4 +271,5 @@ internal data class UpdateQuantity(
 
 data class UiState(
     val items: List<CartItem> = emptyList(),
+    val totalCartPrice: Int? = null
 )
