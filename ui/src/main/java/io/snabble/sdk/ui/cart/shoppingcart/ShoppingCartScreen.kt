@@ -49,7 +49,7 @@ fun ShoppingCartScreen(
                 viewModel.onEvent(UpdateQuantity(item, quantity))
             },
             onDeleteDepositReturnClick = {
-                viewModel.onEvent(RemoveDepositReturn)
+                viewModel.onEvent(RemoveDepositReturn(it))
             }
         )
     }
@@ -60,7 +60,7 @@ private fun ShoppingCartScreen(
     uiState: UiState,
     modifier: Modifier = Modifier,
     onItemDeleted: (ShoppingCart.Item) -> Unit,
-    onDeleteDepositReturnClick: () -> Unit,
+    onDeleteDepositReturnClick: (ShoppingCart.Item) -> Unit,
     onQuantityChanged: (ShoppingCart.Item, Int) -> Unit
 ) {
 

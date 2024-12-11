@@ -50,18 +50,20 @@ class ShoppingCartViewModel : ViewModel() {
         when (event) {
             is RemoveItem -> removeItemFromCart(event.item, event.onSuccess)
             is UpdateQuantity -> updateQuantity(event.item, event.quantity)
-            RemoveDepositReturn -> removeDepositReturnItems()
+            is RemoveDepositReturn -> removeDepositReturnItem(event.item)
         }
     }
 
-    private fun removeDepositReturnItems() {
-        cachedCart
-            .filter {
-                it?.lineItem?.type in listOf(
-                    LineItemType.DEPOSIT_RETURN,
-                    LineItemType.DEPOSIT_RETURN_VOUCHER
-                )
-            }.forEach {
+    private fun removeDepositReturnItem(item: ShoppingCart.Item) {
+        val index = cachedCart.indexOf(item)
+        if (index != -1) {
+            cachedCart.remove(index)
+        }
+    }
+
+    private fun ShoppingCart.removeRelatedDepositReturnVoucher(item: ShoppingCart.Item) {
+        firstOrNull { it?.id == item.lineItem?.refersTo }
+            ?.let {
                 val index = cachedCart.indexOf(it)
                 if (index != -1) {
                     cachedCart.remove(index)
@@ -87,10 +89,12 @@ class ShoppingCartViewModel : ViewModel() {
         cachedCart = cart
 
         val cartItems: MutableList<CartItem> = mutableListOf()
-
         with(cart.filterNotNull()) {
             filter { it.type == ItemType.PRODUCT }.let { cartItems.addProducts(it) }
-            filter { it.lineItem?.type == LineItemType.DEPOSIT_RETURN }.let { cartItems.addDepositReturnItems(it) }
+            filter {
+                it.lineItem?.type == LineItemType.DEPOSIT_RETURN ||
+                    it.lineItem?.type == LineItemType.DEPOSIT_RETURN_VOUCHER
+            }.let { cartItems.addDepositReturnItems(it) }
 
             filter { it.lineItem?.type == LineItemType.DEPOSIT }.let { cartItems.addDepositsToProducts(it) }
 
@@ -106,12 +110,19 @@ class ShoppingCartViewModel : ViewModel() {
     }
 
     private fun MutableList<CartItem>.addDepositReturnItems(depositReturns: List<ShoppingCart.Item>) {
-        val totalDepositReturn = depositReturns.mapNotNull { it.lineItem }.sumOf { it.totalPrice }
-        if (totalDepositReturn >= 0) return
+        depositReturns
+            .filter { it.lineItem?.type == LineItemType.DEPOSIT_RETURN_VOUCHER }
+            .forEach { returnVoucher ->
+                val relatedReturn = depositReturns.filter { it.lineItem?.refersTo == returnVoucher.id }
+                val totalDepositReturn = relatedReturn.mapNotNull { it.lineItem }.sumOf { it.totalPrice }
 
-        add(
-            DepositReturnItem(totalDeposit = priceFormatter?.format(totalDepositReturn).orEmpty())
-        )
+                add(
+                    DepositReturnItem(
+                        item = returnVoucher,
+                        totalDeposit = priceFormatter?.format(totalDepositReturn).orEmpty()
+                    )
+                )
+            }
     }
 
     private fun MutableList<CartItem>.sortCartDiscountsToBottom() {
@@ -215,7 +226,7 @@ class ShoppingCartViewModel : ViewModel() {
             val name = item.displayName.orEmpty()
             val value = item.totalPrice
 
-            firstOrNull { it.item?.id == item.lineItem?.refersTo }
+            firstOrNull { it.item.id == item.lineItem?.refersTo }
                 ?.let {
                     remove(it)
                     val product = it as? ProductItem ?: return@forEach
@@ -226,7 +237,7 @@ class ShoppingCartViewModel : ViewModel() {
 
     private fun MutableList<CartItem>.addDepositsToProducts(deposit: List<ShoppingCart.Item>) =
         deposit.forEach { item ->
-            firstOrNull { it.item?.id == item.lineItem?.refersTo }?.let {
+            firstOrNull { it.item.id == item.lineItem?.refersTo }?.let {
                 remove(it)
                 val product = it as? ProductItem ?: return@forEach
                 add(
@@ -257,7 +268,9 @@ class ShoppingCartViewModel : ViewModel() {
 
 sealed interface Event
 
-data object RemoveDepositReturn : Event
+internal data class RemoveDepositReturn(
+    val item: ShoppingCart.Item,
+) : Event
 
 internal data class RemoveItem(
     val item: ShoppingCart.Item,

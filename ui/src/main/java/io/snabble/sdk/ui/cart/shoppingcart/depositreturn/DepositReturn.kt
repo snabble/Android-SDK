@@ -1,7 +1,6 @@
 package io.snabble.sdk.ui.cart.shoppingcart.depositreturn
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,8 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedIconButton
@@ -19,15 +16,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import io.snabble.sdk.shoppingcart.ShoppingCart
+import io.snabble.sdk.shoppingcart.data.item.DepositReturnVoucher
+import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DepositReturnItem
 
@@ -36,7 +33,7 @@ fun DepositReturn(
     modifier: Modifier = Modifier,
     item: DepositReturnItem,
     showHint: Boolean = false,
-    onDeleteClick: () -> Unit
+    onDeleteClick: (ShoppingCart.Item) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -52,13 +49,6 @@ fun DepositReturn(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Image(
-                modifier = Modifier.size(44.dp),
-                painter = rememberVectorPainter(Icons.Filled.Receipt),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
-            )
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -83,7 +73,7 @@ fun DepositReturn(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.33f)
                 ),
-                onClick = onDeleteClick
+                onClick = { onDeleteClick(item.item) }
             ) {
                 Icon(
                     painter = painterResource(R.drawable.snabble_ic_delete),
@@ -114,7 +104,13 @@ fun DepositReturn(
 private fun PreviewWithHint() {
     Surface {
         DepositReturn(
-            item = DepositReturnItem(totalDeposit = "-0.75€"),
+            item = DepositReturnItem(
+                item = ShoppingCart.Item(
+                    ShoppingCart(),
+                    DepositReturnVoucher("", "", 1, ItemType.DEPOSIT_RETURN_VOUCHER)
+                ),
+                totalDeposit = "-0.75€"
+            ),
             showHint = true,
             onDeleteClick = {}
         )
@@ -126,7 +122,13 @@ private fun PreviewWithHint() {
 private fun PreviewWithoutHint() {
     Surface {
         DepositReturn(
-            item = DepositReturnItem(totalDeposit = "-0.75€"),
+            item = DepositReturnItem(
+                item = ShoppingCart.Item(
+                    ShoppingCart(),
+                    DepositReturnVoucher("", "", 1, ItemType.DEPOSIT_RETURN_VOUCHER)
+                ),
+                totalDeposit = "-0.75€"
+            ),
             showHint = false,
             onDeleteClick = {}
         )
