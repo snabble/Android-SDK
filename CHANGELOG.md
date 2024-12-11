@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 ### Added
 ### Changed
+*ui: add safe area as background to the exit code and adjust the brightness if it is shown
 ### Removed
 ### Fixed
 
