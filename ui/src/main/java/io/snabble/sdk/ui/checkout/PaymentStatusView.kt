@@ -107,6 +107,7 @@ class PaymentStatusView @JvmOverloads constructor(
 
     init {
         clipChildren = false
+        exitTokenBarcode.removeQuietZone(true)
 
         if (!isInEditMode) {
             project = Snabble.checkedInProject.value
