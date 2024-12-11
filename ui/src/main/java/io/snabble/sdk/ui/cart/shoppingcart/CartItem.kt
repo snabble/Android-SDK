@@ -4,5 +4,5 @@ import io.snabble.sdk.shoppingcart.ShoppingCart
 
 interface CartItem {
 
-    val item: ShoppingCart.Item
+    val item: ShoppingCart.Item?
 }
