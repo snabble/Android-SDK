@@ -4,14 +4,19 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 ### Added
 ### Changed
-* ui: add quiet zone as background to the exit code and adjust the brightness if it is shown
 ### Removed
 ### Fixed
+
+## [0.80.2]
+### Fixed
 * ui: Add missing focus to the product search field after opening the `ProductSearchView`
+### Changed
+* ui: add quiet zone as background to the exit code and adjust the brightness if it is shown
 
 ## [0.80.1]
 ### Fixed
 * ui: fix adding TWINT
+
 ## [0.80.0]
 ### Removed
 * core: SSL Pinning has been removed
