@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 * ui: add quiet zone as background to the exit code and adjust the brightness if it is shown
 ### Removed
 ### Fixed
+* ui: Add missing focus to the product search field after opening the `ProductSearchView`
 
 ## [0.80.1]
 ### Fixed
