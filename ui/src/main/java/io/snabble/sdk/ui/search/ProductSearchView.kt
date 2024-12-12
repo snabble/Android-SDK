@@ -151,8 +151,7 @@ open class ProductSearchView @JvmOverloads constructor(
 
     private fun onSearchUpdated() {
         if (searchableProductAdapter.itemCount == 0 && lastSearchQuery.isNotNullOrBlank() && allowAnyCode) {
-            addCodeAsIs.text =
-                resources.getString(R.string.Snabble_Scanner_addCodeAsIs, lastSearchQuery)
+            addCodeAsIs.text = resources.getString(R.string.Snabble_Scanner_addCodeAsIs, lastSearchQuery)
             addCodeAsIs.visibility = VISIBLE
         } else {
             addCodeAsIs.visibility = GONE
