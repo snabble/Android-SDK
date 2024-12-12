@@ -726,8 +726,6 @@ class ShoppingCart(
         handleCouponViolations(violations)
         handleDepositReturnVoucherViolations(violations)
         notifyViolations()
-        forEach {
-        }
         updatePrices(debounce = false)
     }
 
