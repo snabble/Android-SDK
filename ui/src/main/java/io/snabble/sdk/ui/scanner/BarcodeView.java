@@ -144,6 +144,10 @@ public class BarcodeView extends AppCompatImageView {
         animateBarcode = animate;
     }
 
+    /**
+     * If set the quiet zone, e.g. the white space around the qr code will be removed.
+     * @param adjust : true for removing the quiet zone false (default) to keep it as it is.
+     */
     public void removeQuietZone(boolean adjust) {
         removeQuietZone = adjust;
     }
