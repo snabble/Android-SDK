@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 ### Removed
 ### Fixed
+* ui: Add missing focus to the product search field after opening the `ProductSearchView`
 
 ## [0.80.1]
 ### Fixed
