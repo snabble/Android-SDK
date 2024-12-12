@@ -51,6 +51,7 @@ public class BarcodeView extends AppCompatImageView {
     private boolean isNumberDisplayEnabled = true;
     private boolean adjustBrightness = true;
     private boolean animateBarcode = true;
+    private boolean removeQuietZone = false;
 
     private Handler uiHandler;
     private int backgroundColor;
@@ -143,6 +144,14 @@ public class BarcodeView extends AppCompatImageView {
         animateBarcode = animate;
     }
 
+    /**
+     * If set the quiet zone, e.g. the white space around the qr code will be removed.
+     * @param adjust : true for removing the quiet zone false (default) to keep it as it is.
+     */
+    public void removeQuietZone(boolean adjust) {
+        removeQuietZone = adjust;
+    }
+
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
@@ -180,7 +189,7 @@ public class BarcodeView extends AppCompatImageView {
                         Map<EncodeHintType, String> hints = null;
 
                         // Remove the quite zone of the QR code we have enough space in the light mode
-                        if (format == BarcodeFormat.QR_CODE && !isDarkMode) {
+                        if ((format == BarcodeFormat.QR_CODE && !isDarkMode) || removeQuietZone) {
                             hints = new HashMap<>();
                             hints.put(EncodeHintType.MARGIN, "0");
                             border = 0;
