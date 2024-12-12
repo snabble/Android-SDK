@@ -737,13 +737,17 @@ class ShoppingCart(
     }
 
     private fun handleDepositReturnVoucherViolations(violations: List<Violation>) {
-        resolveDuplicated(violations)
+        violations.resolve("deposit_return_voucher_duplicate")
+        violations.resolve("deposit_return_voucher_already_redeemed")
     }
 
-    private fun resolveDuplicated(violations: List<Violation>) {
-        data.items.removeAll { it.isDuplicated(violations) }
-        violations
-            .filter { it.refersTo !in data.violationNotifications.map { notification -> notification.refersTo } }
+    private fun List<Violation>.resolve(type: String) {
+        data.items.removeAll {
+            it.violates(violations = this, type = type)
+                .also { data = data.copy(modCount = modCount.inc()) }
+        }
+
+        filter { it.refersTo !in data.violationNotifications.map { notification -> notification.refersTo } }
             .forEach { violation ->
                 data.violationNotifications.add(
                     ViolationNotification(
@@ -756,10 +760,11 @@ class ShoppingCart(
             }
     }
 
-    private fun Item.isDuplicated(
+    private fun Item.violates(
         violations: List<Violation>,
-    ) = violations.filter { it.type == "deposit_return_voucher_duplicate" }
-        .any { it.refersTo == id }.xx("isduplicated :")
+        type: String,
+    ) = violations.filter { it.type == type }
+        .any { it.refersTo == id }
 
     private fun handleCouponViolations(violations: List<Violation>) {
         violations.forEach { violation ->
