@@ -16,7 +16,6 @@ import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.codes.templates.CodeTemplate
 import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.coupons.CouponType
-import io.snabble.sdk.extensions.xx
 import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.shoppingcart.data.cart.BackendCart
 import io.snabble.sdk.shoppingcart.data.cart.BackendCartCustomer
@@ -124,7 +123,7 @@ class ShoppingCart(
     fun insert(item: Item, index: Int, update: Boolean) {
         val itemIsMerged = insertIfMergeable(item, index, update)
         if (itemIsMerged) return
-        data.items.add(index, item).xx("item added:")
+        data.items.add(index, item)
         clearBackup()
         checkLimits()
         notifyItemAdded(this, item)
@@ -728,11 +727,7 @@ class ShoppingCart(
         handleDepositReturnVoucherViolations(violations)
         notifyViolations()
         forEach {
-            it?.id.xx("after violation")
-            it?.type.xx("after violation")
-            it?.lineItem.xx("after violation")
         }
-        "update after violation".xx()
         updatePrices(debounce = false)
     }
 
