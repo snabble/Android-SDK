@@ -12,6 +12,7 @@ import io.snabble.sdk.checkout.LineItem
 import io.snabble.sdk.checkout.LineItemType
 import io.snabble.sdk.checkout.PaymentMethodInfo
 import io.snabble.sdk.checkout.Violation
+import io.snabble.sdk.checkout.ViolationType
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.codes.templates.CodeTemplate
 import io.snabble.sdk.coupons.Coupon
@@ -730,11 +731,11 @@ class ShoppingCart(
     }
 
     private fun handleDepositReturnVoucherViolations(violations: List<Violation>) {
-        violations.resolve("deposit_return_voucher_duplicate")
-        violations.resolve("deposit_return_voucher_already_redeemed")
+        violations.resolve(ViolationType.DEPOSIT_RETURN_DUPLICATED)
+        violations.resolve(ViolationType.DEPOSIT_RETURN_ALREADY_REDEEMED)
     }
 
-    private fun List<Violation>.resolve(type: String) {
+    private fun List<Violation>.resolve(type: ViolationType) {
         data.items.removeAll {
             it.violates(violations = this, type = type)
                 .also { data = data.copy(modCount = modCount.inc()) }
@@ -755,9 +756,8 @@ class ShoppingCart(
 
     private fun Item.violates(
         violations: List<Violation>,
-        type: String,
-    ) = violations.filter { it.type == type }
-        .any { it.refersTo == id }
+        type: ViolationType,
+    ) = violations.filter { it.type == type }.any { it.refersTo == id }
 
     private fun handleCouponViolations(violations: List<Violation>) {
         violations.forEach { violation ->
