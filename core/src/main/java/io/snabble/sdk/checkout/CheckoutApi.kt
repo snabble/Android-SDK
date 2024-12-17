@@ -20,7 +20,6 @@ import java.util.Date
  * https://docs.snabble.io/docs/api/api_checkout
  */
 interface CheckoutApi {
-
     /**
      * Cancel all operations
      */
@@ -77,13 +76,11 @@ interface CheckoutApi {
 }
 
 interface AuthorizePaymentResult {
-
     fun onSuccess()
     fun onError()
 }
 
 interface CheckoutInfoResult {
-
     fun onSuccess(
         signedCheckoutInfo: SignedCheckoutInfo,
         onlinePrice: Int,
@@ -98,89 +95,50 @@ interface CheckoutInfoResult {
 }
 
 interface PaymentProcessResult {
-
     fun onSuccess(checkoutProcessResponse: CheckoutProcessResponse?, rawResponse: String?)
     fun onError()
     fun onNotFound()
 }
 
 interface PaymentAbortResult {
-
     fun onSuccess()
     fun onError()
 }
 
 enum class LineItemType {
-    @SerializedName("default")
-    DEFAULT,
-
-    @SerializedName("deposit")
-    DEPOSIT,
-
-    @SerializedName("discount")
-    DISCOUNT,
-
-    @SerializedName("coupon")
-    COUPON,
-
-    @SerializedName("depositReturnVoucher")
-    DEPOSIT_RETURN_VOUCHER,
-
-    @SerializedName("depositReturn")
-    DEPOSIT_RETURN
+    @SerializedName("default") DEFAULT,
+    @SerializedName("deposit") DEPOSIT,
+    @SerializedName("discount") DISCOUNT,
+    @SerializedName("coupon") COUPON,
+    @SerializedName("depositReturnVoucher") DEPOSIT_RETURN_VOUCHER,
+    @SerializedName("depositReturn") DEPOSIT_RETURN
 }
 
 enum class CheckState {
-    @SerializedName("unauthorized")
-    UNAUTHORIZED,
-
-    @SerializedName("pending")
-    PENDING,
-
-    @SerializedName("processing")
-    PROCESSING,
-
-    @SerializedName("successful")
-    SUCCESSFUL,
-
-    @SerializedName("transferred")
-    TRANSFERRED,
-
-    @SerializedName("failed")
-    FAILED
+    @SerializedName("unauthorized") UNAUTHORIZED,
+    @SerializedName("pending") PENDING,
+    @SerializedName("processing")  PROCESSING,
+    @SerializedName("successful") SUCCESSFUL,
+    @SerializedName("transferred") TRANSFERRED,
+    @SerializedName("failed") FAILED
 }
 
 enum class CheckType {
-    @SerializedName("min_age")
-    MIN_AGE,
-
-    @SerializedName("supervisor_approval")
-    SUPERVISOR
+    @SerializedName("min_age") MIN_AGE,
+    @SerializedName("supervisor_approval") SUPERVISOR
 }
 
 enum class Performer {
-    @SerializedName("app")
-    APP,
-
-    @SerializedName("supervisor")
-    SUPERVISOR,
-
-    @SerializedName("backend")
-    BACKEND,
-
-    @SerializedName("payment")
-    PAYMENT
+    @SerializedName("app") APP,
+    @SerializedName("supervisor") SUPERVISOR,
+    @SerializedName("backend") BACKEND,
+    @SerializedName("payment") PAYMENT
 }
 
 enum class RoutingTarget {
-    @SerializedName("gatekeeper")
-    GATEKEEPER,
-
-    @SerializedName("supervisor")
-    SUPERVISOR,
-
-    @SerializedName("none")
-    NONE
+    @SerializedName("gatekeeper") GATEKEEPER,
+    @SerializedName("supervisor") SUPERVISOR,
+    @SerializedName("none") NONE
 }
 
 data class Href(
@@ -192,7 +150,6 @@ data class SignedCheckoutInfo(
     val signature: String? = null,
     val links: Map<String, Href>? = null,
 ) {
-
     val checkoutProcessLink: String?
         get() = links?.get("checkoutProcess")?.href
 
@@ -362,7 +319,6 @@ data class Check(
     val performedBy: Performer? = null,
     val state: CheckState? = null,
 ) {
-
     val selfLink: String?
         get() = links?.get("self")?.href
 }
@@ -374,7 +330,6 @@ data class Fulfillment(
     val refersTo: List<String> = emptyList(),
     val links: Map<String, Href>? = null,
 ) {
-
     val selfLink: String?
         get() = links?.get("self")?.href
 }
@@ -395,7 +350,6 @@ data class CheckoutProcessResponse(
     val paymentResult: PaymentResult? = null,
     val fulfillments: List<Fulfillment> = emptyList(),
 ) {
-
     val selfLink: String?
         get() = links?.get("self")?.href
 
