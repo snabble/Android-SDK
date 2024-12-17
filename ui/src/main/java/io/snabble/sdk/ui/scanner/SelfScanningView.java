@@ -601,7 +601,6 @@ public class SelfScanningView extends FrameLayout {
 
         @Override
         public void onViolationDetected(@NonNull List<ViolationNotification> violations) {
-            Log.d("xx", "onViolationDetected: ");
             ViolationNotificationUtils.showNotificationOnce(violations, getContext(), shoppingCart);
         }
     };
