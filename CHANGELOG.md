@@ -4,8 +4,8 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 ### Added
 ### Changed
-### Removed/
-* ui / core : Remove everything related to the old deposit return voucher feature
+### Removed
+* ui/core: Remove everything related to the old deposit return voucher feature
 ### Fixed
 
 ## [0.79.0]
