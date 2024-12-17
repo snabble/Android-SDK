@@ -332,7 +332,6 @@ class ShoppingCart(
     fun invalidateOnlinePrices() {
         data = data.copy(
             invalidProducts = null,
-            invalidDepositReturnVoucher = false,
             onlineTotalPrice = null
         )
 
@@ -428,10 +427,6 @@ class ShoppingCart(
     val isOnlinePrice: Boolean
         get() = data.onlineTotalPrice != null
 
-    fun setInvalidDepositReturnVoucher(invalidDepositReturnVoucher: Boolean) {
-        data = data.copy(invalidDepositReturnVoucher = invalidDepositReturnVoucher)
-    }
-
     fun isCouponApplied(coupon: Coupon): Boolean = any { it?.coupon?.id == coupon.id }
 
     fun removeCoupon(coupon: Coupon) {
@@ -447,8 +442,6 @@ class ShoppingCart(
         set(invalidProducts) {
             data = data.copy(invalidProducts = invalidProducts)
         }
-
-    fun hasInvalidDepositReturnVoucher(): Boolean = data.invalidDepositReturnVoucher
 
     /**
      * Returns the total price of the cart.
@@ -1005,16 +998,6 @@ class ShoppingCart(
                 if (quantity == 0) {
                     quantity = 1
                 }
-            }
-            if (scannedCode.hasEmbeddedData() && product.type == Type.DepositReturnVoucher) {
-                val builder = scannedCode.newBuilder()
-                if (scannedCode.hasEmbeddedData()) {
-                    builder.setEmbeddedData(scannedCode.embeddedData * -1)
-                }
-                if (scannedCode.hasEmbeddedDecimalData()) {
-                    builder.setEmbeddedDecimalData(scannedCode.embeddedDecimalData.multiply(BigDecimal(-1)))
-                }
-                this.scannedCode = builder.create()
             }
         }
 

@@ -98,11 +98,6 @@ internal class ShoppingCartUpdater(
                     error(requestSucceeded = true)
                 }
 
-                override fun onInvalidDepositReturnVoucher() {
-                    cart.setInvalidDepositReturnVoucher(true)
-                    error(requestSucceeded = true)
-                }
-
                 override fun onUnknownError() {
 
                     error(requestSucceeded = false)

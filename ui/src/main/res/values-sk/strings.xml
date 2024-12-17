@@ -90,7 +90,6 @@
   <string name="Snabble.Hints.closedBags">Len tak ďalej! Prosím, uľahči prácu pokladníkom a nevkladaj svoje produkty priamo do uzavretých tašiek. Ďakujem!</string>
   <string name="Snabble.Hints.continueScanning">Pokračovať v skenovaní</string>
   <string name="Snabble.Hints.title">Poznámka od %s</string>
-  <string name="Snabble.InvalidDepositVoucher.errorMsg">Poukážky za vratné produkty môžu byť uplatnené len jedenkrát.</string>
   <string name="Snabble.Keyguard.message">Tým zabezpečíme, že k tomuto spôsobu platby budeš mať prístup len ty sám/sama</string>
   <string name="Snabble.Keyguard.requireScreenLock">Aby si mohol/mohla priradiť tento spôsob platby, musíš chrániť svoj smartfón uzamknutím displeja.</string>
   <string name="Snabble.Keyguard.title">Prosím, odomknite svoj smartfón</string>

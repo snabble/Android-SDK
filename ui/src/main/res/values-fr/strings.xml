@@ -74,7 +74,6 @@
   <string name="Snabble.Hints.closedBags">Parfait, continuez ! S\'il vous plaît, facilitez la tâche du personnel de caisse et ne déposez pas vos articles directement dans des sacs fermés. Merci !</string>
   <string name="Snabble.Hints.continueScanning">Continuer à scanner</string>
   <string name="Snabble.Hints.title">Avis de %s</string>
-  <string name="Snabble.InvalidDepositVoucher.errorMsg">Les bons pour les emballages vides ne peuvent être échangés qu\'une seule fois.</string>
   <string name="Snabble.Keyguard.message">Nous nous assurons ainsi que vous êtes le seul à avoir accès à ce mode de paiement.</string>
   <string name="Snabble.Keyguard.requireScreenLock">Vous devez protéger votre smartphone avec un verrouillage d\'écran pour ajouter ce mode de paiement.</string>
   <string name="Snabble.Keyguard.title">Veuillez déverrouiller votre smartphone</string>
