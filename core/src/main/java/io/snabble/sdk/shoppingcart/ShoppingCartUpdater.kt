@@ -163,8 +163,6 @@ internal class ShoppingCartUpdater(
             invalidProducts = null
             checkLimits()
             notifyPriceUpdate(this)
-            forEach {
-            }
         }
     }
 
