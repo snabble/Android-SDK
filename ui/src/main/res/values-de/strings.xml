@@ -283,6 +283,7 @@
   <string name="Snabble.Scanner.BundleDialog.headline">Verpackungseinheit auswählen</string>
   <string name="Snabble.Scanner.Camera.accessDenied">Kamerazugriff verweigert</string>
   <string name="Snabble.Scanner.Camera.allowAccess">Entschuldigung, wir benötigen Zugriff auf deine Kamera, um mit ihr Barcodes zu scannen. Bitte erlaube die Nutzung in den Einstellungen und kehre dann hierher zurück.</string>
+  <string name="Snabble.Scanner.DepositReturnVoucher.Added">Leergutbon hinzugefügt</string>
   <string name="Snabble.Scanner.GoToCart.empty">Warenkorb</string>
   <string name="Snabble.Scanner.addCodeAsIs">%s so hinzufügen</string>
   <string name="Snabble.Scanner.addToCart">In den Warenkorb</string>
@@ -431,6 +432,8 @@
   <string name="Snabble.Taxation.pleaseChoose">Bitte wählen</string>
   <string name="Snabble.Textfield.HidePassword.Accessibility">Passwort verbergen</string>
   <string name="Snabble.Textfield.ShowPassword.Accessibility">Passwort anzeigen</string>
+  <string name="Snabble.Violations.DepositReturnVoucher.alreadyRedeemed">Dieser Leergutbon wurde bereits eingelöst.</string>
+  <string name="Snabble.Violations.DepositReturnVoucher.duplicated">Dieser Leergutbon wurde bereits erfasst.</string>
   <string name="Snabble.Violations.couponAlreadyVoided">Ein Coupon wurde bereits eingelöst und wird aus dem Warenkorb entfernt</string>
   <string name="Snabble.Violations.couponCurrentlyNotValid">Ein Coupon ist aktuell ungültig und wird aus dem Warenkorb entfernt</string>
   <string name="Snabble.Violations.couponInvalid">Ein Coupon ist ungültig und wird aus dem Warenkorb entfernt</string>

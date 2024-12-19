@@ -37,6 +37,7 @@ import io.snabble.sdk.Shop;
 import io.snabble.sdk.Snabble;
 import io.snabble.sdk.ViolationNotification;
 import io.snabble.sdk.codes.ScannedCode;
+import io.snabble.sdk.codes.templates.CodeTemplate;
 import io.snabble.sdk.coupons.Coupon;
 import io.snabble.sdk.coupons.CouponCode;
 import io.snabble.sdk.coupons.CouponType;
@@ -192,10 +193,23 @@ public class SelfScanningView extends FrameLayout {
                         resumeBarcodeScanner();
                     }
                 })
-                .setOnProductNotFoundListener(() ->
-                        handleCoupon(scannedCodes, getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_unknownBarcode))))
+                .setOnProductNotFoundListener(() -> {
+                    final Boolean couponAdded = handleCoupon(scannedCodes);
+                    if (!couponAdded) {
+                        handleReturnDepositVoucher(scannedCodes);
+                    } else {
+                        showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_unknownBarcode)));
+                    }
+                })
                 .setOnNetworkErrorListener(() ->
-                        handleCoupon(scannedCodes, getResources().getString(R.string.Snabble_Scanner_networkError)))
+                {
+                    final Boolean couponAdded = handleCoupon(scannedCodes);
+                    if (!couponAdded) {
+                        handleReturnDepositVoucher(scannedCodes);
+                    } else {
+                        showWarning(getResources().getString(R.string.Snabble_Scanner_networkError));
+                    }
+                })
                 .setOnShelfCodeScannedListener(() ->
                         showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_scannedShelfCode))))
                 .setOnSaleStopListener(() -> new AlertDialog.Builder(getContext())
@@ -225,17 +239,23 @@ public class SelfScanningView extends FrameLayout {
                 .resolve();
     }
 
-    private void handleCoupon(List<ScannedCode> scannedCodes, String failureMessage) {
+    private void handleReturnDepositVoucher(List<ScannedCode> scannedCodes) {
+        final kotlin.Pair<CodeTemplate, String> codeTemplateScannedCodePair = DepositReturnVoucherHelper.getDrvCodeTemplateWithScannedCode(project, scannedCodes);
+        if (codeTemplateScannedCodePair != null) {
+            DepositReturnVoucherHelper.insertDepositReturnVoucherItem(shoppingCart, codeTemplateScannedCodePair.getFirst(), codeTemplateScannedCodePair.getSecond());
+            showInfo(getResources().getString(R.string.Snabble_Scanner_DepositReturnVoucher_Added));
+        }
+    }
+
+    private Boolean handleCoupon(List<ScannedCode> scannedCodes) {
         Pair<Coupon, ScannedCode> coupon = lookupCoupon(scannedCodes);
-        if (coupon == null) {
-            showWarning(failureMessage);
-        } else {
+        if (coupon != null) {
             if (!shoppingCart.containsScannedCode(coupon.second)) {
                 shoppingCart.add(shoppingCart.newItem(coupon.first, coupon.second));
             }
-
             showInfo(getResources().getString(R.string.Snabble_Scanner_couponAdded, coupon.first.getName()));
         }
+        return coupon != null;
     }
 
     private Pair<Coupon, ScannedCode> lookupCoupon(List<ScannedCode> scannedCodes) {
@@ -337,7 +357,7 @@ public class SelfScanningView extends FrameLayout {
             final Project currentProject = Snabble.getInstance().getCheckedInProject().getLatestValue();
 
             RemoteThemingHelper
-                    .changeButtonColorFor(alertDialog,currentProject)
+                    .changeButtonColorFor(alertDialog, currentProject)
                     .show();
 
             input.requestFocus();
