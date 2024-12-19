@@ -85,7 +85,6 @@
   <string name="Snabble.Hints.closedBags">Well done! Please make things easy for the cashier and don\'t store your products in closed bags. Thank you!</string>
   <string name="Snabble.Hints.continueScanning">Continue scanning</string>
   <string name="Snabble.Hints.title">Info from %s</string>
-  <string name="Snabble.InvalidDepositVoucher.errorMsg">Deposit return vouchers can be redeemed only once.</string>
   <string name="Snabble.Keyguard.message">That\'s how we make sure that only you have access to this payment method</string>
   <string name="Snabble.Keyguard.requireScreenLock">You need to secure your smartphone with a screen lock to add this payment method.</string>
   <string name="Snabble.Keyguard.title">Please unlock your device</string>

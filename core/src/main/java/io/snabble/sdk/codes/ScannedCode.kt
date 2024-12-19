@@ -197,12 +197,8 @@ class ScannedCode private constructor() : Serializable {
 
             project.depositReturnVoucherProviders
                 .flatMap { it.templates }
-                .forEach { codeTemplate ->
-                    val scannedCode: ScannedCode? = codeTemplate.match(code).buildCode()
-                    if (scannedCode != null) {
-                        matches.add(scannedCode)
-                    }
-                }
+                .mapNotNull { template -> template.match(code).buildCode() }
+                .forEach(matches::add)
 
             project.priceOverrideTemplates.forEach { priceOverrideTemplate ->
                 val codeTemplate = priceOverrideTemplate.codeTemplate

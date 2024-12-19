@@ -85,7 +85,6 @@
   <string name="Snabble.Hints.closedBags">Weiter so! Bitte mache es dem Kassenpersonal leicht und packe deine Artikel nicht direkt in geschlossene Taschen. Danke!</string>
   <string name="Snabble.Hints.continueScanning">Weiter scannen</string>
   <string name="Snabble.Hints.title">Hinweis von %s</string>
-  <string name="Snabble.InvalidDepositVoucher.errorMsg">Leergutbons können nur einmal eingelöst werden.</string>
   <string name="Snabble.Keyguard.message">Dadurch stellen wir sicher, dass nur du selbst Zugriff auf diese Zahlungsmethode hast</string>
   <string name="Snabble.Keyguard.requireScreenLock">Du musst dein Smartphone mit einer Display-Sperre schützen, um diese Zahlungsmethode hinzuzufügen.</string>
   <string name="Snabble.Keyguard.title">Bitte entsperre dein Smartphone</string>
@@ -284,7 +283,7 @@
   <string name="Snabble.Scanner.BundleDialog.headline">Verpackungseinheit auswählen</string>
   <string name="Snabble.Scanner.Camera.accessDenied">Kamerazugriff verweigert</string>
   <string name="Snabble.Scanner.Camera.allowAccess">Entschuldigung, wir benötigen Zugriff auf deine Kamera, um mit ihr Barcodes zu scannen. Bitte erlaube die Nutzung in den Einstellungen und kehre dann hierher zurück.</string>
-  <string name="Snabble.Scanner.DepositReturnVoucher.Added">Pfandbon hinzugefügt</string>
+  <string name="Snabble.Scanner.DepositReturnVoucher.Added">Leergutbon hinzugefügt</string>
   <string name="Snabble.Scanner.GoToCart.empty">Warenkorb</string>
   <string name="Snabble.Scanner.addCodeAsIs">%s so hinzufügen</string>
   <string name="Snabble.Scanner.addToCart">In den Warenkorb</string>

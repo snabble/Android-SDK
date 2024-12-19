@@ -12,6 +12,7 @@ import io.snabble.sdk.checkout.LineItem
 import io.snabble.sdk.checkout.LineItemType
 import io.snabble.sdk.checkout.PaymentMethodInfo
 import io.snabble.sdk.checkout.Violation
+import io.snabble.sdk.checkout.ViolationType
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.codes.templates.CodeTemplate
 import io.snabble.sdk.coupons.Coupon
@@ -27,7 +28,6 @@ import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
-import java.math.BigDecimal
 import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.CopyOnWriteArrayList
@@ -331,7 +331,6 @@ class ShoppingCart(
     fun invalidateOnlinePrices() {
         data = data.copy(
             invalidProducts = null,
-            invalidDepositReturnVoucher = false,
             onlineTotalPrice = null
         )
 
@@ -427,10 +426,6 @@ class ShoppingCart(
     val isOnlinePrice: Boolean
         get() = data.onlineTotalPrice != null
 
-    fun setInvalidDepositReturnVoucher(invalidDepositReturnVoucher: Boolean) {
-        data = data.copy(invalidDepositReturnVoucher = invalidDepositReturnVoucher)
-    }
-
     fun isCouponApplied(coupon: Coupon): Boolean = any { it?.coupon?.id == coupon.id }
 
     fun removeCoupon(coupon: Coupon) {
@@ -446,8 +441,6 @@ class ShoppingCart(
         set(invalidProducts) {
             data = data.copy(invalidProducts = invalidProducts)
         }
-
-    fun hasInvalidDepositReturnVoucher(): Boolean = data.invalidDepositReturnVoucher
 
     /**
      * Returns the total price of the cart.
@@ -726,35 +719,38 @@ class ShoppingCart(
         handleCouponViolations(violations)
         handleDepositReturnVoucherViolations(violations)
         notifyViolations()
-        forEach {
-        }
         updatePrices(debounce = false)
     }
 
     private fun handleDepositReturnVoucherViolations(violations: List<Violation>) {
-        resolveDuplicated(violations)
+        violations.resolve(ViolationType.DEPOSIT_RETURN_DUPLICATED)
+        violations.resolve(ViolationType.DEPOSIT_RETURN_ALREADY_REDEEMED)
     }
 
-    private fun resolveDuplicated(violations: List<Violation>) {
-        data.items.removeAll { it.isDuplicated(violations) }
-        violations
-            .filter { it.refersTo !in data.violationNotifications.map { notification -> notification.refersTo } }
-            .forEach { violation ->
-                data.violationNotifications.add(
-                    ViolationNotification(
-                        name = null,
-                        refersTo = violation.refersTo,
-                        type = violation.type,
-                        fallbackMessage = violation.message
-                    )
+    private fun List<Violation>.resolve(type: ViolationType) {
+        data.items.removeAll {
+            it.violates(violations = this, type = type)
+                .also { data = data.copy(modCount = modCount.inc()) }
+        }
+
+        val notificationReferrers = data.violationNotifications.map { notification -> notification.refersTo }
+        this
+            .filter { it.refersTo !in notificationReferrers }
+            .map { violation ->
+                ViolationNotification(
+                    name = null,
+                    refersTo = violation.refersTo,
+                    type = violation.type,
+                    fallbackMessage = violation.message
                 )
             }
+            .forEach(data.violationNotifications::add)
     }
 
-    private fun Item.isDuplicated(
+    private fun Item.violates(
         violations: List<Violation>,
-    ) = violations.filter { it.type == "deposit_return_voucher_duplicate" }
-        .any { it.refersTo == id }
+        type: ViolationType,
+    ) = violations.any { it.type == type && it.refersTo == id }
 
     private fun handleCouponViolations(violations: List<Violation>) {
         violations.forEach { violation ->
@@ -1002,16 +998,6 @@ class ShoppingCart(
                 if (quantity == 0) {
                     quantity = 1
                 }
-            }
-            if (scannedCode.hasEmbeddedData() && product.type == Type.DepositReturnVoucher) {
-                val builder = scannedCode.newBuilder()
-                if (scannedCode.hasEmbeddedData()) {
-                    builder.setEmbeddedData(scannedCode.embeddedData * -1)
-                }
-                if (scannedCode.hasEmbeddedDecimalData()) {
-                    builder.setEmbeddedDecimalData(scannedCode.embeddedDecimalData.multiply(BigDecimal(-1)))
-                }
-                this.scannedCode = builder.create()
             }
         }
 
