@@ -218,21 +218,21 @@ data class Violation(
     val message: String? = null,
 )
 
-enum class ViolationType(value: String) {
+enum class ViolationType {
     @SerializedName("deposit_return_voucher_already_redeemed")
-    DEPOSIT_RETURN_ALREADY_REDEEMED("deposit_return_voucher_already_redeemed"),
+    DEPOSIT_RETURN_ALREADY_REDEEMED,
 
     @SerializedName("deposit_return_voucher_duplicate")
-    DEPOSIT_RETURN_DUPLICATED("deposit_return_voucher_duplicate"),
+    DEPOSIT_RETURN_DUPLICATED,
 
     @SerializedName("coupon_already_voided")
-    COUPON_ALREADY_VOIDED("coupon_already_voided"),
+    COUPON_ALREADY_VOIDED,
 
     @SerializedName("coupon_currently_not_valid")
-    COUPON_CURRENTLY_NOT_VALID("coupon_currently_not_valid"),
+    COUPON_CURRENTLY_NOT_VALID,
 
     @SerializedName("coupon_invalid")
-    COUPON_INVALID("coupon_invalid"),
+    COUPON_INVALID,
 }
 
 data class LineItem(
