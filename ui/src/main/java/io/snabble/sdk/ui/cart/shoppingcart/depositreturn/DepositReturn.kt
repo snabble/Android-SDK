@@ -40,7 +40,7 @@ fun DepositReturn(
             .fillMaxWidth()
             .padding(vertical = 16.dp, horizontal = 16.dp)
             .heightIn(min = 48.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically)
     ) {
 
         Row(
