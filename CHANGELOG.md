@@ -8,6 +8,21 @@ All notable changes to this project will be documented in this file.
 * ui/core: Remove everything related to the old deposit return voucher feature
 ### Fixed
 
+## [0.80.2]
+### Fixed
+* ui: Add missing focus to the product search field after opening the `ProductSearchView`
+### Changed
+* ui: add quiet zone as background to the exit code and adjust the brightness if it is shown
+
+## [0.80.1]
+### Fixed
+* ui: fix adding TWINT
+
+## [0.80.0]
+### Removed
+* core: SSL Pinning has been removed
+* ui: Datatrans SSL Pinning has been deactivated
+
 ## [0.79.0]
 ### Added
 * core: Add the shop services from meta data to Shop class

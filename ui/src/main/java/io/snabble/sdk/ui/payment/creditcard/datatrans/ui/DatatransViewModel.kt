@@ -67,8 +67,11 @@ internal class DatatransViewModel(
                     is SavedCard -> DatatransToken(savedPaymentMethod, savedPaymentMethod.cardExpiryDate)
 
                     else -> {
-                        if (savedPaymentMethod != null) DatatransToken(savedPaymentMethod)
-                        null
+                        if (savedPaymentMethod != null) {
+                            DatatransToken(savedPaymentMethod)
+                        } else {
+                            null
+                        }
                     }
                 }
                 when {
@@ -86,7 +89,6 @@ internal class DatatransViewModel(
         }
         options.appCallbackScheme = "snabble"
         options.isTesting = isTesting
-        options.useCertificatePinning = true
     }
 
     fun errorHandled() {
