@@ -11,7 +11,6 @@ import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
-import java.lang.Exception
 import java.net.HttpURLConnection.HTTP_CONFLICT
 import java.net.HttpURLConnection.HTTP_FORBIDDEN
 import java.net.HttpURLConnection.HTTP_NOT_FOUND
@@ -115,15 +114,28 @@ class DefaultCheckoutApi(private val project: Project,
                     when (type) {
                         "invalid_cart_item" -> {
                             val invalidSkus = error["details"].asJsonArray
-                                .mapNotNull { it.asJsonObject["sku"].asString }
+                                .mapNotNull {
+                                    val sku: String? = it.asJsonObject["sku"].asString
+                                    if (sku.isNotNullOrBlank()) {
+                                        sku
+                                    } else {
+                                        null
+                                    }
+                                }
 
                             val invalidProducts = shoppingCart
                                 .mapNotNull { it?.product }
                                 .filter { invalidSkus.contains(it.sku) }
 
-                            Logger.e("Invalid products")
-
-                            checkoutInfoResult?.onInvalidProducts(invalidProducts)
+                            if (invalidProducts.isNotEmpty()) {
+                                Logger.e("Invalid products found")
+                                checkoutInfoResult?.onInvalidProducts(invalidProducts)
+                            } else {
+                                Logger.e("Invalid items found")
+                                val invalidIds = error["details"].asJsonArray
+                                    .mapNotNull { it.asJsonObject["id"].asString }
+                                checkoutInfoResult?.onInvalidItem(invalidIds)
+                            }
                         }
 
                         "no_available_method" -> checkoutInfoResult?.onNoAvailablePaymentMethodFound()
