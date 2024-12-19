@@ -1,3 +1,4 @@
+@file:JvmName("ReturnDepositProviderImpl")
 package io.snabble.sdk.ui.scanner
 
 import io.snabble.sdk.Project
