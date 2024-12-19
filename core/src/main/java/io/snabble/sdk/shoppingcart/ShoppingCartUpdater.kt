@@ -74,7 +74,7 @@ internal class ShoppingCartUpdater(
                     mainScope.launch {
                         if (skus.isNotEmpty()) {
                             val products = withContext(Dispatchers.Default) { getReplacedProducts(skus) }
-                            if (products == null) {
+                            if (products == null && !containsReturnDepositReturnVouchers(signedCheckoutInfo)) {
                                 onUnknownError()
                             } else {
                                 commitCartUpdate(modCount, signedCheckoutInfo, products)
@@ -98,12 +98,8 @@ internal class ShoppingCartUpdater(
                     error(requestSucceeded = true)
                 }
 
-                override fun onInvalidDepositReturnVoucher() {
-                    cart.setInvalidDepositReturnVoucher(true)
-                    error(requestSucceeded = true)
-                }
-
                 override fun onUnknownError() {
+
                     error(requestSucceeded = false)
                 }
 
@@ -153,6 +149,7 @@ internal class ShoppingCartUpdater(
 
             addLineItemsAsCartItems(filter { it.type == LineItemType.COUPON })
             addLineItemsAsCartItems(filter { it.type == LineItemType.DEPOSIT })
+            addLineItemsAsCartItems(filter { it.type == LineItemType.DEPOSIT_RETURN })
         }
 
         setOnlinePrice(price)
@@ -238,7 +235,7 @@ internal class ShoppingCartUpdater(
         lineItem: LineItem,
         products: Map<String?, Product>?
     ): Boolean {
-        if (item.product?.sku != lineItem.sku) {
+        if (item.product?.sku != lineItem.sku && !lineItem.isDepositReturnVoucher()) {
             if (products == null) {
                 error(requestSucceeded = false)
                 return false
@@ -258,6 +255,9 @@ internal class ShoppingCartUpdater(
         }
         return true
     }
+
+    private fun LineItem.isDepositReturnVoucher() =
+        type == LineItemType.DEPOSIT_RETURN || type == LineItemType.DEPOSIT_RETURN_VOUCHER
 
     private fun areAllItemsSynced(lineItems: List<LineItem>): Boolean {
         val requiredIds = cart.filter { it?.type != ItemType.COUPON }.map { it?.id }
@@ -282,6 +282,11 @@ internal class ShoppingCartUpdater(
 
         else -> false
     }
+
+    private fun containsReturnDepositReturnVouchers(signedCheckoutInfo: SignedCheckoutInfo): Boolean =
+        deserializedCheckoutInfo(signedCheckoutInfo)?.lineItems
+            ?.any { it.type == LineItemType.DEPOSIT_RETURN_VOUCHER }
+            ?: false
 
     private fun getToBeReplacedSkus(signedCheckoutInfo: SignedCheckoutInfo): List<String?> {
         val (_, lineItems) = deserializedCheckoutInfo(signedCheckoutInfo) ?: return emptyList()

@@ -83,7 +83,6 @@
   <string name="Snabble.Hints.closedBags">Csak így tovább! Kérjük, könnyítsd meg a pénztáros munkáját, és ne csomagold közvetlenül lezárt tasakba a termékedet. Köszönjük!</string>
   <string name="Snabble.Hints.continueScanning">Szkennelés folytatása</string>
   <string name="Snabble.Hints.title">%s megjegyzése</string>
-  <string name="Snabble.InvalidDepositVoucher.errorMsg">Az üvegvisszaváltó blokkot csak egyszer lehet beváltani.</string>
   <string name="Snabble.Keyguard.message">Ezzel garantálható, hogy csak te férj ehhez a fizetési eljáráshoz</string>
   <string name="Snabble.Keyguard.requireScreenLock">E fizetési mód hozzáadásához képernyőzárral kell védened az okostelefonod.</string>
   <string name="Snabble.Keyguard.title">Kérlek, oldd fel az okostelefonod képernyőzárát</string>

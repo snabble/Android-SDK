@@ -207,7 +207,6 @@ class ShoppingCartView : FrameLayout {
             updateEmptyState()
             scanForImages()
             checkSaleStop()
-            checkDepositReturnVoucher()
         }
     }
 
@@ -243,18 +242,6 @@ class ShoppingCartView : FrameLayout {
                 .show()
 
             lastInvalidProducts = invalidProducts
-        }
-    }
-
-    private fun checkDepositReturnVoucher() {
-        if (cart?.hasInvalidDepositReturnVoucher() == true && !hasAlreadyShownInvalidDeposit) {
-            AlertDialog.Builder(context)
-                .setCancelable(false)
-                .setTitle(getIdentifier(resources, R.string.Snabble_SaleStop_ErrorMsg_title))
-                .setMessage(getIdentifier(resources, R.string.Snabble_InvalidDepositVoucher_errorMsg))
-                .setPositiveButton(R.string.Snabble_ok, null)
-                .show()
-            hasAlreadyShownInvalidDeposit = true
         }
     }
 

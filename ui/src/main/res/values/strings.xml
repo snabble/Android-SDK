@@ -85,7 +85,6 @@
   <string name="Snabble.Hints.closedBags">Well done! Please make things easy for the cashier and don\'t store your products in closed bags. Thank you!</string>
   <string name="Snabble.Hints.continueScanning">Continue scanning</string>
   <string name="Snabble.Hints.title">Info from %s</string>
-  <string name="Snabble.InvalidDepositVoucher.errorMsg">Deposit return vouchers can be redeemed only once.</string>
   <string name="Snabble.Keyguard.message">That\'s how we make sure that only you have access to this payment method</string>
   <string name="Snabble.Keyguard.requireScreenLock">You need to secure your smartphone with a screen lock to add this payment method.</string>
   <string name="Snabble.Keyguard.title">Please unlock your device</string>
@@ -284,6 +283,7 @@
   <string name="Snabble.Scanner.BundleDialog.headline">Choose package</string>
   <string name="Snabble.Scanner.Camera.accessDenied">Camera access denied</string>
   <string name="Snabble.Scanner.Camera.allowAccess">Sorry, we\'ll need to access your camera to scan barcodes. Please allow this in the settings and return here.</string>
+  <string name="Snabble.Scanner.DepositReturnVoucher.Added">Deposit voucher added</string>
   <string name="Snabble.Scanner.GoToCart.empty">Cart</string>
   <string name="Snabble.Scanner.addCodeAsIs">Add %s as-is</string>
   <string name="Snabble.Scanner.addToCart">Add to cart</string>
@@ -432,6 +432,8 @@
   <string name="Snabble.Taxation.pleaseChoose">Please choose</string>
   <string name="Snabble.Textfield.HidePassword.Accessibility">Hide password</string>
   <string name="Snabble.Textfield.ShowPassword.Accessibility">Show password</string>
+  <string name="Snabble.Violations.DepositReturnVoucher.alreadyRedeemed">This deposit voucher has already been redeemed.</string>
+  <string name="Snabble.Violations.DepositReturnVoucher.duplicated">This deposit voucher has already been added.</string>
   <string name="Snabble.Violations.couponAlreadyVoided">A coupon is already redeemed and will be removed from cart</string>
   <string name="Snabble.Violations.couponCurrentlyNotValid">A coupon is currently not valid and will be removed from cart</string>
   <string name="Snabble.Violations.couponInvalid">A coupon is invalid and will be removed from cart</string>

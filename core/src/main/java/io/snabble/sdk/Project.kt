@@ -9,6 +9,7 @@ import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.codes.templates.CodeTemplate
 import io.snabble.sdk.codes.templates.PriceOverrideTemplate
+import io.snabble.sdk.codes.templates.depositReturnVoucher.DepositReturnVoucherProvider
 import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.coupons.CouponSource
 import io.snabble.sdk.coupons.Coupons
@@ -191,6 +192,13 @@ class Project internal constructor(
      * Can be used to extract data from barcodes (e.g. price in a printed barcode)
      */
     var codeTemplates = emptyList<CodeTemplate>()
+        private set
+
+    /**
+     * List of providers for deposit return vouchers.
+     * Each provider contains an id and a list of code templates used for parsing return voucher specific barcodes.
+     */
+    var depositReturnVoucherProviders = emptyList<DepositReturnVoucherProvider>()
         private set
 
     /**
@@ -467,6 +475,13 @@ class Project internal constructor(
             codeTemplates.add(CodeTemplate("default", "{code:*}"))
         }
         this.codeTemplates = codeTemplates
+
+        val dvrProvider: JsonElement? = jsonObject["depositReturnVoucherProviders"]
+
+        if (dvrProvider?.isJsonArray == true) {
+            depositReturnVoucherProviders =
+                dvrProvider.asJsonArray.mapNotNull { drv -> DepositReturnVoucherProvider.fromJsonElement(drv) }
+        }
 
         val priceOverrideTemplates = mutableListOf<PriceOverrideTemplate>()
         jsonObject["priceOverrideCodes"]?.asJsonArray?.forEach {

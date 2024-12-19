@@ -309,12 +309,6 @@ class ProductResolver private constructor(private val context: Context, private 
                 progressDialog.dismiss()
                 onDismissListener?.onDismiss()
             }
-            product.type == Product.Type.DepositReturnVoucher
-                    && project.shoppingCart.containsScannedCode(scannedCode) -> {
-                onAlreadyScannedListener?.onAlreadyScanned()
-                progressDialog.dismiss()
-                onDismissListener?.onDismiss()
-            }
             onProductFoundListener != null -> {
                 onProductFoundListener?.onProductFound(product, scannedCode)
             }

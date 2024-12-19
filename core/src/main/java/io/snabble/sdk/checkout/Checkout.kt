@@ -307,10 +307,6 @@ class Checkout @JvmOverloads constructor(
                     notifyStateChanged(CheckoutState.NO_PAYMENT_METHOD_AVAILABLE)
                 }
 
-                override fun onInvalidDepositReturnVoucher() {
-                    notifyStateChanged(CheckoutState.CONNECTION_ERROR)
-                }
-
                 override fun onUnknownError() {
                     notifyStateChanged(CheckoutState.CONNECTION_ERROR)
                 }
