@@ -14,9 +14,8 @@ data class DepositReturnVoucherProvider(
         fun fromJsonElement(json: JsonElement): DepositReturnVoucherProvider? = try {
             val id: String? = json.getValue("id")
             val templates = json.asJsonObject["templates"].asJsonArray
-                ?.mapNotNull {
-                    it.getValue("template")?.let { template -> CodeTemplate(id, template) }
-                }
+                ?.mapNotNull { it.getValue("template") }
+                ?.map { template -> CodeTemplate(id, template) }
             when {
                 id == null || templates == null -> null
                 else -> DepositReturnVoucherProvider(id = id, templates = templates)
