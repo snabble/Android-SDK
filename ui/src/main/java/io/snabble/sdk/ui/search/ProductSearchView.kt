@@ -17,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -80,14 +81,17 @@ open class ProductSearchView @JvmOverloads constructor(
                 var searchedCode by remember { mutableStateOf("") }
 
                 LaunchedEffect(Unit) {
-                    focusRequester.requestFocus()
                     textFieldManager.showKeyboard()
                 }
+
                 Box(modifier = Modifier.padding(8.dp)) {
                     TextInput(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .focusRequester(focusRequester),
+                            .focusRequester(focusRequester)
+                            .onGloballyPositioned {
+                                focusRequester.requestFocus()
+                            },
                         value = searchedCode,
                         label = stringResource(id = R.string.Snabble_Scanner_enterBarcode),
                         keyboardOptions = KeyboardOptions(
