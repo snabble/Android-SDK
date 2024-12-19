@@ -12,7 +12,6 @@ import android.os.SystemClock;
 import android.os.Vibrator;
 import android.text.InputType;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -241,9 +240,9 @@ public class SelfScanningView extends FrameLayout {
     }
 
     private void handleReturnDepositVoucher(List<ScannedCode> scannedCodes) {
-        final kotlin.Pair<CodeTemplate, String> codeTemplateScannedCodePair = ReturnDepositProviderImpl.containsReturnDepositVoucher(project, scannedCodes);
+        final kotlin.Pair<CodeTemplate, String> codeTemplateScannedCodePair = DepositReturnVoucherHelper.getDrvCodeTemplateWithScannedCode(project, scannedCodes);
         if (codeTemplateScannedCodePair != null) {
-            ReturnDepositProviderImpl.insertDepositReturnVoucherItem(shoppingCart, codeTemplateScannedCodePair.getFirst(), codeTemplateScannedCodePair.getSecond());
+            DepositReturnVoucherHelper.insertDepositReturnVoucherItem(shoppingCart, codeTemplateScannedCodePair.getFirst(), codeTemplateScannedCodePair.getSecond());
             showInfo(getResources().getString(R.string.Snabble_Scanner_DepositReturnVoucher_Added));
         }
     }
