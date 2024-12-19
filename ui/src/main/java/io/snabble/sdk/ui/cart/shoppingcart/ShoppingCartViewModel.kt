@@ -61,16 +61,6 @@ class ShoppingCartViewModel : ViewModel() {
         }
     }
 
-    private fun ShoppingCart.removeRelatedDepositReturnVoucher(item: ShoppingCart.Item) {
-        firstOrNull { it?.id == item.lineItem?.refersTo }
-            ?.let {
-                val index = cachedCart.indexOf(it)
-                if (index != -1) {
-                    cachedCart.remove(index)
-                }
-            }
-    }
-
     private fun removeItemFromCart(item: ShoppingCart.Item?, onSuccess: (index: Int) -> Unit) {
         val index = cachedCart.indexOf(item)
         if (index != -1) {
