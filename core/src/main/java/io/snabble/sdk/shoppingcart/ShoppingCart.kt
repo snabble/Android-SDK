@@ -28,7 +28,6 @@ import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
-import java.math.BigDecimal
 import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.CopyOnWriteArrayList
@@ -48,6 +47,9 @@ class ShoppingCart(
     private val listeners: MutableList<ShoppingCartListener>? = CopyOnWriteArrayList()
 
     @Transient
+    var onInvalidItemDetectedListener: ((List<Item>) -> kotlin.Unit)? = null
+
+    @Transient
     private var updater: ShoppingCartUpdater? = null
 
     @Transient
@@ -56,6 +58,10 @@ class ShoppingCart(
     init {
         updateTimestamp()
         updater = project?.let { ShoppingCartUpdater(it, this) }
+        updater?.onInvalidItemDetectedListener = { invalidItems ->
+            val items = this.mapNotNull { it }.filter { it.id in invalidItems }
+            onInvalidItemDetectedListener?.let { it(items) }
+        }
         priceFormatter = project?.priceFormatter
     }
 
@@ -332,6 +338,7 @@ class ShoppingCart(
     fun invalidateOnlinePrices() {
         data = data.copy(
             invalidProducts = null,
+            invalidItemIds = null,
             onlineTotalPrice = null
         )
 
@@ -441,6 +448,15 @@ class ShoppingCart(
         get() = data.invalidProducts ?: emptyList()
         set(invalidProducts) {
             data = data.copy(invalidProducts = invalidProducts)
+        }
+
+    /**
+     * Gets a list of invalid item ids that were rejected by the backend.
+     */
+    var invalidItemIds: List<String>?
+        get() = data.invalidItemIds ?: emptyList()
+        set(invalidItemIds) {
+            data = data.copy(invalidItemIds = invalidItemIds)
         }
 
     /**
@@ -1222,6 +1238,8 @@ class ShoppingCart(
                 lineItem != null -> lineItem?.name
                 else -> if (type == ItemType.COUPON) {
                     coupon?.name
+                } else if (type == ItemType.DEPOSIT_RETURN_VOUCHER) {
+                    "Leergutbon ${depositReturnVoucher?.scannedCode}"
                 } else {
                     product?.name
                 }

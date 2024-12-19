@@ -23,7 +23,6 @@ import androidx.fragment.app.FragmentActivity
 import io.snabble.accessibility.accessibility
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
-import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.Snabble.instance
 import io.snabble.sdk.checkout.Checkout
@@ -31,6 +30,7 @@ import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.config.ExternalBillingSubjectLength
 import io.snabble.sdk.config.ProjectId
 import io.snabble.sdk.extensions.getApplicationInfoCompat
+import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
 import io.snabble.sdk.ui.Keyguard
@@ -44,6 +44,7 @@ import io.snabble.sdk.ui.payment.externalbilling.ui.widgets.SubjectAlertDialog
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.DelayedProgressDialog
 import io.snabble.sdk.ui.utils.I18nUtils
+import io.snabble.sdk.ui.utils.I18nUtils.getIdentifier
 import io.snabble.sdk.ui.utils.OneShotClickListener
 import io.snabble.sdk.ui.utils.SnackbarUtils
 import io.snabble.sdk.ui.utils.UIUtils
@@ -409,6 +410,44 @@ open class CheckoutBar @JvmOverloads constructor(
                         .setTitle(I18nUtils.getIdentifier(resources, R.string.Snabble_SaleStop_ErrorMsg_title))
                         .setMessage(sb.toString())
                         .setPositiveButton(R.string.Snabble_ok, null)
+                        .show()
+                } else {
+                    SnackbarUtils.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
+                        .show()
+                }
+                progressDialog.dismiss()
+            }
+
+            CheckoutState.INVALID_ITEMS -> {
+                val invalidItems = project.checkout.invalidItems
+
+                if (!invalidItems.isNullOrEmpty()) {
+                    val errorMessage = when {
+                        invalidItems.size == 1 -> context.getString(R.string.Snabble_SaleStop_ErrorMsg_one)
+                        else -> context.getString(R.string.Snabble_SaleStop_errorMsg)
+                    }
+
+                    var message = "$errorMessage\n\n"
+
+                    invalidItems.forEach {
+                        message = "$message${it.displayName}\n"
+                    }
+
+                    AlertDialog.Builder(context)
+                        .setCancelable(false)
+                        .setTitle(getIdentifier(resources, R.string.Snabble_SaleStop_ErrorMsg_title))
+                        .setMessage(message)
+                        .setPositiveButton(
+                            R.string.Snabble_remove
+                        ) { dialog, _ ->
+                            invalidItems.forEach {
+                                val index = cart.indexOf(it)
+                                if (index != -1) {
+                                    cart.remove(index)
+                                }
+                            }
+                            dialog.dismiss()
+                        }
                         .show()
                 } else {
                     SnackbarUtils.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
