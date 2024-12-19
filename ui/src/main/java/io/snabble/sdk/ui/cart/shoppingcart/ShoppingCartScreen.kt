@@ -2,7 +2,7 @@ package io.snabble.sdk.ui.cart.shoppingcart
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -67,7 +67,7 @@ private fun ShoppingCartScreen(
     LazyColumn(
         modifier = modifier.nestedScroll(rememberNestedScrollInteropConnection())
     ) {
-        items(items = uiState.items, key = { it.hashCode() }) { cartItem ->
+        itemsIndexed(items = uiState.items, key = { _, item -> item.hashCode() }) { index, cartItem ->
             when (cartItem) {
                 is ProductItem -> {
                     DeletableProduct(
@@ -78,7 +78,6 @@ private fun ShoppingCartScreen(
                             onQuantityChanged(cartItem.item, quantity)
                         }
                     )
-                    HorizontalDivider()
                 }
 
                 is DepositReturnItem -> {
@@ -91,9 +90,9 @@ private fun ShoppingCartScreen(
                         modifier = Modifier.fillMaxWidth(),
                         item = cartItem
                     )
-                    HorizontalDivider()
                 }
             }
+            if (index != uiState.items.lastIndex) HorizontalDivider()
         }
     }
 }
