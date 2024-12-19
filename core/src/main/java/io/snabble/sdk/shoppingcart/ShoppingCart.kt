@@ -28,7 +28,6 @@ import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
-import java.math.BigDecimal
 import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.CopyOnWriteArrayList
@@ -750,7 +749,7 @@ class ShoppingCart(
     private fun Item.violates(
         violations: List<Violation>,
         type: ViolationType,
-    ) = violations.filter { it.type == type }.any { it.refersTo == id }
+    ) = violations.any { it.type == type && it.refersTo == id }
 
     private fun handleCouponViolations(violations: List<Violation>) {
         violations.forEach { violation ->
