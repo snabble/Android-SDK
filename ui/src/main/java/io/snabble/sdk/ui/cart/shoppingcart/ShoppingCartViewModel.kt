@@ -81,10 +81,8 @@ class ShoppingCartViewModel : ViewModel() {
         val cartItems: MutableList<CartItem> = mutableListOf()
         with(cart.filterNotNull()) {
             filter { it.type == ItemType.PRODUCT }.let { cartItems.addProducts(it) }
-            filter {
-                it.lineItem?.type == LineItemType.DEPOSIT_RETURN ||
-                    it.lineItem?.type == LineItemType.DEPOSIT_RETURN_VOUCHER
-            }.let { cartItems.addDepositReturnItems(it) }
+            filter { it.lineItem?.type == LineItemType.DEPOSIT_RETURN_VOUCHER }
+                .let { cartItems.addDepositReturnItems(it) }
 
             filter { it.lineItem?.type == LineItemType.DEPOSIT }.let { cartItems.addDepositsToProducts(it) }
 
@@ -100,12 +98,9 @@ class ShoppingCartViewModel : ViewModel() {
     }
 
     private fun MutableList<CartItem>.addDepositReturnItems(depositReturns: List<ShoppingCart.Item>) {
-        depositReturns
-            .filter { it.lineItem?.type == LineItemType.DEPOSIT_RETURN_VOUCHER }
-            .forEach { returnVoucher ->
-                val relatedReturn = depositReturns.filter { it.lineItem?.refersTo == returnVoucher.id }
-                val totalDepositReturn = relatedReturn.mapNotNull { it.lineItem }.sumOf { it.totalPrice }
-
+        depositReturns.forEach { returnVoucher ->
+                val totalDepositReturn =
+                    returnVoucher.depositReturnVoucher?.lineItems?.sumOf { it.totalPrice } ?: return@forEach
                 add(
                     DepositReturnItem(
                         item = returnVoucher,
