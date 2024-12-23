@@ -52,7 +52,6 @@ import io.snabble.sdk.ui.telemetry.Telemetry;
 import io.snabble.sdk.ui.utils.DelayedProgressDialog;
 import io.snabble.sdk.ui.utils.I18nUtils;
 import io.snabble.sdk.ui.utils.OneShotClickListener;
-import io.snabble.sdk.ui.utils.SnackbarUtils;
 import io.snabble.sdk.ui.utils.UIUtils;
 import io.snabble.sdk.ui.utils.ViewUtils;
 import io.snabble.sdk.ui.views.MessageBoxStackView;
@@ -114,46 +113,53 @@ public class SelfScanningView extends FrameLayout {
             unregisterListeners();
             project = p;
             shoppingCart = project.getShoppingCart();
+            setOnInvalidItemListener();
 
-            shoppingCart.setOnInvalidItemDetectedListener(items -> {
-                if (!items.isEmpty()) {
-
-                    final StringBuilder sb = new StringBuilder();
-                    if (items.size() == 1) {
-                        sb.append(getContext().getString(R.string.Snabble_SaleStop_ErrorMsg_one));
-                    } else {
-                        sb.append(getContext().getString(R.string.Snabble_SaleStop_errorMsg));
-                    }
-                    sb.append("\n\n");
-                    for (ShoppingCart.Item item : items) {
-                        sb.append(item.getDisplayName());
-                        sb.append("\n");
-                    }
-
-                    new AlertDialog.Builder(getContext())
-                            .setCancelable(false)
-                            .setTitle(getContext().getString(R.string.Snabble_SaleStop_ErrorMsg_title))
-                            .setPositiveButton(getContext().getString(R.string.Snabble_delete), (dialog, which) -> {
-                                for (ShoppingCart.Item item : items) {
-                                    final int index = shoppingCart.indexOf(item);
-                                    if (index != -1) {
-                                        shoppingCart.remove(index);
-                                    }
-                                }
-                            })
-                            .setMessage(sb.toString())
-                            .create()
-                            .show();
-                } else {
-                    SnackbarUtils.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
-                            .show();
-                }
-                return null;
-            });
             productDatabase = project.getProductDatabase();
             resetViewState();
             registerListeners();
         }
+    }
+
+    private void setOnInvalidItemListener() {
+        shoppingCart.setOnInvalidItemDetectedListener(items -> {
+            if (!items.isEmpty()) {
+                new AlertDialog.Builder(getContext())
+                        .setCancelable(false)
+                        .setTitle(getContext().getString(R.string.Snabble_ShoppingCart_Product_Invalid_title))
+                        .setPositiveButton(
+                                getContext().getString(R.string.Snabble_ShoppingCart_Product_Invalid_button),
+                                (dialog, which) -> {
+                                    removeAll(items);
+                                }
+                        )
+                        .setMessage(createMessage(items))
+                        .create()
+                        .show();
+            }
+            return null;
+        });
+    }
+
+    private void removeAll(List<ShoppingCart.Item> items) {
+        for (ShoppingCart.Item item : items) {
+            final int index = shoppingCart.indexOf(item);
+            if (index != -1) {
+                shoppingCart.remove(index);
+            }
+        }
+    }
+
+    @NonNull
+    private String createMessage(List<ShoppingCart.Item> items) {
+        final StringBuilder message = new StringBuilder();
+        for (int i = 0; i < items.size(); i++) {
+            message.append(items.get(i).getDisplayName());
+            if (i != (items.size() - 1)) {
+                message.append("\n");
+            }
+        }
+        return getResources().getQuantityString(R.plurals.Snabble_ShoppingCart_Product_Invalid_message, items.size(), message.toString());
     }
 
     private void resetViewState() {
