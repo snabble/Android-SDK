@@ -40,7 +40,7 @@ internal class ShoppingCartUpdater(
      * Listener that notifies if items are detected that are that cant be found
      * in the product data base
      */
-    var onInvalidItemDetectedListener: ((List<String>) -> Unit)? = null
+    var onInvalidItemsDetectedListener: ((List<String>) -> Unit)? = null
 
     var lastAvailablePaymentMethods: List<PaymentMethodInfo>? = null
         private set
@@ -100,9 +100,9 @@ internal class ShoppingCartUpdater(
                     error(requestSucceeded = true)
                 }
 
-                override fun onInvalidItem(itemIds: List<String>) {
+                override fun onInvalidItems(itemIds: List<String>) {
                     handler.post {
-                        onInvalidItemDetectedListener?.let { it(itemIds) }
+                        onInvalidItemsDetectedListener?.let { it(itemIds) }
                     }
                     cart.invalidItemIds = itemIds
                     error(requestSucceeded = true)

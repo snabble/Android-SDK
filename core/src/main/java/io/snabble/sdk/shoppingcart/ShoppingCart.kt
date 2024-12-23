@@ -47,7 +47,7 @@ class ShoppingCart(
     private val listeners: MutableList<ShoppingCartListener>? = CopyOnWriteArrayList()
 
     @Transient
-    var onInvalidItemDetectedListener: ((List<Item>) -> kotlin.Unit)? = null
+    var onInvalidItemsDetectedListener: ((List<Item>) -> kotlin.Unit)? = null
 
     @Transient
     private var updater: ShoppingCartUpdater? = null
@@ -58,9 +58,9 @@ class ShoppingCart(
     init {
         updateTimestamp()
         updater = project?.let { ShoppingCartUpdater(it, this) }
-        updater?.onInvalidItemDetectedListener = { invalidItems ->
+        updater?.onInvalidItemsDetectedListener = { invalidItems ->
             val items = this.mapNotNull { it }.filter { it.id in invalidItems }
-            onInvalidItemDetectedListener?.let { it(items) }
+            onInvalidItemsDetectedListener?.let { it(items) }
         }
         priceFormatter = project?.priceFormatter
     }

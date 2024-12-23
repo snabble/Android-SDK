@@ -143,7 +143,7 @@ internal class CheckoutRetryer(project: Project, fallbackPaymentMethod: PaymentM
                         fail()
                     }
 
-                    override fun onInvalidItem(itemIds: List<String>) {
+                    override fun onInvalidItems(itemIds: List<String>) {
                         fail()
                     }
 

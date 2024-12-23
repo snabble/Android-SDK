@@ -122,7 +122,7 @@ public class SelfScanningView extends FrameLayout {
     }
 
     private void setOnInvalidItemListener() {
-        shoppingCart.setOnInvalidItemDetectedListener(items -> {
+        shoppingCart.setOnInvalidItemsDetectedListener(items -> {
             if (!items.isEmpty()) {
                 new AlertDialog.Builder(getContext())
                         .setCancelable(false)

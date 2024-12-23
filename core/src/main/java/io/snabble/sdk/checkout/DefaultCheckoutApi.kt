@@ -134,7 +134,7 @@ class DefaultCheckoutApi(private val project: Project,
                                 Logger.e("Invalid items found")
                                 val invalidIds = error["details"].asJsonArray
                                     .mapNotNull { it.asJsonObject["id"].asString }
-                                checkoutInfoResult?.onInvalidItem(invalidIds)
+                                checkoutInfoResult?.onInvalidItems(invalidIds)
                             }
                         }
 
