@@ -47,9 +47,6 @@ fun ShoppingCartScreen(
             },
             onQuantityChanged = { item, quantity ->
                 viewModel.onEvent(UpdateQuantity(item, quantity))
-            },
-            onDeleteDepositReturnClick = {
-                viewModel.onEvent(RemoveDepositReturn(it))
             }
         )
     }
@@ -60,7 +57,6 @@ private fun ShoppingCartScreen(
     uiState: UiState,
     modifier: Modifier = Modifier,
     onItemDeleted: (ShoppingCart.Item) -> Unit,
-    onDeleteDepositReturnClick: (ShoppingCart.Item) -> Unit,
     onQuantityChanged: (ShoppingCart.Item, Int) -> Unit
 ) {
 
@@ -82,7 +78,7 @@ private fun ShoppingCartScreen(
 
                 is DepositReturnItem -> {
                     val showHint = uiState.totalCartPrice != null && uiState.totalCartPrice < 0
-                    DepositReturn(item = cartItem, showHint = showHint, onDeleteClick = onDeleteDepositReturnClick)
+                    DepositReturn(item = cartItem, showHint = showHint, onDeleteClick = onItemDeleted)
                 }
 
                 is CartDiscountItem -> {
@@ -134,7 +130,6 @@ private fun CardWithDefaultItems() {
         uiState = uiState,
         onItemDeleted = {},
         onQuantityChanged = { _, _ -> },
-        onDeleteDepositReturnClick = {}
     )
 }
 
@@ -164,7 +159,6 @@ private fun CardWithUserWeightedItems() {
         uiState = uiState,
         onItemDeleted = {},
         onQuantityChanged = { _, _ -> },
-        onDeleteDepositReturnClick = {}
     )
 }
 
@@ -200,7 +194,6 @@ private fun CardWithDiscountItem() {
         uiState = uiState,
         onItemDeleted = {},
         onQuantityChanged = { _, _ -> },
-        onDeleteDepositReturnClick = {}
     )
 }
 
@@ -235,7 +228,6 @@ private fun CardWithDeposit() {
         uiState = uiState,
         onItemDeleted = {},
         onQuantityChanged = { _, _ -> },
-        onDeleteDepositReturnClick = {}
     )
 }
 
@@ -268,6 +260,5 @@ private fun CardWithCartDiscount() {
         uiState = uiState,
         onItemDeleted = {},
         onQuantityChanged = { _, _ -> },
-        onDeleteDepositReturnClick = {}
     )
 }

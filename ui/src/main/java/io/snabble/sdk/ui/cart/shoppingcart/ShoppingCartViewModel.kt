@@ -50,14 +50,6 @@ class ShoppingCartViewModel : ViewModel() {
         when (event) {
             is RemoveItem -> removeItemFromCart(event.item, event.onSuccess)
             is UpdateQuantity -> updateQuantity(event.item, event.quantity)
-            is RemoveDepositReturn -> removeDepositReturnItem(event.item)
-        }
-    }
-
-    private fun removeDepositReturnItem(item: ShoppingCart.Item) {
-        val index = cachedCart.indexOf(item)
-        if (index != -1) {
-            cachedCart.remove(index)
         }
     }
 
@@ -99,15 +91,15 @@ class ShoppingCartViewModel : ViewModel() {
 
     private fun MutableList<CartItem>.addDepositReturnItems(depositReturns: List<ShoppingCart.Item>) {
         depositReturns.forEach { returnVoucher ->
-                val totalDepositReturn =
-                    returnVoucher.depositReturnVoucher?.lineItems?.sumOf { it.totalPrice } ?: return@forEach
-                add(
-                    DepositReturnItem(
-                        item = returnVoucher,
-                        totalDeposit = priceFormatter?.format(totalDepositReturn).orEmpty()
-                    )
+            val totalDepositReturn =
+                returnVoucher.depositReturnVoucher?.lineItems?.sumOf { it.totalPrice } ?: return@forEach
+            add(
+                DepositReturnItem(
+                    item = returnVoucher,
+                    totalDeposit = priceFormatter?.format(totalDepositReturn).orEmpty()
                 )
-            }
+            )
+        }
     }
 
     private fun MutableList<CartItem>.sortCartDiscountsToBottom() {
@@ -252,10 +244,6 @@ class ShoppingCartViewModel : ViewModel() {
 }
 
 sealed interface Event
-
-internal data class RemoveDepositReturn(
-    val item: ShoppingCart.Item,
-) : Event
 
 internal data class RemoveItem(
     val item: ShoppingCart.Item,
