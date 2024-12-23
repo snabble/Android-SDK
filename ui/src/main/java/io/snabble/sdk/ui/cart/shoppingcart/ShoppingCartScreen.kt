@@ -129,7 +129,7 @@ private fun CardWithDefaultItems() {
     ShoppingCartScreen(
         uiState = uiState,
         onItemDeleted = {},
-        onQuantityChanged = { _, _ -> },
+        onQuantityChanged = { _, _ -> }
     )
 }
 
@@ -158,7 +158,7 @@ private fun CardWithUserWeightedItems() {
     ShoppingCartScreen(
         uiState = uiState,
         onItemDeleted = {},
-        onQuantityChanged = { _, _ -> },
+        onQuantityChanged = { _, _ -> }
     )
 }
 
@@ -193,7 +193,7 @@ private fun CardWithDiscountItem() {
     ShoppingCartScreen(
         uiState = uiState,
         onItemDeleted = {},
-        onQuantityChanged = { _, _ -> },
+        onQuantityChanged = { _, _ -> }
     )
 }
 
@@ -227,7 +227,7 @@ private fun CardWithDeposit() {
     ShoppingCartScreen(
         uiState = uiState,
         onItemDeleted = {},
-        onQuantityChanged = { _, _ -> },
+        onQuantityChanged = { _, _ -> }
     )
 }
 
@@ -259,6 +259,6 @@ private fun CardWithCartDiscount() {
     ShoppingCartScreen(
         uiState = uiState,
         onItemDeleted = {},
-        onQuantityChanged = { _, _ -> },
+        onQuantityChanged = { _, _ -> }
     )
 }
