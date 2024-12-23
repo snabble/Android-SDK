@@ -110,7 +110,7 @@ enum class CheckoutState {
     INVALID_PRODUCTS,
 
     /**
-     * Invalid items detected. For if an item can't be found
+     * Invalid items detected. For example if an item can't be found
      */
     INVALID_ITEMS,
 
