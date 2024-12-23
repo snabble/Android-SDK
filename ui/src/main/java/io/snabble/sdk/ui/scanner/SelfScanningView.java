@@ -133,7 +133,7 @@ public class SelfScanningView extends FrameLayout {
                                     removeAll(items);
                                 }
                         )
-                        .setMessage(createMessage(items))
+                        .setMessage(createInvalidItemsMessage(items))
                         .create()
                         .show();
             }
@@ -151,7 +151,7 @@ public class SelfScanningView extends FrameLayout {
     }
 
     @NonNull
-    private String createMessage(List<ShoppingCart.Item> items) {
+    private String createInvalidItemsMessage(List<ShoppingCart.Item> items) {
         final StringBuilder message = new StringBuilder();
         for (int i = 0; i < items.size(); i++) {
             message.append(items.get(i).getDisplayName());
