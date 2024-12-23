@@ -750,17 +750,18 @@ class ShoppingCart(
                 .also { data = data.copy(modCount = modCount.inc()) }
         }
 
-        filter { it.refersTo !in data.violationNotifications.map { notification -> notification.refersTo } }
-            .forEach { violation ->
-                data.violationNotifications.add(
-                    ViolationNotification(
-                        name = null,
-                        refersTo = violation.refersTo,
-                        type = violation.type,
-                        fallbackMessage = violation.message
-                    )
+        val notificationReferrers = data.violationNotifications.map { notification -> notification.refersTo }
+
+        filter { it.refersTo !in notificationReferrers }
+            .map { violation ->
+                ViolationNotification(
+                    name = null,
+                    refersTo = violation.refersTo,
+                    type = violation.type,
+                    fallbackMessage = violation.message
                 )
             }
+            .forEach(data.violationNotifications::add)
     }
 
     private fun Item.violates(

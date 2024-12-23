@@ -298,10 +298,10 @@ internal class ShoppingCartUpdater(
         else -> false
     }
 
-    private fun containsReturnDepositReturnVouchers(signedCheckoutInfo: SignedCheckoutInfo): Boolean {
-        val (_, lineItems) = deserializedCheckoutInfo(signedCheckoutInfo) ?: return false
-        return lineItems.any { it.type == LineItemType.DEPOSIT_RETURN_VOUCHER }
-    }
+    private fun containsReturnDepositReturnVouchers(signedCheckoutInfo: SignedCheckoutInfo): Boolean =
+        deserializedCheckoutInfo(signedCheckoutInfo)?.lineItems
+            ?.any { it.type == LineItemType.DEPOSIT_RETURN_VOUCHER }
+            ?: false
 
     private fun getToBeReplacedSkus(signedCheckoutInfo: SignedCheckoutInfo): List<String?> {
         val (_, lineItems) = deserializedCheckoutInfo(signedCheckoutInfo) ?: return emptyList()
