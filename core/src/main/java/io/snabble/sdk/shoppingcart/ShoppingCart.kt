@@ -209,6 +209,16 @@ class ShoppingCart(
     }
 
     /**
+     * Removes a cart item from the cart by its id
+     */
+    fun removeItem(itemId: String) {
+        val index = indexOf(firstOrNull { it?.id == itemId })
+        if (index != -1) {
+            remove(index)
+        }
+    }
+
+    /**
      * The number items in the cart.
      *
      *
@@ -1222,6 +1232,8 @@ class ShoppingCart(
                 lineItem != null -> lineItem?.name
                 else -> if (type == ItemType.COUPON) {
                     coupon?.name
+                } else if (type == ItemType.DEPOSIT_RETURN_VOUCHER) {
+                    "Leergutbon ${depositReturnVoucher?.scannedCode}"  // TBI: replace it with something better
                 } else {
                     product?.name
                 }
