@@ -7,6 +7,7 @@ public class Telemetry {
         ClickCheckout,
         SelectedPaymentMethod,
         CheckoutSuccessful,
+        CheckoutDepositReturnRedemptionFailed,
         CheckoutDeniedByTooYoung,
         CheckoutDeniedBySupervisor,
         CheckoutDeniedByPaymentProvider,

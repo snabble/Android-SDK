@@ -427,6 +427,10 @@ open class CheckoutBar @JvmOverloads constructor(
                 }
             }
 
+            CheckoutState.DEPOSIT_RETURN_REDEMPTION_FAILED -> {
+                progressDialog.dismiss()
+                //TBI: show Info Dialog here
+            }
             CheckoutState.PAYMENT_ABORTED -> {
                 progressDialog.dismiss()
             }
