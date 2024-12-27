@@ -406,6 +406,7 @@
   <string name="Snabble.Shoppingcart.EmptyState.title">Dein Warenkorb ist noch leer</string>
   <string name="Snabble.Shoppingcart.articleRemoved">Artikel entfernt</string>
   <string name="Snabble.Shoppingcart.buyProducts">%1$d Artikel für %2$s kaufen</string>
+  <string name="Snabble.Shoppingcart.completePurchase">Einkauf abschließen</string>
   <string name="Snabble.Shoppingcart.coupon">Gutschein</string>
   <string name="Snabble.Shoppingcart.coupons">Gutscheine</string>
   <string name="Snabble.Shoppingcart.deposit">Pfand</string>

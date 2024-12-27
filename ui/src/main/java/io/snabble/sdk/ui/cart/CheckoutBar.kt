@@ -244,13 +244,23 @@ open class CheckoutBar @JvmOverloads constructor(
                 payButton.isEnabled = true
                 payButton.setText(R.string.Snabble_Shoppingcart_EmptyState_restoreButtonTitle)
             } else {
-                payButton.setText(
-                    I18nUtils.getIdentifierForProject(
-                        resources,
-                        project,
-                        R.string.Snabble_Shoppingcart_BuyProducts_now
+                if (price == 0) {
+                    payButton.setText(
+                        I18nUtils.getIdentifierForProject(
+                            resources,
+                            project,
+                            R.string.Snabble_Shoppingcart_completePurchase
+                        )
                     )
-                )
+                } else {
+                    payButton.setText(
+                        I18nUtils.getIdentifierForProject(
+                            resources,
+                            project,
+                            R.string.Snabble_Shoppingcart_BuyProducts_now
+                        )
+                    )
+                }
             }
         }
     }
