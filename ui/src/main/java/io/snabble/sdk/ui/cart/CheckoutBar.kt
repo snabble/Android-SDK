@@ -52,6 +52,7 @@ import io.snabble.sdk.ui.utils.observeView
 import io.snabble.sdk.ui.utils.requireFragmentActivity
 import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.utils.Logger
+import io.snabble.sdk.utils.getColorByAttribute
 
 open class CheckoutBar @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -212,6 +213,11 @@ open class CheckoutBar @JvmOverloads constructor(
             val articlesText = resources.getQuantityText(R.plurals.Snabble_Shoppingcart_numberOfItems, quantity)
             articleCount.text = String.format(articlesText.toString(), quantity)
             priceSum.text = project.priceFormatter.format(price)
+            if (price < 0){
+                context.getColorByAttribute(R.attr.colorError)
+            }else {
+                context.getColorByAttribute(R.attr.colorOnSurface)
+            }
 
             val onlinePaymentAvailable = !cart.availablePaymentMethods.isNullOrEmpty()
             payButton.isEnabled =
