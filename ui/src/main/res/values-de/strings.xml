@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
+  <string name="Account.UserDetails.stateSelect">Bitte wählen</string>
   <string name="Snabble.AgeVerification.Failed.message">Einige Artikel in deinem Warenkorb unterliegen einer Altersbeschränkung, du darfst sie leider nicht kaufen.</string>
   <string name="Snabble.AgeVerification.Failed.title">Du bist nicht alt genug</string>
   <string name="Snabble.AgeVerification.Pending.message">Einige Artikel in deinem Warenkorb unterliegen einer Altersbeschränkung. Bitte verifiziere dein Alter, um den Einkauf fortzusetzen.</string>
@@ -341,6 +342,16 @@
   <string name="Snabble.Shop.List.Expand.accessibility">aufklappen</string>
   <string name="Snabble.Shop.List.ShowDetails.accessibility">Shop-Details anzeigen</string>
   <string name="Snabble.Shopping.title">Einkaufen</string>
+  <string name="Snabble.ShoppingCart.DepositReturn.message">Damit der Leergutbon eingelöst werden kann,  fülle deinen Warenkorb mit deinen Wunschprodukten.</string>
+  <string name="Snabble.ShoppingCart.DepositReturn.title">Leergutbon</string>
+  <string name="Snabble.ShoppingCart.DepositVoucher.RedemptionFailed.title">Ungültiger Leergutbon</string>
+  <string name="Snabble.ShoppingCart.Product.Invalid.button">Entfernen</string>
+  <plurals name="Snabble.ShoppingCart.Product.Invalid.message">
+    <item quantity="zero"></item>
+    <item quantity="one">Dieses Produkt kann derzeit leider nicht mit der App bezahlt werden: \n%s\n \n\nBitte bezahle es an der Kassen.</item>
+    <item quantity="other">Diese Produkte können derzeit leider nicht mit der App bezahlt werden: \n%s\n \n\nBitte bezahle diese an der Kassen.</item>
+  </plurals>
+  <string name="Snabble.ShoppingCart.Product.Invalid.title">Ungültiges Produkt</string>
   <string name="Snabble.ShoppingCart.title">Warenkorb</string>
   <string name="Snabble.ShoppingList.AddItem.viaScan">Produkte scannen</string>
   <string name="Snabble.ShoppingList.AddItem.viaVoice">Produkte diktieren</string>
@@ -455,4 +466,10 @@
   <string name="Snabble.save">Speichern</string>
   <string name="Snabble.undo">Rückgängig</string>
   <string name="Snabble.yes">Ja</string>
+  <string name="Snabble.ShoppingCart.DepositVoucher.RedemptionFailed.button">Entfernen</string>
+  <plurals name="Snabble.ShoppingCart.DepositVoucher.RedemptionFailed.message">
+    <item quantity="zero"></item>
+    <item quantity="one">Dieser Leergutbon kann derzeit leider nicht in der App eingelöst werden: \n\n%s\n\nBitte versuche es an der Kassen.</item>
+    <item quantity="other">Diese Leergutbon\'s können derzeit leider nicht in der App eingelöst werden: \n\n%s\n\nBitte versuche es an der Kassen.</item>
+  </plurals>
 </resources>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
+  <string name="Account.UserDetails.stateSelect">Pick one</string>
   <string name="Snabble.AgeVerification.Failed.message">Some products in your cart have an age restriction, unfortunately you can\'t purchase them.</string>
   <string name="Snabble.AgeVerification.Failed.title">Age restriction</string>
   <string name="Snabble.AgeVerification.Pending.message">Some products in your cart have an age restriction. Please verify your age before continuing.</string>
@@ -341,6 +342,16 @@
   <string name="Snabble.Shop.List.Expand.accessibility">expand</string>
   <string name="Snabble.Shop.List.ShowDetails.accessibility">Show shop details</string>
   <string name="Snabble.Shopping.title">Shopping</string>
+  <string name="Snabble.ShoppingCart.DepositReturn.message">To redeem your voucher, fill your shopping basket with the products you wish to purchase.</string>
+  <string name="Snabble.ShoppingCart.DepositReturn.title">Deposit voucher</string>
+  <string name="Snabble.ShoppingCart.DepositVoucher.RedemptionFailed.title">Invalid deposit voucher</string>
+  <string name="Snabble.ShoppingCart.Product.Invalid.button">Remove</string>
+  <plurals name="Snabble.ShoppingCart.Product.Invalid.message">
+    <item quantity="zero"></item>
+    <item quantity="one">Unfortunately, this product cannot currently be paid for with the app: \n%s\n \n\nPlease pay for it at the cash desk.</item>
+    <item quantity="other">Unfortunately, these products cannot currently be paid for with the app: \n%s\n \n\nPlease pay for it at the cash desk.</item>
+  </plurals>
+  <string name="Snabble.ShoppingCart.Product.Invalid.title">Invalid product</string>
   <string name="Snabble.ShoppingCart.title">Shopping Cart</string>
   <string name="Snabble.ShoppingList.AddItem.viaScan">Scan products</string>
   <string name="Snabble.ShoppingList.AddItem.viaVoice">Tell products</string>
@@ -455,4 +466,10 @@
   <string name="Snabble.save">Save</string>
   <string name="Snabble.undo">Undo</string>
   <string name="Snabble.yes">Yes</string>
+  <string name="Snabble.ShoppingCart.DepositVoucher.RedemptionFailed.button">Remove</string>
+  <plurals name="Snabble.ShoppingCart.DepositVoucher.RedemptionFailed.message">
+    <item quantity="zero"></item>
+    <item quantity="one">Unfortunately, this deposit voucher cannot currently be redeemed in the app: \n\n%s\n\nPlease try for it at the cash desk.</item>
+    <item quantity="other">Unfortunately, these deposit vouchers cannot currently be redeemed in the app: \n\n%s\n\nPlease try for it at the cash desk.</item>
+  </plurals>
 </resources>

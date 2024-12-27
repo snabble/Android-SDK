@@ -23,14 +23,15 @@ import androidx.fragment.app.FragmentActivity
 import io.snabble.accessibility.accessibility
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
-import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.Snabble.instance
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.checkout.CheckoutState
+import io.snabble.sdk.checkout.DepositReturnVoucherState
 import io.snabble.sdk.config.ExternalBillingSubjectLength
 import io.snabble.sdk.config.ProjectId
 import io.snabble.sdk.extensions.getApplicationInfoCompat
+import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
 import io.snabble.sdk.ui.Keyguard
@@ -429,8 +430,9 @@ open class CheckoutBar @JvmOverloads constructor(
 
             CheckoutState.DEPOSIT_RETURN_REDEMPTION_FAILED -> {
                 progressDialog.dismiss()
-                //TBI: show Info Dialog here
+                handleFailedDepositReturns()
             }
+
             CheckoutState.PAYMENT_ABORTED -> {
                 progressDialog.dismiss()
             }
@@ -473,10 +475,44 @@ open class CheckoutBar @JvmOverloads constructor(
                     .show()
                 progressDialog.dismiss()
             }
+
             else -> {
                 Logger.d("Unhandled event in CheckoutBar: $state")
             }
         }
+    }
+
+    private fun handleFailedDepositReturns() {
+        val failedDepositReturnVouchers =
+            project.checkout.checkoutProcess?.depositReturnVouchers
+                ?.filter { it.state == DepositReturnVoucherState.REDEEMING_FAILED }
+                ?: return
+
+        var message = ""
+        failedDepositReturnVouchers
+            .forEachIndexed { index, depositReturnVoucher ->
+                message = "$message${cart.getByItemId(depositReturnVoucher.refersTo)?.displayName}"
+                if (index != failedDepositReturnVouchers.lastIndex){
+                    message = "$message\n"
+                }
+            }
+
+        AlertDialog.Builder(context)
+            .setCancelable(false)
+            .setTitle(context.getString(R.string.Snabble_ShoppingCart_DepositVoucher_RedemptionFailed_title))
+            .setMessage(
+                resources.getQuantityString(
+                    R.plurals.Snabble_ShoppingCart_DepositVoucher_RedemptionFailed_message,
+                    failedDepositReturnVouchers.size,
+                    message
+                )
+            )
+            .setPositiveButton(R.string.Snabble_ShoppingCart_DepositVoucher_RedemptionFailed_button) { _, _ ->
+                failedDepositReturnVouchers
+                    .map { it.refersTo }
+                    .forEach(cart::removeItem)
+            }
+            .show()
     }
 
     private fun getMaxSubjectLength(): Int? = Snabble.checkedInProject.value
