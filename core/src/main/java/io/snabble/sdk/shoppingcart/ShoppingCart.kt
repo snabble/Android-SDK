@@ -767,7 +767,7 @@ class ShoppingCart(
     private fun Item.violates(
         violations: List<Violation>,
         type: ViolationType,
-    ) = violations.filter { it.type == type }.any { it.refersTo == id }
+    ) = violations.any { it.type == type && it.refersTo == id }
 
     private fun handleCouponViolations(violations: List<Violation>) {
         violations.forEach { violation ->
