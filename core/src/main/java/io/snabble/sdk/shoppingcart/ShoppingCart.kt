@@ -1230,12 +1230,10 @@ class ShoppingCart(
         val displayName: String?
             get() = when {
                 lineItem != null -> lineItem?.name
-                else -> if (type == ItemType.COUPON) {
-                    coupon?.name
-                } else if (type == ItemType.DEPOSIT_RETURN_VOUCHER) {
-                    "Leergutbon ${depositReturnVoucher?.scannedCode}"  // TBI: replace it with something better
-                } else {
-                    product?.name
+                else -> when (type) {
+                    ItemType.COUPON -> coupon?.name
+                    ItemType.DEPOSIT_RETURN_VOUCHER -> depositReturnVoucher?.scannedCode
+                    else -> product?.name
                 }
             }
 
