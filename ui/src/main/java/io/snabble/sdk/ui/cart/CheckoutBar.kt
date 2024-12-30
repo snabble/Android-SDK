@@ -44,7 +44,6 @@ import io.snabble.sdk.ui.payment.externalbilling.ui.widgets.SubjectAlertDialog
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.DelayedProgressDialog
 import io.snabble.sdk.ui.utils.I18nUtils
-import io.snabble.sdk.ui.utils.I18nUtils.getIdentifier
 import io.snabble.sdk.ui.utils.OneShotClickListener
 import io.snabble.sdk.ui.utils.SnackbarUtils
 import io.snabble.sdk.ui.utils.UIUtils
@@ -422,35 +421,17 @@ open class CheckoutBar @JvmOverloads constructor(
                 val invalidItems = project.checkout.invalidItems
 
                 if (!invalidItems.isNullOrEmpty()) {
-                    val errorMessage = when {
-                        invalidItems.size == 1 -> context.getString(R.string.Snabble_SaleStop_ErrorMsg_one)
-                        else -> context.getString(R.string.Snabble_SaleStop_errorMsg)
-                    }
-
-                    var message = "$errorMessage\n\n"
-
-                    invalidItems.forEachIndexed { index, item ->
-                        val itemName = context.getString(R.string.Snabble_ShoppingCart_depositReturn, item.displayName)
-                        message = "$message${itemName}"
-                        if (index != invalidItems.lastIndex) message = "$message\n"
-                    }
-
-                    AlertDialog.Builder(context)
-                        .setCancelable(false)
-                        .setTitle(getIdentifier(resources, R.string.Snabble_SaleStop_ErrorMsg_title))
-                        .setMessage(message)
-                        .setPositiveButton(
-                            R.string.Snabble_remove
-                        ) { dialog, _ ->
+                    context.showInvalidProductsDialog(
+                        invalidItems = invalidItems,
+                        onRemove = {
                             invalidItems.forEach {
                                 val index = cart.indexOf(it)
                                 if (index != -1) {
                                     cart.remove(index)
                                 }
                             }
-                            dialog.dismiss()
                         }
-                        .show()
+                    )
                 } else {
                     SnackbarUtils.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
                         .show()
@@ -510,6 +491,7 @@ open class CheckoutBar @JvmOverloads constructor(
                     .show()
                 progressDialog.dismiss()
             }
+
             else -> {
                 Logger.d("Unhandled event in CheckoutBar: $state")
             }

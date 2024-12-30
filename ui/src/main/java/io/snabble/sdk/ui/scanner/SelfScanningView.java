@@ -46,6 +46,7 @@ import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener;
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.cart.InvalidProductsHelper;
 import io.snabble.sdk.ui.checkout.ViolationNotificationUtils;
 import io.snabble.sdk.ui.remotetheme.RemoteThemingHelper;
 import io.snabble.sdk.ui.telemetry.Telemetry;
@@ -124,18 +125,14 @@ public class SelfScanningView extends FrameLayout {
     private void setOnInvalidItemListener() {
         shoppingCart.setOnInvalidItemsDetectedListener(items -> {
             if (!items.isEmpty()) {
-                new AlertDialog.Builder(getContext())
-                        .setCancelable(false)
-                        .setTitle(getContext().getString(R.string.Snabble_ShoppingCart_Product_Invalid_title))
-                        .setPositiveButton(
-                                getContext().getString(R.string.Snabble_ShoppingCart_Product_Invalid_button),
-                                (dialog, which) -> {
-                                    removeAll(items);
-                                }
-                        )
-                        .setMessage(createInvalidItemsMessage(items))
-                        .create()
-                        .show();
+                InvalidProductsHelper.showInvalidProductsDialog(
+                        getContext(),
+                        items,
+                        () -> {
+                            removeAll(items);
+                            return null;
+                        }
+                );
             }
             return null;
         });
@@ -148,18 +145,6 @@ public class SelfScanningView extends FrameLayout {
                 shoppingCart.remove(index);
             }
         }
-    }
-
-    @NonNull
-    private String createInvalidItemsMessage(List<ShoppingCart.Item> items) {
-        final StringBuilder message = new StringBuilder();
-        for (int i = 0; i < items.size(); i++) {
-            message.append(items.get(i).getDisplayName());
-            if (i != (items.size() - 1)) {
-                message.append("\n");
-            }
-        }
-        return getResources().getQuantityString(R.plurals.Snabble_ShoppingCart_Product_Invalid_message, items.size(), message.toString());
     }
 
     private void resetViewState() {

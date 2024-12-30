@@ -25,6 +25,7 @@ import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.SnabbleUI.executeAction
 import io.snabble.sdk.ui.cart.PaymentSelectionHelper
 import io.snabble.sdk.ui.cart.shoppingcart.ShoppingCartScreen
+import io.snabble.sdk.ui.cart.showInvalidProductsDialog
 import io.snabble.sdk.ui.checkout.showNotificationOnce
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.I18nUtils.getIdentifier
@@ -244,35 +245,21 @@ class ShoppingCartView : FrameLayout {
 
             lastInvalidProducts = invalidProducts
         } else if (!invalidItemIds.isNullOrEmpty()) {
-            val errorMessage = when {
-                invalidItemIds.size == 1 -> context.getString(R.string.Snabble_SaleStop_ErrorMsg_one)
-                else -> context.getString(R.string.Snabble_SaleStop_errorMsg)
-            }
+            val invalidItems = cart?.mapNotNull { it }?.filter { it.id in invalidItemIds } ?: return
 
-            var message = "$errorMessage\n\n"
-
-            val invalidItems = cart?.mapNotNull { it }?.filter { it.id in invalidItemIds }
-
-            invalidItems?.forEach {
-                message = "$message${it.displayName}\n"
-            }
-
-            AlertDialog.Builder(context)
-                .setCancelable(false)
-                .setTitle(getIdentifier(resources, R.string.Snabble_SaleStop_ErrorMsg_title))
-                .setMessage(message)
-                .setPositiveButton(
-                    R.string.Snabble_remove
-                ) { dialog, _ ->
-                    invalidItems?.forEach {
-                        val index = cart?.indexOf(it) ?: return@forEach
-                        if (index != -1) {
-                            cart?.remove(index)
+            context.showInvalidProductsDialog(
+                invalidItems = invalidItems,
+                onRemove = {
+                    cart?.let { cart ->
+                        invalidItems.forEach { item ->
+                            val index = cart.indexOf(item)
+                            if (index != -1) {
+                                cart.remove(index)
+                            }
                         }
                     }
-                    dialog.dismiss()
                 }
-                .show()
+            )
         }
     }
 
