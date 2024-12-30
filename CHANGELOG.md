@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
+* ui/core: Integrate new states for deposit return vouchers into the checkout process and handle them
 ### Changed
 ### Removed
 * ui/core: Remove everything related to the old deposit return voucher feature
