@@ -89,14 +89,15 @@ class ShoppingCartViewModel : ViewModel() {
         _uiState.update { it.copy(items = cartItems, totalCartPrice = cachedCart.totalPrice) }
     }
 
-    private fun MutableList<CartItem>.addDepositReturnItems(depositReturns: List<ShoppingCart.Item>) {
-        depositReturns.forEach { returnVoucher ->
-            val totalDepositReturn =
-                returnVoucher.depositReturnVoucher?.lineItems?.sumOf { it.totalPrice } ?: return@forEach
+    private fun MutableList<CartItem>.addDepositReturnItems(items: List<ShoppingCart.Item>) {
+        items.forEach { item ->
+            val totalDepositReturnPrice =
+                item.depositReturnVoucher?.lineItems?.sumOf { it.totalPrice } ?: return@forEach
+
             add(
                 DepositReturnItem(
-                    item = returnVoucher,
-                    totalDeposit = priceFormatter?.format(totalDepositReturn).orEmpty()
+                    item = item,
+                    totalDeposit = priceFormatter?.format(totalDepositReturnPrice).orEmpty()
                 )
             )
         }
