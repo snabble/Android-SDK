@@ -488,13 +488,9 @@ open class CheckoutBar @JvmOverloads constructor(
                 ?.filter { it.state == DepositReturnVoucherState.REDEEMING_FAILED }
                 ?: return
 
-        var message = ""
-        failedDepositReturnVouchers
-            .forEachIndexed { index, depositReturnVoucher ->
-                message = "$message${cart.getByItemId(depositReturnVoucher.refersTo)?.displayName}"
-                if (index != failedDepositReturnVouchers.lastIndex){
-                    message = "$message\n"
-                }
+        val message = failedDepositReturnVouchers
+            .joinToString(separator = "/n") {
+                cart.getByItemId(it.refersTo)?.displayName.toString()
             }
 
         AlertDialog.Builder(context)
