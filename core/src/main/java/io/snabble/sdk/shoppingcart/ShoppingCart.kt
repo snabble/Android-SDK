@@ -1240,7 +1240,7 @@ class ShoppingCart(
                 else -> if (type == ItemType.COUPON) {
                     coupon?.name
                 } else if (type == ItemType.DEPOSIT_RETURN_VOUCHER) {
-                    "Leergutbon ${depositReturnVoucher?.scannedCode}"
+                    depositReturnVoucher?.scannedCode
                 } else {
                     product?.name
                 }

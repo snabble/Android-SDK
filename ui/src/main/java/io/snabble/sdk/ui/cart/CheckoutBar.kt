@@ -429,8 +429,10 @@ open class CheckoutBar @JvmOverloads constructor(
 
                     var message = "$errorMessage\n\n"
 
-                    invalidItems.forEach {
-                        message = "$message${it.displayName}\n"
+                    invalidItems.forEachIndexed { index, item ->
+                        val itemName = context.getString(R.string.Snabble_ShoppingCart_depositReturn, item.displayName)
+                        message = "$message${itemName}"
+                        if (index != invalidItems.lastIndex) message = "$message\n"
                     }
 
                     AlertDialog.Builder(context)

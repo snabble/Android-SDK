@@ -350,6 +350,7 @@
     <item quantity="other">Diese Produkte können derzeit leider nicht mit der App bezahlt werden: \n%s\n \n\nBitte bezahle diese an der Kassen.</item>
   </plurals>
   <string name="Snabble.ShoppingCart.Product.Invalid.title">Ungültiges Produkt</string>
+  <string name="Snabble.ShoppingCart.depositReturn">Leergutbon: </string>
   <string name="Snabble.ShoppingCart.title">Warenkorb</string>
   <string name="Snabble.ShoppingList.AddItem.viaScan">Produkte scannen</string>
   <string name="Snabble.ShoppingList.AddItem.viaVoice">Produkte diktieren</string>
