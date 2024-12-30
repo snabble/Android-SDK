@@ -58,6 +58,7 @@ open class SelfScanningFragment : BaseFragment(), MenuProvider {
                 createSelfScanningView()
                 requireView().announceForAccessibility(getString(R.string.Snabble_Scanner_Accessibility_eventBackInScanner))
                 explainScanner()
+                onCameraPermissionGrantedListener?.invoke()
             } else {
                 canAskAgain = ActivityCompat.shouldShowRequestPermissionRationale(
                     requireActivity(),
@@ -66,6 +67,8 @@ open class SelfScanningFragment : BaseFragment(), MenuProvider {
                 showPermissionRationale()
             }
         }
+
+    var onCameraPermissionGrantedListener: (() -> Unit)? = null
 
     override fun onCreateActualView(
         inflater: LayoutInflater,
