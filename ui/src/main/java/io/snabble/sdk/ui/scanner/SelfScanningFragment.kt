@@ -68,6 +68,9 @@ open class SelfScanningFragment : BaseFragment(), MenuProvider {
             }
         }
 
+    /**
+     * Add a listener to get notified if the camera permission has been granted
+     */
     var onCameraPermissionGrantedListener: (() -> Unit)? = null
 
     override fun onCreateActualView(
