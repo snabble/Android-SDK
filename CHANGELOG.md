@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
+* core: Receive origin type from `PaymentMethodDesricptor` in case it is not set by default
 ### Changed
 ### Removed
 ### Fixed
