@@ -163,7 +163,7 @@ internal class ShoppingCartUpdater(
 
             addLineItemsAsCartItems(filter { it.type == LineItemType.COUPON })
             addLineItemsAsCartItems(filter { it.type == LineItemType.DEPOSIT })
-            addLineItemsAsCartItems(filter { it.type == LineItemType.DEPOSIT_RETURN })
+            addDepositReturnsToVoucher(filter { it.type == LineItemType.DEPOSIT_RETURN })
         }
 
         setOnlinePrice(price)
@@ -179,6 +179,15 @@ internal class ShoppingCartUpdater(
             checkLimits()
             notifyPriceUpdate(this)
         }
+    }
+
+    private fun addDepositReturnsToVoucher(depositReturnItems: List<LineItem>) {
+        depositReturnItems
+            .groupBy { it.refersTo }
+            .forEach { (refersTo, items) ->
+                val drv = cart.getByItemId(refersTo)
+                drv?.depositReturnVoucher = drv?.depositReturnVoucher?.copy(lineItems = items)
+            }
     }
 
     private fun addCartDiscounts(cartDiscountItems: List<LineItem>) {

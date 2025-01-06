@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
+* ui: Add UI for deposit return vouchers (APPS-1643)
 * core: Handle invalid items (APPS-2039)
 ### Changed
 ### Removed
