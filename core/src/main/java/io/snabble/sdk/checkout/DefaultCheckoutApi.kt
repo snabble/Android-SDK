@@ -114,14 +114,7 @@ class DefaultCheckoutApi(private val project: Project,
                     when (type) {
                         "invalid_cart_item" -> {
                             val invalidSkus = error["details"].asJsonArray
-                                .mapNotNull {
-                                    val sku: String? = it.asJsonObject["sku"].asString
-                                    if (sku.isNotNullOrBlank()) {
-                                        sku
-                                    } else {
-                                        null
-                                    }
-                                }
+                                .mapNotNull { it.asJsonObject["sku"].asString?.ifBlank { null } }
 
                             val invalidProducts = shoppingCart
                                 .mapNotNull { it?.product }
