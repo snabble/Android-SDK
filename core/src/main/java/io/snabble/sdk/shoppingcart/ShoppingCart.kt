@@ -1239,8 +1239,12 @@ class ShoppingCart(
                 lineItem != null -> lineItem?.name
                 else -> when (type) {
                     ItemType.COUPON -> coupon?.name
+
                     ItemType.DEPOSIT_RETURN_VOUCHER -> depositReturnVoucher?.scannedCode
-                    else -> product?.name
+
+                    ItemType.PRODUCT,
+                    ItemType.LINE_ITEM,
+                    null -> product?.name
                 }
             }
 
