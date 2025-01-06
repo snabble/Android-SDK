@@ -54,7 +54,7 @@ private fun Preview() {
         CartDiscount(
             modifier = Modifier.fillMaxWidth(),
             item = CartDiscountItem(
-                item = ShoppingCart.Item(ShoppingCart(), LineItem("", 1)),
+                item = ShoppingCart.Item(ShoppingCart(), LineItem(id = "", amount = 1)),
                 discount = "7.00",
                 name = "SUPER DUPER RABATT"
             )
