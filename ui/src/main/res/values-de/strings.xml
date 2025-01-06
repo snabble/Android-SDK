@@ -341,7 +341,7 @@
   <string name="Snabble.Shop.List.Expand.accessibility">aufklappen</string>
   <string name="Snabble.Shop.List.ShowDetails.accessibility">Shop-Details anzeigen</string>
   <string name="Snabble.Shopping.title">Einkaufen</string>
-  <string name="Snabble.ShoppingCart.DepositReturn.message">Damit der Leergutbon eingelöst werden kann,  fülle deinen Warenkorb mit deinen Wunschprodukten.</string>
+  <string name="Snabble.ShoppingCart.DepositReturn.message">Damit der Leergutbon eingelöst werden kann, fülle deinen Warenkorb mit deinen Wunschprodukten.</string>
   <string name="Snabble.ShoppingCart.DepositReturn.title">Leergutbon</string>
   <string name="Snabble.ShoppingCart.title">Warenkorb</string>
   <string name="Snabble.ShoppingList.AddItem.viaScan">Produkte scannen</string>
