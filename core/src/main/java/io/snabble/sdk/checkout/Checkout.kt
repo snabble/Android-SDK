@@ -311,7 +311,7 @@ class Checkout @JvmOverloads constructor(
                 }
 
                 override fun onInvalidItems(itemIds: List<String>) {
-                    invalidItems = shoppingCart.mapNotNull { it }.filter { it.id in itemIds }
+                    invalidItems = shoppingCart.filterNotNull().filter { it.id in itemIds }
                     notifyStateChanged(CheckoutState.INVALID_ITEMS)
                 }
 
