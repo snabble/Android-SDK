@@ -59,7 +59,7 @@ class ShoppingCart(
         updateTimestamp()
         updater = project?.let { ShoppingCartUpdater(it, this) }
         updater?.onInvalidItemsDetectedListener = { invalidItems ->
-            val items = this.mapNotNull { it }.filter { it.id in invalidItems }
+            val items = filterNotNull().filter { it.id in invalidItems }
             onInvalidItemsDetectedListener?.let { it(items) }
         }
         priceFormatter = project?.priceFormatter
