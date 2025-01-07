@@ -23,7 +23,6 @@ import androidx.fragment.app.FragmentActivity
 import io.snabble.accessibility.accessibility
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
-import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.Snabble.instance
 import io.snabble.sdk.checkout.Checkout
@@ -31,6 +30,7 @@ import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.config.ExternalBillingSubjectLength
 import io.snabble.sdk.config.ProjectId
 import io.snabble.sdk.extensions.getApplicationInfoCompat
+import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
 import io.snabble.sdk.ui.Keyguard
@@ -433,6 +433,28 @@ open class CheckoutBar @JvmOverloads constructor(
                 progressDialog.dismiss()
             }
 
+            CheckoutState.INVALID_ITEMS -> {
+                val invalidItems = project.checkout.invalidItems
+
+                if (!invalidItems.isNullOrEmpty()) {
+                    context.showInvalidProductsDialog(
+                        invalidItems = invalidItems,
+                        onRemove = {
+                            invalidItems.forEach {
+                                val index = cart.indexOf(it)
+                                if (index != -1) {
+                                    cart.remove(index)
+                                }
+                            }
+                        }
+                    )
+                } else {
+                    SnackbarUtils.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
+                        .show()
+                }
+                progressDialog.dismiss()
+            }
+
             CheckoutState.CONNECTION_ERROR,
             CheckoutState.NO_SHOP,
             CheckoutState.PAYMENT_PROCESSING_ERROR -> {
@@ -485,6 +507,7 @@ open class CheckoutBar @JvmOverloads constructor(
                     .show()
                 progressDialog.dismiss()
             }
+
             else -> {
                 Logger.d("Unhandled event in CheckoutBar: $state")
             }

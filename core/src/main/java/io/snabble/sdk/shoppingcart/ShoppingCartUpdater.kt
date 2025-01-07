@@ -36,6 +36,12 @@ internal class ShoppingCartUpdater(
     private val checkoutApi: DefaultCheckoutApi = DefaultCheckoutApi(project, cart)
     private val handler: Handler = Handler(Looper.getMainLooper())
 
+    /**
+     * Listener that notifies if items are detected that are that cant be found
+     * in the product data base
+     */
+    var onInvalidItemsDetectedListener: ((List<String>) -> Unit)? = null
+
     var lastAvailablePaymentMethods: List<PaymentMethodInfo>? = null
         private set
     var isUpdated = false
@@ -94,6 +100,12 @@ internal class ShoppingCartUpdater(
                     error(requestSucceeded = true)
                 }
 
+                override fun onInvalidItems(itemIds: List<String>) {
+                    handler.post { onInvalidItemsDetectedListener?.invoke(itemIds) }
+                    cart.invalidItemIds = itemIds
+                    error(requestSucceeded = true)
+                }
+
                 override fun onNoAvailablePaymentMethodFound() {
                     error(requestSucceeded = true)
                 }
@@ -149,7 +161,7 @@ internal class ShoppingCartUpdater(
 
             addLineItemsAsCartItems(filter { it.type == LineItemType.COUPON })
             addLineItemsAsCartItems(filter { it.type == LineItemType.DEPOSIT })
-            addLineItemsAsCartItems(filter { it.type == LineItemType.DEPOSIT_RETURN })
+            addDepositReturnsToVoucher(filter { it.type == LineItemType.DEPOSIT_RETURN })
         }
 
         setOnlinePrice(price)
@@ -161,9 +173,19 @@ internal class ShoppingCartUpdater(
 
         with(cart) {
             invalidProducts = null
+            invalidItemIds = null
             checkLimits()
             notifyPriceUpdate(this)
         }
+    }
+
+    private fun addDepositReturnsToVoucher(depositReturnItems: List<LineItem>) {
+        depositReturnItems
+            .groupBy { it.refersTo }
+            .forEach { (refersTo, items) ->
+                val drv = cart.getByItemId(refersTo)
+                drv?.depositReturnVoucher = drv?.depositReturnVoucher?.copy(lineItems = items)
+            }
     }
 
     private fun addCartDiscounts(cartDiscountItems: List<LineItem>) {
