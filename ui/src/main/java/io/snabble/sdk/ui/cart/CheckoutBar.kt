@@ -489,9 +489,8 @@ open class CheckoutBar @JvmOverloads constructor(
                 ?: return
 
         val message = failedDepositReturnVouchers
-            .joinToString(separator = "/n") {
-                cart.getByItemId(it.refersTo)?.displayName.toString()
-            }
+            .mapNotNull { cart.getByItemId(it.refersTo)?.displayName }
+            .joinToString(separator = "/n") { it }
 
         AlertDialog.Builder(context)
             .setCancelable(false)
