@@ -11,7 +11,6 @@ import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
-import java.lang.Exception
 import java.net.HttpURLConnection.HTTP_CONFLICT
 import java.net.HttpURLConnection.HTTP_FORBIDDEN
 import java.net.HttpURLConnection.HTTP_NOT_FOUND
@@ -209,6 +208,9 @@ class DefaultCheckoutApi(private val project: Project,
             }
         }
 
+        val originType = paymentCredentials?.type?.originType
+            ?: getOriginTypeFromPaymentMethodDescriptor(paymentMethod = paymentMethod)
+
         val checkoutProcessRequest = CheckoutProcessRequest(
             paymentMethod = paymentMethod,
             signedCheckoutInfo = signedCheckoutInfo,
@@ -217,22 +219,24 @@ class DefaultCheckoutApi(private val project: Project,
             paymentInformation = when (paymentCredentials?.type) {
                 PaymentCredentials.Type.EXTERNAL_BILLING -> {
                     PaymentInformation(
-                        originType = paymentCredentials.type?.originType,
+                        originType = originType,
                         encryptedOrigin = paymentCredentials.encryptedData,
                         subject = paymentCredentials.additionalData["subject"]
                     )
                 }
+
                 PaymentCredentials.Type.CREDIT_CARD_PSD2 -> {
                     PaymentInformation(
-                        originType = paymentCredentials.type?.originType,
+                        originType = originType,
                         encryptedOrigin = paymentCredentials.encryptedData,
                         validUntil = SimpleDateFormat("yyyy/MM/dd").format(Date(paymentCredentials.validTo)),
                         cardNumber = paymentCredentials.obfuscatedId,
                     )
                 }
+
                 PaymentCredentials.Type.GIROPAY -> {
                     PaymentInformation(
-                        originType = paymentCredentials.type?.originType,
+                        originType = originType,
                         encryptedOrigin = paymentCredentials.encryptedData,
                         deviceID = paymentCredentials.additionalData["deviceID"],
                         deviceName = paymentCredentials.additionalData["deviceName"],
@@ -243,7 +247,7 @@ class DefaultCheckoutApi(private val project: Project,
                 null -> null
                 else -> {
                     PaymentInformation(
-                        originType = paymentCredentials.type?.originType,
+                        originType = originType,
                         encryptedOrigin = paymentCredentials.encryptedData
                     )
                 }
@@ -320,7 +324,14 @@ class DefaultCheckoutApi(private val project: Project,
         })
     }
 
+    private fun getOriginTypeFromPaymentMethodDescriptor(paymentMethod: PaymentMethod): String? =
+        project.paymentMethodDescriptors
+            .firstOrNull { it.paymentMethod == paymentMethod }
+            ?.acceptedOriginTypes
+            ?.get(0)
+
     companion object {
+
         private val JSON: MediaType = "application/json".toMediaType()
     }
 }
