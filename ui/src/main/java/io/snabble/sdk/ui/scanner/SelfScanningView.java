@@ -46,6 +46,7 @@ import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener;
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.SnabbleUI;
+import io.snabble.sdk.ui.cart.InvalidProductsHelper;
 import io.snabble.sdk.ui.checkout.ViolationNotificationUtils;
 import io.snabble.sdk.ui.remotetheme.RemoteThemingHelper;
 import io.snabble.sdk.ui.telemetry.Telemetry;
@@ -113,9 +114,36 @@ public class SelfScanningView extends FrameLayout {
             unregisterListeners();
             project = p;
             shoppingCart = project.getShoppingCart();
+            setOnInvalidItemListener();
+
             productDatabase = project.getProductDatabase();
             resetViewState();
             registerListeners();
+        }
+    }
+
+    private void setOnInvalidItemListener() {
+        shoppingCart.setOnInvalidItemsDetectedListener(items -> {
+            if (!items.isEmpty()) {
+                InvalidProductsHelper.showInvalidProductsDialog(
+                        getContext(),
+                        items,
+                        () -> {
+                            removeAll(items);
+                            return null;
+                        }
+                );
+            }
+            return null;
+        });
+    }
+
+    private void removeAll(List<ShoppingCart.Item> items) {
+        for (ShoppingCart.Item item : items) {
+            final int index = shoppingCart.indexOf(item);
+            if (index != -1) {
+                shoppingCart.remove(index);
+            }
         }
     }
 

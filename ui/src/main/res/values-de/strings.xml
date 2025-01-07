@@ -343,6 +343,14 @@
   <string name="Snabble.Shopping.title">Einkaufen</string>
   <string name="Snabble.ShoppingCart.DepositReturn.message">Damit der Leergutbon eingelöst werden kann, fülle deinen Warenkorb mit deinen Wunschprodukten.</string>
   <string name="Snabble.ShoppingCart.DepositReturn.title">Leergutbon</string>
+  <string name="Snabble.ShoppingCart.Product.Invalid.button">Entfernen</string>
+  <plurals name="Snabble.ShoppingCart.Product.Invalid.message">
+    <item quantity="zero"></item>
+    <item quantity="one">Dieses Produkt kann derzeit leider nicht mit der App bezahlt werden: \n%s\n \n\nBitte bezahle es an der Kassen.</item>
+    <item quantity="other">Diese Produkte können derzeit leider nicht mit der App bezahlt werden: \n%s\n \n\nBitte bezahle diese an der Kassen.</item>
+  </plurals>
+  <string name="Snabble.ShoppingCart.Product.Invalid.title">Ungültiges Produkt</string>
+  <string name="Snabble.ShoppingCart.product">Produkt: %s</string>
   <string name="Snabble.ShoppingCart.title">Warenkorb</string>
   <string name="Snabble.ShoppingList.AddItem.viaScan">Produkte scannen</string>
   <string name="Snabble.ShoppingList.AddItem.viaVoice">Produkte diktieren</string>

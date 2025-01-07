@@ -12,6 +12,7 @@ val CheckoutState.isCheckoutState: Boolean
         CheckoutState.REQUEST_TAXATION,
         CheckoutState.CONNECTION_ERROR,
         CheckoutState.INVALID_PRODUCTS,
+        CheckoutState.INVALID_ITEMS,
         CheckoutState.NO_PAYMENT_METHOD_AVAILABLE,
         CheckoutState.PAYMENT_ABORTED,
         CheckoutState.NO_SHOP -> false
