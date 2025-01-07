@@ -3,11 +3,14 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
-* ui: Add listener to `SelfScanningFragment` to react to camera permission changes
-* core: Receive origin type from `PaymentMethodDesricptor` in case it is not set by default
 ### Changed
 ### Removed
 ### Fixed
+
+## [0.80.3]
+### Added
+* ui: Add listener to `SelfScanningFragment` to react to camera permission changes
+* core: Receive origin type from `PaymentMethodDesricptor` in case it is not set by default
 
 ## [0.80.2]
 ### Fixed
