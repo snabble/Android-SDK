@@ -59,7 +59,7 @@ class ShoppingCart(
         updateTimestamp()
         updater = project?.let { ShoppingCartUpdater(it, this) }
         updater?.onInvalidItemsDetectedListener = { invalidItems ->
-            val items = this.mapNotNull { it }.filter { it.id in invalidItems }
+            val items = filterNotNull().filter { it.id in invalidItems }
             onInvalidItemsDetectedListener?.let { it(items) }
         }
         priceFormatter = project?.priceFormatter
@@ -1239,8 +1239,12 @@ class ShoppingCart(
                 lineItem != null -> lineItem?.name
                 else -> when (type) {
                     ItemType.COUPON -> coupon?.name
+
                     ItemType.DEPOSIT_RETURN_VOUCHER -> depositReturnVoucher?.scannedCode
-                    else -> product?.name
+
+                    ItemType.PRODUCT,
+                    ItemType.LINE_ITEM,
+                    null -> product?.name
                 }
             }
 

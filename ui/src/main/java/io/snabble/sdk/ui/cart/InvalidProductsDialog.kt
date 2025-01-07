@@ -16,9 +16,7 @@ fun Context.showInvalidProductsDialog(
         .setCancelable(false)
         .setTitle(getString(R.string.Snabble_ShoppingCart_Product_Invalid_title))
         .setMessage(resources.createInvalidItemsMessage(invalidItems))
-        .setPositiveButton(
-            R.string.Snabble_ShoppingCart_Product_Invalid_button
-        ) { dialog, _ ->
+        .setPositiveButton(R.string.Snabble_ShoppingCart_Product_Invalid_button) { dialog, _ ->
             onRemove()
             dialog.dismiss()
         }

@@ -245,7 +245,7 @@ class ShoppingCartView : FrameLayout {
 
             lastInvalidProducts = invalidProducts
         } else if (!invalidItemIds.isNullOrEmpty()) {
-            val invalidItems = cart?.mapNotNull { it }?.filter { it.id in invalidItemIds } ?: return
+            val invalidItems = cart?.filterNotNull()?.filter { it.id in invalidItemIds } ?: return
 
             context.showInvalidProductsDialog(
                 invalidItems = invalidItems,
