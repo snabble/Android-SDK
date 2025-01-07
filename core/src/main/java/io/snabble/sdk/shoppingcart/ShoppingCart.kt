@@ -454,7 +454,7 @@ class ShoppingCart(
      * Gets a list of invalid item ids that were rejected by the backend.
      */
     var invalidItemIds: List<String>?
-        get() = data.invalidItemIds ?: emptyList()
+        get() = data.invalidItemIds
         set(invalidItemIds) {
             data = data.copy(invalidItemIds = invalidItemIds)
         }
