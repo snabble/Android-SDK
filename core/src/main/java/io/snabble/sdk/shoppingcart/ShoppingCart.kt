@@ -60,7 +60,7 @@ class ShoppingCart(
         updater = project?.let { ShoppingCartUpdater(it, this) }
         updater?.onInvalidItemsDetectedListener = { invalidItems ->
             val items = filterNotNull().filter { it.id in invalidItems }
-            onInvalidItemsDetectedListener?.let { it(items) }
+            onInvalidItemsDetectedListener?.invoke(items)
         }
         priceFormatter = project?.priceFormatter
     }

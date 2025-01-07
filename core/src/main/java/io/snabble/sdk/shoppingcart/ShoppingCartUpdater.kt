@@ -101,9 +101,7 @@ internal class ShoppingCartUpdater(
                 }
 
                 override fun onInvalidItems(itemIds: List<String>) {
-                    handler.post {
-                        onInvalidItemsDetectedListener?.let { it(itemIds) }
-                    }
+                    handler.post { onInvalidItemsDetectedListener?.invoke(itemIds) }
                     cart.invalidItemIds = itemIds
                     error(requestSucceeded = true)
                 }
