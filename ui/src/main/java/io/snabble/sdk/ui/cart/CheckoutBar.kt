@@ -27,6 +27,7 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.Snabble.instance
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.checkout.CheckoutState
+import io.snabble.sdk.checkout.DepositReturnVoucherState
 import io.snabble.sdk.config.ExternalBillingSubjectLength
 import io.snabble.sdk.config.ProjectId
 import io.snabble.sdk.extensions.getApplicationInfoCompat
@@ -449,6 +450,11 @@ open class CheckoutBar @JvmOverloads constructor(
                 }
             }
 
+            CheckoutState.DEPOSIT_RETURN_REDEMPTION_FAILED -> {
+                progressDialog.dismiss()
+                handleFailedDepositReturns()
+            }
+
             CheckoutState.PAYMENT_ABORTED -> {
                 progressDialog.dismiss()
             }
@@ -496,6 +502,34 @@ open class CheckoutBar @JvmOverloads constructor(
                 Logger.d("Unhandled event in CheckoutBar: $state")
             }
         }
+    }
+
+    private fun handleFailedDepositReturns() {
+        val failedDepositReturnVouchers =
+            project.checkout.checkoutProcess?.depositReturnVouchers
+                ?.filter { it.state == DepositReturnVoucherState.REDEEMING_FAILED }
+                ?: return
+
+        val message = failedDepositReturnVouchers
+            .mapNotNull { cart.getByItemId(it.refersTo)?.displayName }
+            .joinToString(separator = "/n") { it }
+
+        AlertDialog.Builder(context)
+            .setCancelable(false)
+            .setTitle(context.getString(R.string.Snabble_ShoppingCart_DepositVoucher_RedemptionFailed_title))
+            .setMessage(
+                resources.getQuantityString(
+                    R.plurals.Snabble_ShoppingCart_DepositVoucher_RedemptionFailed_message,
+                    failedDepositReturnVouchers.size,
+                    message
+                )
+            )
+            .setPositiveButton(R.string.Snabble_ShoppingCart_DepositVoucher_RedemptionFailed_button) { _, _ ->
+                failedDepositReturnVouchers
+                    .map { it.refersTo }
+                    .forEach(cart::removeItem)
+            }
+            .show()
     }
 
     private fun getMaxSubjectLength(): Int? = Snabble.checkedInProject.value

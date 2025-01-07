@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 * ui: Add UI for deposit return vouchers (APPS-1643)
 * core: Handle invalid items (APPS-2039)
+* ui/core: Integrate new states for deposit return vouchers into the checkout process and handle them
 ### Changed
 ### Removed
 * ui/core: Remove everything related to the old deposit return voucher feature

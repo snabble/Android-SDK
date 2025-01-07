@@ -335,11 +335,37 @@ data class Fulfillment(
         get() = links?.get("self")?.href
 }
 
+data class DepositReturnVoucher(
+    @SerializedName("refersTo")
+    val refersTo: String,
+    @SerializedName("state")
+    val state: DepositReturnVoucherState
+)
+
+enum class DepositReturnVoucherState {
+    @SerializedName("pending")
+    PENDING,
+
+    @SerializedName("redeemed")
+    REDEEMED,
+
+    @SerializedName("redeemingFailed")
+    REDEEMING_FAILED,
+
+    @SerializedName("rolledback")
+    ROLLED_BACK,
+
+    @SerializedName("rollbackFailed")
+    ROLLBACK_FAILED
+}
+
 data class CheckoutProcessResponse(
     val links: Map<String, Href>? = null,
     val checks: List<Check> = emptyList(),
     @SerializedName("orderID")
     val orderId: String? = null,
+    @SerializedName("depositReturnVouchers")
+    val depositReturnVouchers: List<DepositReturnVoucher>? = null,
     val aborted: Boolean = false,
     val paymentMethod: PaymentMethod? = null,
     val paymentInformation: PaymentInformation? = null,

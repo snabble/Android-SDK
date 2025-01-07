@@ -216,6 +216,16 @@ class ShoppingCart(
     }
 
     /**
+     * Removes a cart item from the cart by its id
+     */
+    fun removeItem(itemId: String) {
+        val index = indexOf(firstOrNull { it?.id == itemId })
+        if (index != -1) {
+            remove(index)
+        }
+    }
+
+    /**
      * The number items in the cart.
      *
      *
