@@ -82,6 +82,13 @@ class Checkout @JvmOverloads constructor(
             persistentState.save()
         }
 
+    var invalidItems: List<ShoppingCart.Item>?
+        get() = persistentState.invalidItems
+        private set(value) {
+            persistentState.invalidItems = value
+            persistentState.save()
+        }
+
     /**
      * List of coupons that were redeemed during this checkout
      */
@@ -301,6 +308,11 @@ class Checkout @JvmOverloads constructor(
                 override fun onInvalidProducts(products: List<Product>) {
                     invalidProducts = products
                     notifyStateChanged(CheckoutState.INVALID_PRODUCTS)
+                }
+
+                override fun onInvalidItems(itemIds: List<String>) {
+                    invalidItems = shoppingCart.filterNotNull().filter { it.id in itemIds }
+                    notifyStateChanged(CheckoutState.INVALID_ITEMS)
                 }
 
                 override fun onNoAvailablePaymentMethodFound() {

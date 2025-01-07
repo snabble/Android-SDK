@@ -47,6 +47,9 @@ class ShoppingCart(
     private val listeners: MutableList<ShoppingCartListener>? = CopyOnWriteArrayList()
 
     @Transient
+    var onInvalidItemsDetectedListener: ((List<Item>) -> kotlin.Unit)? = null
+
+    @Transient
     private var updater: ShoppingCartUpdater? = null
 
     @Transient
@@ -55,6 +58,10 @@ class ShoppingCart(
     init {
         updateTimestamp()
         updater = project?.let { ShoppingCartUpdater(it, this) }
+        updater?.onInvalidItemsDetectedListener = { invalidItems ->
+            val items = filterNotNull().filter { it.id in invalidItems }
+            onInvalidItemsDetectedListener?.invoke(items)
+        }
         priceFormatter = project?.priceFormatter
     }
 
@@ -341,6 +348,7 @@ class ShoppingCart(
     fun invalidateOnlinePrices() {
         data = data.copy(
             invalidProducts = null,
+            invalidItemIds = null,
             onlineTotalPrice = null
         )
 
@@ -450,6 +458,15 @@ class ShoppingCart(
         get() = data.invalidProducts ?: emptyList()
         set(invalidProducts) {
             data = data.copy(invalidProducts = invalidProducts)
+        }
+
+    /**
+     * Gets a list of invalid item ids that were rejected by the backend.
+     */
+    var invalidItemIds: List<String>?
+        get() = data.invalidItemIds
+        set(invalidItemIds) {
+            data = data.copy(invalidItemIds = invalidItemIds)
         }
 
     /**
@@ -744,8 +761,8 @@ class ShoppingCart(
         }
 
         val notificationReferrers = data.violationNotifications.map { notification -> notification.refersTo }
-        this
-            .filter { it.refersTo !in notificationReferrers }
+
+        filter { it.refersTo !in notificationReferrers }
             .map { violation ->
                 ViolationNotification(
                     name = null,
@@ -1232,8 +1249,12 @@ class ShoppingCart(
                 lineItem != null -> lineItem?.name
                 else -> when (type) {
                     ItemType.COUPON -> coupon?.name
+
                     ItemType.DEPOSIT_RETURN_VOUCHER -> depositReturnVoucher?.scannedCode
-                    else -> product?.name
+
+                    ItemType.PRODUCT,
+                    ItemType.LINE_ITEM,
+                    null -> product?.name
                 }
             }
 

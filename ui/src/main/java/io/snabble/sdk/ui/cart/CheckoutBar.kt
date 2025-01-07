@@ -418,6 +418,28 @@ open class CheckoutBar @JvmOverloads constructor(
                 progressDialog.dismiss()
             }
 
+            CheckoutState.INVALID_ITEMS -> {
+                val invalidItems = project.checkout.invalidItems
+
+                if (!invalidItems.isNullOrEmpty()) {
+                    context.showInvalidProductsDialog(
+                        invalidItems = invalidItems,
+                        onRemove = {
+                            invalidItems.forEach {
+                                val index = cart.indexOf(it)
+                                if (index != -1) {
+                                    cart.remove(index)
+                                }
+                            }
+                        }
+                    )
+                } else {
+                    SnackbarUtils.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
+                        .show()
+                }
+                progressDialog.dismiss()
+            }
+
             CheckoutState.CONNECTION_ERROR,
             CheckoutState.NO_SHOP,
             CheckoutState.PAYMENT_PROCESSING_ERROR -> {

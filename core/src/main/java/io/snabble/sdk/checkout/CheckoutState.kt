@@ -110,6 +110,11 @@ enum class CheckoutState {
     INVALID_PRODUCTS,
 
     /**
+     * Invalid items detected. For example if an item can't be found
+     */
+    INVALID_ITEMS,
+
+    /**
      * No payment method available
      */
     NO_PAYMENT_METHOD_AVAILABLE,

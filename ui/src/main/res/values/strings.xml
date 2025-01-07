@@ -344,6 +344,14 @@
   <string name="Snabble.ShoppingCart.DepositReturn.message">To redeem your voucher, fill your shopping basket with the products you wish to purchase.</string>
   <string name="Snabble.ShoppingCart.DepositReturn.title">Deposit voucher</string>
   <string name="Snabble.ShoppingCart.DepositVoucher.RedemptionFailed.title">Invalid deposit voucher</string>
+  <string name="Snabble.ShoppingCart.Product.Invalid.button">Remove</string>
+  <plurals name="Snabble.ShoppingCart.Product.Invalid.message">
+    <item quantity="zero"></item>
+    <item quantity="one">Unfortunately, this product cannot currently be paid for with the app: \n%s\n \n\nPlease pay for it at the cash desk.</item>
+    <item quantity="other">Unfortunately, these products cannot currently be paid for with the app: \n%s\n \n\nPlease pay for it at the cash desk.</item>
+  </plurals>
+  <string name="Snabble.ShoppingCart.Product.Invalid.title">Invalid product</string>
+  <string name="Snabble.ShoppingCart.product">Product: %s</string>
   <string name="Snabble.ShoppingCart.title">Shopping Cart</string>
   <string name="Snabble.ShoppingList.AddItem.viaScan">Scan products</string>
   <string name="Snabble.ShoppingList.AddItem.viaVoice">Tell products</string>
