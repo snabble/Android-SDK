@@ -213,11 +213,13 @@ open class CheckoutBar @JvmOverloads constructor(
             val articlesText = resources.getQuantityText(R.plurals.Snabble_Shoppingcart_numberOfItems, quantity)
             articleCount.text = String.format(articlesText.toString(), quantity)
             priceSum.text = project.priceFormatter.format(price)
-            if (price < 0){
-                context.getColorByAttribute(R.attr.colorError)
-            }else {
-                context.getColorByAttribute(R.attr.colorOnSurface)
-            }
+            priceSum.setTextColor(
+                if (price < 0) {
+                    context.getColorByAttribute(R.attr.colorError)
+                } else {
+                    context.getColorByAttribute(R.attr.colorOnSurface)
+                }
+            )
 
             val onlinePaymentAvailable = !cart.availablePaymentMethods.isNullOrEmpty()
             payButton.isEnabled =
