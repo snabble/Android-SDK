@@ -100,11 +100,7 @@ class DefaultCheckoutApi(private val project: Project,
                     ?: shoppingCart.totalPrice
 
                 val availablePaymentMethods = signedCheckoutInfo.getAvailablePaymentMethods()
-                if (availablePaymentMethods.isNotEmpty()) {
-                    checkoutInfoResult?.onSuccess(signedCheckoutInfo, price, availablePaymentMethods)
-                } else {
-                    checkoutInfoResult?.onConnectionError()
-                }
+                checkoutInfoResult?.onSuccess(signedCheckoutInfo, price, availablePaymentMethods)
             }
 
             override fun failure(obj: JsonObject) {
