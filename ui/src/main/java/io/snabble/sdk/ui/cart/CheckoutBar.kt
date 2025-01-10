@@ -53,6 +53,7 @@ import io.snabble.sdk.ui.utils.observeView
 import io.snabble.sdk.ui.utils.requireFragmentActivity
 import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.utils.Logger
+import io.snabble.sdk.utils.getColorByAttribute
 
 open class CheckoutBar @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -213,6 +214,13 @@ open class CheckoutBar @JvmOverloads constructor(
             val articlesText = resources.getQuantityText(R.plurals.Snabble_Shoppingcart_numberOfItems, quantity)
             articleCount.text = String.format(articlesText.toString(), quantity)
             priceSum.text = project.priceFormatter.format(price)
+            priceSum.setTextColor(
+                if (price < 0) {
+                    context.getColorByAttribute(R.attr.colorError)
+                } else {
+                    context.getColorByAttribute(R.attr.colorOnSurface)
+                }
+            )
 
             val onlinePaymentAvailable = !cart.availablePaymentMethods.isNullOrEmpty()
             payButton.isEnabled =
@@ -245,13 +253,23 @@ open class CheckoutBar @JvmOverloads constructor(
                 payButton.isEnabled = true
                 payButton.setText(R.string.Snabble_Shoppingcart_EmptyState_restoreButtonTitle)
             } else {
-                payButton.setText(
-                    I18nUtils.getIdentifierForProject(
-                        resources,
-                        project,
-                        R.string.Snabble_Shoppingcart_BuyProducts_now
+                if (price == 0) {
+                    payButton.setText(
+                        I18nUtils.getIdentifierForProject(
+                            resources,
+                            project,
+                            R.string.Snabble_Shoppingcart_completePurchase
+                        )
                     )
-                )
+                } else {
+                    payButton.setText(
+                        I18nUtils.getIdentifierForProject(
+                            resources,
+                            project,
+                            R.string.Snabble_Shoppingcart_BuyProducts_now
+                        )
+                    )
+                }
             }
         }
     }

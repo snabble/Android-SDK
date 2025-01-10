@@ -417,6 +417,7 @@
   <string name="Snabble.Shoppingcart.EmptyState.title">Your shopping cart is empty</string>
   <string name="Snabble.Shoppingcart.articleRemoved">Product removed</string>
   <string name="Snabble.Shoppingcart.buyProducts">Buy %1$d products for %2$s</string>
+  <string name="Snabble.Shoppingcart.completePurchase">Complete purchase</string>
   <string name="Snabble.Shoppingcart.coupon">Coupon</string>
   <string name="Snabble.Shoppingcart.coupons">Coupons</string>
   <string name="Snabble.Shoppingcart.deposit">Deposit</string>
