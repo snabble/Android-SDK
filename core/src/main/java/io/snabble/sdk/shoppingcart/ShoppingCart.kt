@@ -733,10 +733,15 @@ class ShoppingCart(
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun resolveViolations(violations: List<Violation>) {
-        handleCouponViolations(violations)
-        handleDepositReturnVoucherViolations(violations)
+        val validViolations = getValidViolations(violations) ?: return
+        handleCouponViolations(validViolations)
+        handleDepositReturnVoucherViolations(validViolations)
         notifyViolations()
         updatePrices(debounce = false)
+    }
+
+    private fun getValidViolations(violations: List<Violation>): List<Violation>? {
+        return violations.filter { it.type in ViolationType.entries }.ifEmpty { null }
     }
 
     private fun handleDepositReturnVoucherViolations(violations: List<Violation>) {
