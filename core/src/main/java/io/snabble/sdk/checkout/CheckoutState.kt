@@ -134,4 +134,9 @@ enum class CheckoutState {
      * will not be communicated
      */
     PAYMENT_TRANSFERRED,
+
+    /**
+     * One of the deposit return vouchers added couldn't be redeemed
+     */
+    DEPOSIT_RETURN_REDEMPTION_FAILED
 }

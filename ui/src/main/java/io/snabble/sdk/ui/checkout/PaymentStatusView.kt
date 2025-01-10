@@ -298,6 +298,11 @@ class PaymentStatusView @JvmOverloads constructor(
                 handlePaymentAborted()
             }
 
+            CheckoutState.DEPOSIT_RETURN_REDEMPTION_FAILED -> {
+                Telemetry.event(Telemetry.Event.CheckoutDepositReturnRedemptionFailed)
+                handlePaymentAborted()
+            }
+
             CheckoutState.PAYMENT_ABORTED -> {
                 Telemetry.event(Telemetry.Event.CheckoutAbortByUser)
                 handlePaymentAborted()

@@ -343,6 +343,7 @@
   <string name="Snabble.Shopping.title">Shopping</string>
   <string name="Snabble.ShoppingCart.DepositReturn.message">To redeem your voucher, fill your shopping basket with the products you wish to purchase.</string>
   <string name="Snabble.ShoppingCart.DepositReturn.title">Deposit voucher</string>
+  <string name="Snabble.ShoppingCart.DepositVoucher.RedemptionFailed.title">Invalid deposit voucher</string>
   <string name="Snabble.ShoppingCart.Product.Invalid.button">Remove</string>
   <plurals name="Snabble.ShoppingCart.Product.Invalid.message">
     <item quantity="zero"></item>
@@ -407,7 +408,7 @@
   <string name="Snabble.Shoppingcart.Accessibility.quantity">Quantity</string>
   <string name="Snabble.Shoppingcart.Accessibility.selected">Selected</string>
   <string name="Snabble.Shoppingcart.BuyProducts.now">Pay now</string>
-  <string name="Snabble.Shoppingcart.BuyProducts.one">Buy %1$d product for %2$s</string>
+  <string name="Snabble.Shoppingcart.BuyProducts.one">Buy %1$d product for %2$s</string>1
   <string name="Snabble.Shoppingcart.BuyProducts.selectPaymentMethod">Select payment method</string>
   <string name="Snabble.Shoppingcart.EmptyState.buttonTitle">Scan now</string>
   <string name="Snabble.Shoppingcart.EmptyState.description">Visit a store that supports Snabble and scan the barcodes of products you wish to purchase.</string>
@@ -466,4 +467,10 @@
   <string name="Snabble.save">Save</string>
   <string name="Snabble.undo">Undo</string>
   <string name="Snabble.yes">Yes</string>
+  <string name="Snabble.ShoppingCart.DepositVoucher.RedemptionFailed.button">Remove</string>
+  <plurals name="Snabble.ShoppingCart.DepositVoucher.RedemptionFailed.message">
+    <item quantity="zero"></item>
+    <item quantity="one">Unfortunately, this deposit voucher cannot currently be redeemed in the app: \n\n%s\n\nPlease try for it at the cash desk.</item>
+    <item quantity="other">Unfortunately, these deposit vouchers cannot currently be redeemed in the app: \n\n%s\n\nPlease try for it at the cash desk.</item>
+  </plurals>
 </resources>

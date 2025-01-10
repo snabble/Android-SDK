@@ -453,6 +453,15 @@ class Checkout @JvmOverloads constructor(
             notifyStateChanged(CheckoutState.PAYMENT_ABORTED)
             return
         }
+        val hasAnyFailedDrvRedemptions =
+            checkoutProcess?.depositReturnVouchers
+                ?.any { it.state == DepositReturnVoucherState.REDEEMING_FAILED }
+                ?: false
+
+        if (hasAnyFailedDrvRedemptions) {
+            notifyStateChanged(CheckoutState.DEPOSIT_RETURN_REDEMPTION_FAILED)
+            return
+        }
 
         Logger.d("Polling for approval state...")
         Logger.d("RoutingTarget = $routingTarget")

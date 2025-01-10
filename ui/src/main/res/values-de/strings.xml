@@ -341,6 +341,7 @@
   <string name="Snabble.Shop.List.Expand.accessibility">aufklappen</string>
   <string name="Snabble.Shop.List.ShowDetails.accessibility">Shop-Details anzeigen</string>
   <string name="Snabble.Shopping.title">Einkaufen</string>
+  <string name="Snabble.ShoppingCart.DepositVoucher.RedemptionFailed.title">Ungültiger Leergutbon</string>
   <string name="Snabble.ShoppingCart.DepositReturn.message">Damit der Leergutbon eingelöst werden kann, fülle deinen Warenkorb mit deinen Wunschprodukten.</string>
   <string name="Snabble.ShoppingCart.DepositReturn.title">Leergutbon</string>
   <string name="Snabble.ShoppingCart.Product.Invalid.button">Entfernen</string>
@@ -466,4 +467,10 @@
   <string name="Snabble.save">Speichern</string>
   <string name="Snabble.undo">Rückgängig</string>
   <string name="Snabble.yes">Ja</string>
+  <string name="Snabble.ShoppingCart.DepositVoucher.RedemptionFailed.button">Entfernen</string>
+  <plurals name="Snabble.ShoppingCart.DepositVoucher.RedemptionFailed.message">
+    <item quantity="zero"></item>
+    <item quantity="one">Dieser Leergutbon kann derzeit leider nicht in der App eingelöst werden: \n\n%s\n\nBitte versuche es an der Kassen.</item>
+    <item quantity="other">Diese Leergutbon\'s können derzeit leider nicht in der App eingelöst werden: \n\n%s\n\nBitte versuche es an der Kassen.</item>
+  </plurals>
 </resources>
