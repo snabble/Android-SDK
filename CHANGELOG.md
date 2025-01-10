@@ -6,8 +6,11 @@ All notable changes to this project will be documented in this file.
 * ui: Add UI for deposit return vouchers (APPS-1643)
 * core: Handle invalid items (APPS-2039)
 ### Changed
+* ui: Change button message for a total price of zero and price text color for a negative total price (APPS-1939)
+* core: Handle only a set of pre defined violations (APPS-2049)
 ### Removed
 * ui/core: Remove everything related to the old deposit return voucher feature
+* core: Remove handling an empty list of payment methods in the checkout info as error (APPS-2049)
 ### Fixed
 
 ## [0.80.3]
