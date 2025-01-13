@@ -253,7 +253,7 @@ open class CheckoutBar @JvmOverloads constructor(
                 payButton.isEnabled = true
                 payButton.setText(R.string.Snabble_Shoppingcart_EmptyState_restoreButtonTitle)
             } else {
-                if (price == 0) {
+                if (price == 0 && !cart.isEmpty) {
                     payButton.setText(
                         I18nUtils.getIdentifierForProject(
                             resources,
