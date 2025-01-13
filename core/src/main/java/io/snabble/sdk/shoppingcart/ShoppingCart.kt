@@ -1199,20 +1199,26 @@ class ShoppingCart(
          */
         val localTotalPrice: Int
             get() {
-                if (type == ItemType.PRODUCT) {
-                    if (unit == Unit.PRICE) {
-                        scannedCode?.embeddedData?.let {
-                            return it
+                when (type) {
+                    ItemType.PRODUCT -> {
+                        if (unit == Unit.PRICE) {
+                            scannedCode?.embeddedData?.let {
+                                return it
+                            }
                         }
+                        return product?.getPriceForQuantity(
+                            effectiveQuantity,
+                            scannedCode,
+                            cart?.project?.roundingMode,
+                            cart?.project?.customerCardId
+                        ) ?: 0
                     }
-                    return product?.getPriceForQuantity(
-                        effectiveQuantity,
-                        scannedCode,
-                        cart?.project?.roundingMode,
-                        cart?.project?.customerCardId
-                    ) ?: 0
-                } else {
-                    return 0
+                    ItemType.DEPOSIT_RETURN_VOUCHER -> {
+                        return depositReturnVoucher?.lineItems?.sumOf { it.totalPrice } ?: 0
+                    }
+                    else -> {
+                        return 0
+                    }
                 }
             }
 
