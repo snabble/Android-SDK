@@ -257,6 +257,8 @@ internal class ShoppingCartUpdater(
         lineItem: LineItem,
         products: Map<String?, Product>?
     ): Boolean {
+        if (item.type == ItemType.DEPOSIT_RETURN_VOUCHER) return true
+
         if (item.product?.sku != lineItem.sku && !lineItem.isDepositReturnVoucher()) {
             if (products == null) {
                 error(requestSucceeded = false)

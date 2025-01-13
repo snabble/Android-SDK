@@ -27,6 +27,7 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.Snabble.instance
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.checkout.CheckoutState
+import io.snabble.sdk.checkout.DepositReturnVoucher
 import io.snabble.sdk.checkout.DepositReturnVoucherState
 import io.snabble.sdk.config.ExternalBillingSubjectLength
 import io.snabble.sdk.config.ProjectId
@@ -529,7 +530,7 @@ open class CheckoutBar @JvmOverloads constructor(
                 ?: return
 
         val message = failedDepositReturnVouchers
-            .mapNotNull { cart.getByItemId(it.refersTo)?.displayName }
+            .mapNotNull(::getDisplayName)
             .joinToString(separator = "/n") { it }
 
         AlertDialog.Builder(context)
@@ -548,6 +549,15 @@ open class CheckoutBar @JvmOverloads constructor(
                     .forEach(cart::removeItem)
             }
             .show()
+    }
+
+    private fun getDisplayName(depositReturnVoucher: DepositReturnVoucher): String? {
+        val totalPrice = cart.getByItemId(depositReturnVoucher.refersTo)?.displayName
+        return if (totalPrice != null) {
+            "${context.getString(R.string.Snabble_ShoppingCart_DepositReturn_title)}: $totalPrice"
+        } else {
+            null
+        }
     }
 
     private fun getMaxSubjectLength(): Int? = Snabble.checkedInProject.value
