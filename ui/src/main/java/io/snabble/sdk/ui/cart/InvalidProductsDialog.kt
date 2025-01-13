@@ -29,7 +29,7 @@ private fun Resources.createInvalidItemsMessage(
 ): String {
     val invalidItems = items.joinToString(separator = "\n") { item ->
         if (item.type == ItemType.DEPOSIT_RETURN_VOUCHER) {
-            "${getString(R.string.Snabble_ShoppingCart_DepositReturn_title)}: ${item.displayName}"
+            getString(R.string.Snabble_ShoppingCart_DepositReturn_title)
         } else {
             getString(R.string.Snabble_ShoppingCart_product, item.displayName)
         }
