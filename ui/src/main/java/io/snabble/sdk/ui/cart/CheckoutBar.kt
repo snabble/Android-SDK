@@ -551,14 +551,10 @@ open class CheckoutBar @JvmOverloads constructor(
             .show()
     }
 
-    private fun getDisplayName(depositReturnVoucher: DepositReturnVoucher): String? {
-        val totalPrice = cart.getByItemId(depositReturnVoucher.refersTo)?.displayName
-        return if (totalPrice != null) {
-            "${context.getString(R.string.Snabble_ShoppingCart_DepositReturn_title)}: $totalPrice"
-        } else {
-            null
-        }
-    }
+    private fun getDisplayName(depositReturnVoucher: DepositReturnVoucher): String? =
+        cart.getByItemId(depositReturnVoucher.refersTo)
+            ?.displayName
+            ?.let { price -> "${context.getString(R.string.Snabble_ShoppingCart_DepositReturn_title)}: $price" }
 
     private fun getMaxSubjectLength(): Int? = Snabble.checkedInProject.value
         ?.id
