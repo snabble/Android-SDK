@@ -1146,12 +1146,12 @@ class ShoppingCart(
         val isEditableInDialog: Boolean
             get() = when {
                 lineItem != null -> (lineItem?.type == LineItemType.DEFAULT &&
-                    (scannedCode?.hasEmbeddedData() == false ||
-                        scannedCode?.embeddedData == 0))
+                        (scannedCode?.hasEmbeddedData() == false ||
+                                scannedCode?.embeddedData == 0))
 
                 else -> (scannedCode?.hasEmbeddedData() == false ||
-                    scannedCode?.embeddedData == 0) &&
-                    product?.getPrice(cart?.project?.customerCardId) != 0
+                        scannedCode?.embeddedData == 0) &&
+                        product?.getPrice(cart?.project?.customerCardId) != 0
             }
 
         /**
@@ -1167,10 +1167,10 @@ class ShoppingCart(
             get() {
                 if (product == null && lineItem != null || coupon != null) return false
                 return product?.type == Type.Article
-                    && unit != Unit.PIECE
-                    && product?.getPrice(cart?.project?.customerCardId) != 0
-                    && scannedCode?.embeddedData == 0
-                    && !isUsingSpecifiedQuantity
+                        && unit != Unit.PIECE
+                        && product?.getPrice(cart?.project?.customerCardId) != 0
+                        && scannedCode?.embeddedData == 0
+                        && !isUsingSpecifiedQuantity
             }
 
         /**
@@ -1198,28 +1198,21 @@ class ShoppingCart(
          * Gets the total price of the items, ignoring the backend response
          */
         val localTotalPrice: Int
-            get() {
-                when (type) {
-                    ItemType.PRODUCT -> {
-                        if (unit == Unit.PRICE) {
-                            scannedCode?.embeddedData?.let {
-                                return it
-                            }
-                        }
-                        return product?.getPriceForQuantity(
+            get() = when (type) {
+                ItemType.PRODUCT -> {
+                    scannedCode?.embeddedData.takeIf { unit == Unit.PRICE }
+                        ?: product?.getPriceForQuantity(
                             effectiveQuantity,
                             scannedCode,
                             cart?.project?.roundingMode,
                             cart?.project?.customerCardId
-                        ) ?: 0
-                    }
-                    ItemType.DEPOSIT_RETURN_VOUCHER -> {
-                        return depositReturnVoucher?.lineItems?.sumOf { it.totalPrice } ?: 0
-                    }
-                    else -> {
-                        return 0
-                    }
+                        )
+                        ?: 0
                 }
+
+                ItemType.DEPOSIT_RETURN_VOUCHER -> depositReturnVoucher?.lineItems?.sumOf { it.totalPrice } ?: 0
+
+                else -> 0
             }
 
         /**
@@ -1365,8 +1358,8 @@ class ShoppingCart(
                             product != null
                             && unitsIsAtLeastOne
                             || (unit != Unit.PRICE
-                                && (unit != Unit.PIECE || scannedCode?.embeddedData == 0)
-                                && effectiveQuantity > 1)
+                                    && (unit != Unit.PIECE || scannedCode?.embeddedData == 0)
+                                    && effectiveQuantity > 1)
                         ) {
                             extendedPriceText
                         } else {
