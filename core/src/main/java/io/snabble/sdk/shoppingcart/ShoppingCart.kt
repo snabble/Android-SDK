@@ -1254,10 +1254,9 @@ class ShoppingCart(
                 else -> when (type) {
                     ItemType.COUPON -> coupon?.name
 
-                    ItemType.DEPOSIT_RETURN_VOUCHER -> depositReturnVoucher
-                        ?.lineItems
-                        ?.sumOf { it.totalPrice }
-                        ?.let { cart?.priceFormatter?.format(it) }
+                    ItemType.DEPOSIT_RETURN_VOUCHER -> cart?.priceFormatter?.let { formatter ->
+                        depositReturnVoucher?.lineItems?.sumOf { it.totalPrice }?.let(formatter::format)
+                    }
 
                     ItemType.PRODUCT,
                     ItemType.LINE_ITEM,
