@@ -9,6 +9,7 @@ import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.model.CartDiscountItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DepositItem
+import io.snabble.sdk.ui.cart.shoppingcart.product.model.DepositReturnItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DiscountItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.ProductItem
 import io.snabble.sdk.ui.telemetry.Telemetry
@@ -30,6 +31,7 @@ class ShoppingCartViewModel : ViewModel() {
         }
     }
 
+    // used to update the cart remote -> do not delete it
     fun updateCart() {
         updateUiState(cachedCart)
     }
@@ -68,12 +70,10 @@ class ShoppingCartViewModel : ViewModel() {
     private fun updateUiState(cart: ShoppingCart) {
         cachedCart = cart
 
-        val filteredCart = cart.filterNotNull()
-
         val cartItems: MutableList<CartItem> = mutableListOf()
-
-        with(filteredCart) {
+        with(cart.filterNotNull()) {
             filter { it.type == ItemType.PRODUCT }.let { cartItems.addProducts(it) }
+            filter { it.type == ItemType.DEPOSIT_RETURN_VOUCHER }.let { cartItems.addDepositReturnItems(it) }
 
             filter { it.lineItem?.type == LineItemType.DEPOSIT }.let { cartItems.addDepositsToProducts(it) }
 
@@ -85,7 +85,21 @@ class ShoppingCartViewModel : ViewModel() {
         cartItems.updatePrices()
         cartItems.sortCartDiscountsToBottom()
 
-        _uiState.update { it.copy(items = cartItems) }
+        _uiState.update { it.copy(items = cartItems, totalCartPrice = cachedCart.totalPrice) }
+    }
+
+    private fun MutableList<CartItem>.addDepositReturnItems(items: List<ShoppingCart.Item>) {
+        items.forEach { item ->
+            val totalDepositReturnPrice =
+                item.depositReturnVoucher?.lineItems?.sumOf { it.totalPrice } ?: return@forEach
+
+            add(
+                DepositReturnItem(
+                    item = item,
+                    totalDeposit = priceFormatter?.format(totalDepositReturnPrice).orEmpty()
+                )
+            )
+        }
     }
 
     private fun MutableList<CartItem>.sortCartDiscountsToBottom() {
@@ -230,6 +244,7 @@ class ShoppingCartViewModel : ViewModel() {
 }
 
 sealed interface Event
+
 internal data class RemoveItem(
     val item: ShoppingCart.Item,
     val onSuccess: (index: Int) -> Unit
@@ -242,4 +257,5 @@ internal data class UpdateQuantity(
 
 data class UiState(
     val items: List<CartItem> = emptyList(),
+    val totalCartPrice: Int? = null
 )

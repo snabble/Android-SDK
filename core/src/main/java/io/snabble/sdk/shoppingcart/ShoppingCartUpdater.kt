@@ -36,6 +36,12 @@ internal class ShoppingCartUpdater(
     private val checkoutApi: DefaultCheckoutApi = DefaultCheckoutApi(project, cart)
     private val handler: Handler = Handler(Looper.getMainLooper())
 
+    /**
+     * Listener that notifies if items are detected that are that cant be found
+     * in the product data base
+     */
+    var onInvalidItemsDetectedListener: ((List<String>) -> Unit)? = null
+
     var lastAvailablePaymentMethods: List<PaymentMethodInfo>? = null
         private set
     var isUpdated = false
@@ -74,7 +80,7 @@ internal class ShoppingCartUpdater(
                     mainScope.launch {
                         if (skus.isNotEmpty()) {
                             val products = withContext(Dispatchers.Default) { getReplacedProducts(skus) }
-                            if (products == null) {
+                            if (products == null && !containsReturnDepositReturnVouchers(signedCheckoutInfo)) {
                                 onUnknownError()
                             } else {
                                 commitCartUpdate(modCount, signedCheckoutInfo, products)
@@ -94,16 +100,18 @@ internal class ShoppingCartUpdater(
                     error(requestSucceeded = true)
                 }
 
+                override fun onInvalidItems(itemIds: List<String>) {
+                    handler.post { onInvalidItemsDetectedListener?.invoke(itemIds) }
+                    cart.invalidItemIds = itemIds
+                    error(requestSucceeded = true)
+                }
+
                 override fun onNoAvailablePaymentMethodFound() {
                     error(requestSucceeded = true)
                 }
 
-                override fun onInvalidDepositReturnVoucher() {
-                    cart.setInvalidDepositReturnVoucher(true)
-                    error(requestSucceeded = true)
-                }
-
                 override fun onUnknownError() {
+
                     error(requestSucceeded = false)
                 }
 
@@ -153,6 +161,7 @@ internal class ShoppingCartUpdater(
 
             addLineItemsAsCartItems(filter { it.type == LineItemType.COUPON })
             addLineItemsAsCartItems(filter { it.type == LineItemType.DEPOSIT })
+            addDepositReturnsToVoucher(filter { it.type == LineItemType.DEPOSIT_RETURN })
         }
 
         setOnlinePrice(price)
@@ -164,9 +173,19 @@ internal class ShoppingCartUpdater(
 
         with(cart) {
             invalidProducts = null
+            invalidItemIds = null
             checkLimits()
             notifyPriceUpdate(this)
         }
+    }
+
+    private fun addDepositReturnsToVoucher(depositReturnItems: List<LineItem>) {
+        depositReturnItems
+            .groupBy { it.refersTo }
+            .forEach { (refersTo, items) ->
+                val drv = cart.getByItemId(refersTo)
+                drv?.depositReturnVoucher = drv?.depositReturnVoucher?.copy(lineItems = items)
+            }
     }
 
     private fun addCartDiscounts(cartDiscountItems: List<LineItem>) {
@@ -238,7 +257,9 @@ internal class ShoppingCartUpdater(
         lineItem: LineItem,
         products: Map<String?, Product>?
     ): Boolean {
-        if (item.product?.sku != lineItem.sku) {
+        if (item.type == ItemType.DEPOSIT_RETURN_VOUCHER) return true
+
+        if (item.product?.sku != lineItem.sku && !lineItem.isDepositReturnVoucher()) {
             if (products == null) {
                 error(requestSucceeded = false)
                 return false
@@ -258,6 +279,9 @@ internal class ShoppingCartUpdater(
         }
         return true
     }
+
+    private fun LineItem.isDepositReturnVoucher() =
+        type == LineItemType.DEPOSIT_RETURN || type == LineItemType.DEPOSIT_RETURN_VOUCHER
 
     private fun areAllItemsSynced(lineItems: List<LineItem>): Boolean {
         val requiredIds = cart.filter { it?.type != ItemType.COUPON }.map { it?.id }
@@ -282,6 +306,11 @@ internal class ShoppingCartUpdater(
 
         else -> false
     }
+
+    private fun containsReturnDepositReturnVouchers(signedCheckoutInfo: SignedCheckoutInfo): Boolean =
+        deserializedCheckoutInfo(signedCheckoutInfo)?.lineItems
+            ?.any { it.type == LineItemType.DEPOSIT_RETURN_VOUCHER }
+            ?: false
 
     private fun getToBeReplacedSkus(signedCheckoutInfo: SignedCheckoutInfo): List<String?> {
         val (_, lineItems) = deserializedCheckoutInfo(signedCheckoutInfo) ?: return emptyList()

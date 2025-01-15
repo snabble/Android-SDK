@@ -179,6 +179,7 @@ class CheckoutActivity : FragmentActivity() {
                 }
             }
 
+            CheckoutState.DEPOSIT_RETURN_REDEMPTION_FAILED,
             CheckoutState.PAYMENT_ABORTED -> {
                 finish()
                 null

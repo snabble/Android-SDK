@@ -16,10 +16,10 @@ data class ShoppingCartData @JvmOverloads constructor(
     val addCount: Int = 0,
     val onlineTotalPrice: Int? = null,
     val invalidProducts: List<Product>? = null,
+    val invalidItemIds: List<String>? = null,
     val taxation: Taxation = Taxation.UNDECIDED,
     val hasReachedMaxCheckoutLimit: Boolean = false,
     val hasReachedMaxOnlinePaymentLimit: Boolean = false,
-    val invalidDepositReturnVoucher: Boolean = false,
     val backupTimestamp: Long = 0,
 ) {
 

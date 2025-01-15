@@ -2,7 +2,7 @@ package io.snabble.sdk.ui.cart.shoppingcart
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,8 +16,10 @@ import io.snabble.sdk.checkout.LineItem
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.CartDiscount
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.model.CartDiscountItem
+import io.snabble.sdk.ui.cart.shoppingcart.depositreturn.DepositReturn
 import io.snabble.sdk.ui.cart.shoppingcart.product.DeletableProduct
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DepositItem
+import io.snabble.sdk.ui.cart.shoppingcart.product.model.DepositReturnItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DiscountItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.ProductItem
 import io.snabble.sdk.ui.utils.ThemeWrapper
@@ -61,7 +63,7 @@ private fun ShoppingCartScreen(
     LazyColumn(
         modifier = modifier.nestedScroll(rememberNestedScrollInteropConnection())
     ) {
-        items(items = uiState.items, key = { it.hashCode() }) { cartItem ->
+        itemsIndexed(items = uiState.items, key = { _, item -> item.hashCode() }) { index, cartItem ->
             when (cartItem) {
                 is ProductItem -> {
                     DeletableProduct(
@@ -72,7 +74,11 @@ private fun ShoppingCartScreen(
                             onQuantityChanged(cartItem.item, quantity)
                         }
                     )
-                    HorizontalDivider()
+                }
+
+                is DepositReturnItem -> {
+                    val showHint = uiState.totalCartPrice != null && uiState.totalCartPrice < 0
+                    DepositReturn(item = cartItem, showHint = showHint, onDeleteClick = onItemDeleted)
                 }
 
                 is CartDiscountItem -> {
@@ -80,9 +86,9 @@ private fun ShoppingCartScreen(
                         modifier = Modifier.fillMaxWidth(),
                         item = cartItem
                     )
-                    HorizontalDivider()
                 }
             }
+            if (index != uiState.items.lastIndex) HorizontalDivider()
         }
     }
 }

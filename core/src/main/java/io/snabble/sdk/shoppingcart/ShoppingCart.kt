@@ -12,6 +12,7 @@ import io.snabble.sdk.checkout.LineItem
 import io.snabble.sdk.checkout.LineItemType
 import io.snabble.sdk.checkout.PaymentMethodInfo
 import io.snabble.sdk.checkout.Violation
+import io.snabble.sdk.checkout.ViolationType
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.codes.templates.CodeTemplate
 import io.snabble.sdk.coupons.Coupon
@@ -21,11 +22,12 @@ import io.snabble.sdk.shoppingcart.data.cart.BackendCart
 import io.snabble.sdk.shoppingcart.data.cart.BackendCartCustomer
 import io.snabble.sdk.shoppingcart.data.cart.BackendCartRequiredInformation
 import io.snabble.sdk.shoppingcart.data.item.BackendCartItem
+import io.snabble.sdk.shoppingcart.data.item.BackendCartItemType
+import io.snabble.sdk.shoppingcart.data.item.DepositReturnVoucher
 import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
-import java.math.BigDecimal
 import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.CopyOnWriteArrayList
@@ -45,6 +47,9 @@ class ShoppingCart(
     private val listeners: MutableList<ShoppingCartListener>? = CopyOnWriteArrayList()
 
     @Transient
+    var onInvalidItemsDetectedListener: ((List<Item>) -> kotlin.Unit)? = null
+
+    @Transient
     private var updater: ShoppingCartUpdater? = null
 
     @Transient
@@ -53,6 +58,10 @@ class ShoppingCart(
     init {
         updateTimestamp()
         updater = project?.let { ShoppingCartUpdater(it, this) }
+        updater?.onInvalidItemsDetectedListener = { invalidItems ->
+            val items = filterNotNull().filter { it.id in invalidItems }
+            onInvalidItemsDetectedListener?.invoke(items)
+        }
         priceFormatter = project?.priceFormatter
     }
 
@@ -85,6 +94,11 @@ class ShoppingCart(
      * Create a new cart item using a coupon and a scanned code
      */
     fun newItem(coupon: Coupon, scannedCode: ScannedCode?): Item = Item(this, coupon, scannedCode)
+
+    /**
+     * Create a new cart item using a depositReturnVoucher
+     */
+    fun newItem(depositReturnVoucher: DepositReturnVoucher): Item = Item(this, depositReturnVoucher)
 
     /**
      * Create a new cart item using a line item of a checkout info
@@ -199,6 +213,16 @@ class ShoppingCart(
         updatePrices(debounce = size() != 0)
         invalidateOnlinePrices()
         notifyItemRemoved(this, removedItem, index)
+    }
+
+    /**
+     * Removes a cart item from the cart by its id
+     */
+    fun removeItem(itemId: String) {
+        val index = indexOf(firstOrNull { it?.id == itemId })
+        if (index != -1) {
+            remove(index)
+        }
     }
 
     /**
@@ -324,7 +348,7 @@ class ShoppingCart(
     fun invalidateOnlinePrices() {
         data = data.copy(
             invalidProducts = null,
-            invalidDepositReturnVoucher = false,
+            invalidItemIds = null,
             onlineTotalPrice = null
         )
 
@@ -420,10 +444,6 @@ class ShoppingCart(
     val isOnlinePrice: Boolean
         get() = data.onlineTotalPrice != null
 
-    fun setInvalidDepositReturnVoucher(invalidDepositReturnVoucher: Boolean) {
-        data = data.copy(invalidDepositReturnVoucher = invalidDepositReturnVoucher)
-    }
-
     fun isCouponApplied(coupon: Coupon): Boolean = any { it?.coupon?.id == coupon.id }
 
     fun removeCoupon(coupon: Coupon) {
@@ -440,7 +460,14 @@ class ShoppingCart(
             data = data.copy(invalidProducts = invalidProducts)
         }
 
-    fun hasInvalidDepositReturnVoucher(): Boolean = data.invalidDepositReturnVoucher
+    /**
+     * Gets a list of invalid item ids that were rejected by the backend.
+     */
+    var invalidItemIds: List<String>?
+        get() = data.invalidItemIds
+        set(invalidItemIds) {
+            data = data.copy(invalidItemIds = invalidItemIds)
+        }
 
     /**
      * Returns the total price of the cart.
@@ -612,6 +639,21 @@ class ShoppingCart(
                     )
                 }
 
+                ItemType.DEPOSIT_RETURN_VOUCHER -> {
+
+                    val depositReturnVoucher = cartItem.depositReturnVoucher ?: return@forEach
+
+                    items.add(
+                        BackendCartItem(
+                            id = cartItem.id,
+                            amount = depositReturnVoucher.amount,
+                            type = BackendCartItemType.DEPOSIT_RETURN_VOUCHER,
+                            itemId = depositReturnVoucher.itemId,
+                            scannedCode = depositReturnVoucher.scannedCode
+                        )
+                    )
+                }
+
                 else -> Unit
             }
         }
@@ -701,6 +743,48 @@ class ShoppingCart(
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     fun resolveViolations(violations: List<Violation>) {
+        val validViolations = getValidViolations(violations) ?: return
+        handleCouponViolations(validViolations)
+        handleDepositReturnVoucherViolations(validViolations)
+        notifyViolations()
+        updatePrices(debounce = false)
+    }
+
+    private fun getValidViolations(violations: List<Violation>): List<Violation>? {
+        return violations.filter { it.type in ViolationType.entries }.ifEmpty { null }
+    }
+
+    private fun handleDepositReturnVoucherViolations(violations: List<Violation>) {
+        violations.resolve(ViolationType.DEPOSIT_RETURN_DUPLICATED)
+        violations.resolve(ViolationType.DEPOSIT_RETURN_ALREADY_REDEEMED)
+    }
+
+    private fun List<Violation>.resolve(type: ViolationType) {
+        data.items.removeAll {
+            it.violates(violations = this, type = type)
+                .also { data = data.copy(modCount = modCount.inc()) }
+        }
+
+        val notificationReferrers = data.violationNotifications.map { notification -> notification.refersTo }
+
+        filter { it.refersTo !in notificationReferrers }
+            .map { violation ->
+                ViolationNotification(
+                    name = null,
+                    refersTo = violation.refersTo,
+                    type = violation.type,
+                    fallbackMessage = violation.message
+                )
+            }
+            .forEach(data.violationNotifications::add)
+    }
+
+    private fun Item.violates(
+        violations: List<Violation>,
+        type: ViolationType,
+    ) = violations.any { it.type == type && it.refersTo == id }
+
+    private fun handleCouponViolations(violations: List<Violation>) {
         violations.forEach { violation ->
             data.items
                 .filter { it.coupon != null }
@@ -725,8 +809,6 @@ class ShoppingCart(
                     }
                 }
         }
-        notifyViolations()
-        updatePrices(debounce = false)
     }
 
     /**
@@ -892,6 +974,7 @@ class ShoppingCart(
          */
         var id: String? = null
             private set
+
         private var isUsingSpecifiedQuantity = false
 
         @Transient
@@ -907,6 +990,11 @@ class ShoppingCart(
          * Gets the user associated coupon of this item
          */
         var coupon: Coupon? = null
+
+        /**
+         * Returns the depositReturnVoucher associated with the shopping cart item.
+         */
+        var depositReturnVoucher: DepositReturnVoucher? = null
 
         // The local generated UUID of a coupon which which will be used by the backend
         var backendCouponId: String? = null
@@ -943,22 +1031,18 @@ class ShoppingCart(
                     quantity = 1
                 }
             }
-            if (scannedCode.hasEmbeddedData() && product.type == Type.DepositReturnVoucher) {
-                val builder = scannedCode.newBuilder()
-                if (scannedCode.hasEmbeddedData()) {
-                    builder.setEmbeddedData(scannedCode.embeddedData * -1)
-                }
-                if (scannedCode.hasEmbeddedDecimalData()) {
-                    builder.setEmbeddedDecimalData(scannedCode.embeddedDecimalData.multiply(BigDecimal(-1)))
-                }
-                this.scannedCode = builder.create()
-            }
         }
 
         constructor(cart: ShoppingCart, lineItem: LineItem) {
             id = UUID.randomUUID().toString()
             this.cart = cart
             this.lineItem = lineItem
+        }
+
+        constructor(cart: ShoppingCart, depositReturnVoucher: DepositReturnVoucher) {
+            id = UUID.randomUUID().toString()
+            this.cart = cart
+            this.depositReturnVoucher = depositReturnVoucher
         }
 
         /**
@@ -1040,6 +1124,8 @@ class ShoppingCart(
 
                 coupon != null -> ItemType.COUPON
 
+                depositReturnVoucher != null -> ItemType.DEPOSIT_RETURN_VOUCHER
+
                 lineItem != null -> ItemType.LINE_ITEM
 
                 else -> null
@@ -1112,22 +1198,21 @@ class ShoppingCart(
          * Gets the total price of the items, ignoring the backend response
          */
         val localTotalPrice: Int
-            get() {
-                if (type == ItemType.PRODUCT) {
-                    if (unit == Unit.PRICE) {
-                        scannedCode?.embeddedData?.let {
-                            return it
-                        }
-                    }
-                    return product?.getPriceForQuantity(
-                        effectiveQuantity,
-                        scannedCode,
-                        cart?.project?.roundingMode,
-                        cart?.project?.customerCardId
-                    ) ?: 0
-                } else {
-                    return 0
+            get() = when (type) {
+                ItemType.PRODUCT -> {
+                    scannedCode?.embeddedData.takeIf { unit == Unit.PRICE }
+                        ?: product?.getPriceForQuantity(
+                            effectiveQuantity,
+                            scannedCode,
+                            cart?.project?.roundingMode,
+                            cart?.project?.customerCardId
+                        )
+                        ?: 0
                 }
+
+                ItemType.DEPOSIT_RETURN_VOUCHER -> depositReturnVoucher?.lineItems?.sumOf { it.totalPrice } ?: 0
+
+                else -> 0
             }
 
         /**
@@ -1166,10 +1251,17 @@ class ShoppingCart(
         val displayName: String?
             get() = when {
                 lineItem != null -> lineItem?.name
-                else -> if (type == ItemType.COUPON) {
-                    coupon?.name
-                } else {
-                    product?.name
+                else -> when (type) {
+                    ItemType.COUPON -> coupon?.name
+
+                    ItemType.DEPOSIT_RETURN_VOUCHER -> cart?.priceFormatter?.let { formatter ->
+                        depositReturnVoucher?.lineItems?.sumOf { it.totalPrice }?.let(formatter::format)
+                    }
+
+                    ItemType.PRODUCT,
+                    ItemType.LINE_ITEM,
+                    null -> product?.name
+
                 }
             }
 

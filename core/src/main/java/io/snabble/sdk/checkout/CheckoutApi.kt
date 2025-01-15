@@ -4,15 +4,14 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
-import io.snabble.sdk.payment.PaymentCredentials
-import io.snabble.sdk.Product
-import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.FulfillmentState
 import io.snabble.sdk.PaymentMethod
+import io.snabble.sdk.Product
+import io.snabble.sdk.coupons.Coupon
+import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.shoppingcart.data.cart.BackendCart
 import java.io.Serializable
-import java.lang.Exception
-import java.util.*
+import java.util.Date
 
 /**
  * Interface for the snabble Checkout API
@@ -90,8 +89,8 @@ interface CheckoutInfoResult {
 
     fun onNoShopFound()
     fun onInvalidProducts(products: List<Product>)
+    fun onInvalidItems(itemIds: List<String>)
     fun onNoAvailablePaymentMethodFound()
-    fun onInvalidDepositReturnVoucher()
     fun onUnknownError()
     fun onConnectionError()
 }
@@ -111,7 +110,9 @@ enum class LineItemType {
     @SerializedName("default") DEFAULT,
     @SerializedName("deposit") DEPOSIT,
     @SerializedName("discount") DISCOUNT,
-    @SerializedName("coupon") COUPON
+    @SerializedName("coupon") COUPON,
+    @SerializedName("depositReturnVoucher") DEPOSIT_RETURN_VOUCHER,
+    @SerializedName("depositReturn") DEPOSIT_RETURN
 }
 
 enum class CheckState {
@@ -213,10 +214,27 @@ data class CheckoutInfo(
 )
 
 data class Violation(
-    val type: String? = null,
+    val type: ViolationType? = null,
     val refersTo: String? = null,
     val message: String? = null,
 )
+
+enum class ViolationType {
+    @SerializedName("deposit_return_voucher_already_redeemed")
+    DEPOSIT_RETURN_ALREADY_REDEEMED,
+
+    @SerializedName("deposit_return_voucher_duplicate")
+    DEPOSIT_RETURN_DUPLICATED,
+
+    @SerializedName("coupon_already_voided")
+    COUPON_ALREADY_VOIDED,
+
+    @SerializedName("coupon_currently_not_valid")
+    COUPON_CURRENTLY_NOT_VALID,
+
+    @SerializedName("coupon_invalid")
+    COUPON_INVALID,
+}
 
 data class LineItem(
     val id: String? = null,
@@ -317,11 +335,37 @@ data class Fulfillment(
         get() = links?.get("self")?.href
 }
 
+data class DepositReturnVoucher(
+    @SerializedName("refersTo")
+    val refersTo: String,
+    @SerializedName("state")
+    val state: DepositReturnVoucherState
+)
+
+enum class DepositReturnVoucherState {
+    @SerializedName("pending")
+    PENDING,
+
+    @SerializedName("redeemed")
+    REDEEMED,
+
+    @SerializedName("redeemingFailed")
+    REDEEMING_FAILED,
+
+    @SerializedName("rolledback")
+    ROLLED_BACK,
+
+    @SerializedName("rollbackFailed")
+    ROLLBACK_FAILED
+}
+
 data class CheckoutProcessResponse(
     val links: Map<String, Href>? = null,
     val checks: List<Check> = emptyList(),
     @SerializedName("orderID")
     val orderId: String? = null,
+    @SerializedName("depositReturnVouchers")
+    val depositReturnVouchers: List<DepositReturnVoucher>? = null,
     val aborted: Boolean = false,
     val paymentMethod: PaymentMethod? = null,
     val paymentInformation: PaymentInformation? = null,

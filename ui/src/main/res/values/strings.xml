@@ -85,7 +85,6 @@
   <string name="Snabble.Hints.closedBags">Well done! Please make things easy for the cashier and don\'t store your products in closed bags. Thank you!</string>
   <string name="Snabble.Hints.continueScanning">Continue scanning</string>
   <string name="Snabble.Hints.title">Info from %s</string>
-  <string name="Snabble.InvalidDepositVoucher.errorMsg">Deposit return vouchers can be redeemed only once.</string>
   <string name="Snabble.Keyguard.message">That\'s how we make sure that only you have access to this payment method</string>
   <string name="Snabble.Keyguard.requireScreenLock">You need to secure your smartphone with a screen lock to add this payment method.</string>
   <string name="Snabble.Keyguard.title">Please unlock your device</string>
@@ -284,6 +283,7 @@
   <string name="Snabble.Scanner.BundleDialog.headline">Choose package</string>
   <string name="Snabble.Scanner.Camera.accessDenied">Camera access denied</string>
   <string name="Snabble.Scanner.Camera.allowAccess">Sorry, we\'ll need to access your camera to scan barcodes. Please allow this in the settings and return here.</string>
+  <string name="Snabble.Scanner.DepositReturnVoucher.Added">Deposit voucher added</string>
   <string name="Snabble.Scanner.GoToCart.empty">Cart</string>
   <string name="Snabble.Scanner.addCodeAsIs">Add %s as-is</string>
   <string name="Snabble.Scanner.addToCart">Add to cart</string>
@@ -341,6 +341,23 @@
   <string name="Snabble.Shop.List.Expand.accessibility">expand</string>
   <string name="Snabble.Shop.List.ShowDetails.accessibility">Show shop details</string>
   <string name="Snabble.Shopping.title">Shopping</string>
+  <string name="Snabble.ShoppingCart.DepositReturn.message">To redeem your voucher, fill your shopping basket with the products you wish to purchase.</string>
+  <string name="Snabble.ShoppingCart.DepositReturn.title">Deposit voucher</string>
+  <string name="Snabble.ShoppingCart.DepositVoucher.RedemptionFailed.button">Remove</string>
+  <plurals name="Snabble.ShoppingCart.DepositVoucher.RedemptionFailed.message">
+    <item quantity="zero"></item>
+    <item quantity="one">Unfortunately, this deposit voucher cannot currently be redeemed in the app:\n\n%s</item>
+    <item quantity="other">Unfortunately, these deposit vouchers cannot currently be redeemed in the app:\n\n%s</item>
+  </plurals>
+  <string name="Snabble.ShoppingCart.DepositVoucher.RedemptionFailed.title">Invalid deposit voucher</string>
+  <string name="Snabble.ShoppingCart.Product.Invalid.button">Remove</string>
+  <plurals name="Snabble.ShoppingCart.Product.Invalid.message">
+    <item quantity="zero"></item>
+    <item quantity="one">Unfortunately, this product cannot currently be paid for with the app:\n\n%s</item>
+    <item quantity="other">Unfortunately, these products cannot currently be paid for with the app:\n\n%s</item>
+  </plurals>
+  <string name="Snabble.ShoppingCart.Product.Invalid.title">Invalid product</string>
+  <string name="Snabble.ShoppingCart.product">Product: %s</string>
   <string name="Snabble.ShoppingCart.title">Shopping Cart</string>
   <string name="Snabble.ShoppingList.AddItem.viaScan">Scan products</string>
   <string name="Snabble.ShoppingList.AddItem.viaVoice">Tell products</string>
@@ -397,7 +414,7 @@
   <string name="Snabble.Shoppingcart.Accessibility.quantity">Quantity</string>
   <string name="Snabble.Shoppingcart.Accessibility.selected">Selected</string>
   <string name="Snabble.Shoppingcart.BuyProducts.now">Pay now</string>
-  <string name="Snabble.Shoppingcart.BuyProducts.one">Buy %1$d product for %2$s</string>
+  <string name="Snabble.Shoppingcart.BuyProducts.one">Buy %1$d product for %2$s</string>1
   <string name="Snabble.Shoppingcart.BuyProducts.selectPaymentMethod">Select payment method</string>
   <string name="Snabble.Shoppingcart.EmptyState.buttonTitle">Scan now</string>
   <string name="Snabble.Shoppingcart.EmptyState.description">Visit a store that supports Snabble and scan the barcodes of products you wish to purchase.</string>
@@ -406,6 +423,7 @@
   <string name="Snabble.Shoppingcart.EmptyState.title">Your shopping cart is empty</string>
   <string name="Snabble.Shoppingcart.articleRemoved">Product removed</string>
   <string name="Snabble.Shoppingcart.buyProducts">Buy %1$d products for %2$s</string>
+  <string name="Snabble.Shoppingcart.completePurchase">Complete purchase</string>
   <string name="Snabble.Shoppingcart.coupon">Coupon</string>
   <string name="Snabble.Shoppingcart.coupons">Coupons</string>
   <string name="Snabble.Shoppingcart.deposit">Deposit</string>
@@ -432,6 +450,8 @@
   <string name="Snabble.Taxation.pleaseChoose">Please choose</string>
   <string name="Snabble.Textfield.HidePassword.Accessibility">Hide password</string>
   <string name="Snabble.Textfield.ShowPassword.Accessibility">Show password</string>
+  <string name="Snabble.Violations.DepositReturnVoucher.alreadyRedeemed">This deposit voucher has already been redeemed.</string>
+  <string name="Snabble.Violations.DepositReturnVoucher.duplicated">This deposit voucher has already been added.</string>
   <string name="Snabble.Violations.couponAlreadyVoided">A coupon is already redeemed and will be removed from cart</string>
   <string name="Snabble.Violations.couponCurrentlyNotValid">A coupon is currently not valid and will be removed from cart</string>
   <string name="Snabble.Violations.couponInvalid">A coupon is invalid and will be removed from cart</string>

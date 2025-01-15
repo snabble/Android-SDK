@@ -143,11 +143,11 @@ internal class CheckoutRetryer(project: Project, fallbackPaymentMethod: PaymentM
                         fail()
                     }
 
-                    override fun onNoAvailablePaymentMethodFound() {
+                    override fun onInvalidItems(itemIds: List<String>) {
                         fail()
                     }
 
-                    override fun onInvalidDepositReturnVoucher() {
+                    override fun onNoAvailablePaymentMethodFound() {
                         fail()
                     }
 

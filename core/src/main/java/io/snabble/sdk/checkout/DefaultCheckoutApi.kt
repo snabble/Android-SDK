@@ -100,45 +100,40 @@ class DefaultCheckoutApi(private val project: Project,
                     ?: shoppingCart.totalPrice
 
                 val availablePaymentMethods = signedCheckoutInfo.getAvailablePaymentMethods()
-                if (availablePaymentMethods.isNotEmpty()) {
-                    checkoutInfoResult?.onSuccess(signedCheckoutInfo, price, availablePaymentMethods)
-                } else {
-                    checkoutInfoResult?.onConnectionError()
-                }
+                checkoutInfoResult?.onSuccess(signedCheckoutInfo, price, availablePaymentMethods)
             }
 
             override fun failure(obj: JsonObject) {
                 try {
-                    val error = obj["error"].asJsonObject
-                    val type = error["type"].asString
+                    val error: JsonObject? = obj["error"].asJsonObject
+                    val type: String? = error?.get("type")?.asString
                     when (type) {
                         "invalid_cart_item" -> {
-                            val invalidSkus: MutableList<String> = ArrayList()
-                            val arr = error["details"].asJsonArray
+                            val invalidSkus = error["details"].asJsonArray
+                                .mapNotNull { it.asJsonObject["sku"].asString?.ifBlank { null } }
 
-                            arr.forEach {
-                                val sku = it.asJsonObject["sku"].asString
-                                invalidSkus.add(sku)
-                            }
+                            val invalidProducts = shoppingCart
+                                .mapNotNull { it?.product }
+                                .filter { invalidSkus.contains(it.sku) }
 
-                            val invalidProducts = mutableListOf<Product>()
-                            for (i in 0..shoppingCart.size()) {
-                                val product = shoppingCart[i].product
-                                if (product != null) {
-                                    if (invalidSkus.contains(product.sku)) {
-                                        invalidProducts.add(product)
-                                    }
-                                }
+                            if (invalidProducts.isNotEmpty()) {
+                                Logger.e("Invalid products found")
+                                checkoutInfoResult?.onInvalidProducts(invalidProducts)
+                            } else {
+                                Logger.e("Invalid items found")
+                                val invalidIds = error["details"].asJsonArray
+                                    .mapNotNull { it.asJsonObject["id"].asString }
+                                checkoutInfoResult?.onInvalidItems(invalidIds)
                             }
-                            Logger.e("Invalid products")
-                            checkoutInfoResult?.onInvalidProducts(invalidProducts)
                         }
+
                         "no_available_method" -> checkoutInfoResult?.onNoAvailablePaymentMethodFound()
                         "bad_shop_id", "shop_not_found" -> checkoutInfoResult?.onNoShopFound()
-                        "invalid_deposit_return_voucher" -> checkoutInfoResult?.onInvalidDepositReturnVoucher()
                         else -> checkoutInfoResult?.onUnknownError()
                     }
-                } catch (e: Exception) {
+                } catch (e: IllegalStateException) {
+                    error(e)
+                } catch (e: UnsupportedOperationException) {
                     error(e)
                 }
             }
