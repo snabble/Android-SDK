@@ -347,7 +347,7 @@
   <plurals name="Snabble.ShoppingCart.DepositVoucher.RedemptionFailed.message">
     <item quantity="zero"></item>
     <item quantity="one">Dieser Leergutbon kann derzeit leider nicht in der App eingelöst werden:\n\n%s</item>
-    <item quantity="other">Diese Leergutbon\'s können derzeit leider nicht in der App eingelöst werden:\n\n%s</item>
+    <item quantity="other">Diese Leergutbons können derzeit leider nicht in der App eingelöst werden:\n\n%s</item>
   </plurals>
   <string name="Snabble.ShoppingCart.DepositVoucher.RedemptionFailed.title">Ungültiger Leergutbon</string>
   <string name="Snabble.ShoppingCart.Product.Invalid.button">Entfernen</string>

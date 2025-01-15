@@ -73,8 +73,7 @@ class ShoppingCartViewModel : ViewModel() {
         val cartItems: MutableList<CartItem> = mutableListOf()
         with(cart.filterNotNull()) {
             filter { it.type == ItemType.PRODUCT }.let { cartItems.addProducts(it) }
-            filter { it.lineItem?.type == LineItemType.DEPOSIT_RETURN_VOUCHER }
-                .let { cartItems.addDepositReturnItems(it) }
+            filter { it.type == ItemType.DEPOSIT_RETURN_VOUCHER }.let { cartItems.addDepositReturnItems(it) }
 
             filter { it.lineItem?.type == LineItemType.DEPOSIT }.let { cartItems.addDepositsToProducts(it) }
 

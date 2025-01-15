@@ -27,6 +27,7 @@ import io.snabble.sdk.Snabble
 import io.snabble.sdk.Snabble.instance
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.checkout.CheckoutState
+import io.snabble.sdk.checkout.DepositReturnVoucher
 import io.snabble.sdk.checkout.DepositReturnVoucherState
 import io.snabble.sdk.config.ExternalBillingSubjectLength
 import io.snabble.sdk.config.ProjectId
@@ -253,7 +254,7 @@ open class CheckoutBar @JvmOverloads constructor(
                 payButton.isEnabled = true
                 payButton.setText(R.string.Snabble_Shoppingcart_EmptyState_restoreButtonTitle)
             } else {
-                if (price == 0) {
+                if (price == 0 && !cart.isEmpty) {
                     payButton.setText(
                         I18nUtils.getIdentifierForProject(
                             resources,
@@ -529,7 +530,7 @@ open class CheckoutBar @JvmOverloads constructor(
                 ?: return
 
         val message = failedDepositReturnVouchers
-            .mapNotNull { cart.getByItemId(it.refersTo)?.displayName }
+            .mapNotNull(::getDisplayName)
             .joinToString(separator = "/n") { it }
 
         AlertDialog.Builder(context)
@@ -549,6 +550,11 @@ open class CheckoutBar @JvmOverloads constructor(
             }
             .show()
     }
+
+    private fun getDisplayName(depositReturnVoucher: DepositReturnVoucher): String? =
+        cart.getByItemId(depositReturnVoucher.refersTo)
+            ?.displayName
+            ?.let { price -> "${context.getString(R.string.Snabble_ShoppingCart_DepositReturn_title)}: $price" }
 
     private fun getMaxSubjectLength(): Int? = Snabble.checkedInProject.value
         ?.id

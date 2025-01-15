@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.res.Resources
 import androidx.appcompat.app.AlertDialog
 import io.snabble.sdk.shoppingcart.ShoppingCart
+import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.ui.R
 
 fun Context.showInvalidProductsDialog(
@@ -23,9 +24,15 @@ fun Context.showInvalidProductsDialog(
         .show()
 }
 
-private fun Resources.createInvalidItemsMessage(items: List<ShoppingCart.Item>): String {
+private fun Resources.createInvalidItemsMessage(
+    items: List<ShoppingCart.Item>
+): String {
     val invalidItems = items.joinToString(separator = "\n") { item ->
-        getString(R.string.Snabble_ShoppingCart_product, item.displayName)
+        if (item.type == ItemType.DEPOSIT_RETURN_VOUCHER) {
+            getString(R.string.Snabble_ShoppingCart_DepositReturn_title)
+        } else {
+            getString(R.string.Snabble_ShoppingCart_product, item.displayName)
+        }
     }
 
     return getQuantityString(
