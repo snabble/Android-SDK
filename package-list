@@ -12,6 +12,7 @@ io.snabble.sdk.checkout
 io.snabble.sdk.codes
 io.snabble.sdk.codes.gs1
 io.snabble.sdk.codes.templates
+io.snabble.sdk.codes.templates.depositReturnVoucher
 io.snabble.sdk.codes.templates.groups
 io.snabble.sdk.config
 io.snabble.sdk.coupons
@@ -40,6 +41,8 @@ io.snabble.sdk.ui
 io.snabble.sdk.ui.cart
 io.snabble.sdk.ui.cart.deprecated
 io.snabble.sdk.ui.cart.shoppingcart
+io.snabble.sdk.ui.cart.shoppingcart.depositreturn
+io.snabble.sdk.ui.cart.shoppingcart.product.model
 io.snabble.sdk.ui.checkout
 io.snabble.sdk.ui.checkout.routingtargets
 io.snabble.sdk.ui.coupon
