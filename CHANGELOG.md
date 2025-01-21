@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 ### Removed
 ### Fixed
+* Add missing style to fix offline checkout button
 
 ## [0.80.4]
 ### Added
