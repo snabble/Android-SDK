@@ -6,10 +6,11 @@ All notable changes to this project will be documented in this file.
 ### Changed
 ### Removed
 ### Fixed
+* Add missing style to fix offline checkout button
 
 ## [0.80.4]
 ### Added
-* ui: Improve edge-to-edge support for apps targing API level 35
+* ui: Improve edge-to-edge support for apps targeting API level 35
 * ui: Add UI for deposit return vouchers (APPS-1643)
 * core: Handle invalid items (APPS-2039)
 * ui/core: Integrate new states for deposit return vouchers into the checkout process and handle them
