@@ -42,6 +42,10 @@ All notable changes to this project will be documented in this file.
 * core: SSL Pinning has been removed
 * ui: Datatrans SSL Pinning has been deactivated
 
+## [0.80.0]
+### Addded
+* core: Add customer info needed for a Google Pay payment provider
+
 ## [0.79.0]
 ### Added
 * core: Add the shop services from meta data to Shop class
