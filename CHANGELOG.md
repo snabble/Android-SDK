@@ -3,9 +3,13 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
-* Add prefilled data to credit card input views
 ### Changed
 ### Removed
+### Fixed
+
+## [0.80.5]
+### Added
+* Add prefilled data to credit card input views
 ### Fixed
 * Add missing style to fix offline checkout button
 
