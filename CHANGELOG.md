@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
+* Add prefilled data to credit card input views
 ### Changed
 ### Removed
 ### Fixed
