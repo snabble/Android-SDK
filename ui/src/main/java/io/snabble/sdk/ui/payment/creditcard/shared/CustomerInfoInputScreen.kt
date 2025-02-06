@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
+import io.snabble.sdk.Snabble
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.shoppingcart.utils.rememberTextFieldManager
 import io.snabble.sdk.ui.payment.creditcard.shared.country.displayName
@@ -44,20 +45,33 @@ internal fun CustomerInfoInputScreen(
     countryItems: List<CountryItem>,
     onBackNavigationClick: () -> Unit,
 ) {
-    var name by remember { mutableStateOf("") }
+    val preFilledData = Snabble.formPrefillData
+
+    var name by remember { mutableStateOf(preFilledData?.name.orEmpty()) }
     var intCallingCode by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var street by remember { mutableStateOf("") }
-    var zip by remember { mutableStateOf("") }
-    var city by remember { mutableStateOf("") }
-    var state by remember { mutableStateOf("") }
-    var country: CountryItem by remember { mutableStateOf(countryItems.loadDefaultCountry()) }
+    var email by remember { mutableStateOf(preFilledData?.email.orEmpty()) }
+    var street by remember { mutableStateOf(preFilledData?.street.orEmpty()) }
+    var zip by remember { mutableStateOf(preFilledData?.zip.orEmpty()) }
+    var city by remember { mutableStateOf(preFilledData?.city.orEmpty()) }
+    var state by remember { mutableStateOf(preFilledData?.stateCode.orEmpty()) }
+
+    var country: CountryItem by remember {
+        mutableStateOf(
+            countryItems.loadPreSetCountry(preFilledData?.countryCode)
+                ?: countryItems.loadDefaultCountry()
+        )
+    }
 
     val textFieldManager = rememberTextFieldManager()
 
     val isRequiredStateSet =
-        if (!countryItems.firstOrNull { it.code == country.code }?.stateItems.isNullOrEmpty()) state.isNotEmpty() else true
+        if (!countryItems.firstOrNull { it.code == country.code }?.stateItems.isNullOrEmpty()) {
+            state.isNotEmpty()
+        } else {
+            true
+        }
+
     val areRequiredFieldsSet = listOf(
         name,
         intCallingCode,
@@ -166,7 +180,7 @@ internal fun CustomerInfoInputScreen(
         CountrySelectionMenu(
             countryItems = countryItems,
             selectedCountryCode = country,
-            selectedStateCode = null,
+            selectedStateCode = state,
             onCountrySelected = { countryItem, stateItem ->
                 country = countryItem
                 state = stateItem?.code.orEmpty()
@@ -202,6 +216,9 @@ internal fun CustomerInfoInputScreen(
         }
     }
 }
+
+private fun List<CountryItem>?.loadPreSetCountry(countryCode: String?): CountryItem? =
+    this?.firstOrNull { it.code == countryCode }
 
 private fun List<CountryItem>?.loadDefaultCountry(): CountryItem =
     this?.firstOrNull { it.displayName == Locale.getDefault().country.displayName }
