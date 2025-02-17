@@ -100,14 +100,11 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                         if (p == null) {
                             p = Snabble.getInstance().getCheckedInProject().getValue();
                         }
-
-                        if (p == null) {
-                            throw new IllegalStateException("Cannot get current project. Did you forget to set the projectId to the PaymentCredentialsListFragment or PaymentCredentialsListView?");
+                        if (p != null) {
+                            bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, p.getId());
+                            dialogFragment.setArguments(bundle);
+                            dialogFragment.show(((FragmentActivity) activity).getSupportFragmentManager(), null);
                         }
-
-                        bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, p.getId());
-                        dialogFragment.setArguments(bundle);
-                        dialogFragment.show(((FragmentActivity) activity).getSupportFragmentManager(), null);
                     } else {
                         throw new RuntimeException("Host activity must be a Fragment Activity");
                     }
