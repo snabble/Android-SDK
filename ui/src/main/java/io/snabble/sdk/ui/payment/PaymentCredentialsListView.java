@@ -52,7 +52,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
     private Project project;
     private View emptyState;
     private FloatingActionButton fab;
-    private CircularProgressIndicator progressIndicator;
+    private CircularProgressIndicator circularIndicator;
 
     public PaymentCredentialsListView(Context context) {
         super(context);
@@ -75,7 +75,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         emptyState = findViewById(R.id.empty_state);
         recyclerView = findViewById(R.id.recycler_view);
         fab = findViewById(R.id.fab);
-        progressIndicator = findViewById(R.id.circular_indicator);
+        circularIndicator = findViewById(R.id.circular_indicator);
 
         paymentCredentialsStore = Snabble.getInstance().getPaymentCredentialsStore();
 
@@ -127,7 +127,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
 
     public void setProject(Project project) {
         this.project = project;
-        progressIndicator.setVisibility(View.GONE);
+        circularIndicator.setVisibility(View.GONE);
         onChanged();
     }
 
@@ -136,7 +136,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         this.project = project;
 
         entries.clear();
-        progressIndicator.setVisibility(View.GONE);
+        circularIndicator.setVisibility(View.GONE);
         onChanged();
     }
 
