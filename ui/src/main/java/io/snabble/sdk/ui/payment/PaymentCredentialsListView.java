@@ -102,9 +102,6 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                         Bundle bundle = new Bundle();
 
                         Project p = project;
-                        if (p == null) {
-                            p = Snabble.getInstance().getCheckedInProject().getValue();
-                        }
                         if (p != null) {
                             bundle.putString(SelectPaymentMethodFragment.ARG_PROJECT_ID, p.getId());
                             dialogFragment.setArguments(bundle);
