@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -50,6 +51,8 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
     private List<Type> types;
     private Project project;
     private View emptyState;
+    private FloatingActionButton fab;
+    private CircularProgressIndicator progressIndicator;
 
     public PaymentCredentialsListView(Context context) {
         super(context);
@@ -69,16 +72,18 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
     private void inflateView() {
         inflate(getContext(), R.layout.snabble_view_payment_credentials_list, this);
         if (isInEditMode()) return;
+        emptyState = findViewById(R.id.empty_state);
+        recyclerView = findViewById(R.id.recycler_view);
+        fab = findViewById(R.id.fab);
+        progressIndicator = findViewById(R.id.circular_indicator);
+
         paymentCredentialsStore = Snabble.getInstance().getPaymentCredentialsStore();
 
-        recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setAdapter(new PaymentCredentialsListView.Adapter());
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(null);
-
-        FloatingActionButton fab = findViewById(R.id.fab);
 
         final Project currentProject = Snabble.getInstance().getCheckedInProject().getLatestValue();
         final int primaryColor = RemoteThemingHelper.primaryColorForProject(getContext(), currentProject);
@@ -121,12 +126,12 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
                 }
             }
         });
-
-        emptyState = findViewById(R.id.empty_state);
     }
 
     public void setProject(Project project) {
         this.project = project;
+        progressIndicator.setVisibility(View.GONE);
+        onChanged();
     }
 
     public void show(List<Type> types, Project project) {
@@ -134,6 +139,7 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         this.project = project;
 
         entries.clear();
+        progressIndicator.setVisibility(View.GONE);
         onChanged();
     }
 
@@ -181,24 +187,27 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         List<PaymentCredentials> paymentCredentials = paymentCredentialsStore.getAll();
 
         for (PaymentCredentials pm : paymentCredentials) {
-            boolean sameProjectOrNull = true;
+            boolean sameProject = false;
             if (project != null) {
-                sameProjectOrNull = project.getId().equals(pm.getProjectId());
+                sameProject = project.getId().equals(pm.getProjectId());
             }
 
             if (pm.getProjectId() == null && (pm.getType() == Type.SEPA || pm.getType() == Type.PAYONE_SEPA)) {
-                sameProjectOrNull = true;
+                sameProject = true;
             }
 
-            boolean sameTypeOrNull = true;
+            boolean sameType = false;
             if (types != null) {
                 if (project != null) {
-                    sameTypeOrNull = project.getAvailablePaymentMethods().contains(pm.getPaymentMethod());
+                    sameType = project.getAvailablePaymentMethods().contains(pm.getPaymentMethod());
                 } else {
-                    sameTypeOrNull = types.contains(pm.getType());
+                    sameType = types.contains(pm.getType());
                 }
             }
-            if (pm.isAvailableInCurrentApp() && sameTypeOrNull && sameProjectOrNull) {
+
+            boolean isRetailer = Snabble.getInstance().getProjects().size() == 1;
+
+            if ((pm.isAvailableInCurrentApp() && sameType && sameProject) || isRetailer) {
                 switch (pm.getType()) {
                     case SEPA:
                     case PAYONE_SEPA:
@@ -228,11 +237,15 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         }
 
         if (entries.size() == 0) {
-            emptyState.setVisibility(View.VISIBLE);
+            if (project != null) {
+                emptyState.setVisibility(View.VISIBLE);
+                fab.setVisibility(View.VISIBLE);
+            }
             recyclerView.setVisibility(View.GONE);
         } else {
             emptyState.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
+            fab.setVisibility(View.VISIBLE);
         }
 
         recyclerView.getAdapter().notifyDataSetChanged();
