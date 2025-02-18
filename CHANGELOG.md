@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 ### Removed
 ### Fixed
+* ui: fix crash when adding a payment mehtod (APPS-2155)
 
 ## [0.80.5]
 ### Added
