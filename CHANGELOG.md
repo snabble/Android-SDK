@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 ### Changed
 ### Removed
 ### Fixed
+* core: fix npe's in payment validation
+
+## [0.80.6]
+### Fixed
 * ui: fix crash when adding a payment mehtod (APPS-2155)
 
 ## [0.80.5]
