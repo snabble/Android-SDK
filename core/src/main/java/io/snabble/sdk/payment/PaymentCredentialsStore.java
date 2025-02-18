@@ -49,7 +49,8 @@ public class PaymentCredentialsStore {
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     public PaymentCredentialsStore() {
-
+        data = new Data();
+        data.credentialsList = new ArrayList<>();
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY)
