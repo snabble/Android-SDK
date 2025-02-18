@@ -283,11 +283,14 @@ public class PaymentCredentialsStore {
     }
 
     private synchronized void validate() {
+        final List<PaymentCredentials> credentialsList = data.credentialsList;
+        if (credentialsList == null || credentialsList.isEmpty()) return;
+
         boolean changed = false;
 
         List<PaymentCredentials> removals = new ArrayList<>();
 
-        for (PaymentCredentials credentials : data.credentialsList) {
+        for (PaymentCredentials credentials : credentialsList) {
             if (credentials != null) {
                 if (!credentials.validate()) {
                     removals.add(credentials);
@@ -308,12 +311,12 @@ public class PaymentCredentialsStore {
         }
 
         for (PaymentCredentials credentials : removals) {
-            data.credentialsList.remove(credentials);
+            credentialsList.remove(credentials);
         }
 
         // old apps don't have ids set
         for (PaymentCredentials pc : data.credentialsList) {
-            if (pc.getId() == null) {
+            if (pc != null && pc.getId() == null) {
                 pc.generateId();
                 changed = true;
             }
@@ -353,7 +356,7 @@ public class PaymentCredentialsStore {
         }
 
         if (project.getGooglePayHelper() != null
-         && project.getGooglePayHelper().isGooglePayAvailable()) {
+                && project.getGooglePayHelper().isGooglePayAvailable()) {
             count++;
         }
 
