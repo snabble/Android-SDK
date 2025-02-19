@@ -6,6 +6,13 @@ All notable changes to this project will be documented in this file.
 ### Changed
 ### Removed
 ### Fixed
+
+## [0.80.8]
+### Fixed
+* ui: Fix missing updates for the shopping cart (APPS-2163)
+
+## [0.80.7]
+### Fixed
 * core: fix payment validation
 
 ## [0.80.6]
