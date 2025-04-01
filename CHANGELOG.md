@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.80.9]
+* core: add new property "email" for shops
+
 ## [0.80.8]
 ### Fixed
 * ui: Fix missing updates for the shopping cart (APPS-2163)

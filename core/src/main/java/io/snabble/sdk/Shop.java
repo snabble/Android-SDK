@@ -153,6 +153,7 @@ public class Shop implements Serializable, Parcelable {
     private String country;
     private String state;
     private String phone;
+    private String email;
     private boolean isPreLaunch;
     private Map<String, Href> links;
     @SerializedName("lat")
