@@ -241,6 +241,13 @@ public class Shop implements Serializable, Parcelable {
     }
 
     /**
+     * Gets the email of the shop
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
      * Gets the latitude of the shop
      */
     public double getLatitude() {
@@ -257,7 +264,7 @@ public class Shop implements Serializable, Parcelable {
     /**
      * Gets the latitude / longitude pair ot the shop as a Location object
      */
-    public Location getLocation() { 
+    public Location getLocation() {
         Location location = new Location("");
         location.setLatitude(latitude);
         location.setLongitude(longitude);

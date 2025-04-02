@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+
+## [0.80.10]
+* core: add public getter for "email"
+
 ## [0.80.9]
 * core: add new property "email" for shops
 
