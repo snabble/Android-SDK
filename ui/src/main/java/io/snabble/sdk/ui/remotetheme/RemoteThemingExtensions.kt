@@ -7,7 +7,6 @@ import android.graphics.Color
 import androidx.appcompat.app.AlertDialog
 import com.google.gson.annotations.SerializedName
 import io.snabble.sdk.Project
-import io.snabble.sdk.extensions.xx
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.getColorByAttribute
@@ -83,26 +82,22 @@ private data class ToolbarColors(
     @SerializedName("colorOnAppBar_dark") val darkOnToolbarColor: String?,
 )
 
-fun Context.toolBarColorForProject(project: Project?): Int =
-    GsonHolder.get().fromJson(project?.customizationConfig.xx(), ToolbarColors::class.java)?.let {
+fun Context.toolBarColorForProject(project: Project?): Int? =
+    GsonHolder.get().fromJson(project?.customizationConfig, ToolbarColors::class.java)?.let {
         val lightColor = it.lightToolbarColor?.asColor()
         val darkColor = it.darkToolbarColor?.asColor()
         when {
             isDarkMode() -> darkColor ?: lightColor
-            ?: getColorByAttribute(io.snabble.sdk.ui.R.attr.colorSecondary)
-
-            else -> lightColor ?: getColorByAttribute(io.snabble.sdk.ui.R.attr.colorSecondary)
+            else -> lightColor
         }
-    } ?: getColorByAttribute(io.snabble.sdk.ui.R.attr.colorSecondary)
+    }
 
-fun Context.onToolBarColorForProject(project: Project?): Int =
-    GsonHolder.get().fromJson(project?.customizationConfig.xx(), ToolbarColors::class.java)?.let {
+fun Context.onToolBarColorForProject(project: Project?): Int? =
+    GsonHolder.get().fromJson(project?.customizationConfig, ToolbarColors::class.java)?.let {
         val lightColor = it.lightOnToolbarColor?.asColor()
         val darkColor = it.darkOnToolbarColor?.asColor()
         when {
             isDarkMode() -> darkColor ?: lightColor
-            ?: getColorByAttribute(io.snabble.sdk.ui.R.attr.colorOnSecondary)
-
-            else -> lightColor ?: getColorByAttribute(io.snabble.sdk.ui.R.attr.colorOnSecondary)
+            else -> lightColor
         }
-    } ?: getColorByAttribute(io.snabble.sdk.ui.R.attr.colorOnSecondary)
+    }

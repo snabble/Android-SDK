@@ -129,8 +129,8 @@ class CheckoutActivity : FragmentActivity() {
                             val onToolBarColor =
                                 this@CheckoutActivity.onToolBarColorForProject(Snabble.checkedInProject.value)
                             this.findViewById<MaterialToolbar>(R.id.checkout_toolbar).apply {
-                                setBackgroundColor(toolBarColor)
-                                setTitleTextColor(onToolBarColor)
+                                toolBarColor?.let(::setBackgroundColor)
+                                onToolBarColor?.let(::setTitleTextColor)
                             }
                         }
 
