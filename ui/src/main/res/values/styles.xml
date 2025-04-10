@@ -49,6 +49,8 @@
 
     <style name="ThemeOverlay.Snabble.CouponDetail.ActivateButtonStyle" parent="Snabble.CouponDetail.ActivateButtonStyle" />
 
+    <style name="ThemeOverlay.Snabble.SecondaryButton" parent="Widget.Material3.Button.TextButton"/>
+
     <style name="Snabble.CouponDetail.AppliedButtonStyle" parent="Widget.Material3.Button">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
