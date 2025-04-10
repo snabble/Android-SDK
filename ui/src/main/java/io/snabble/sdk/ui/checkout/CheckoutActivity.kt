@@ -23,12 +23,15 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
+import com.google.android.material.appbar.MaterialToolbar
 import io.snabble.sdk.InitializationState
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.checkout.CheckoutState
 import io.snabble.sdk.ui.R
+import io.snabble.sdk.ui.remotetheme.onToolBarColorForProject
+import io.snabble.sdk.ui.remotetheme.toolBarColorForProject
 import io.snabble.sdk.utils.Logger
 
 class CheckoutActivity : FragmentActivity() {
@@ -120,6 +123,17 @@ class CheckoutActivity : FragmentActivity() {
                         }
 
                         navController.graph = navGraph
+                        navController.addOnDestinationChangedListener { _, _, _ ->
+                            val toolBarColor =
+                                this@CheckoutActivity.toolBarColorForProject(Snabble.checkedInProject.value)
+                            val onToolBarColor =
+                                this@CheckoutActivity.onToolBarColorForProject(Snabble.checkedInProject.value)
+                            this.findViewById<MaterialToolbar>(R.id.checkout_toolbar).apply {
+                                setBackgroundColor(toolBarColor)
+                                setTitleTextColor(onToolBarColor)
+                            }
+                        }
+
                     }
                 }
 
@@ -137,7 +151,8 @@ class CheckoutActivity : FragmentActivity() {
         val showToolBar = resources.getBoolean(R.bool.showToolbarInCheckout)
         findViewById<View>(R.id.checkout_toolbar_spacer)?.isVisible = showToolBar
         navController.addOnDestinationChangedListener { _, _, arguments ->
-            findViewById<View>(R.id.checkout_toolbar)?.isVisible = arguments?.getBoolean("showToolbar", false) == true
+            findViewById<View>(R.id.checkout_toolbar)?.isVisible =
+                arguments?.getBoolean("showToolbar", false) == true
         }
         if (showToolBar) {
             applyInsets()
