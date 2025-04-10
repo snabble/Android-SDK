@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 ### Changed
 * ui: add new style and theme manager to make primary and secondary buttons customizable (APPS-2213)
+* ui: add new remote colors for toolbar and adjust it accordingly in the checkout activity (APPS-2062)
 ### Removed
 ### Fixed
 

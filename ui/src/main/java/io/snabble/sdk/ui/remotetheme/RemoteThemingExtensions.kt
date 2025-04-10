@@ -5,8 +5,10 @@ package io.snabble.sdk.ui.remotetheme
 import android.content.Context
 import android.graphics.Color
 import androidx.appcompat.app.AlertDialog
+import com.google.gson.annotations.SerializedName
 import io.snabble.sdk.Project
 import io.snabble.sdk.ui.R
+import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.getColorByAttribute
 
 fun Context.getPrimaryColorForProject(project: Project?): Int {
@@ -72,3 +74,30 @@ fun AlertDialog.changeButtonColorFor(project: Project?): AlertDialog {
     }
     return this
 }
+
+private data class ToolbarColors(
+    @SerializedName("colorAppBar_light") val lightToolbarColor: String?,
+    @SerializedName("colorAppBar_dark") val darkToolbarColor: String?,
+    @SerializedName("colorOnAppBar_light") val lightOnToolbarColor: String?,
+    @SerializedName("colorOnAppBar_dark") val darkOnToolbarColor: String?,
+)
+
+fun Context.toolBarColorForProject(project: Project?): Int? =
+    GsonHolder.get().fromJson(project?.customizationConfig, ToolbarColors::class.java)?.let {
+        val lightColor = it.lightToolbarColor?.asColor()
+        val darkColor = it.darkToolbarColor?.asColor()
+        when {
+            isDarkMode() -> darkColor ?: lightColor
+            else -> lightColor
+        }
+    }
+
+fun Context.onToolBarColorForProject(project: Project?): Int? =
+    GsonHolder.get().fromJson(project?.customizationConfig, ToolbarColors::class.java)?.let {
+        val lightColor = it.lightOnToolbarColor?.asColor()
+        val darkColor = it.darkOnToolbarColor?.asColor()
+        when {
+            isDarkMode() -> darkColor ?: lightColor
+            else -> lightColor
+        }
+    }
