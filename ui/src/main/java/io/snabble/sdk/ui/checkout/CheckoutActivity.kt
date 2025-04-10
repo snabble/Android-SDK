@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.FrameLayout
 import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.ViewCompat
@@ -151,6 +152,9 @@ class CheckoutActivity : FragmentActivity() {
             this.findViewById<MaterialToolbar>(R.id.checkout_toolbar).apply {
                 toolBarColor?.let(::setBackgroundColor)
                 onToolBarColor?.let(::setTitleTextColor)
+            }
+            this.findViewById<FrameLayout>(R.id.checkout_toolbar_spacer).apply {
+                toolBarColor?.let(::setBackgroundColor)
             }
         }
 
