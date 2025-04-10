@@ -123,17 +123,6 @@ class CheckoutActivity : FragmentActivity() {
                         }
 
                         navController.graph = navGraph
-                        navController.addOnDestinationChangedListener { _, _, _ ->
-                            val toolBarColor =
-                                this@CheckoutActivity.toolBarColorForProject(Snabble.checkedInProject.value)
-                            val onToolBarColor =
-                                this@CheckoutActivity.onToolBarColorForProject(Snabble.checkedInProject.value)
-                            this.findViewById<MaterialToolbar>(R.id.checkout_toolbar).apply {
-                                toolBarColor?.let(::setBackgroundColor)
-                                onToolBarColor?.let(::setTitleTextColor)
-                            }
-                        }
-
                     }
                 }
 
@@ -150,10 +139,21 @@ class CheckoutActivity : FragmentActivity() {
     private fun setUpToolBarAndStatusBar() {
         val showToolBar = resources.getBoolean(R.bool.showToolbarInCheckout)
         findViewById<View>(R.id.checkout_toolbar_spacer)?.isVisible = showToolBar
+
         navController.addOnDestinationChangedListener { _, _, arguments ->
             findViewById<View>(R.id.checkout_toolbar)?.isVisible =
                 arguments?.getBoolean("showToolbar", false) == true
+
+            val toolBarColor =
+                this@CheckoutActivity.toolBarColorForProject(Snabble.checkedInProject.value)
+            val onToolBarColor =
+                this@CheckoutActivity.onToolBarColorForProject(Snabble.checkedInProject.value)
+            this.findViewById<MaterialToolbar>(R.id.checkout_toolbar).apply {
+                toolBarColor?.let(::setBackgroundColor)
+                onToolBarColor?.let(::setTitleTextColor)
+            }
         }
+
         if (showToolBar) {
             applyInsets()
         }
