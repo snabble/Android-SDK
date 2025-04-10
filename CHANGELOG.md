@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 ### Added
 ### Changed
-* ui: add new style and theme manager to make secondary buttons customizable (APPS-2213)
+* ui: add new style and theme manager to make primary and secondary buttons customizable (APPS-2213)
 ### Removed
 ### Fixed
 
