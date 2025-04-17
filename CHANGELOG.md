@@ -3,13 +3,70 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
+* core: Add customer info needed for a Google Pay payment provider
 ### Changed
+* ui: add new style and theme manager to make primary and secondary buttons customizable (APPS-2213)
 ### Removed
 ### Fixed
 
+
+## [0.80.10]
+* core: add public getter for "email"
+
+## [0.80.9]
+* core: add new property "email" for shops
+
+## [0.80.8]
+### Fixed
+* ui: Fix missing updates for the shopping cart (APPS-2163)
+
+## [0.80.7]
+### Fixed
+* core: fix payment validation
+
+## [0.80.6]
+### Fixed
+* ui: fix crash when adding a payment mehtod (APPS-2155)
+
+## [0.80.5]
+### Added
+* Add prefilled data to credit card input views
+### Fixed
+* Add missing style to fix offline checkout button
+
+## [0.80.4]
+### Added
+* ui: Improve edge-to-edge support for apps targeting API level 35
+* ui: Add UI for deposit return vouchers (APPS-1643)
+* core: Handle invalid items (APPS-2039)
+* ui/core: Integrate new states for deposit return vouchers into the checkout process and handle them
+### Changed
+* ui: Change button message for a total price of zero and price text color for a negative total price (APPS-1939)
+* core: Handle only a set of pre defined violations (APPS-2049)
+### Removed
+* ui/core: Remove everything related to the old deposit return voucher feature
+* core: Remove handling an empty list of payment methods in the checkout info as error (APPS-2049)
+### Fixed
+
+## [0.80.3]
+### Added
+* ui: Add listener to `SelfScanningFragment` to react to camera permission changes
+* core: Receive origin type from `PaymentMethodDesricptor` in case it is not set by default
+
+## [0.80.2]
+### Fixed
+* ui: Add missing focus to the product search field after opening the `ProductSearchView`
+### Changed
+* ui: add quiet zone as background to the exit code and adjust the brightness if it is shown
+
+## [0.80.1]
+### Fixed
+* ui: fix adding TWINT
+
 ## [0.80.0]
-### Addded
-* core: Add customer info needed for a Google Pay payment provider
+### Removed
+* core: SSL Pinning has been removed
+* ui: Datatrans SSL Pinning has been deactivated
 
 ## [0.79.0]
 ### Added

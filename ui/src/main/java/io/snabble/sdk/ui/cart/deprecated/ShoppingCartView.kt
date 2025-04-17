@@ -25,6 +25,7 @@ import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.SnabbleUI.executeAction
 import io.snabble.sdk.ui.cart.PaymentSelectionHelper
 import io.snabble.sdk.ui.cart.shoppingcart.ShoppingCartScreen
+import io.snabble.sdk.ui.cart.showInvalidProductsDialog
 import io.snabble.sdk.ui.checkout.showNotificationOnce
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.I18nUtils.getIdentifier
@@ -207,12 +208,12 @@ class ShoppingCartView : FrameLayout {
             updateEmptyState()
             scanForImages()
             checkSaleStop()
-            checkDepositReturnVoucher()
         }
     }
 
     private fun checkSaleStop() {
         val invalidProducts = cart?.invalidProducts
+        val invalidItemIds = cart?.invalidItemIds
 
         if (invalidProducts?.isNotEmpty() == true && invalidProducts != lastInvalidProducts) {
             val res = resources
@@ -243,18 +244,22 @@ class ShoppingCartView : FrameLayout {
                 .show()
 
             lastInvalidProducts = invalidProducts
-        }
-    }
+        } else if (!invalidItemIds.isNullOrEmpty()) {
+            val invalidItems = cart?.filterNotNull()?.filter { it.id in invalidItemIds } ?: return
 
-    private fun checkDepositReturnVoucher() {
-        if (cart?.hasInvalidDepositReturnVoucher() == true && !hasAlreadyShownInvalidDeposit) {
-            AlertDialog.Builder(context)
-                .setCancelable(false)
-                .setTitle(getIdentifier(resources, R.string.Snabble_SaleStop_ErrorMsg_title))
-                .setMessage(getIdentifier(resources, R.string.Snabble_InvalidDepositVoucher_errorMsg))
-                .setPositiveButton(R.string.Snabble_ok, null)
-                .show()
-            hasAlreadyShownInvalidDeposit = true
+            context.showInvalidProductsDialog(
+                invalidItems = invalidItems,
+                onRemove = {
+                    cart?.let { cart ->
+                        invalidItems.forEach { item ->
+                            val index = cart.indexOf(item)
+                            if (index != -1) {
+                                cart.remove(index)
+                            }
+                        }
+                    }
+                }
+            )
         }
     }
 

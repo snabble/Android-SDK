@@ -4,6 +4,7 @@ import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Product
 import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.events.Events
+import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
@@ -18,6 +19,7 @@ data class PersistentState(
     var priceToPay: Int = 0,
     var codes: List<String> = mutableListOf(),
     var invalidProducts: List<Product>? = null,
+    var invalidItems: List<ShoppingCart.Item>? = null,
     var redeemedCoupons: List<Coupon> = emptyList(),
     var state: CheckoutState = CheckoutState.NONE,
     var fulfillmentState: List<Fulfillment>? = null,

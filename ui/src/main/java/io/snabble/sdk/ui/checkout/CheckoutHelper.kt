@@ -12,6 +12,7 @@ val CheckoutState.isCheckoutState: Boolean
         CheckoutState.REQUEST_TAXATION,
         CheckoutState.CONNECTION_ERROR,
         CheckoutState.INVALID_PRODUCTS,
+        CheckoutState.INVALID_ITEMS,
         CheckoutState.NO_PAYMENT_METHOD_AVAILABLE,
         CheckoutState.PAYMENT_ABORTED,
         CheckoutState.NO_SHOP -> false
@@ -28,5 +29,6 @@ val CheckoutState.isCheckoutState: Boolean
         CheckoutState.PAYMENT_ABORT_FAILED,
         CheckoutState.PAYMENT_PROCESSING_ERROR,
         CheckoutState.PAYMENT_TRANSFERRED,
+        CheckoutState.DEPOSIT_RETURN_REDEMPTION_FAILED,
         CheckoutState.PAYONE_SEPA_MANDATE_REQUIRED -> true
     }

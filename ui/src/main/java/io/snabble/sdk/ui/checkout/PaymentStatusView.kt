@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.webkit.URLUtil
 import android.widget.Button
@@ -44,6 +45,7 @@ import io.snabble.sdk.ui.payment.SEPACardInputActivity
 import io.snabble.sdk.ui.payment.payone.sepa.form.PayoneSepaActivity
 import io.snabble.sdk.ui.scanner.BarcodeView
 import io.snabble.sdk.ui.telemetry.Telemetry
+import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.ui.utils.executeUiAction
 import io.snabble.sdk.ui.utils.getFragmentActivity
 import io.snabble.sdk.ui.utils.observeView
@@ -105,6 +107,7 @@ class PaymentStatusView @JvmOverloads constructor(
 
     init {
         clipChildren = false
+        exitTokenBarcode.removeQuietZone(true)
 
         if (!isInEditMode) {
             project = Snabble.checkedInProject.value
@@ -139,6 +142,8 @@ class PaymentStatusView @JvmOverloads constructor(
             } else {
                 checkout?.abort()
             }
+
+            adjustBrightness(DEFAULT_BRIGHTNESS)
         }
 
         checkout?.state?.observeView(this) {
@@ -293,6 +298,11 @@ class PaymentStatusView @JvmOverloads constructor(
                 handlePaymentAborted()
             }
 
+            CheckoutState.DEPOSIT_RETURN_REDEMPTION_FAILED -> {
+                Telemetry.event(Telemetry.Event.CheckoutDepositReturnRedemptionFailed)
+                handlePaymentAborted()
+            }
+
             CheckoutState.PAYMENT_ABORTED -> {
                 Telemetry.event(Telemetry.Event.CheckoutAbortByUser)
                 handlePaymentAborted()
@@ -335,13 +345,22 @@ class PaymentStatusView @JvmOverloads constructor(
                     exitTokenContainer.isVisible = true
                     exitToken.state = PaymentStatusItemView.State.SUCCESS
                     exitToken.setTitle(resources.getString(R.string.Snabble_PaymentStatus_ExitCode_title))
+                    exitToken.setText(resources.getString(R.string.Snabble_PaymentStatus_ExitCode_openExitGateTimed))
                     exitTokenBarcode.setFormat(format)
                     exitTokenBarcode.setText(it.value)
+                    adjustBrightness(MAX_BRIGHTNESS)
                 } else {
                     exitTokenContainer.isVisible = false
                 }
             }
         }
+    }
+
+    private fun adjustBrightness(value: Float) {
+        val activity = UIUtils.getHostActivity(context)
+        val localLayoutParams: WindowManager.LayoutParams = activity.window.attributes
+        localLayoutParams.screenBrightness = value
+        activity.window.setAttributes(localLayoutParams)
     }
 
     private fun handlePaymentAborted() {
@@ -485,3 +504,6 @@ class PaymentStatusView @JvmOverloads constructor(
         }
     }
 }
+
+private const val MAX_BRIGHTNESS = 0.99f // value of 1.0 is not accepted
+private const val DEFAULT_BRIGHTNESS = -1f

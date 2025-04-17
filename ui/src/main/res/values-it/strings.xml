@@ -66,7 +66,6 @@
   <string name="Snabble.Hints.closedBags">Continua così! Agevola il compito del personale di cassa ed evita di mettere direttamente gli articoli in borse chiuse. Grazie!</string>
   <string name="Snabble.Hints.continueScanning">Continua la scansione</string>
   <string name="Snabble.Hints.title">Nota di %s</string>
-  <string name="Snabble.InvalidDepositVoucher.errorMsg">Gli scontrini dei vuoti possono essere riscattati una sola volta.</string>
   <string name="Snabble.Keyguard.message">In questo modo ci assicuriamo che solo tu abbia accesso a questa modalità di pagamento</string>
   <string name="Snabble.Keyguard.requireScreenLock">È necessario proteggere il tuo smartphone con un blocco schermo per poter aggiungere questo metodo di pagamento.</string>
   <string name="Snabble.Keyguard.title">Sblocca il tuo smartphone</string>

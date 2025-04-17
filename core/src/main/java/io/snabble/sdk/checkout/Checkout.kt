@@ -82,6 +82,13 @@ class Checkout @JvmOverloads constructor(
             persistentState.save()
         }
 
+    var invalidItems: List<ShoppingCart.Item>?
+        get() = persistentState.invalidItems
+        private set(value) {
+            persistentState.invalidItems = value
+            persistentState.save()
+        }
+
     /**
      * List of coupons that were redeemed during this checkout
      */
@@ -303,12 +310,13 @@ class Checkout @JvmOverloads constructor(
                     notifyStateChanged(CheckoutState.INVALID_PRODUCTS)
                 }
 
-                override fun onNoAvailablePaymentMethodFound() {
-                    notifyStateChanged(CheckoutState.NO_PAYMENT_METHOD_AVAILABLE)
+                override fun onInvalidItems(itemIds: List<String>) {
+                    invalidItems = shoppingCart.filterNotNull().filter { it.id in itemIds }
+                    notifyStateChanged(CheckoutState.INVALID_ITEMS)
                 }
 
-                override fun onInvalidDepositReturnVoucher() {
-                    notifyStateChanged(CheckoutState.CONNECTION_ERROR)
+                override fun onNoAvailablePaymentMethodFound() {
+                    notifyStateChanged(CheckoutState.NO_PAYMENT_METHOD_AVAILABLE)
                 }
 
                 override fun onUnknownError() {
@@ -441,6 +449,15 @@ class Checkout @JvmOverloads constructor(
     internal fun poll() {
         if (checkoutProcess == null) {
             notifyStateChanged(CheckoutState.PAYMENT_ABORTED)
+            return
+        }
+        val hasAnyFailedDrvRedemptions =
+            checkoutProcess?.depositReturnVouchers
+                ?.any { it.state == DepositReturnVoucherState.REDEEMING_FAILED }
+                ?: false
+
+        if (hasAnyFailedDrvRedemptions) {
+            notifyStateChanged(CheckoutState.DEPOSIT_RETURN_REDEMPTION_FAILED)
             return
         }
 

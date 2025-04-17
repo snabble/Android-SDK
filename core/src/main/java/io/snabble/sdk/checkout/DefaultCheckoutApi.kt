@@ -105,45 +105,40 @@ class DefaultCheckoutApi(private val project: Project,
                     ?: shoppingCart.totalPrice
 
                 val availablePaymentMethods = signedCheckoutInfo.getAvailablePaymentMethods()
-                if (availablePaymentMethods.isNotEmpty()) {
-                    checkoutInfoResult?.onSuccess(signedCheckoutInfo, price, availablePaymentMethods)
-                } else {
-                    checkoutInfoResult?.onConnectionError()
-                }
+                checkoutInfoResult?.onSuccess(signedCheckoutInfo, price, availablePaymentMethods)
             }
 
             override fun failure(obj: JsonObject) {
                 try {
-                    val error = obj["error"].asJsonObject
-                    val type = error["type"].asString
+                    val error: JsonObject? = obj["error"].asJsonObject
+                    val type: String? = error?.get("type")?.asString
                     when (type) {
                         "invalid_cart_item" -> {
-                            val invalidSkus: MutableList<String> = ArrayList()
-                            val arr = error["details"].asJsonArray
+                            val invalidSkus = error["details"].asJsonArray
+                                .mapNotNull { it.asJsonObject["sku"].asString?.ifBlank { null } }
 
-                            arr.forEach {
-                                val sku = it.asJsonObject["sku"].asString
-                                invalidSkus.add(sku)
-                            }
+                            val invalidProducts = shoppingCart
+                                .mapNotNull { it?.product }
+                                .filter { invalidSkus.contains(it.sku) }
 
-                            val invalidProducts = mutableListOf<Product>()
-                            for (i in 0..shoppingCart.size()) {
-                                val product = shoppingCart[i].product
-                                if (product != null) {
-                                    if (invalidSkus.contains(product.sku)) {
-                                        invalidProducts.add(product)
-                                    }
-                                }
+                            if (invalidProducts.isNotEmpty()) {
+                                Logger.e("Invalid products found")
+                                checkoutInfoResult?.onInvalidProducts(invalidProducts)
+                            } else {
+                                Logger.e("Invalid items found")
+                                val invalidIds = error["details"].asJsonArray
+                                    .mapNotNull { it.asJsonObject["id"].asString }
+                                checkoutInfoResult?.onInvalidItems(invalidIds)
                             }
-                            Logger.e("Invalid products")
-                            checkoutInfoResult?.onInvalidProducts(invalidProducts)
                         }
+
                         "no_available_method" -> checkoutInfoResult?.onNoAvailablePaymentMethodFound()
                         "bad_shop_id", "shop_not_found" -> checkoutInfoResult?.onNoShopFound()
-                        "invalid_deposit_return_voucher" -> checkoutInfoResult?.onInvalidDepositReturnVoucher()
                         else -> checkoutInfoResult?.onUnknownError()
                     }
-                } catch (e: Exception) {
+                } catch (e: IllegalStateException) {
+                    error(e)
+                } catch (e: UnsupportedOperationException) {
                     error(e)
                 }
             }
@@ -213,6 +208,9 @@ class DefaultCheckoutApi(private val project: Project,
             }
         }
 
+        val originType = paymentCredentials?.type?.originType
+            ?: getOriginTypeFromPaymentMethodDescriptor(paymentMethod = paymentMethod)
+
         val checkoutProcessRequest = CheckoutProcessRequest(
             paymentMethod = paymentMethod,
             signedCheckoutInfo = signedCheckoutInfo,
@@ -221,22 +219,24 @@ class DefaultCheckoutApi(private val project: Project,
             paymentInformation = when (paymentCredentials?.type) {
                 PaymentCredentials.Type.EXTERNAL_BILLING -> {
                     PaymentInformation(
-                        originType = paymentCredentials.type?.originType,
+                        originType = originType,
                         encryptedOrigin = paymentCredentials.encryptedData,
                         subject = paymentCredentials.additionalData["subject"]
                     )
                 }
+
                 PaymentCredentials.Type.CREDIT_CARD_PSD2 -> {
                     PaymentInformation(
-                        originType = paymentCredentials.type?.originType,
+                        originType = originType,
                         encryptedOrigin = paymentCredentials.encryptedData,
                         validUntil = SimpleDateFormat("yyyy/MM/dd").format(Date(paymentCredentials.validTo)),
                         cardNumber = paymentCredentials.obfuscatedId,
                     )
                 }
+
                 PaymentCredentials.Type.GIROPAY -> {
                     PaymentInformation(
-                        originType = paymentCredentials.type?.originType,
+                        originType = originType,
                         encryptedOrigin = paymentCredentials.encryptedData,
                         deviceID = paymentCredentials.additionalData["deviceID"],
                         deviceName = paymentCredentials.additionalData["deviceName"],
@@ -247,7 +247,7 @@ class DefaultCheckoutApi(private val project: Project,
                 null -> null
                 else -> {
                     PaymentInformation(
-                        originType = paymentCredentials.type?.originType,
+                        originType = originType,
                         encryptedOrigin = paymentCredentials.encryptedData
                     )
                 }
@@ -324,7 +324,14 @@ class DefaultCheckoutApi(private val project: Project,
         })
     }
 
+    private fun getOriginTypeFromPaymentMethodDescriptor(paymentMethod: PaymentMethod): String? =
+        project.paymentMethodDescriptors
+            .firstOrNull { it.paymentMethod == paymentMethod }
+            ?.acceptedOriginTypes
+            ?.get(0)
+
     companion object {
+
         private val JSON: MediaType = "application/json".toMediaType()
     }
 }

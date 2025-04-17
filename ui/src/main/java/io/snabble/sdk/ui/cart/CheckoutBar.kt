@@ -23,14 +23,16 @@ import androidx.fragment.app.FragmentActivity
 import io.snabble.accessibility.accessibility
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
-import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.Snabble.instance
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.checkout.CheckoutState
+import io.snabble.sdk.checkout.DepositReturnVoucher
+import io.snabble.sdk.checkout.DepositReturnVoucherState
 import io.snabble.sdk.config.ExternalBillingSubjectLength
 import io.snabble.sdk.config.ProjectId
 import io.snabble.sdk.extensions.getApplicationInfoCompat
+import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
 import io.snabble.sdk.ui.Keyguard
@@ -52,6 +54,7 @@ import io.snabble.sdk.ui.utils.observeView
 import io.snabble.sdk.ui.utils.requireFragmentActivity
 import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.utils.Logger
+import io.snabble.sdk.utils.getColorByAttribute
 
 open class CheckoutBar @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -212,6 +215,13 @@ open class CheckoutBar @JvmOverloads constructor(
             val articlesText = resources.getQuantityText(R.plurals.Snabble_Shoppingcart_numberOfItems, quantity)
             articleCount.text = String.format(articlesText.toString(), quantity)
             priceSum.text = project.priceFormatter.format(price)
+            priceSum.setTextColor(
+                if (price < 0) {
+                    context.getColorByAttribute(R.attr.colorError)
+                } else {
+                    context.getColorByAttribute(R.attr.colorOnSurface)
+                }
+            )
 
             val onlinePaymentAvailable = !cart.availablePaymentMethods.isNullOrEmpty()
             payButton.isEnabled =
@@ -244,13 +254,23 @@ open class CheckoutBar @JvmOverloads constructor(
                 payButton.isEnabled = true
                 payButton.setText(R.string.Snabble_Shoppingcart_EmptyState_restoreButtonTitle)
             } else {
-                payButton.setText(
-                    I18nUtils.getIdentifierForProject(
-                        resources,
-                        project,
-                        R.string.Snabble_Shoppingcart_BuyProducts_now
+                if (price == 0 && !cart.isEmpty) {
+                    payButton.setText(
+                        I18nUtils.getIdentifierForProject(
+                            resources,
+                            project,
+                            R.string.Snabble_Shoppingcart_completePurchase
+                        )
                     )
-                )
+                } else {
+                    payButton.setText(
+                        I18nUtils.getIdentifierForProject(
+                            resources,
+                            project,
+                            R.string.Snabble_Shoppingcart_BuyProducts_now
+                        )
+                    )
+                }
             }
         }
     }
@@ -417,6 +437,28 @@ open class CheckoutBar @JvmOverloads constructor(
                 progressDialog.dismiss()
             }
 
+            CheckoutState.INVALID_ITEMS -> {
+                val invalidItems = project.checkout.invalidItems
+
+                if (!invalidItems.isNullOrEmpty()) {
+                    context.showInvalidProductsDialog(
+                        invalidItems = invalidItems,
+                        onRemove = {
+                            invalidItems.forEach {
+                                val index = cart.indexOf(it)
+                                if (index != -1) {
+                                    cart.remove(index)
+                                }
+                            }
+                        }
+                    )
+                } else {
+                    SnackbarUtils.make(this, R.string.Snabble_Payment_errorStarting, UIUtils.SNACKBAR_LENGTH_VERY_LONG)
+                        .show()
+                }
+                progressDialog.dismiss()
+            }
+
             CheckoutState.CONNECTION_ERROR,
             CheckoutState.NO_SHOP,
             CheckoutState.PAYMENT_PROCESSING_ERROR -> {
@@ -425,6 +467,11 @@ open class CheckoutBar @JvmOverloads constructor(
                         .show()
                     progressDialog.dismiss()
                 }
+            }
+
+            CheckoutState.DEPOSIT_RETURN_REDEMPTION_FAILED -> {
+                progressDialog.dismiss()
+                handleFailedDepositReturns()
             }
 
             CheckoutState.PAYMENT_ABORTED -> {
@@ -469,11 +516,45 @@ open class CheckoutBar @JvmOverloads constructor(
                     .show()
                 progressDialog.dismiss()
             }
+
             else -> {
                 Logger.d("Unhandled event in CheckoutBar: $state")
             }
         }
     }
+
+    private fun handleFailedDepositReturns() {
+        val failedDepositReturnVouchers =
+            project.checkout.checkoutProcess?.depositReturnVouchers
+                ?.filter { it.state == DepositReturnVoucherState.REDEEMING_FAILED }
+                ?: return
+
+        val message = failedDepositReturnVouchers
+            .mapNotNull(::getDisplayName)
+            .joinToString(separator = "/n") { it }
+
+        AlertDialog.Builder(context)
+            .setCancelable(false)
+            .setTitle(context.getString(R.string.Snabble_ShoppingCart_DepositVoucher_RedemptionFailed_title))
+            .setMessage(
+                resources.getQuantityString(
+                    R.plurals.Snabble_ShoppingCart_DepositVoucher_RedemptionFailed_message,
+                    failedDepositReturnVouchers.size,
+                    message
+                )
+            )
+            .setPositiveButton(R.string.Snabble_ShoppingCart_DepositVoucher_RedemptionFailed_button) { _, _ ->
+                failedDepositReturnVouchers
+                    .map { it.refersTo }
+                    .forEach(cart::removeItem)
+            }
+            .show()
+    }
+
+    private fun getDisplayName(depositReturnVoucher: DepositReturnVoucher): String? =
+        cart.getByItemId(depositReturnVoucher.refersTo)
+            ?.displayName
+            ?.let { price -> "${context.getString(R.string.Snabble_ShoppingCart_DepositReturn_title)}: $price" }
 
     private fun getMaxSubjectLength(): Int? = Snabble.checkedInProject.value
         ?.id

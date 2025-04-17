@@ -120,25 +120,24 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
-                    <io.snabble.sdk.ui.scanner.BarcodeView
-                        android:id="@+id/exit_token_barcode"
-                        android:layout_width="match_parent"
-                        android:layout_height="120dp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:background="@android:color/transparent"
-                        android:textAppearance="?attr/textAppearanceBodyLarge"
-                        tools:visibility="visible" />
-
-                    <TextView
-                        android:layout_width="match_parent"
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center_horizontal"
-                        android:paddingHorizontal="16dp"
-                        android:paddingVertical="8dp"
-                        android:text="@string/Snabble.PaymentStatus.ExitCode.openExitGateTimed"
-                        android:textAppearance="?attr/textAppearanceBodyMedium" />
+                        android:layout_marginVertical="16.dp"
+                        android:padding="16dp"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@drawable/snabble_barcode_background">
+
+                        <io.snabble.sdk.ui.scanner.BarcodeView
+                            android:id="@+id/exit_token_barcode"
+                            android:layout_width="160dp"
+                            android:layout_height="160dp"
+                            android:layout_gravity="center"
+                            android:background="@android:color/transparent"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            tools:visibility="visible" />
+                    </RelativeLayout>
+
                 </LinearLayout>
 
                 <io.snabble.sdk.ui.checkout.PaymentStatusItemView
@@ -286,7 +285,7 @@
 
                 <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
                     android:id="@+id/send_feedback"
-                    style="@style/Widget.Material3.Button"
+                    style="@style/Snabble.Widget.MaterialComponents.Button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -326,7 +325,7 @@
 
         <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
             android:id="@+id/back"
-            style="@style/Widget.Material3.Button"
+            style="@style/Snabble.Widget.MaterialComponents.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"

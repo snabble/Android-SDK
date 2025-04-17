@@ -1,7 +1,10 @@
 package io.snabble.sdk.ui.cart.shoppingcart
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asFlow
+import androidx.lifecycle.viewModelScope
 import io.snabble.sdk.PriceFormatter
+import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.checkout.LineItemType
 import io.snabble.sdk.shoppingcart.ShoppingCart
@@ -9,39 +12,71 @@ import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.model.CartDiscountItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DepositItem
+import io.snabble.sdk.ui.cart.shoppingcart.product.model.DepositReturnItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DiscountItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.ProductItem
 import io.snabble.sdk.ui.telemetry.Telemetry
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class ShoppingCartViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
 
-    private lateinit var cachedCart: ShoppingCart
+    private var currentCart: ShoppingCart? = null
     private var priceFormatter: PriceFormatter? = null
+    private var project: Project? = null
 
     private val simpleShoppingCartListener = object : SimpleShoppingCartListener() {
         override fun onChanged(cart: ShoppingCart) {
+            currentCart = cart
             updateUiState(cart)
         }
     }
 
+    // used to update the cart remote -> do not delete it
     fun updateCart() {
-        updateUiState(cachedCart)
+        currentCart?.let { updateUiState(it) }
     }
 
     init {
-        val project = Snabble.checkedInProject.value
-        val cart = Snabble.checkedInProject.value?.shoppingCart
-        cart?.addListener(simpleShoppingCartListener)
+        project = Snabble.checkedInProject.value
         project?.let {
             priceFormatter = PriceFormatter(it)
-            updateUiState(it.shoppingCart)
+            updateCart(it.shoppingCart)
+            updateOnShoppingCartChange(it)
         }
+        updateOnProjectChange()
+    }
+
+    private fun updateOnShoppingCartChange(project: Project) {
+        viewModelScope.launch {
+            project.shoppingCartFlow.collectLatest {
+                updateCart(it)
+            }
+        }
+    }
+
+    private fun updateOnProjectChange() {
+        viewModelScope.launch {
+            Snabble.checkedInProject.asFlow().filterNotNull().collectLatest {
+                priceFormatter = PriceFormatter(it)
+                updateCart(it.shoppingCart)
+                updateOnShoppingCartChange(it)
+            }
+        }
+    }
+
+    private fun updateCart(shoppingCart: ShoppingCart) {
+        currentCart?.removeListener(simpleShoppingCartListener)
+        currentCart = shoppingCart
+        currentCart?.addListener(simpleShoppingCartListener)
+        updateUiState(shoppingCart)
     }
 
     fun onEvent(event: Event) {
@@ -52,9 +87,9 @@ class ShoppingCartViewModel : ViewModel() {
     }
 
     private fun removeItemFromCart(item: ShoppingCart.Item?, onSuccess: (index: Int) -> Unit) {
-        val index = cachedCart.indexOf(item)
+        val index = currentCart?.indexOf(item) ?: return
         if (index != -1) {
-            cachedCart.remove(index)
+            currentCart?.remove(index)
             Telemetry.event(Telemetry.Event.DeletedFromCart, item?.product)
             onSuccess(index)
         }
@@ -66,14 +101,10 @@ class ShoppingCartViewModel : ViewModel() {
     }
 
     private fun updateUiState(cart: ShoppingCart) {
-        cachedCart = cart
-
-        val filteredCart = cart.filterNotNull()
-
         val cartItems: MutableList<CartItem> = mutableListOf()
-
-        with(filteredCart) {
+        with(cart.filterNotNull()) {
             filter { it.type == ItemType.PRODUCT }.let { cartItems.addProducts(it) }
+            filter { it.type == ItemType.DEPOSIT_RETURN_VOUCHER }.let { cartItems.addDepositReturnItems(it) }
 
             filter { it.lineItem?.type == LineItemType.DEPOSIT }.let { cartItems.addDepositsToProducts(it) }
 
@@ -85,7 +116,21 @@ class ShoppingCartViewModel : ViewModel() {
         cartItems.updatePrices()
         cartItems.sortCartDiscountsToBottom()
 
-        _uiState.update { it.copy(items = cartItems) }
+        _uiState.update { it.copy(items = cartItems, totalCartPrice = currentCart?.totalPrice) }
+    }
+
+    private fun MutableList<CartItem>.addDepositReturnItems(items: List<ShoppingCart.Item>) {
+        items.forEach { item ->
+            val totalDepositReturnPrice =
+                item.depositReturnVoucher?.lineItems?.sumOf { it.totalPrice } ?: return@forEach
+
+            add(
+                DepositReturnItem(
+                    item = item,
+                    totalDeposit = priceFormatter?.format(totalDepositReturnPrice).orEmpty()
+                )
+            )
+        }
     }
 
     private fun MutableList<CartItem>.sortCartDiscountsToBottom() {
@@ -230,6 +275,7 @@ class ShoppingCartViewModel : ViewModel() {
 }
 
 sealed interface Event
+
 internal data class RemoveItem(
     val item: ShoppingCart.Item,
     val onSuccess: (index: Int) -> Unit
@@ -242,4 +288,5 @@ internal data class UpdateQuantity(
 
 data class UiState(
     val items: List<CartItem> = emptyList(),
+    val totalCartPrice: Int? = null
 )

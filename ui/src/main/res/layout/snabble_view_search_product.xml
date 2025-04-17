@@ -26,6 +26,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="56dp"
         android:gravity="center"
+        android:visibility="gone"
         android:padding="16dp"
         tools:text="Add 2623237002494 as is" />
 </RelativeLayout>
