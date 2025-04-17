@@ -5,15 +5,20 @@ All notable changes to this project will be documented in this file.
 ### Added
 * core: Add customer info needed for a Google Pay payment provider
 ### Changed
-* ui: add new style and theme manager to make primary and secondary buttons customizable (APPS-2213)
 ### Removed
 ### Fixed
 
-
+## [0.80.11]
+### Added
+* ui: add new style and theme manager to make primary and secondary buttons customizable (APPS-2213)
+* ui: add new remote colors for toolbar and adjust it accordingly in the checkout activity (APPS-2062)
+  
 ## [0.80.10]
+### Added
 * core: add public getter for "email"
 
 ## [0.80.9]
+### Added
 * core: add new property "email" for shops
 
 ## [0.80.8]
