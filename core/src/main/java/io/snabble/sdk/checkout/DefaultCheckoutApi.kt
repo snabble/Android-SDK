@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit
 class DefaultCheckoutApi(private val project: Project,
                          private val shoppingCart: ShoppingCart
 ) : CheckoutApi {
+
     private val okHttpClient: OkHttpClient = project.okHttpClient
     private var call: Call? = null
 

@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
+* core: Add customer info needed for a Google Pay payment provider
 ### Changed
 ### Removed
 ### Fixed
