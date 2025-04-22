@@ -3,11 +3,14 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
-* core: Add customer info needed for a Google Pay payment provider
 ### Changed
 ### Removed
 ### Fixed
 
+## [0.80.12]
+### Added
+* core: Add customer info needed for a Google Pay payment provider
+  
 ## [0.80.11]
 ### Added
 * ui: add new style and theme manager to make primary and secondary buttons customizable (APPS-2213)
