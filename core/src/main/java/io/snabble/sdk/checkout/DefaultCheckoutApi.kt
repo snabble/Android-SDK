@@ -10,7 +10,6 @@ import io.snabble.sdk.utils.*
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.logging.HttpLoggingInterceptor
 import java.io.IOException
 import java.net.HttpURLConnection.HTTP_CONFLICT
 import java.net.HttpURLConnection.HTTP_FORBIDDEN
@@ -23,10 +22,7 @@ class DefaultCheckoutApi(private val project: Project,
                          private val shoppingCart: ShoppingCart
 ) : CheckoutApi {
 
-    private val okHttpClient: OkHttpClient = project.okHttpClient.newBuilder()
-        .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
-        .build()
-
+    private val okHttpClient: OkHttpClient = project.okHttpClient
     private var call: Call? = null
 
     override fun cancel() {
