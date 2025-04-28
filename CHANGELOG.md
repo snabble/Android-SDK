@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
+*ui: Add new headline option for the payment options (APPS-1915)
 ### Changed
 ### Removed
 ### Fixed

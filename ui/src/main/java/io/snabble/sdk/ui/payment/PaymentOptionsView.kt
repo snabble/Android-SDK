@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -25,11 +26,14 @@ import io.snabble.sdk.ui.SnabbleUI
 import io.snabble.sdk.ui.utils.executeUiAction
 import io.snabble.sdk.ui.utils.getFragmentActivity
 import io.snabble.sdk.ui.utils.loadAsset
-import kotlin.collections.set
 
 open class PaymentOptionsView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
+
+    companion object {
+        const val ARG_PAYMENT_OPTIONS_HEADLINE = "headline"
+    }
 
     init {
         inflate(context, R.layout.snabble_payment_options, this)
@@ -59,6 +63,13 @@ open class PaymentOptionsView @JvmOverloads constructor(
                 }
             }
         })
+    }
+
+    fun setHeadline(headline: String) {
+        findViewById<TextView>(R.id.headline).apply {
+            text = headline
+            isVisible = true
+        }
     }
 
     private fun getEntries(): List<Entry> {
