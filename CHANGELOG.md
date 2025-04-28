@@ -3,11 +3,14 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
-*ui: Add new headline option for the payment options (APPS-1915)
 ### Changed
 ### Removed
 ### Fixed
 
+## [0.80.13]
+### Added
+* ui: Add new headline option for the payment options (APPS-1915)
+  
 ## [0.80.12]
 ### Added
 * core: Add customer info needed for a Google Pay payment provider
