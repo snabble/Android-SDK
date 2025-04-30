@@ -23,6 +23,7 @@ import io.snabble.sdk.shoppingcart.data.cart.BackendCartCustomer
 import io.snabble.sdk.shoppingcart.data.cart.BackendCartRequiredInformation
 import io.snabble.sdk.shoppingcart.data.item.BackendCartItem
 import io.snabble.sdk.shoppingcart.data.item.BackendCartItemType
+import io.snabble.sdk.shoppingcart.data.item.Deposit
 import io.snabble.sdk.shoppingcart.data.item.DepositReturnVoucher
 import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener
@@ -995,6 +996,11 @@ class ShoppingCart(
          * Returns the depositReturnVoucher associated with the shopping cart item.
          */
         var depositReturnVoucher: DepositReturnVoucher? = null
+
+        /**
+         * Returns the deposit associated with the shopping cart item.
+         */
+        var deposit : Deposit? = null
 
         // The local generated UUID of a coupon which which will be used by the backend
         var backendCouponId: String? = null

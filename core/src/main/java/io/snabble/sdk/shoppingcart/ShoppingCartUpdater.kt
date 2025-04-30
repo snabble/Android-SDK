@@ -17,6 +17,7 @@ import io.snabble.sdk.checkout.Price
 import io.snabble.sdk.checkout.SignedCheckoutInfo
 import io.snabble.sdk.checkout.Violation
 import io.snabble.sdk.codes.ScannedCode.Companion.parseDefault
+import io.snabble.sdk.shoppingcart.data.item.Deposit
 import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
@@ -160,7 +161,7 @@ internal class ShoppingCartUpdater(
             addLineItemsAsCartItems(filter { it.type == LineItemType.DISCOUNT && it.discountType != "cart" })
 
             addLineItemsAsCartItems(filter { it.type == LineItemType.COUPON })
-            addLineItemsAsCartItems(filter { it.type == LineItemType.DEPOSIT })
+            addDepositToItem(filter { it.type == LineItemType.DEPOSIT })
             addDepositReturnsToVoucher(filter { it.type == LineItemType.DEPOSIT_RETURN })
         }
 
@@ -179,12 +180,20 @@ internal class ShoppingCartUpdater(
         }
     }
 
+    private fun addDepositToItem(deposits: List<LineItem>) {
+        deposits
+            .forEach { deposit ->
+                val item = cart.getByItemId(deposit.refersTo)
+                item?.deposit = Deposit(deposit)
+            }
+    }
+
     private fun addDepositReturnsToVoucher(depositReturnItems: List<LineItem>) {
         depositReturnItems
             .groupBy { it.refersTo }
             .forEach { (refersTo, items) ->
                 val drv = cart.getByItemId(refersTo)
-                drv?.depositReturnVoucher = drv?.depositReturnVoucher?.copy(lineItems = items)
+                drv?.depositReturnVoucher = drv.depositReturnVoucher?.copy(lineItems = items)
             }
     }
 

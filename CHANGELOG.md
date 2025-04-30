@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.80.14]
+### Fixed
+* ui: fix jumping of the shopping cart it an item is used with a deposit (APPS-2177)
+
 ## [0.80.13]
 ### Added
 * ui: Add new headline option for the payment options (APPS-1915)
