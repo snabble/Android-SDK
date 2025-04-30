@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import io.snabble.sdk.PriceFormatter
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.checkout.LineItemType
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
@@ -106,8 +105,6 @@ class ShoppingCartViewModel : ViewModel() {
             filter { it.type == ItemType.PRODUCT }.let { cartItems.addProducts(it) }
             filter { it.type == ItemType.DEPOSIT_RETURN_VOUCHER }.let { cartItems.addDepositReturnItems(it) }
 
-            filter { it.lineItem?.type == LineItemType.DEPOSIT }.let { cartItems.addDepositsToProducts(it) }
-
             filter { it.isDiscount && it.lineItem?.discountType != "cart" }.let { cartItems.addDiscountsToProducts(it) }
             filter { it.isDiscount && it.lineItem?.discountType == "cart" }.let { cartItems.addCartDiscount(it) }
         }
@@ -182,10 +179,16 @@ class ShoppingCartViewModel : ViewModel() {
                     isAgeRestricted = item.isAgeRestricted,
                     minimumAge = item.minimumAge,
                     item = item,
-                    totalPrice = item.lineItem?.totalPrice ?: 0
+                    totalPrice = item.totalPrice,
+                    deposit = item.deposit?.let {
+                        DepositItem(
+                            depositPrice = item.quantity * it.lineItem.price,
+                            depositText = it.lineItem.name,
+                            depositPriceText = priceFormatter?.format(item.quantity * it.lineItem.price)
+                        )
+                    }
                 )
-            }
-        )
+            })
     }
 
     private fun MutableList<CartItem>.addPriceModifiersAsDiscountsProducts() = replaceAll { item ->
@@ -242,23 +245,6 @@ class ShoppingCartViewModel : ViewModel() {
                 }
         }
     }
-
-    private fun MutableList<CartItem>.addDepositsToProducts(deposit: List<ShoppingCart.Item>) =
-        deposit.forEach { item ->
-            firstOrNull { it.item.id == item.lineItem?.refersTo }?.let {
-                remove(it)
-                val product = it as? ProductItem ?: return@forEach
-                add(
-                    product.copy(
-                        deposit = DepositItem(
-                            depositPriceText = item.totalPriceText,
-                            depositText = item.displayName,
-                            depositPrice = item.totalPrice
-                        ),
-                    )
-                )
-            }
-        }
 
     private fun MutableList<CartItem>.addCartDiscount(cartDiscount: List<ShoppingCart.Item>) =
         cartDiscount.forEach { item ->
