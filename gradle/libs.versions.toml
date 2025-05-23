@@ -2,7 +2,7 @@
 compileSdk = "34"
 targetSdk = "34"
 minSdk = "21"
-gradlePlugin = "8.7.2"
+gradlePlugin = "8.9.2"
 kotlin = "2.0.20"
 navigation = "2.8.1"
 snabbleSdk = "0.69.6"
