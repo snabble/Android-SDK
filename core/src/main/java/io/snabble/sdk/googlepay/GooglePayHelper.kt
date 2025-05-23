@@ -130,9 +130,7 @@ class GooglePayHelper(
 
     private fun getPaymentDataRequest(price: String): JsonObject {
         return baseRequest().apply {
-            add("allowedPaymentMethods", JsonArray().apply {
-                add(cardPaymentMethod())
-            })
+            add("allowedPaymentMethods", allowedPaymentMethods)
             add("transactionInfo", getTransactionInfo(price))
             add("merchantInfo", getMerchantInfo())
         }
@@ -140,11 +138,13 @@ class GooglePayHelper(
 
     private fun isReadyToPayRequest(): JsonObject {
         return baseRequest().apply {
-            add("allowedPaymentMethods", JsonArray().apply {
-                add(cardPaymentMethod())
-            })
+            add("allowedPaymentMethods", allowedPaymentMethods)
             addProperty("existingPaymentMethodRequired", false)
         }
+    }
+
+    val allowedPaymentMethods = JsonArray().apply {
+        add(cardPaymentMethod())
     }
 
     /**
