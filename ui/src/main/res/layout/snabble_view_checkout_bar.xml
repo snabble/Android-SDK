@@ -107,12 +107,12 @@
                 android:text="@string/Snabble.Shoppingcart.BuyProducts.now"
                 app:strokeColor="@drawable/snabble_stroke" />
 
-            <include android:id="@+id/google_pay_button_layout"
+            <com.google.android.gms.wallet.button.PayButton
+                android:id="@+id/google_pay_button_layout"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                layout="@layout/snabble_buy_with_googlepay_button_no_shadow"/>
+                android:layout_marginEnd="16dp"/>
         </LinearLayout>
 
         <io.snabble.sdk.ui.remotetheme.SnabblePrimaryButton
