@@ -11,14 +11,13 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import io.snabble.sdk.PaymentMethod;
@@ -63,8 +62,8 @@ public class PaymentSelectionHelper {
     private PaymentCredentials lastAddedPaymentCredentials;
     private boolean googlePayIsReady = false;
 
-    @NotNull
-    private PaymentMethodMetaDataHelper metaDataHelper;
+    @NonNull
+    private final PaymentMethodMetaDataHelper metaDataHelper;
 
     private final ShoppingCartListener shoppingCartListener =
             new SimpleShoppingCartListener() {
@@ -121,7 +120,7 @@ public class PaymentSelectionHelper {
 
         updateEntries();
 
-        if (entries.size() > 0 && cart.size() > 0) {
+        if (!entries.isEmpty() && !cart.isEmpty()) {
             if (lastAddedPaymentCredentials != null) {
                 for (Entry e : entries) {
                     if (e.paymentCredentials != null) {
@@ -200,7 +199,7 @@ public class PaymentSelectionHelper {
                 GooglePayHelper googlePayHelper = project.getGooglePayHelper();
                 if (googlePayHelper != null) {
                     for (PaymentMethodInfo info : availablePaymentMethods) {
-                        if (info.getId().equals(PaymentMethod.GOOGLE_PAY.getId())) {
+                        if (Objects.equals(info.getId(), PaymentMethod.GOOGLE_PAY.getId())) {
                             googlePayHelper.setUseTestEnvironment(info.isTesting());
                             break;
                         }
@@ -429,7 +428,7 @@ public class PaymentSelectionHelper {
     }
 
     public boolean shouldShowSmallSelector() {
-        return cart.size() > 0 && (selectedEntry.getValue() != null || !shouldShowBigSelector());
+        return !cart.isEmpty() && (selectedEntry.getValue() != null || !shouldShowBigSelector());
     }
 
     private void setSelectedEntry(Entry entry) {
