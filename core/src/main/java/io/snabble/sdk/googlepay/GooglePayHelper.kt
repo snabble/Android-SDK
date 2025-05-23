@@ -5,9 +5,12 @@ import android.content.Context
 import android.content.Intent
 import android.util.Base64
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RestrictTo
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.Status
+import com.google.android.gms.tasks.Task
 import com.google.android.gms.wallet.AutoResolveHelper
 import com.google.android.gms.wallet.IsReadyToPayRequest
 import com.google.android.gms.wallet.PaymentData
@@ -31,6 +34,7 @@ class GooglePayHelper(
     val project: Project,
     val context: Context,
 ) {
+    var paymentDataLauncher: ActivityResultLauncher<Task<PaymentData>>? = null
     private var googlePayClient: PaymentsClient = createPaymentsClient(false)
 
     private fun createPaymentsClient(useTestEnvironment: Boolean): PaymentsClient {
@@ -71,7 +75,7 @@ class GooglePayHelper(
         add("CRYPTOGRAM_3DS")
     }
 
-    private fun baseRequest() : JsonObject {
+    private fun baseRequest(): JsonObject {
         return JsonObject().apply {
             addProperty("apiVersion", 2)
             addProperty("apiVersionMinor", 0)
@@ -177,75 +181,61 @@ class GooglePayHelper(
      */
     fun requestPayment(priceToPay: Int): Boolean {
         val priceToPayDecimal = priceToPay.toBigDecimal().divide(100.toBigDecimal())
-        val intent = Intent(context, GooglePayHelperActivity::class.java).apply {
-            setPackage(context.packageName)
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            putExtra(GooglePayHelperActivity.INTENT_EXTRA_PROJECT_ID, project.id)
-            putExtra(GooglePayHelperActivity.INTENT_EXTRA_PAYMENT_PRICE_TO_PAY, priceToPayDecimal.toString())
-        }
-        context.startActivity(intent)
+        val task = getLoadPaymentDataTask(priceToPayDecimal.toString())
+        task.addOnCompleteListener(paymentDataLauncher!!::launch)
 
         return false
     }
 
-    /**
-     * Starts a payment data request to google pay
-     */
-    @SuppressWarnings("deprecation")
-    fun loadPaymentData(priceToPay: String, activity: Activity, requestCode: Int): Boolean {
-        val paymentDataRequestJson = getPaymentDataRequest(priceToPay)
 
-        val request = PaymentDataRequest.fromJson(GsonHolder.get().toJson(paymentDataRequestJson))
-        val googlePayClient = googlePayClient
-        val task = googlePayClient.loadPaymentData(request)
-        // TODO: https://github.com/Adyen/adyen-android/issues/771#issuecomment-1640221564
-        AutoResolveHelper.resolveTask(task, activity, requestCode)
-        return true
+    private fun getLoadPaymentDataTask(priceLabel: String): Task<PaymentData> {
+        val paymentDataRequestJson = getPaymentDataRequest(priceLabel)
+        val request = PaymentDataRequest.fromJson(paymentDataRequestJson.toString())
+        return googlePayClient.loadPaymentData(request)
     }
 
-    fun onActivityResult(resultCode: Int, data: Intent?) {
+    fun onResult(resultCode: Status, paymentData: PaymentData?) {
         when (resultCode) {
-            AppCompatActivity.RESULT_OK -> {
-                data?.let { intent ->
-                    try {
-                        val paymentData = PaymentData.getFromIntent(intent)?.toJson()
-                        val jsonPaymentData = GsonHolder.get().fromJson(paymentData, JsonObject::class.java)
+            Status.RESULT_SUCCESS -> {
+                try {
+                    val jsonPaymentData = GsonHolder.get().fromJson(paymentData?.toJson(), JsonObject::class.java)
 
-                        val token = jsonPaymentData.get("paymentMethodData")
-                            ?.asJsonObject?.get("tokenizationData")
-                            ?.asJsonObject?.get("token")
-                            ?.asString
+                    val token = jsonPaymentData.get("paymentMethodData")
+                        ?.asJsonObject?.get("tokenizationData")
+                        ?.asJsonObject?.get("token")
+                        ?.asString
 
-                        if (token == null) {
-                            project.checkout.abortError()
-                        } else {
-                            val base64Token = String(Base64.encode(token.toByteArray(), Base64.NO_WRAP))
-                            val address: BillingAddress? = jsonPaymentData.get("paymentMethodData")
-                                ?.asJsonObject?.get("info")
-                                ?.asJsonObject?.get("billingAddress")
-                                ?.let { GsonHolder.get().fromJson(it, BillingAddress::class.java) }
-                            project.checkout.authorizePayment(
-                                AuthorizePaymentRequest(
-                                    encryptedOrigin = base64Token,
-                                    name = address?.name,
-                                    countryCode = address?.countryCode,
-                                    state = address?.administrativeArea
-                                )
-                            )
-                        }
-                    } catch (e: Exception) {
+                    if (token == null) {
                         project.checkout.abortError()
+                    } else {
+                        val base64Token = String(Base64.encode(token.toByteArray(), Base64.NO_WRAP))
+                        val address: BillingAddress? = jsonPaymentData.get("paymentMethodData")
+                            ?.asJsonObject?.get("info")
+                            ?.asJsonObject?.get("billingAddress")
+                            ?.let { GsonHolder.get().fromJson(it, BillingAddress::class.java) }
+                        project.checkout.authorizePayment(
+                            AuthorizePaymentRequest(
+                                encryptedOrigin = base64Token,
+                                name = address?.name,
+                                countryCode = address?.countryCode,
+                                state = address?.administrativeArea
+                            )
+                        )
                     }
+                } catch (e: Exception) {
+                    project.checkout.abortError()
                 }
             }
-            AppCompatActivity.RESULT_CANCELED -> {
+
+            Status.RESULT_CANCELED -> {
                 project.checkout.abort()
             }
-            AutoResolveHelper.RESULT_ERROR -> {
+
+            else -> {
                 project.checkout.abortError()
 
-                AutoResolveHelper.getStatusFromIntent(data)?.let {
-                    Toast.makeText(context, "Google Pay Error ${it.statusCode}", Toast.LENGTH_LONG).show()
+                paymentData?.let {
+                    Toast.makeText(context, "Google Pay Error", Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -255,5 +245,6 @@ class GooglePayHelper(
 private data class BillingAddress(val name: String?, val countryCode: String?, val administrativeArea: String?)
 
 interface IsReadyToPayListener {
+
     fun isReadyToPay(isReadyToPay: Boolean)
 }

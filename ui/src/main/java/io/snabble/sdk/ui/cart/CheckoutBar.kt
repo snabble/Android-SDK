@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.AttributeSet
+import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.widget.ArrayAdapter
@@ -17,9 +18,12 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.compose.foundation.layout.add
 import androidx.core.view.isVisible
 import androidx.core.view.marginTop
 import androidx.fragment.app.FragmentActivity
+import com.google.android.gms.wallet.button.ButtonOptions
+import com.google.android.gms.wallet.button.PayButton
 import io.snabble.accessibility.accessibility
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Project
@@ -32,6 +36,7 @@ import io.snabble.sdk.checkout.DepositReturnVoucherState
 import io.snabble.sdk.config.ExternalBillingSubjectLength
 import io.snabble.sdk.config.ProjectId
 import io.snabble.sdk.extensions.getApplicationInfoCompat
+import io.snabble.sdk.googlepay.HeadlessGooglePlayFragment
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
@@ -69,13 +74,14 @@ open class CheckoutBar @JvmOverloads constructor(
     private val payButton = findViewById<Button>(R.id.pay)
     private val priceSum = findViewById<TextView>(R.id.price_sum)
     private val sumContainer = findViewById<View>(R.id.sum_container)
-    private val googlePayButtonLayout = findViewById<View>(R.id.google_pay_button_layout)
+    private val googlePayButtonLayout = findViewById<PayButton>(R.id.google_pay_button_layout)
     private val paymentSelector = findViewById<View>(R.id.payment_selector)
     private val paymentIcon = findViewById<ImageView>(R.id.payment_icon)
     private val paymentActive = findViewById<View>(R.id.payment_active)
     private val articleCount = findViewById<TextView>(R.id.article_count)
 
     private lateinit var progressDialog: DelayedProgressDialog
+    private var headlessFragment: HeadlessGooglePlayFragment? = null
 
     private val paymentSelectionHelper by lazy { PaymentSelectionHelper.getInstance() }
     private lateinit var project: Project
@@ -104,6 +110,36 @@ open class CheckoutBar @JvmOverloads constructor(
         }
     }
 
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        if (headlessFragment == null) {
+            val fragmentManager = requireFragmentActivity().supportFragmentManager
+            var foundFragment =
+                fragmentManager.findFragmentByTag(HeadlessGooglePlayFragment.TAG) as? HeadlessGooglePlayFragment
+
+            if (foundFragment == null) {
+                foundFragment = HeadlessGooglePlayFragment.newInstance(Snabble.checkedInProject.value?.id)
+                fragmentManager.beginTransaction()
+                    .add(foundFragment, HeadlessGooglePlayFragment.TAG)
+                    .commitNowAllowingStateLoss()
+            }
+            headlessFragment = foundFragment
+        }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        val activity = requireFragmentActivity()
+        headlessFragment?.let { fragment ->
+            if (!activity.isChangingConfigurations) {
+                activity.supportFragmentManager.beginTransaction()
+                    .remove(fragment)
+                    .commitAllowingStateLoss()
+            }
+        }
+        headlessFragment = null
+    }
+
     private fun initBusinessLogic(project: Project) {
         if (this::project.isInitialized && this.project == project) {
             return
@@ -128,29 +164,12 @@ open class CheckoutBar @JvmOverloads constructor(
             handleButtonClick()
         }
 
-        googlePayButtonLayout.setOneShotClickListener {
-            val packageName = "com.google.android.apps.walletnfcrel"
-            try {
-                context.packageManager.getApplicationInfoCompat(packageName, PackageManager.GET_ACTIVITIES)
-                handleButtonClick()
-            } catch (ignored: PackageManager.NameNotFoundException) {
-                try {
-                    context.startActivity(
-                        Intent(
-                            Intent.ACTION_VIEW,
-                            Uri.parse("market://details?id=$packageName")
-                        )
-                    )
-                } catch (ignored: ActivityNotFoundException) {
-                    context.startActivity(
-                        Intent(
-                            Intent.ACTION_VIEW,
-                            Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
-                        )
-                    )
-                }
-            }
+        project.googlePayHelper?.allowedPaymentMethods?.let { allowedPaymentMethods ->
+            googlePayButtonLayout.initialize(
+                ButtonOptions.newBuilder().setAllowedPaymentMethods(allowedPaymentMethods.toString()).build()
+            )
         }
+        googlePayButtonLayout.setOnClickListener { handleButtonClick() }
 
         cart.addListener(cartChangeListener)
         update()
@@ -235,7 +254,7 @@ open class CheckoutBar @JvmOverloads constructor(
                 if (paymentSelectionHelper.shouldShowGooglePayButton()) {
                     showBigSelector = false
                     payButton.isVisible = false
-                    googlePayButtonLayout.isVisible = !showBigSelector
+                    googlePayButtonLayout.isVisible = true
                 } else {
                     payButton.isVisible = !showBigSelector
                     googlePayButtonLayout.isVisible = false
@@ -289,7 +308,8 @@ open class CheckoutBar @JvmOverloads constructor(
                     PaymentInputViewHelper.openPaymentInputView(context, entry.paymentMethod, project.id)
                 } else {
                     Telemetry.event(Telemetry.Event.ClickCheckout)
-                    SEPALegalInfoHelper.showSEPALegalInfoIfNeeded(context,
+                    SEPALegalInfoHelper.showSEPALegalInfoIfNeeded(
+                        context,
                         entry.paymentMethod,
                         object : OneShotClickListener() {
                             override fun click() {
@@ -340,36 +360,40 @@ open class CheckoutBar @JvmOverloads constructor(
                 }
                 if (entry.paymentCredentials != null) {
                     progressDialog.dismiss()
-                    if (entry.paymentMethod == PaymentMethod.TEGUT_EMPLOYEE_CARD) {
-                        project.checkout.pay(entry.paymentMethod, entry.paymentCredentials)
-                    } else if (entry.paymentMethod == PaymentMethod.EXTERNAL_BILLING) {
-                        SubjectAlertDialog(context, maxSubjectLength = getMaxSubjectLength())
-                            .addMessageClickListener { message ->
-                                entry.paymentCredentials.additionalData["subject"] = message
-                                project.checkout.pay(entry.paymentMethod, entry.paymentCredentials)
-                            }
-                            .addSkipClickListener {
-                                project.checkout.pay(
-                                    entry.paymentMethod,
-                                    entry.paymentCredentials
-                                )
-                            }
-                            .setOnCanceledListener {
-                                project.checkout.abort()
-                            }
-                            .show()
-                    } else {
-                        Keyguard.unlock(UIUtils.getHostFragmentActivity(context), object : Keyguard.Callback {
-                            override fun success() {
-                                progressDialog.showAfterDelay(300)
-                                project.checkout.pay(entry.paymentMethod, entry.paymentCredentials)
-                            }
+                    when (entry.paymentMethod) {
+                        PaymentMethod.TEGUT_EMPLOYEE_CARD -> {
+                            project.checkout.pay(entry.paymentMethod, entry.paymentCredentials)
+                        }
+                        PaymentMethod.EXTERNAL_BILLING -> {
+                            SubjectAlertDialog(context, maxSubjectLength = getMaxSubjectLength())
+                                .addMessageClickListener { message ->
+                                    entry.paymentCredentials.additionalData["subject"] = message
+                                    project.checkout.pay(entry.paymentMethod, entry.paymentCredentials)
+                                }
+                                .addSkipClickListener {
+                                    project.checkout.pay(
+                                        entry.paymentMethod,
+                                        entry.paymentCredentials
+                                    )
+                                }
+                                .setOnCanceledListener {
+                                    project.checkout.abort()
+                                }
+                                .show()
+                        }
+                        else -> {
+                            Keyguard.unlock(UIUtils.getHostFragmentActivity(context), object : Keyguard.Callback {
+                                override fun success() {
+                                    progressDialog.showAfterDelay(300)
+                                    project.checkout.pay(entry.paymentMethod, entry.paymentCredentials)
+                                }
 
-                            override fun error() {
-                                progressDialog.dismiss()
-                                project.checkout.reset()
-                            }
-                        })
+                                override fun error() {
+                                    progressDialog.dismiss()
+                                    project.checkout.reset()
+                                }
+                            })
+                        }
                     }
                 } else {
                     progressDialog.showAfterDelay(300)
@@ -407,7 +431,7 @@ open class CheckoutBar @JvmOverloads constructor(
 
             CheckoutState.INVALID_PRODUCTS -> {
                 val invalidProducts = project.checkout.invalidProducts
-                if (invalidProducts != null && invalidProducts.size > 0) {
+                if (!invalidProducts.isNullOrEmpty()) {
                     val res = resources
                     val sb = StringBuilder()
                     if (invalidProducts.size == 1) {
