@@ -2,7 +2,6 @@ package io.snabble.sdk
 
 import android.os.Parcel
 import android.os.Parcelable
-import androidx.annotation.Nullable
 import com.google.gson.annotations.SerializedName
 
 /**
@@ -178,7 +177,7 @@ enum class PaymentMethod(
 
         @JvmField
         val CREATOR = object : Parcelable.Creator<PaymentMethod> {
-            override fun createFromParcel(parcel: Parcel) = PaymentMethod.values()[parcel.readInt()]
+            override fun createFromParcel(parcel: Parcel) = PaymentMethod.entries[parcel.readInt()]
             override fun newArray(size: Int) = arrayOfNulls<PaymentMethod>(size)
         }
 
@@ -186,10 +185,8 @@ enum class PaymentMethod(
          * Converts a payment method from its string representation.
          */
         @JvmStatic
-        @Nullable
         fun fromString(value: String): PaymentMethod? {
-            val values = values()
-            for (pm in values) {
+            for (pm in entries) {
                 if (pm.id == value) {
                     return pm
                 }
@@ -201,9 +198,8 @@ enum class PaymentMethod(
          * Converts a payment method from its string representation and a list of origins.
          */
         @JvmStatic
-        @Nullable
         fun fromIdAndOrigin(id: String, origin: List<String>): PaymentMethod? {
-            values().forEach { pm ->
+            entries.forEach { pm ->
                 if (pm.id == id && pm.id == TEGUT_EMPLOYEE_CARD.id) {
                     when (origin[0]) {
                         "tegutEmployeeID" -> return TEGUT_EMPLOYEE_CARD
