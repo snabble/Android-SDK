@@ -183,9 +183,7 @@ class GooglePayHelper(
         val priceToPayDecimal = priceToPay.toBigDecimal().divide(100.toBigDecimal())
         val task = getLoadPaymentDataTask(priceToPayDecimal.toString())
         task.addOnCompleteListener {
-            println("### addOnCompleteListener ${paymentDataLauncher != null}")
             paymentDataLauncher!!.launch(it)
-            println("### addOnCompleteListener finished")
         }
 
         return false
@@ -199,7 +197,6 @@ class GooglePayHelper(
     }
 
     fun onResult(resultCode: Status, paymentData: PaymentData?) {
-        println("### result...")
         when (resultCode) {
             Status.RESULT_SUCCESS -> {
                 try {
