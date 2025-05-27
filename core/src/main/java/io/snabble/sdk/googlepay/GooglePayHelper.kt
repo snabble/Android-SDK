@@ -147,7 +147,7 @@ class GooglePayHelper(
         }
     }
 
-    val allowedPaymentMethods = JsonArray().apply {
+    val allowedPaymentMethods; get() = JsonArray().apply {
         add(cardPaymentMethod())
     }
 
@@ -182,7 +182,11 @@ class GooglePayHelper(
     fun requestPayment(priceToPay: Int): Boolean {
         val priceToPayDecimal = priceToPay.toBigDecimal().divide(100.toBigDecimal())
         val task = getLoadPaymentDataTask(priceToPayDecimal.toString())
-        task.addOnCompleteListener(paymentDataLauncher!!::launch)
+        task.addOnCompleteListener {
+            println("### addOnCompleteListener ${paymentDataLauncher != null}")
+            paymentDataLauncher!!.launch(it)
+            println("### addOnCompleteListener finished")
+        }
 
         return false
     }
@@ -195,6 +199,7 @@ class GooglePayHelper(
     }
 
     fun onResult(resultCode: Status, paymentData: PaymentData?) {
+        println("### result...")
         when (resultCode) {
             Status.RESULT_SUCCESS -> {
                 try {
