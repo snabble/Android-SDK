@@ -9,7 +9,8 @@ All notable changes to this project will be documented in this file.
 
 ## [0.80.15]
 ### Changed
-* core: Migrate custom Google Pay Button to Google's PayButton
+* ui: Migrate custom GooglePay button to Google's PayButton
+* ui: Removed old (and now unused) GooglePay drawables
 * code: Migrate from old activity result method to `registerForActivityResult` with a `HeadlessGooglePlayFragment` 
 
 ## [0.80.14]
