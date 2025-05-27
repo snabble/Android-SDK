@@ -7,6 +7,11 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.80.15]
+### Changed
+* core: Migrate custom Google Pay Button to Google's PayButton
+* code: Migrate from old activity result method to `registerForActivityResult` with a `HeadlessGooglePlayFragment` 
+
 ## [0.80.14]
 ### Fixed
 * ui: fix jumping of the shopping cart it an item is used with a deposit (APPS-2177)
