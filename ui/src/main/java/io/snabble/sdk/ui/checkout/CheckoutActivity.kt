@@ -298,4 +298,17 @@ class CheckoutActivity : FragmentActivity() {
             headlessFragment = foundFragment
         }
     }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        val activity = requireFragmentActivity()
+        headlessFragment?.let { fragment ->
+            if (!activity.isChangingConfigurations) {
+                activity.supportFragmentManager.beginTransaction()
+                    .remove(fragment)
+                    .commitAllowingStateLoss()
+            }
+        }
+        headlessFragment = null
+    }
 }
