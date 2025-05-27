@@ -169,7 +169,7 @@ open class CheckoutBar @JvmOverloads constructor(
                 ButtonOptions.newBuilder().setAllowedPaymentMethods(allowedPaymentMethods.toString()).build()
             )
         }
-        googlePayButtonLayout.setOnClickListener { handleButtonClick() }
+        googlePayButtonLayout.setOneShotClickListener { handleButtonClick() }
 
         cart.addListener(cartChangeListener)
         update()
