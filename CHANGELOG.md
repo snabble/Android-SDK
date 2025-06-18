@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.80.16]
+### Added
+* core: Add support for different time formats in the receipts API 
+
 ## [0.80.15]
 ### Changed
 * ui: Migrate custom GooglePay button to Google's PayButton
