@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -61,11 +62,18 @@ public class ReceiptsApi {
         void failure();
     }
 
-    private final SimpleDateFormat simpleDateFormat;
+    private final List<SimpleDateFormat> formats = Arrays.asList(
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US),
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US),
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US)
+    );
 
     public ReceiptsApi() {
-        simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
-        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        TimeZone utc = TimeZone.getTimeZone("UTC");
+        for (SimpleDateFormat format : formats) {
+            format.setTimeZone(utc);
+            format.setLenient(false);
+        }
     }
 
     /**
@@ -147,7 +155,7 @@ public class ReceiptsApi {
                                 ReceiptInfo receiptInfo = new ReceiptInfo(
                                         apiOrder.id,
                                         apiOrder.project,
-                                        simpleDateFormat.parse(apiOrder.date).getTime(),
+                                        parseDate(apiOrder.date).getTime(),
                                         url != null ? snabble.absoluteUrl(url) : null,
                                         apiOrder.shopName,
                                         priceFormatter.format(apiOrder.price),
@@ -177,5 +185,18 @@ public class ReceiptsApi {
         } else {
             receiptUpdateCallback.failure();
         }
+    }
+
+    private Date parseDate(String dateStr) throws ParseException {
+        ParseException lastException = null;
+        for (SimpleDateFormat format : formats) {
+            try {
+                return format.parse(dateStr);
+            } catch (ParseException e) {
+                lastException = e;
+            }
+        }
+        assert lastException != null;
+        throw lastException;
     }
 }
