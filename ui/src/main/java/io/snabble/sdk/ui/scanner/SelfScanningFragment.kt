@@ -24,6 +24,9 @@ import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.Lifecycle
+import com.google.android.gms.wallet.PaymentData
+import com.google.android.gms.wallet.contract.ApiTaskResult
+import com.google.android.gms.wallet.contract.TaskResultContracts
 import com.google.android.material.snackbar.Snackbar
 import io.snabble.accessibility.focusForAccessibility
 import io.snabble.accessibility.isTalkBackActive
@@ -67,6 +70,22 @@ open class SelfScanningFragment : BaseFragment(), MenuProvider {
                 showPermissionRationale()
             }
         }
+
+    init {
+        with(Snabble.checkedInProject.value?.googlePayHelper) {
+            this?.paymentDataLauncher =
+                this@SelfScanningFragment.registerForActivityResult(
+                    /* contract = */ TaskResultContracts.GetPaymentDataResult()
+                ) { result: ApiTaskResult<PaymentData?>? ->
+                    result?.let {
+                        onResult(
+                            resultCode = it.status,
+                            paymentData = it.result
+                        )
+                    }
+                }
+        }
+    }
 
     /**
      * Add a listener to get notified if the camera permission has been granted

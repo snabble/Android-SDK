@@ -183,7 +183,7 @@ class GooglePayHelper(
         val priceToPayDecimal = priceToPay.toBigDecimal().divide(100.toBigDecimal())
         val task = getLoadPaymentDataTask(priceToPayDecimal.toString())
         task.addOnCompleteListener {
-            paymentDataLauncher!!.launch(it)
+            paymentDataLauncher?.launch(it)
         }
 
         return false
