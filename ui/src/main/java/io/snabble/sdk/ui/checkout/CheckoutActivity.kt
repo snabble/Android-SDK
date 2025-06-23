@@ -3,7 +3,6 @@ package io.snabble.sdk.ui.checkout
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -24,17 +23,18 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
+import com.google.android.gms.wallet.PaymentData
+import com.google.android.gms.wallet.contract.ApiTaskResult
+import com.google.android.gms.wallet.contract.TaskResultContracts
 import com.google.android.material.appbar.MaterialToolbar
 import io.snabble.sdk.InitializationState
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Snabble
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.checkout.CheckoutState
-import io.snabble.sdk.googlepay.HeadlessGooglePlayFragment
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.remotetheme.onToolBarColorForProject
 import io.snabble.sdk.ui.remotetheme.toolBarColorForProject
-import io.snabble.sdk.ui.utils.requireFragmentActivity
 import io.snabble.sdk.utils.Logger
 
 class CheckoutActivity : FragmentActivity() {
@@ -71,7 +71,22 @@ class CheckoutActivity : FragmentActivity() {
     private lateinit var navGraph: NavGraph
     private lateinit var navController: NavController
     private var checkout: Checkout? = null
-    private var headlessFragment: HeadlessGooglePlayFragment? = null
+
+    init {
+        with(Snabble.checkedInProject.value?.googlePayHelper) {
+            this?.paymentDataLauncher =
+                this@CheckoutActivity.registerForActivityResult(
+                    /* contract = */ TaskResultContracts.GetPaymentDataResult()
+                ) { result: ApiTaskResult<PaymentData?>? ->
+                    result?.let {
+                        onResult(
+                            resultCode = it.status,
+                            paymentData = it.result
+                        )
+                    }
+                }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -280,35 +295,5 @@ class CheckoutActivity : FragmentActivity() {
         navController.navigate(navigationId, null, NavOptions.Builder().apply {
             setPopUpTo(currentNavigationId ?: 0, true)
         }.build())
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        if (headlessFragment == null) {
-            val fragmentManager = requireFragmentActivity().supportFragmentManager
-            var foundFragment =
-                fragmentManager.findFragmentByTag(HeadlessGooglePlayFragment.TAG) as? HeadlessGooglePlayFragment
-
-            if (foundFragment == null) {
-                foundFragment = HeadlessGooglePlayFragment.newInstance(Snabble.checkedInProject.value?.id)
-                fragmentManager.beginTransaction()
-                    .add(foundFragment, HeadlessGooglePlayFragment.TAG)
-                    .commitNowAllowingStateLoss()
-            }
-            headlessFragment = foundFragment
-        }
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        val activity = requireFragmentActivity()
-        headlessFragment?.let { fragment ->
-            if (!activity.isChangingConfigurations) {
-                activity.supportFragmentManager.beginTransaction()
-                    .remove(fragment)
-                    .commitAllowingStateLoss()
-            }
-        }
-        headlessFragment = null
     }
 }

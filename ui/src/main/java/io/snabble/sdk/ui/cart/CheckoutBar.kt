@@ -1,14 +1,9 @@
 package io.snabble.sdk.ui.cart
 
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.util.AttributeSet
-import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.widget.ArrayAdapter
@@ -18,7 +13,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.compose.foundation.layout.add
 import androidx.core.view.isVisible
 import androidx.core.view.marginTop
 import androidx.fragment.app.FragmentActivity
@@ -35,8 +29,6 @@ import io.snabble.sdk.checkout.DepositReturnVoucher
 import io.snabble.sdk.checkout.DepositReturnVoucherState
 import io.snabble.sdk.config.ExternalBillingSubjectLength
 import io.snabble.sdk.config.ProjectId
-import io.snabble.sdk.extensions.getApplicationInfoCompat
-import io.snabble.sdk.googlepay.HeadlessGooglePlayFragment
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
@@ -81,7 +73,6 @@ open class CheckoutBar @JvmOverloads constructor(
     private val articleCount = findViewById<TextView>(R.id.article_count)
 
     private lateinit var progressDialog: DelayedProgressDialog
-    private var headlessFragment: HeadlessGooglePlayFragment? = null
 
     private val paymentSelectionHelper by lazy { PaymentSelectionHelper.getInstance() }
     private lateinit var project: Project
@@ -108,36 +99,6 @@ open class CheckoutBar @JvmOverloads constructor(
                 initBusinessLogic(it)
             }
         }
-    }
-
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        if (headlessFragment == null) {
-            val fragmentManager = requireFragmentActivity().supportFragmentManager
-            var foundFragment =
-                fragmentManager.findFragmentByTag(HeadlessGooglePlayFragment.TAG) as? HeadlessGooglePlayFragment
-
-            if (foundFragment == null) {
-                foundFragment = HeadlessGooglePlayFragment.newInstance(Snabble.checkedInProject.value?.id)
-                fragmentManager.beginTransaction()
-                    .add(foundFragment, HeadlessGooglePlayFragment.TAG)
-                    .commitNowAllowingStateLoss()
-            }
-            headlessFragment = foundFragment
-        }
-    }
-
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        val activity = requireFragmentActivity()
-        headlessFragment?.let { fragment ->
-            if (!activity.isChangingConfigurations) {
-                activity.supportFragmentManager.beginTransaction()
-                    .remove(fragment)
-                    .commitAllowingStateLoss()
-            }
-        }
-        headlessFragment = null
     }
 
     private fun initBusinessLogic(project: Project) {
