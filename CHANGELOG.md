@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.80.17]
+### Changed
+* core / ui: replace headless fragment with different result launcher for google pay
+
 ## [0.80.16]
 ### Added
 * core: Add support for different time formats in the receipts API 
