@@ -43,7 +43,7 @@ open class OnboardingFragment : Fragment() {
         val headerImage = view.findViewById<ImageView>(R.id.image_header)
         headerImage.resolveImageOrHide(model.configuration?.imageSource)
 
-        viewPager = view.findViewById<ViewPager2?>(R.id.view_pager).apply {
+        viewPager = view.findViewById<ViewPager2>(R.id.view_pager).apply {
             adapter = StepAdapter(model)
             offscreenPageLimit = 1
         }

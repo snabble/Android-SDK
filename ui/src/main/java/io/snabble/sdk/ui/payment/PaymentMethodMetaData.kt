@@ -71,6 +71,6 @@ class PaymentMethodMetaDataHelper(
 }
 
 data class PaymentMethodMetaData(
-    @DrawableRes val iconResId: Int,
+    @param:DrawableRes val iconResId: Int,
     val label: String
 )

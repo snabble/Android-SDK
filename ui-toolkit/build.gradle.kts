@@ -1,5 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id(libs.plugins.androidLibrary.get().pluginId)
     id(libs.plugins.kotlin.android.get().pluginId)
@@ -52,12 +54,13 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        freeCompilerArgs = listOf(
-            *kotlinOptions.freeCompilerArgs.toTypedArray(),
-            "-Xjvm-default=all"
-        )
-        jvmTarget = "17"
+    kotlin {
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_17
+            freeCompilerArgs.addAll(
+                "-Xjvm-default=all"
+            )
+        }
     }
 
     buildFeatures {
@@ -97,6 +100,7 @@ dependencies {
     implementation(libs.sebaslogen.resaca)
 
     implementation(libs.bundles.compose)
+    implementation(libs.androidx.swiperefreshlayout)
     debugImplementation(libs.bundles.compose.debug)
 
     implementation(libs.bundles.koin)

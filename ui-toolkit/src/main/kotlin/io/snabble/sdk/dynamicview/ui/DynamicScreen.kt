@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.snabble.sdk.dynamicview.domain.model.Configuration
 import io.snabble.sdk.dynamicview.domain.model.DynamicConfig
 import io.snabble.sdk.dynamicview.domain.model.ImageItem
@@ -55,7 +56,9 @@ internal fun DynamicScreen(
 @Composable
 private fun DynamicScreenPreviewWith(config: DynamicConfig) {
     ThemeWrapper {
-        DynamicScreen(dynamicViewModel = DynamicViewModel().apply { setConfig(config) }, modifier = Modifier)
+        val viewModel: DynamicViewModel = viewModel()
+        viewModel.apply { setConfig(config) }
+        DynamicScreen(dynamicViewModel = viewModel, modifier = Modifier)
     }
 }
 

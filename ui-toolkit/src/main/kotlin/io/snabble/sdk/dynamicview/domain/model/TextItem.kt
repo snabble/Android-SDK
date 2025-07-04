@@ -5,7 +5,7 @@ import androidx.annotation.ColorInt
 data class TextItem(
     override val id: String,
     val text: String,
-    @ColorInt val textColor: Int? = null,
+    @param:ColorInt val textColor: Int? = null,
     val textStyle: String? = null,
     val showDisclosure: Boolean,
     val padding: Padding,

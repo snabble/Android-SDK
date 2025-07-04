@@ -8,8 +8,8 @@ import io.snabble.sdk.ui.cart.shoppingcart.CartItem
 
 internal data class CartDiscountItem(
     override val item: ShoppingCart.Item,
-    @StringRes val title: Int = R.string.Snabble_Shoppingcart_discounts,
+    @param:StringRes val title: Int = R.string.Snabble_Shoppingcart_discounts,
     val discount: String,
     val name: String,
-    @DrawableRes val imageResId: Int = R.drawable.snabble_ic_percent
+    @param:DrawableRes val imageResId: Int = R.drawable.snabble_ic_percent
 ) : CartItem

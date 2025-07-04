@@ -1,22 +1,23 @@
 package io.snabble.sdk.ui.checkout
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isVisible
-import androidx.core.view.updateLayoutParams
-import androidx.core.view.updateMargins
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
@@ -41,6 +42,9 @@ class CheckoutActivity : FragmentActivity() {
     companion object {
 
         const val ARG_PROJECT_ID = "projectId"
+
+        private const val HSV_COLOR_SIZE = 3
+        private const val DARKEN_FACTOR = 0.2f
 
         @JvmStatic
         fun startCheckoutFlow(context: Context, newTask: Boolean = false) {
@@ -157,7 +161,7 @@ class CheckoutActivity : FragmentActivity() {
 
     private fun setUpToolBarAndStatusBar() {
         val showToolBar = resources.getBoolean(R.bool.showToolbarInCheckout)
-        findViewById<View>(R.id.checkout_toolbar_spacer)?.isVisible = showToolBar
+        findViewById<View>(R.id.checkout_toolbar)?.isVisible = showToolBar
 
         navController.addOnDestinationChangedListener { _, _, arguments ->
             findViewById<View>(R.id.checkout_toolbar)?.isVisible =
@@ -165,19 +169,13 @@ class CheckoutActivity : FragmentActivity() {
 
             val toolBarColor =
                 this@CheckoutActivity.toolBarColorForProject(Snabble.checkedInProject.value)
+            if (showToolBar) toolBarColor?.let { applyStatusBarStyling(toolBarColor) }
             val onToolBarColor =
                 this@CheckoutActivity.onToolBarColorForProject(Snabble.checkedInProject.value)
             this.findViewById<MaterialToolbar>(R.id.checkout_toolbar).apply {
                 toolBarColor?.let(::setBackgroundColor)
                 onToolBarColor?.let(::setTitleTextColor)
             }
-            this.findViewById<FrameLayout>(R.id.checkout_toolbar_spacer).apply {
-                toolBarColor?.let(::setBackgroundColor)
-            }
-        }
-
-        if (showToolBar) {
-            applyInsets()
         }
     }
 
@@ -256,35 +254,63 @@ class CheckoutActivity : FragmentActivity() {
         }
     }
 
-    private fun applyInsets() {
-        val root = findViewById<View>(R.id.root) ?: return
-
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+    private fun applyStatusBarStyling(color: Int) {
+        val root = findViewById<View>(R.id.root)
         val windowInsetsController = WindowInsetsControllerCompat(window, root)
+        setStatusBarColor(darkenColor(color))
+        windowInsetsController.isAppearanceLightStatusBars = !isNightModeActive
+    }
 
-        ViewCompat.setOnApplyWindowInsetsListener(root) { view, windowInsets ->
-            window.statusBarColor = 0x22000000
-            windowInsetsController.isAppearanceLightStatusBars = false
+    private fun darkenColor(color: Int): Int {
+        val hsv = FloatArray(HSV_COLOR_SIZE)
+        Color.colorToHSV(color, hsv)
+        hsv[2] *= (1f - DARKEN_FACTOR) // Reduce brightness
+        return Color.HSVToColor(hsv)
+    }
 
-            val currentInsetTypeMask = listOf(
-                WindowInsetsCompat.Type.navigationBars(),
-                WindowInsetsCompat.Type.ime(),
-                WindowInsetsCompat.Type.systemBars(),
-                WindowInsetsCompat.Type.statusBars()
-            ).fold(0) { accumulator, type -> accumulator or type }
+    private fun setStatusBarColor(color: Int) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) { // API 35+
+            // For API 35+, use edge-to-edge but handle status bar coloring properly
+            WindowCompat.setDecorFitsSystemWindows(window, false)
 
-            @SuppressLint("WrongConstant")
-            val insets = windowInsets.getInsets(currentInsetTypeMask)
-            view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                updateMargins(insets.left, 0, insets.right, insets.bottom)
+            // Create a status bar overlay instead of coloring the entire root view
+            ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.root)) { view, insets ->
+                val statusBarInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+
+                // Create a colored overlay just for the status bar area
+                createStatusBarOverlay(color, statusBarInsets.top)
+
+                insets
             }
-            findViewById<View>(R.id.checkout_toolbar_spacer)?.apply {
-                setPadding(0, insets.top, 0, 0)
-            }
-
-            windowInsets.inset(insets.left, insets.top, insets.right, insets.bottom)
+        } else {
+            // For API < 35, use the traditional method
+            @Suppress("DEPRECATION")
+            window.statusBarColor = color
         }
+    }
+
+    private var statusBarOverlay: View? = null
+
+    private fun createStatusBarOverlay(color: Int, height: Int) {
+        // Remove any existing overlay
+        statusBarOverlay?.let {
+            (it.parent as? ViewGroup)?.removeView(it)
+        }
+
+        // Create new overlay positioned absolutely at the top
+        statusBarOverlay = View(this).apply {
+            setBackgroundColor(color)
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                height
+            ).apply {
+                gravity = Gravity.TOP // Position at the very top
+            }
+        }
+
+        // Add overlay to the window's decor view
+        val decorView = window.decorView as FrameLayout
+        decorView.addView(statusBarOverlay)
     }
 
     private fun onStateChanged() {
@@ -297,3 +323,14 @@ class CheckoutActivity : FragmentActivity() {
         }.build())
     }
 }
+
+val Context.isNightModeActive: Boolean
+    get() {
+        return when (AppCompatDelegate.getDefaultNightMode()) {
+            AppCompatDelegate.MODE_NIGHT_YES -> true
+            AppCompatDelegate.MODE_NIGHT_NO -> false
+            else ->
+                resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
+                        Configuration.UI_MODE_NIGHT_YES
+        }
+    }

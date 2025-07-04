@@ -29,8 +29,6 @@ buildscript {
     }
 }
 
-val sdkVersion = libs.versions.snabbleSdk.get()
-
 allprojects {
     repositories {
         google()

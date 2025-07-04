@@ -1,5 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id(libs.plugins.androidLibrary.get().pluginId)
     id(libs.plugins.kotlin.android.get().pluginId)
@@ -45,13 +47,13 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        freeCompilerArgs = listOf(
-            *kotlinOptions.freeCompilerArgs.toTypedArray(),
-            "-Xjvm-default=all",
-            "-opt-in=kotlin.RequiresOptIn"
-        )
-        jvmTarget = "17"
+    kotlin {
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_17
+            freeCompilerArgs.addAll(
+                "-Xjvm-default=all"
+            )
+        }
     }
 
     buildFeatures {

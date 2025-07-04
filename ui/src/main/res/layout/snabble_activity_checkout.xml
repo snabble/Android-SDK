@@ -7,13 +7,10 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
-    <!-- Workaround for alignment bug in MaterialToolbar when setting padding -->
-    <FrameLayout
-        android:id="@+id/checkout_toolbar_spacer"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/snabble_toolbar"
-        android:visibility="gone">
+        android:fitsSystemWindows="true">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/checkout_toolbar"
@@ -21,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:title="@string/Snabble.Payment.transferCart" />
-    </FrameLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_container"
