@@ -5,7 +5,7 @@ import androidx.annotation.ColorRes
 data class ButtonItem(
     override val id: String,
     val text: String,
-    @ColorRes val foregroundColor: Int?,
-    @ColorRes val backgroundColor: Int?,
+    @param:ColorRes val foregroundColor: Int?,
+    @param:ColorRes val backgroundColor: Int?,
     val padding: Padding,
 ) : Widget

@@ -8,7 +8,6 @@ import io.snabble.sdk.Unit
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.codes.gs1.GS1Code
 import io.snabble.sdk.ui.R
-import io.snabble.sdk.ui.scanner.ProductResolver.*
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.DelayedProgressDialog
 import io.snabble.sdk.ui.utils.UIUtils
@@ -112,9 +111,9 @@ class ProductResolver private constructor(private val context: Context, private 
             for (i in scannedCodes.indices) {
                 val scannedCode = scannedCodes[i]
                 productDatabase.findByCodeOnline(scannedCode, object : OnProductAvailableListener {
-                    override fun onProductAvailable(product: Product, wasOnlineProduct: Boolean) {
+                    override fun onProductAvailable(product: Product, wasOnline: Boolean) {
                         result.product = product
-                        result.wasOnlineProduct = wasOnlineProduct
+                        result.wasOnlineProduct = wasOnline
                         result.code = scannedCode
                         result.matchCount++
                         countDownLatch.countDown()
