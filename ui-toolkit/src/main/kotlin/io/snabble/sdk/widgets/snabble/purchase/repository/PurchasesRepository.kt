@@ -45,7 +45,7 @@ internal class PurchasesRepositoryImpl(
         val receipts = filter { it.pdfUrl != null }
         return when {
             receipts.isEmpty() -> emptyList()
-            else -> receipts.slice(0 until size.coerceAtMost(count))
+            else -> receipts.slice(0 until size.coerceAtMost(count).coerceAtMost(receipts.size))
                 .map { it.toPurchase(timeFormatter) }
         }
     }
