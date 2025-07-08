@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import io.snabble.sdk.InitializationState
 import io.snabble.sdk.Snabble
 
-abstract class BaseFragment(@LayoutRes val layoutResId: Int = 0, val waitForProject: Boolean = true) : Fragment() {
+abstract class BaseFragment(@param:LayoutRes val layoutResId: Int = 0, val waitForProject: Boolean = true) : Fragment() {
     private lateinit var sdkNotInitialized: TextView
     private lateinit var fragmentContainer: ViewGroup
 

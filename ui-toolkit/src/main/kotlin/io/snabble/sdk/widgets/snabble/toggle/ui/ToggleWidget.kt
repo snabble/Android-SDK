@@ -16,7 +16,9 @@ import org.koin.core.parameter.parametersOf
 internal fun ToggleWidget(
     modifier: Modifier = Modifier,
     model: ToggleItem,
-    viewModel: ToggleViewModel = viewModelScoped(model.key) { KoinProvider.get { parametersOf(model.key) } },
+    viewModel: ToggleViewModel = viewModelScoped<ToggleViewModel>(key = model.key) {
+        KoinProvider.get { parametersOf(model.key) }
+    },
     onAction: OnDynamicAction,
 ) {
     val isCheckedState = viewModel.toggleState.collectAsStateWithLifecycle()

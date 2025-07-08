@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id(libs.plugins.androidApplication.get().pluginId)
     id(libs.plugins.kotlin.android.get().pluginId)
@@ -17,7 +19,10 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        resourceConfigurations.addAll(listOf("de", "en"))
+        androidResources {
+            localeFilters.addAll(listOf("de", "en"))
+        }
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -35,12 +40,13 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        freeCompilerArgs = listOf(
-            *kotlinOptions.freeCompilerArgs.toTypedArray(),
-            "-Xjvm-default=all"
-        )
-        jvmTarget = "17"
+    kotlin {
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_17
+            freeCompilerArgs.addAll(
+                "-Xjvm-default=all"
+            )
+        }
     }
 
     buildFeatures {
