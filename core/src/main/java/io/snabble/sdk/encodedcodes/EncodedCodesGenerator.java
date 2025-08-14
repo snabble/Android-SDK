@@ -5,14 +5,13 @@ import androidx.annotation.RestrictTo;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.snabble.sdk.coupons.Coupon;
-import io.snabble.sdk.coupons.CouponCode;
 import io.snabble.sdk.Product;
-import io.snabble.sdk.shoppingcart.ShoppingCart;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
-import io.snabble.sdk.codes.templates.groups.EmbedGroup;
+import io.snabble.sdk.coupons.Coupon;
+import io.snabble.sdk.coupons.CouponCode;
+import io.snabble.sdk.shoppingcart.ShoppingCart;
 import io.snabble.sdk.shoppingcart.data.item.ItemType;
 
 /**
@@ -205,33 +204,7 @@ public class EncodedCodesGenerator {
                 continue;
             }
 
-            if (productInfo.product.getType() == Product.Type.UserWeighed) {
-                // encoding weight in ean
-                Product.Code[] codes = productInfo.product.getScannableCodes();
-                for (Product.Code code : codes) {
-                    if ("default".equals(code.template)) {
-                        continue;
-                    }
-
-                    CodeTemplate codeTemplate = options.project.getCodeTemplate(code.template);
-                    if (codeTemplate != null && codeTemplate.getGroup(EmbedGroup.class) != null) {
-                        ScannedCode scannedCode = codeTemplate.code(code.lookupCode)
-                                .embed(productInfo.quantity)
-                                .buildCode();
-
-                        if (options.repeatCodes) {
-                            addScannableCode(scannedCode.getCode(),
-                                    ageRestricted,
-                                    productInfo.hasManualDiscount);
-                        } else {
-                            addScannableCode("1" + options.countSeparator + scannedCode.getCode(),
-                                    ageRestricted,
-                                    productInfo.hasManualDiscount);
-                        }
-                        break;
-                    }
-                }
-            } else if (productInfo.product.getType() == Product.Type.PreWeighed) {
+            if (productInfo.product.getType() == Product.Type.PreWeighed) {
                 String transmissionCode = productInfo.product.getTransmissionCode(
                         options.project,
                         productInfo.scannedCode.getTemplateName(),

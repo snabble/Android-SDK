@@ -125,36 +125,6 @@ private fun CardWithDefaultItems() {
         )
     )
 
-
-    ShoppingCartScreen(
-        uiState = uiState,
-        onItemDeleted = {},
-        onQuantityChanged = { _, _ -> }
-    )
-}
-
-@Preview
-@Composable
-private fun CardWithUserWeightedItems() {
-    val uiState = UiState(
-        items = listOf(
-            ProductItem(
-                ShoppingCart.Item(ShoppingCart(), LineItem(name = "Cold brew Coffee"))
-                    .apply {
-                        product = Product.Builder().setType(Product.Type.UserWeighed).build()
-                    },
-                name = "Apple",
-                quantity = 1,
-                editable = true,
-                quantityText = "1",
-                totalPrice = 999,
-                totalPriceText = "9,99€",
-                unit = "g"
-            )
-        )
-    )
-
-
     ShoppingCartScreen(
         uiState = uiState,
         onItemDeleted = {},

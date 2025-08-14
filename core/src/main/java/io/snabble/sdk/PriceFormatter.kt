@@ -66,7 +66,7 @@ class PriceFormatter(private val project: Project) {
         if (referenceUnit == null) {
             referenceUnit = Unit.KILOGRAM
         }
-        if (type == Product.Type.UserWeighed || type == Product.Type.PreWeighed) {
+        if (type == Product.Type.PreWeighed) {
             formattedString += " / " + referenceUnit.displayValue
         }
         return formattedString

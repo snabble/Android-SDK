@@ -513,8 +513,7 @@ class ShoppingCart(
                     }
                 } else if (item.type == ItemType.PRODUCT) {
                     val product = item.product
-                    val weightedTypes = listOf(Type.UserWeighed, Type.PreWeighed)
-                    sum += if (weightedTypes.contains(product?.type) || product?.referenceUnit == Unit.PIECE) {
+                    sum += if (product?.type == Type.PreWeighed || product?.referenceUnit == Unit.PIECE) {
                         1
                     } else {
                         item.quantity
@@ -671,7 +670,6 @@ class ShoppingCart(
             sku = product?.sku.toString(),
             scannedCode = getSelectedScannedCode(product, scannedCode, cartItem),
             weightUnit = encodingUnit?.id,
-            weight = getCurrentWeight(cartItem, product, quantity),
             amount = getCurrentAmount(cartItem, product, quantity),
             units = getCurrentUnit(cartItem),
             price = getCurrentPrice(cartItem, scannedCode)
@@ -697,24 +695,12 @@ class ShoppingCart(
         else -> null
     }
 
-    private fun getCurrentWeight(
-        cartItem: Item,
-        product: Product?,
-        quantity: Int
-    ) = when {
-        cartItem.unit != Unit.PRICE && cartItem.unit != Unit.PIECE && cartItem.unit != null ->
-            cartItem.getEffectiveQuantity(ignoreLineItem = true)
-
-        product?.type == Type.UserWeighed -> quantity
-        else -> null
-    }
-
     private fun getCurrentAmount(
         cartItem: Item,
         product: Product?,
         quantity: Int
     ) = when {
-        cartItem.unit == null && product?.type != Type.UserWeighed -> quantity
+        cartItem.unit == null -> quantity
         else -> 1
     }
 
@@ -1018,24 +1004,20 @@ class ShoppingCart(
             this.cart = cart
             this.scannedCode = scannedCode
             this.product = product
-            if (product.type == Type.UserWeighed) {
-                quantity = 0
-            } else {
-                product.scannableCodes.forEach { code: Product.Code? ->
-                    if (code?.template != null &&
-                        code.template == scannedCode.templateName &&
-                        code.lookupCode != null &&
-                        code.lookupCode == scannedCode.lookupCode
-                    ) {
-                        quantity = code.specifiedQuantity
-                        if (!code.isPrimary && code.specifiedQuantity > 1) {
-                            isUsingSpecifiedQuantity = true
-                        }
+            product.scannableCodes.forEach { code: Product.Code? ->
+                if (code?.template != null &&
+                    code.template == scannedCode.templateName &&
+                    code.lookupCode != null &&
+                    code.lookupCode == scannedCode.lookupCode
+                ) {
+                    quantity = code.specifiedQuantity
+                    if (!code.isPrimary && code.specifiedQuantity > 1) {
+                        isUsingSpecifiedQuantity = true
                     }
                 }
-                if (quantity == 0) {
-                    quantity = 1
-                }
+            }
+            if (quantity == 0) {
+                quantity = 1
             }
         }
 

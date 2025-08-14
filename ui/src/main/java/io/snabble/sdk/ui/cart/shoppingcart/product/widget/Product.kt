@@ -16,12 +16,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import io.snabble.sdk.Product.Type.UserWeighed
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DiscountItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.ProductItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.widget.description.ProductDescription
-import io.snabble.sdk.ui.telemetry.Telemetry
 
 @Composable
 internal fun Product(
@@ -54,7 +52,7 @@ internal fun Product(
                         .padding(end = 16.dp),
                     item = cartItem
                 )
-                if (cartItem.editable && cartItem.item.product?.type != UserWeighed) {
+                if (cartItem.editable) {
                     QuantityField(
                         modifier = Modifier,
                         quantity = cartItem.quantity,
@@ -66,17 +64,6 @@ internal fun Product(
                                 onQuantityChanged(it)
                             }
                         }
-                    )
-                }
-                if (cartItem.editable && cartItem.item.product?.type == UserWeighed) {
-                    UserWeightedField(
-                        cartItem.quantity.toString(),
-                        cartItem.unit,
-                        onQuantityChanged = {
-                            cartItem.item.updateQuantity(it)
-                            Telemetry.event(Telemetry.Event.CartAmountChanged, cartItem.item.product)
-                        },
-                        onDeleteWeighed = onDeleteItem
                     )
                 }
             }

@@ -20,7 +20,6 @@ class ProductApi {
         String name;
         String description;
         String subtitle;
-        boolean weighByCustomer;
         String referenceUnit;
         String encodingUnit;
         String imageUrl;
@@ -111,7 +110,7 @@ class ProductApi {
         HttpUrl.Builder builder = baseUrl.newBuilder();
 
         Shop shop = Snabble.getInstance().getCheckedInShop();
-        if(shop != null) {
+        if (shop != null) {
             builder.addQueryParameter("shopID", shop.getId());
         }
 
@@ -150,7 +149,7 @@ class ProductApi {
                 .addQueryParameter("template", code.getTemplateName());
 
         Shop shop = Snabble.getInstance().getCheckedInShop();
-        if(shop != null) {
+        if (shop != null) {
             builder.addQueryParameter("shopID", shop.getId());
         }
 
@@ -270,24 +269,17 @@ class ProductApi {
         Unit encodingUnit = Unit.fromString(apiProduct.encodingUnit);
         builder.setEncodingUnit(encodingUnit);
 
-        if (apiProduct.weighByCustomer) {
-            builder.setType(Product.Type.UserWeighed);
+
+        if (referenceUnit == null || referenceUnit == Unit.PIECE) {
+            builder.setType(Product.Type.Article);
         } else {
-            if (apiProduct.productType == ApiProductType.WEIGHABLE) {
-                if (referenceUnit == null || referenceUnit == Unit.PIECE) {
-                    builder.setType(Product.Type.Article);
-                } else {
-                    builder.setType(Product.Type.PreWeighed);
-                }
-            } else {
-                builder.setType(Product.Type.Article);
-            }
+            builder.setType(Product.Type.PreWeighed);
         }
 
         if (apiProduct.availability == null) {
             builder.setAvailability(Product.Availability.IN_STOCK);
         } else {
-            switch(apiProduct.availability) {
+            switch (apiProduct.availability) {
                 case IN_STOCK:
                     builder.setAvailability(Product.Availability.IN_STOCK);
                     break;
