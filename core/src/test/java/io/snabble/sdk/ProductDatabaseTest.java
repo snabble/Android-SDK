@@ -30,9 +30,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import androidx.annotation.NonNull;
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 
-@RunWith(RobolectricTestRunner.class)
 public class ProductDatabaseTest extends SnabbleSdkTest {
     @Test
     public void testAllPromotionsQuery() {
@@ -172,7 +172,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
         productDatabase.findBySkuOnline(sku, new OnProductAvailableListener() {
             @Override
-            public void onProductAvailable(Product product, boolean wasOnlineProduct) {
+            public void onProductAvailable(@NonNull Product product, boolean wasOnlineProduct) {
                 productArr[0] = product;
                 countDownLatch.countDown();
             }
