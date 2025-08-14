@@ -1142,8 +1142,7 @@ class ShoppingCart(
                                 scannedCode?.embeddedData == 0))
 
                 else -> (scannedCode?.hasEmbeddedData() == false ||
-                        scannedCode?.embeddedData == 0) &&
-                       lastPrice != 0
+                        scannedCode?.embeddedData == 0)
             }
 
         /**
@@ -1272,21 +1271,6 @@ class ShoppingCart(
                     q.toString() + if (unit != null) unit?.displayValue else ""
                 } else {
                     "1"
-                }
-            }
-
-        /**
-         * Gets text displaying price, including the calculation.
-         *
-         *
-         * E.g. "2 * 3,99 € = 7,98 €"
-         */
-        val fullPriceText: String?
-            get() {
-                priceText ?: return null
-                return when (val quantityText = quantityText) {
-                    "1" -> this.priceText
-                    else -> quantityText + " " + this.priceText
                 }
             }
 
