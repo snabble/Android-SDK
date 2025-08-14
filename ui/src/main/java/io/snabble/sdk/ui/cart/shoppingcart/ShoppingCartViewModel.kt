@@ -175,7 +175,6 @@ class ShoppingCartViewModel : ViewModel() {
                     quantity = item.getUnitBasedQuantity(),
                     quantityText = item.quantityText,
                     editable = item.isEditable,
-                    isManualDiscountApplied = item.isManualCouponApplied,
                     isAgeRestricted = item.isAgeRestricted,
                     minimumAge = item.minimumAge,
                     item = item,

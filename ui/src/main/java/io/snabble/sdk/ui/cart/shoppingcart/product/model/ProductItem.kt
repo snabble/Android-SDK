@@ -19,7 +19,6 @@ internal data class ProductItem(
     val totalPriceText: String? = null,
     val totalPrice: Int = 0,
     val isAgeRestricted: Boolean = false,
-    val isManualDiscountApplied: Boolean = false,
     val editable: Boolean = false,
     val quantityText: String,
     val unit: String,
