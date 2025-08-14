@@ -955,6 +955,10 @@ class ShoppingCart(
         var quantity = 0
 
         var lineItem: LineItem? = null
+            set(value) {
+                field = value
+                value?.let { lastPrice= it.totalPrice }
+            }
 
         /**
          * Returns the id of the shopping cart item
@@ -1139,7 +1143,7 @@ class ShoppingCart(
 
                 else -> (scannedCode?.hasEmbeddedData() == false ||
                         scannedCode?.embeddedData == 0) &&
-                        product?.getPrice(cart?.project?.customerCardId) != 0
+                       lastPrice != 0
             }
 
         /**
@@ -1182,21 +1186,13 @@ class ShoppingCart(
         val totalPrice: Int
             get() = lineItem?.totalPrice ?: localTotalPrice
 
+        private var lastPrice: Int = 0
         /**
          * Gets the total price of the items, ignoring the backend response
          */
         val localTotalPrice: Int
             get() = when (type) {
-                ItemType.PRODUCT -> {
-                    scannedCode?.embeddedData.takeIf { unit == Unit.PRICE }
-                        ?: product?.getPriceForQuantity(
-                            effectiveQuantity,
-                            scannedCode,
-                            cart?.project?.roundingMode,
-                            cart?.project?.customerCardId
-                        )
-                        ?: 0
-                }
+                ItemType.PRODUCT -> lastPrice
 
                 ItemType.DEPOSIT_RETURN_VOUCHER -> depositReturnVoucher?.lineItems?.sumOf { it.totalPrice } ?: 0
 
