@@ -535,6 +535,9 @@ object Snabble {
             return jsonElement?.asJsonObject
         }
 
+    val links: JsonObject?
+        get() = metadataDownloader.jsonObject?.get("links")?.asJsonObject
+
     @Synchronized
     private fun readMetadata() {
         metadataDownloader.jsonObject?.let { jsonObject ->
