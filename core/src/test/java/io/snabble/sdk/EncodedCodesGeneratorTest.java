@@ -434,69 +434,6 @@ public class EncodedCodesGeneratorTest extends SnabbleSdkTest {
     }
 
     @Test
-    public void testFinalCodeWithManualDiscounts() {
-        EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)
-                .prefix("snabble;{qrCodeIndex};{qrCodeCount}\n")
-                .separator("\n")
-                .suffix("")
-                .repeatCodes(false)
-                .countSeparator(";")
-                .maxCodes(2)
-                .manualDiscountFinalCode("MANUAL_DISCOUNT")
-                .build();
-
-        EncodedCodesGenerator generator = new EncodedCodesGenerator(options);
-
-        Product duplo = project.getProductDatabase().findBySku("49");
-        addToCart(duplo, 7, ScannedCode.parseDefault(project, "4008400301020"));
-        generator.add(project.getShoppingCart());
-
-        ArrayList<String> codes = generator.generate();
-        Assert.assertEquals(1, codes.size());
-        Assert.assertEquals("snabble;1;1\n7;4008400301020", codes.get(0));
-
-        ShoppingCart cart = project.getShoppingCart();
-        cart.get(0).isManualCouponApplied = true;
-        generator.add(project.getShoppingCart());
-
-        codes = generator.generate();
-        Assert.assertEquals(1, codes.size());
-        Assert.assertEquals("snabble;1;1\n7;4008400301020\n1;MANUAL_DISCOUNT", codes.get(0));
-    }
-
-    @Test
-    public void testFinalCodeWithManualDiscountsAndFinalCode() {
-        EncodedCodesOptions options = new EncodedCodesOptions.Builder(project)
-                .prefix("snabble;{qrCodeIndex};{qrCodeCount}\n")
-                .separator("\n")
-                .suffix("")
-                .repeatCodes(false)
-                .countSeparator(";")
-                .maxCodes(100)
-                .finalCode("FINAL_CODE")
-                .manualDiscountFinalCode("MANUAL_DISCOUNT")
-                .build();
-
-        EncodedCodesGenerator generator = new EncodedCodesGenerator(options);
-
-        Product duplo = project.getProductDatabase().findBySku("49");
-        addToCart(duplo, 7, ScannedCode.parseDefault(project, "4008400301020"));
-        generator.add(project.getShoppingCart());
-
-        ArrayList<String> codes = generator.generate();
-        Assert.assertEquals(1, codes.size());
-        Assert.assertEquals("snabble;1;1\n7;4008400301020\n1;FINAL_CODE", codes.get(0));
-
-        ShoppingCart cart = project.getShoppingCart();
-        cart.get(0).isManualCouponApplied = true;
-        generator.add(project.getShoppingCart());
-
-        codes = generator.generate();
-        Assert.assertEquals(1, codes.size());
-        Assert.assertEquals("snabble;1;1\n7;4008400301020\n1;FINAL_CODE\n1;MANUAL_DISCOUNT", codes.get(0));
-    }
-
-    @Test
     public void testTransmissionTemplates() throws IOException, Snabble.SnabbleException {
         String[] sql = loadSql("transmission_template").split("\n");
         withDb("test_1_25.sqlite3", false, Arrays.asList(sql));

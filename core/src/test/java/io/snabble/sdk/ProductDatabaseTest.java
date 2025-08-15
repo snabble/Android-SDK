@@ -1,15 +1,20 @@
 package io.snabble.sdk;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import androidx.annotation.NonNull;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -24,23 +29,7 @@ import java.util.concurrent.CountDownLatch;
 
 import io.snabble.sdk.codes.ScannedCode;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-
-@RunWith(RobolectricTestRunner.class)
 public class ProductDatabaseTest extends SnabbleSdkTest {
-    @Test
-    public void testAllPromotionsQuery() {
-        ProductDatabase productDatabase = project.getProductDatabase();
-        Product[] products = productDatabase.getDiscountedProducts();
-        assertEquals(17, products.length);
-    }
-
     @Test
     public void testTextSearchNoFTS() throws IOException, Snabble.SnabbleException {
         withDb("test_1_25.sqlite3", true, null);
@@ -172,7 +161,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
         productDatabase.findBySkuOnline(sku, new OnProductAvailableListener() {
             @Override
-            public void onProductAvailable(Product product, boolean wasOnlineProduct) {
+            public void onProductAvailable(@NonNull Product product, boolean wasOnlineProduct) {
                 productArr[0] = product;
                 countDownLatch.countDown();
             }
@@ -202,13 +191,13 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
     @Test
     public void testFindByMultipleSkus() {
         ProductDatabase productDatabase = project.getProductDatabase();
-        Product[] products = productDatabase.findBySkus(new String[] {"1", "2", "asdf1234"});
+        Product[] products = productDatabase.findBySkus(new String[]{"1", "2", "asdf1234"});
 
         assertEquals(products.length, 2);
         assertEquals(products[0].getSku(), "1");
         assertEquals(products[1].getSku(), "2");
 
-        products = productDatabase.findBySkus(new String[] {"1"});
+        products = productDatabase.findBySkus(new String[]{"1"});
 
         assertEquals(products.length, 1);
         assertEquals(products[0].getSku(), "1");
@@ -374,7 +363,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
 
         prepareUpdateDb("test_1_25.sqlite3");
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        boolean[] fail = new boolean[] {false};
+        boolean[] fail = new boolean[]{false};
         project.getProductDatabase().update(new ProductDatabase.UpdateCallback() {
             @Override
             public void success() {
@@ -389,7 +378,7 @@ public class ProductDatabaseTest extends SnabbleSdkTest {
         });
 
         countDownLatch.await();
-        if(fail[0]) Assert.fail();
+        if (fail[0]) Assert.fail();
 
         Product product = project.getProductDatabase().findBySku("1");
 

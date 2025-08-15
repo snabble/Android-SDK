@@ -5,14 +5,13 @@ import androidx.annotation.RestrictTo;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.snabble.sdk.coupons.Coupon;
-import io.snabble.sdk.coupons.CouponCode;
 import io.snabble.sdk.Product;
-import io.snabble.sdk.shoppingcart.ShoppingCart;
 import io.snabble.sdk.Unit;
 import io.snabble.sdk.codes.ScannedCode;
 import io.snabble.sdk.codes.templates.CodeTemplate;
-import io.snabble.sdk.codes.templates.groups.EmbedGroup;
+import io.snabble.sdk.coupons.Coupon;
+import io.snabble.sdk.coupons.CouponCode;
+import io.snabble.sdk.shoppingcart.ShoppingCart;
 import io.snabble.sdk.shoppingcart.data.item.ItemType;
 
 /**
@@ -24,16 +23,13 @@ public class EncodedCodesGenerator {
         Product product;
         int quantity;
         ScannedCode scannedCode;
-        boolean hasManualDiscount;
 
         public ProductInfo(Product product,
                            int quantity,
-                           ScannedCode scannedCode,
-                           boolean hasManualDiscount) {
+                           ScannedCode scannedCode) {
             this.product = product;
             this.quantity = quantity;
             this.scannedCode = scannedCode;
-            this.hasManualDiscount = hasManualDiscount;
         }
     }
 
@@ -42,7 +38,6 @@ public class EncodedCodesGenerator {
     private ArrayList<String> encodedCodes;
     private int codeCount;
     private boolean hasAgeRestrictedCode;
-    private boolean hasAppliedManualDiscount;
 
     public EncodedCodesGenerator(EncodedCodesOptions encodedCodesOptions) {
         encodedCodes = new ArrayList<>();
@@ -59,9 +54,9 @@ public class EncodedCodesGenerator {
         }
 
         if (options.repeatCodes) {
-            addScannableCode(code, false, false);
+            addScannableCode(code, false);
         } else {
-            addScannableCode("1" + options.countSeparator + code, false, false);
+            addScannableCode("1" + options.countSeparator + code, false);
         }
     }
 
@@ -94,10 +89,7 @@ public class EncodedCodesGenerator {
                     continue;
                 }
 
-                productInfos.add(new ProductInfo(product,
-                        item.getUnitBasedQuantity(),
-                        item.getScannedCode(),
-                        item.isManualCouponApplied));
+                productInfos.add(new ProductInfo(product, item.getUnitBasedQuantity(), item.getScannedCode()));
             }
         }
 
@@ -144,14 +136,6 @@ public class EncodedCodesGenerator {
                 append("1" + options.countSeparator + options.finalCode);
             } else {
                 append(options.finalCode);
-            }
-        }
-
-        if (hasAppliedManualDiscount) {
-            if (getCountSeparatorLength() > 0) {
-                append("1" + options.countSeparator + options.manualDiscountFinalCode);
-            } else {
-                append(options.manualDiscountFinalCode);
             }
         }
 
@@ -205,33 +189,7 @@ public class EncodedCodesGenerator {
                 continue;
             }
 
-            if (productInfo.product.getType() == Product.Type.UserWeighed) {
-                // encoding weight in ean
-                Product.Code[] codes = productInfo.product.getScannableCodes();
-                for (Product.Code code : codes) {
-                    if ("default".equals(code.template)) {
-                        continue;
-                    }
-
-                    CodeTemplate codeTemplate = options.project.getCodeTemplate(code.template);
-                    if (codeTemplate != null && codeTemplate.getGroup(EmbedGroup.class) != null) {
-                        ScannedCode scannedCode = codeTemplate.code(code.lookupCode)
-                                .embed(productInfo.quantity)
-                                .buildCode();
-
-                        if (options.repeatCodes) {
-                            addScannableCode(scannedCode.getCode(),
-                                    ageRestricted,
-                                    productInfo.hasManualDiscount);
-                        } else {
-                            addScannableCode("1" + options.countSeparator + scannedCode.getCode(),
-                                    ageRestricted,
-                                    productInfo.hasManualDiscount);
-                        }
-                        break;
-                    }
-                }
-            } else if (productInfo.product.getType() == Product.Type.PreWeighed) {
+            if (productInfo.product.getType() == Product.Type.PreWeighed) {
                 String transmissionCode = productInfo.product.getTransmissionCode(
                         options.project,
                         productInfo.scannedCode.getTemplateName(),
@@ -243,13 +201,9 @@ public class EncodedCodesGenerator {
                 }
 
                 if (options.repeatCodes) {
-                    addScannableCode(transmissionCode,
-                            ageRestricted,
-                            productInfo.hasManualDiscount);
+                    addScannableCode(transmissionCode, ageRestricted);
                 } else {
-                    addScannableCode("1" + options.countSeparator + productInfo.scannedCode.getCode(),
-                            ageRestricted,
-                            productInfo.hasManualDiscount);
+                    addScannableCode("1" + options.countSeparator + productInfo.scannedCode.getCode(), ageRestricted);
                 }
             } else {
                 int q = productInfo.quantity;
@@ -294,14 +248,10 @@ public class EncodedCodesGenerator {
 
                 if (options.repeatCodes) {
                     for (int j = 0; j < q; j++) {
-                        addScannableCode(transmissionCode,
-                                ageRestricted,
-                                productInfo.hasManualDiscount);
+                        addScannableCode(transmissionCode, ageRestricted);
                     }
                 } else {
-                    addScannableCode(q + options.countSeparator + transmissionCode,
-                            ageRestricted,
-                            productInfo.hasManualDiscount);
+                    addScannableCode(q + options.countSeparator + transmissionCode, ageRestricted);
                 }
             }
         }
@@ -314,7 +264,6 @@ public class EncodedCodesGenerator {
         encodedCodes.add(code);
         stringBuilder = new StringBuilder();
         codeCount = 0;
-        hasAppliedManualDiscount = false;
     }
 
     private int getCountSeparatorLength() {
@@ -325,7 +274,7 @@ public class EncodedCodesGenerator {
         }
     }
 
-    private void addScannableCode(String scannableCode, boolean isAgeRestricted, boolean hasManualDiscount) {
+    private void addScannableCode(String scannableCode, boolean isAgeRestricted) {
         String nextCode = hasAgeRestrictedCode ? options.nextCodeWithCheck : options.nextCode;
 
         if (isAgeRestricted
@@ -337,14 +286,9 @@ public class EncodedCodesGenerator {
         }
 
         int charsLeft = options.maxChars - stringBuilder.length();
-        int manualDiscountLength = hasManualDiscount ? options.manualDiscountFinalCode.length() : 0;
-        int suffixCodeLength = Math.max(nextCode.length(), options.finalCode.length() + manualDiscountLength);
+        int suffixCodeLength = Math.max(nextCode.length(), options.finalCode.length());
 
         if (options.finalCode.length() > 0 && getCountSeparatorLength() > 0) {
-            suffixCodeLength += getCountSeparatorLength() + 1;
-        }
-
-        if (options.manualDiscountFinalCode.length() > 0 && getCountSeparatorLength() > 0) {
             suffixCodeLength += getCountSeparatorLength() + 1;
         }
 
@@ -352,11 +296,6 @@ public class EncodedCodesGenerator {
 
         if (options.finalCode.length() > 0) {
             suffixCodes++;
-        }
-
-        if (manualDiscountLength > 0){
-            suffixCodes++;
-            hasAppliedManualDiscount = true;
         }
 
         int codesNeeded = 1 + suffixCodes;

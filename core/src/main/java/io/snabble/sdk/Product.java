@@ -37,13 +37,7 @@ public class Product implements Serializable, Parcelable {
          * Scanned codes usually have a different code the code you get from {@link Product#getScannableCodes()}, containing the
          * price information.
          */
-        PreWeighed(1),
-
-        /**
-         * A product that needs to be user weighed. The price from {@link Product#getListPrice()}
-         * is a base price of 1000g
-         */
-        UserWeighed(2);
+        PreWeighed(1);
 
         private final int databaseValue;
 
@@ -419,7 +413,7 @@ public class Product implements Serializable, Parcelable {
      * Uses the customer card price as a base instead of the normal price
      */
     public int getPriceForQuantity(int quantity, ScannedCode scannedCode, RoundingMode roundingMode, String customerCardId) {
-        if (type == Product.Type.UserWeighed || type == Product.Type.PreWeighed) {
+        if (type == Product.Type.PreWeighed) {
             String lookupCode = scannedCode != null ? scannedCode.getLookupCode() : null;
 
             Unit referenceUnit = this.referenceUnit;

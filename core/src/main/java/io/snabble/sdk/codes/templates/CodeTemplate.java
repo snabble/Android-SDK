@@ -243,15 +243,13 @@ public class CodeTemplate {
         return Collections.unmodifiableList(groups);
     }
 
-    public <T extends Group> T getGroup(Class<? extends Group> clazz) {
+    @SuppressWarnings("unchecked")
+    public <T extends Group> T getGroup(Class<? extends T> clazz) {
         for (Group group : groups) {
-            try {
-                group.getClass().asSubclass(clazz);
+            if (clazz.isInstance(group)) {
                 return (T) group;
-            } catch (ClassCastException ignored) {
             }
         }
-
         return null;
     }
 

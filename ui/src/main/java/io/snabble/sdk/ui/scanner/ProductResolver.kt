@@ -1,25 +1,22 @@
 package io.snabble.sdk.ui.scanner
 
 import android.content.Context
-import android.content.DialogInterface
 import android.view.KeyEvent
-import io.snabble.sdk.*
+import io.snabble.sdk.BarcodeFormat
+import io.snabble.sdk.OnProductAvailableListener
+import io.snabble.sdk.Product
+import io.snabble.sdk.Project
+import io.snabble.sdk.Snabble
 import io.snabble.sdk.Unit
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.codes.gs1.GS1Code
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.telemetry.Telemetry
 import io.snabble.sdk.ui.utils.DelayedProgressDialog
-import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.utils.Age
 import io.snabble.sdk.utils.Dispatch
 import java.math.BigDecimal
 import java.util.concurrent.CountDownLatch
-import kotlin.Boolean
-import kotlin.Deprecated
-import kotlin.Int
-import kotlin.ReplaceWith
-import kotlin.apply
 
 /**
  * The product resolver parses Barcodes e.g. GTINs and provides all meta data about the scanned
@@ -39,9 +36,8 @@ import kotlin.apply
  * You can find an advanced sample in the SelfScanningView.lookupAndShowProduct(...)
  */
 class ProductResolver private constructor(private val context: Context, private val project: Project) {
+
     private var resolveBundles = true
-    private var productConfirmationDialog: ProductConfirmationDialog? = null
-    private var productDialogViewModel: ProductConfirmationDialog.ViewModel? = null
     var scannedCodes: List<ScannedCode> = emptyList()
         private set
     private val progressDialog: DelayedProgressDialog
@@ -57,8 +53,6 @@ class ProductResolver private constructor(private val context: Context, private 
     private var onAlreadyScannedListener: OnAlreadyScannedListener? = null
     var barcodeFormat: BarcodeFormat? = null
         private set
-    private var onKeyListener: ProductConfirmationDialog.OnKeyListener? = null
-    private var lastProduct: Product? = null
 
     private fun checkMinAge(product: Product) {
         if (product.saleRestriction.isAgeRestriction) {
@@ -87,7 +81,6 @@ class ProductResolver private constructor(private val context: Context, private 
     )
 
     private fun lookupProductData(scannedCodes: List<ScannedCode>, gs1Code: GS1Code?) {
-        productConfirmationDialog?.dismiss(false)
         progressDialog.showAfterDelay(300)
         onShowListener?.onShow()
 
@@ -222,7 +215,7 @@ class ProductResolver private constructor(private val context: Context, private 
                 showBundleDialog(product, scannedCode)
             }
             else -> {
-                showProduct(product, scannedCode)
+                addToCart(product, scannedCode)
                 val event = if (wasOnlineProduct) {
                     Telemetry.Event.ScannedOnlineProduct
                 } else {
@@ -248,9 +241,9 @@ class ProductResolver private constructor(private val context: Context, private 
                                     defaultCode = newCode
                                 }
                             }
-                            showProduct(product, defaultCode)
+                            addToCart(product, defaultCode)
                         } else {
-                            showProduct(product, scannedCode)
+                            addToCart(product, scannedCode)
                         }
                     }
                 }
@@ -275,19 +268,18 @@ class ProductResolver private constructor(private val context: Context, private 
         onNetworkErrorListener?.onNetworkError()
     }
 
-    private fun showProduct(product: Product?, scannedCode: ScannedCode?) {
-        lastProduct = product
-
+    fun addToCart(product: Product?, scannedCode: ScannedCode?) {
         if (product != null && scannedCode != null) {
             if (handleProductFlags(product, scannedCode)) {
-                val model = ProductConfirmationDialog.ViewModel(context, project, product, scannedCode)
-                productDialogViewModel = model
-                productConfirmationDialog?.show(UIUtils.getHostFragmentActivity(context), model)
+                val cartItem = project.shoppingCart.newItem(product, scannedCode)
+                project.shoppingCart.add(cartItem)
+                project.shoppingCart.updatePrices(false)
+                checkMinAge(product)
             }
         }
     }
 
-    private fun handleProductFlags(product: Product, scannedCode: ScannedCode) : Boolean {
+    private fun handleProductFlags(product: Product, scannedCode: ScannedCode): Boolean {
         when {
             product.saleStop -> {
                 onSaleStopListener?.onSaleStop()
@@ -326,21 +318,6 @@ class ProductResolver private constructor(private val context: Context, private 
      */
     fun resolve() {
         lookupProductData(scannedCodes, null)
-    }
-
-    /**
-     * Dismiss the product confirmation dialog.
-     */
-    fun dismiss() {
-        productConfirmationDialog?.dismiss(false)
-    }
-
-    /**
-     * Add the resolved product to the cart.
-     */
-    fun addResolvedItemToCart() {
-        // TODO check the bang operator
-        productDialogViewModel!!.addToCart()
     }
 
     /**
@@ -455,9 +432,6 @@ class ProductResolver private constructor(private val context: Context, private 
         private val project: Project
     ) {
         private val productResolver = ProductResolver(context, project)
-        private var factory = ProductConfirmationDialog.Factory {
-            DefaultProductConfirmationDialog()
-        }
 
         /**
          * Set the scanned codes to analyse.
@@ -492,14 +466,6 @@ class ProductResolver private constructor(private val context: Context, private 
          */
         fun setOnShowListener(listener: OnShowListener) = apply {
             productResolver.onShowListener = listener
-        }
-
-        /**
-         * Set a key listener.
-         * @see DialogInterface.OnKeyListener
-         */
-        fun setOnKeyListener(listener: ProductConfirmationDialog.OnKeyListener) = apply {
-            productResolver.onKeyListener = listener
         }
 
         /**
@@ -579,29 +545,9 @@ class ProductResolver private constructor(private val context: Context, private 
         }
 
         /**
-         * Set a factory for a custom DialogConfirmationDialog implementation.
-         */
-        fun setDialogConfirmationDialogFactory(factory: ProductConfirmationDialog.Factory?) = apply {
-            this.factory = factory ?: ProductConfirmationDialog.Factory {
-                DefaultProductConfirmationDialog()
-            }
-        }
-
-        /**
          * Create the product resolver.
          */
-        fun create() = productResolver.apply {
-            productConfirmationDialog = requireNotNull(factory.create())
-            productConfirmationDialog?.setOnDismissListener {
-                if (lastProduct != null && productDialogViewModel?.wasAddedToCart == true) {
-                    checkMinAge(lastProduct!!)
-                }
-                onDismissListener?.onDismiss()
-            }
-            productConfirmationDialog?.setOnKeyListener { keyCode, event ->
-                onKeyListener?.onKey(keyCode, event) ?: false
-            }
-        }
+        fun create() = productResolver
     }
 
     init {

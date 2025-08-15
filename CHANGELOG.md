@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 ### Changed
 ### Removed
+ui: Remove ProductConfirmationDialog (APPS-2411)
 ### Fixed
 
 ## [0.80.17]

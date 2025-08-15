@@ -76,7 +76,6 @@ public class SelfScanningView extends FrameLayout {
     private boolean manualCameraControl;
     private int topDownInfoBoxOffset;
     private MessageBoxStackView messages;
-    private ProductConfirmationDialog.Factory productConfirmationDialogFactory;
     private Project project;
 
     public SelfScanningView(Context context) {
@@ -262,7 +261,6 @@ public class SelfScanningView extends FrameLayout {
                                 R.string.Snabble_NotForSale_ErrorMsg_scan)));
                     }
                 })
-                .setDialogConfirmationDialogFactory(productConfirmationDialogFactory)
                 .create()
                 .resolve();
     }
@@ -587,10 +585,6 @@ public class SelfScanningView extends FrameLayout {
 
     public BarcodeDetector getBarcodeDetector() {
         return barcodeScanner.getBarcodeDetector();
-    }
-
-    public void setProductConfirmationDialogFactory(ProductConfirmationDialog.Factory productConfirmationDialogFactory) {
-        this.productConfirmationDialogFactory = productConfirmationDialogFactory;
     }
 
     private final ShoppingCartListener shoppingCartListener = new SimpleShoppingCartListener() {
