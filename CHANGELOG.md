@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 ### Removed
 ui: Remove ProductConfirmationDialog (APPS-2411)
+ui: Fix multiple cancellation events in RoutingTargetGateKeeperView (APPS-2441)
 ### Fixed
 
 ## [0.80.17]

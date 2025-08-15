@@ -20,6 +20,7 @@ import io.snabble.sdk.ui.scanner.BarcodeView
 import io.snabble.sdk.ui.utils.I18nUtils
 import io.snabble.sdk.ui.utils.UIUtils
 import io.snabble.sdk.ui.utils.observeView
+import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.ui.utils.setTextOrHide
 import io.snabble.sdk.utils.Logger
 import kotlin.math.roundToInt
@@ -57,7 +58,7 @@ class RoutingTargetGatekeeperView @JvmOverloads constructor(
         helperImage = findViewById(R.id.helper_image)
         upArrow = findViewById(R.id.arrow)
 
-        cancel.setOnClickListener {
+        cancel.setOneShotClickListener {
             abort()
         }
 
