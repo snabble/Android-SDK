@@ -128,7 +128,6 @@ class AccessibilityToolBox(private val target: View): AccessibilityDelegateCompa
         AccessibilityEvent.TYPE_VIEW_HOVER_EXIT, AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_START,
         AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_END, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
         AccessibilityEvent.TYPE_VIEW_SCROLLED, AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED,
-        AccessibilityEvent.TYPE_ANNOUNCEMENT, AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED,
         AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED,
         AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY,
         AccessibilityEvent.TYPE_GESTURE_DETECTION_START, AccessibilityEvent.TYPE_GESTURE_DETECTION_END,

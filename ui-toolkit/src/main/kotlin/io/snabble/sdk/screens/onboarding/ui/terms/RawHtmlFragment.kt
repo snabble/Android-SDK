@@ -13,7 +13,7 @@ import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.utils.getColorByAttribute
-import okhttp3.internal.toHexString
+import androidx.core.net.toUri
 
 /** Displays any given HTML in a [WebView] */
 abstract class RawHtmlFragment : Fragment() {
@@ -40,7 +40,7 @@ abstract class RawHtmlFragment : Fragment() {
 
             @Deprecated("Legacy code for Android 5 & 6", replaceWith = ReplaceWith(""))
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?) =
-                shouldOverrideUrlLoading(Uri.parse(url.orEmpty()))
+                shouldOverrideUrlLoading(url.orEmpty().toUri())
         }
 
         showHtml(html)
@@ -91,5 +91,5 @@ abstract class RawHtmlFragment : Fragment() {
     }
 
     private fun Fragment.openUrl(url: String) =
-        startActivity(Intent(Intent.ACTION_VIEW).apply { data = Uri.parse(url) })
+        startActivity(Intent(Intent.ACTION_VIEW).apply { data = url.toUri() })
 }
