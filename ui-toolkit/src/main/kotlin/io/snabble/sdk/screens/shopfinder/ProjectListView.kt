@@ -10,6 +10,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DefaultItemAnimator
 import io.snabble.accessibility.accessibility
 import io.snabble.accessibility.setClickDescription
+import io.snabble.sdk.announceAccessibiltyEvent
 import io.snabble.sdk.screens.shopfinder.shoplist.Item
 import io.snabble.sdk.screens.shopfinder.shoplist.ViewType
 import io.snabble.sdk.screens.shopfinder.utils.AssetHelper
@@ -65,12 +66,10 @@ class ProjectListView @JvmOverloads constructor(
                 .setDuration(itemAnimator.addDuration)
                 .start()
             if (item.type == ViewType.ExpandedBrand) {
-                announceForAccessibility(
-                    resources.getString(
-                        R.string.Snabble_Shop_List_EventShopExpanded_accessibility,
-                        item.name
-                    )
-                )
+                announceAccessibiltyEvent(resources.getString(
+                    R.string.Snabble_Shop_List_EventShopExpanded_accessibility,
+                    item.name
+                ))
                 accessibility.setClickAction(R.string.Snabble_Shop_List_Colapse_accessibility)
             } else {
                 accessibility.setClickAction(

@@ -15,11 +15,12 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.view.isVisible
 import com.google.android.material.animation.AnimationUtils
+import io.snabble.sdk.announceAccessibiltyEvent
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.Utils
 import io.snabble.sdk.utils.Utils.dp2px
-
+import androidx.core.view.contains
 
 class MessageBox @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -123,12 +124,12 @@ class MessageBoxStackView @JvmOverloads constructor(
         messageBox.animateViewIn()
 
         Dispatch.mainThread({
-            if (indexOfChild(messageBox) != -1) {
+            if (contains(messageBox)) {
                 messageBox.animateViewOut {
                     removeView(messageBox)
                 }
             }
         }, duration)
-        announceForAccessibility(message)
+        announceAccessibiltyEvent(message)
     }
 }

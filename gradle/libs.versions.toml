@@ -1,6 +1,6 @@
 [versions]
-compileSdk = "35"
-targetSdk = "35"
+compileSdk = "36"
+targetSdk = "36"
 minSdk = "21"
 gradlePlugin = "8.12.1"
 kotlin = "2.2.0"

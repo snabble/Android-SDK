@@ -8,6 +8,7 @@ import com.google.gson.GsonBuilder
 import io.snabble.sdk.MutableAccessibleLiveData
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.compatId
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Request
@@ -97,7 +98,7 @@ class Coupons (
     @JvmName("setInternalProjectCoupons")
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     internal fun setProjectCoupons(coupons: List<Coupon>) {
-        if (Looper.getMainLooper().thread.id == Thread.currentThread().id) {
+        if (Looper.getMainLooper().thread.compatId() == Thread.currentThread().compatId()) {
             value = coupons
         } else {
             postValue(coupons)
