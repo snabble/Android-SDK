@@ -1,18 +1,18 @@
 [versions]
-compileSdk = "35"
-targetSdk = "35"
+compileSdk = "36"
+targetSdk = "36"
 minSdk = "21"
-gradlePlugin = "8.11.0"
-kotlin = "2.2.0"
-navigation = "2.9.1"
+gradlePlugin = "8.12.1"
+kotlin = "2.2.10"
+navigation = "2.9.3"
 snabbleSdk = "0.69.6"
 androidx-camera = "1.4.2"
-androidx-compose-ui = "1.8.3"
-com-squareup-okhttp3 = "4.12.0"
+androidx-compose-ui = "1.9.0"
+com-squareup-okhttp3 = "5.1.0"
 io-kotest = "5.9.1"
 dokka = "1.9.20"
-androidx-compose-material = "1.8.3"
-android-lifecycle = "2.9.1"
+androidx-compose-material = "1.9.0"
+android-lifecycle = "2.9.2"
 koin = "4.1.0"
 
 [libraries]
@@ -26,7 +26,7 @@ androidx-camera-extension = { module = "androidx.camera:camera-extensions", vers
 androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "androidx-camera" }
 androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "androidx-camera" }
 androidx-cardview = "androidx.cardview:cardview:1.0.0"
-androidx-core-ktx = "androidx.core:core-ktx:1.16.0"
+androidx-core-ktx = "androidx.core:core-ktx:1.17.0"
 androidx-constraintlayout = "androidx.constraintlayout:constraintlayout:2.2.1"
 androidx-constraintlayoutCompose = "androidx.constraintlayout:constraintlayout-compose:1.1.1"
 # Compose previews won't work w/o this: https://issuetracker.google.com/issues/227767363
@@ -50,7 +50,7 @@ androidx-startupRuntime = "androidx.startup:startup-runtime:1.2.0"
 androidx-swiperefreshlayout = "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 androidx-viewpager2 = "androidx.viewpager2:viewpager2:1.1.0"
 androidx-webkit = "androidx.webkit:webkit:1.14.0"
-apache-commonsLang3 = "org.apache.commons:commons-lang3:3.17.0"
+apache-commonsLang3 = "org.apache.commons:commons-lang3:3.18.0"
 caverock-androidsvgAar = "com.caverock:androidsvg-aar:1.4"
 compose-iconsExtended = { module = "androidx.compose.material:material-icons-extended", version = "1.7.8" }
 compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
@@ -64,7 +64,7 @@ compose-uiTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "
 compose-uiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "androidx-compose-ui" }
 compose-uiUtil = { module = "androidx.compose.ui:ui-util", version.ref = "androidx-compose-ui" }
 compose-uiViewBinding = { module = "androidx.compose.ui:ui-viewbinding", version.ref = "androidx-compose-ui" }
-commonsIo = "commons-io:commons-io:2.19.0"
+commonsIo = "commons-io:commons-io:2.20.0"
 datatrans-androidSdk = "ch.datatrans:android-sdk:3.7.0"
 desugarJdkLibsNio = "com.android.tools:desugar_jdk_libs_nio:2.1.5"
 glide-compose = "com.github.bumptech.glide:compose:1.0.0-beta01"
@@ -94,16 +94,16 @@ kotest-assertionsCore = { module = "io.kotest:kotest-assertions-core", version.r
 koltin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinx-serializationJson = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0"
-mockk = "io.mockk:mockk:1.14.4"
+mockk = "io.mockk:mockk:1.14.5"
 # @pin requires higher target
-mockito-kotlin = "org.mockito.kotlin:mockito-kotlin:5.4.0"
+mockito-kotlin = "org.mockito.kotlin:mockito-kotlin:6.0.0"
 roboletric = "org.robolectric:robolectric:4.15.1"
 roboletric-androidAll = "org.robolectric:android-all:13-robolectric-9030017"
-sebaslogen-resaca = "io.github.sebaslogen:resaca:4.4.8"
+sebaslogen-resaca = "io.github.sebaslogen:resaca:4.5.0"
 squareup-okhttp3-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "com-squareup-okhttp3" }
-test-espressoCore = "androidx.test.espresso:espresso-core:3.6.1"
-test-ext-junit = "androidx.test.ext:junit:1.2.1"
-test-runner = "androidx.test:runner:1.6.2"
+test-espressoCore = "androidx.test.espresso:espresso-core:3.7.0"
+test-ext-junit = "androidx.test.ext:junit:1.3.0"
+test-runner = "androidx.test:runner:1.7.0"
 # Classpath dependencies
 classpath-androidGradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "gradlePlugin" }
 classpath-kotlinAndroidPlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }

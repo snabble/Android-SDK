@@ -1,6 +1,6 @@
 package io.snabble.sdk.ui.payment.creditcard.shared.country
 
-import java.util.Locale
+import io.snabble.sdk.localeOf
 
 internal val String.displayName: String
-    get() = Locale("", this).displayName
+    get() = localeOf("", this).displayName

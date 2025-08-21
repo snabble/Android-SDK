@@ -18,7 +18,7 @@ data class TermsOfService(
         get() {
             val defaultLocale = Locale.getDefault()
             variants.forEach {
-                if (Locale(it.language).language == defaultLocale.language) {
+                if (localeOf(it.language).language == defaultLocale.language) {
                     return Snabble.absoluteUrl(it.url)
                 }
             }

@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.Gravity
@@ -32,6 +33,7 @@ import io.snabble.accessibility.focusForAccessibility
 import io.snabble.accessibility.isTalkBackActive
 import io.snabble.accessibility.setClickDescription
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.announceAccessibiltyEvent
 import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.ui.AccessibilityPreferences
 import io.snabble.sdk.ui.BaseFragment
@@ -59,7 +61,7 @@ open class SelfScanningFragment : BaseFragment(), MenuProvider {
             // Handle Permission granted/rejected
             if (isGranted) {
                 createSelfScanningView()
-                requireView().announceForAccessibility(getString(R.string.Snabble_Scanner_Accessibility_eventBackInScanner))
+                view?.announceAccessibiltyEvent(getString(R.string.Snabble_Scanner_Accessibility_eventBackInScanner))
                 explainScanner()
                 onCameraPermissionGrantedListener?.invoke()
             } else {
@@ -122,19 +124,17 @@ open class SelfScanningFragment : BaseFragment(), MenuProvider {
                     )
                 }
             }
-            view.announceForAccessibility(event)
+            view.announceAccessibiltyEvent(event)
             explainScanner()
         } else {
             rootView.removeView(selfScanningView)
             selfScanningView = null
 
             showPermissionRationale()
-
-            view.announceForAccessibility(
-                getString(R.string.Snabble_Scanner_Accessibility_eventScannerOpened)
-                        + " "
-                        + getString(R.string.Snabble_Scanner_Accessibility_hintPermission)
-            )
+            val event =
+                getString(R.string.Snabble_Scanner_Accessibility_eventScannerOpened) +
+                        " ${getString(R.string.Snabble_Scanner_Accessibility_hintPermission)}"
+            view.announceAccessibiltyEvent(event)
         }
     }
 
@@ -260,6 +260,7 @@ open class SelfScanningFragment : BaseFragment(), MenuProvider {
             when (view.layoutParams) {
                 is CoordinatorLayout.LayoutParams -> (view.layoutParams as CoordinatorLayout.LayoutParams).gravity =
                     value ?: Gravity.NO_GRAVITY
+
                 is FrameLayout.LayoutParams -> (view.layoutParams as FrameLayout.LayoutParams).gravity =
                     value ?: Gravity.NO_GRAVITY
             }
@@ -275,6 +276,7 @@ open class SelfScanningFragment : BaseFragment(), MenuProvider {
             R.id.snabble_action_search -> {
                 selfScanningView?.searchWithBarcode()
             }
+
             R.id.snabble_action_torch -> {
                 selfScanningView?.isTorchEnabled = !(selfScanningView?.isTorchEnabled ?: false)
                 updateTorchIcon()
