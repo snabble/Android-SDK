@@ -59,6 +59,7 @@ class PaymentStatusView @JvmOverloads constructor(
 
     init {
         inflate(getContext(), R.layout.snabble_view_payment_status, this)
+        fitsSystemWindows = true
     }
 
     private val image = findViewById<ImageView>(R.id.image)
