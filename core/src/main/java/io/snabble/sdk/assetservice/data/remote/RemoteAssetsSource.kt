@@ -23,29 +23,41 @@ import okhttp3.Request
 import okhttp3.Response
 import okio.IOException
 import org.apache.commons.io.FilenameUtils
+import java.security.MessageDigest
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.time.Duration.Companion.seconds
 
 interface RemoteAssetsSource {
 
-    suspend fun downloadManifestForProject(project: Project): ManifestDto?
+    /**
+     * Downloads the manifest containing metadata info for the Assets (e.g. name of the assets and the variant)
+     */
+    suspend fun downloadManifestForProject(): ManifestDto?
 
-    suspend fun downloadAllAssets(project: Project, files: List<AssetVariantDto>): List<AssetDto?>
+    /**
+     * Downloads the assets (e.g the bytes) for each asset variant provided.
+     * The asset needs to be a valid format (.svg, .jpg, .webp) and not has to be in the root folder
+     */
+    suspend fun downloadAllAssets(files: List<AssetVariantDto>): List<AssetDto>
 }
 
-class RemoteAssetsSourceImpl : RemoteAssetsSource {
+class RemoteAssetsSourceImpl(
+    private val project: Project
+) : RemoteAssetsSource {
 
-    override suspend fun downloadManifestForProject(project: Project): ManifestDto? =
+    override suspend fun downloadManifestForProject(): ManifestDto? =
         with(Dispatchers.IO) {
             suspendCancellableCoroutine { continuation: Continuation<ManifestDto?> ->
                 val assetsUrl = project.assetsUrl ?: return@suspendCancellableCoroutine
+                Logger.d("Loading to Manifest from: $assetsUrl")
 
                 val request = Request.Builder()
                     .cacheControl(CacheControl.Builder().maxAge(30.seconds).build())
                     .url(assetsUrl)
                     .get()
                     .build()
+
 
                 project.okHttpClient.newCall(request).enqueue(object : Callback {
                     override fun onFailure(call: Call, e: IOException) {
@@ -56,14 +68,16 @@ class RemoteAssetsSourceImpl : RemoteAssetsSource {
                     override fun onResponse(call: Call, response: Response) {
                         try {
                             if (!response.isSuccessful) {
+                                Logger.d("Loading manifest failed: ${response.code} ${response.body.string()}")
                                 continuation.resume(null)
                                 return
                             }
 
                             val manifestDto = GsonHolder.get().fromJson(response.body.string(), ManifestDto::class.java)
+                            Logger.d("Loading manifest succeeded: $manifestDto")
                             continuation.resume(manifestDto)
                         } catch (e: JsonSyntaxException) {
-                            Logger.e("Manifest download failed: ${e.message}")
+                            Logger.e("Manifest parsing failed: ${e.message}")
                             continuation.resume(null)
                         } finally {
                             response.close()
@@ -74,71 +88,91 @@ class RemoteAssetsSourceImpl : RemoteAssetsSource {
             }
         }
 
-    // Todo: filter if the existing assets out
     override suspend fun downloadAllAssets(
-        project: Project,
         files: List<AssetVariantDto>
     ) = withContext(Dispatchers.IO) {
 
         val assetsUrls = files.mapNotNull { asset ->
-            val url: String? = asset.variants[VariantDto.MDPI]
-            val format = FilenameUtils.getExtension(asset.name)
+            val url: String = asset.variants[VariantDto.MDPI] ?: return@mapNotNull null
+            val assetsName: String = asset.name
+            val format = FilenameUtils.getExtension(assetsName)
             when {
-                format.isValidFormat() && asset.name.isRootAsset() -> url
+                format.isValidFormat() && asset.name.isRootAsset() -> assetsName to url
                 else -> null
             }
         }
 
+        Logger.e("Filtered valid assets: $assetsUrls")
+
         val semaphore = Semaphore(MAX_CONCURRENT_REQUESTS)
 
-        assetsUrls.map { url ->
-            async {
-                semaphore.withPermit {
-                    loadAsset(project, url)
+        assetsUrls
+            .map { (assetName, url) ->
+                async {
+                    semaphore.withPermit {
+                        loadAsset(project, url, assetName)
+                    }
                 }
-            }
-        }.awaitAll()
+            }.awaitAll()
+            .filterNotNull()
     }
 
-    private suspend fun loadAsset(project: Project, url: String): AssetDto? = withContext(Dispatchers.IO) {
-        suspendCancellableCoroutine { continuation ->
-            val request = Request.Builder()
-                .url(Snabble.absoluteUrl(url))
-                .get()
-                .build()
+    private suspend fun loadAsset(project: Project, url: String, assetName: String): AssetDto? =
+        withContext(Dispatchers.IO) {
+            suspendCancellableCoroutine { continuation ->
+                Logger.e("Loading asset for $url")
+                val request = Request.Builder()
+                    .url(Snabble.absoluteUrl(url))
+                    .get()
+                    .build()
 
-            val call = project.okHttpClient.newCall(request)
+                val call = project.okHttpClient.newCall(request)
 
-            // Handle cancellation
-            continuation.invokeOnCancellation {
-                call.cancel()
-            }
-
-            call.enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    continuation.resume(null)
+                // Handle cancellation
+                continuation.invokeOnCancellation {
+                    call.cancel()
                 }
 
-                override fun onResponse(call: Call, response: Response) {
-                    if (!response.isSuccessful) {
+                call.enqueue(object : Callback {
+                    override fun onFailure(call: Call, e: IOException) {
+                        Logger.e("Loading asset failed: ${e.message}")
                         continuation.resume(null)
-                        return
                     }
 
-                    val bytes = response.body.bytes()
-
-                    val asset = AssetDto(data = bytes)
-
-                    continuation.resume(asset)
-                    response.close()
-                }
-            })
+                    override fun onResponse(call: Call, response: Response) {
+                        if (!response.isSuccessful) {
+                            Logger.e("Loading asset failed: ${response.code} ${response.body.string()}")
+                            continuation.resume(null)
+                            return
+                        }
+                        val bytes = response.body.bytes()
+                        val asset =
+                            AssetDto(data = bytes.inputStream(), hash = url.calculateHash(), name = assetName)
+                        Logger.d("Loading assets succeeded: $asset")
+                        continuation.resume(asset)
+                        response.close()
+                    }
+                })
+            }
         }
-    }
 
     private fun String.isValidFormat() = VALID_FORMATS.contains(this)
 
     private fun String.isRootAsset() = !contains("/")
+
+    /**
+     * Calculate SHA-256 hash for a String
+     */
+    fun String.calculateHash(): String {
+        return try {
+            val digest = MessageDigest.getInstance("SHA-256")
+            val hashBytes = digest.digest(this.toByteArray(Charsets.UTF_8))
+            hashBytes.joinToString("") { "%02x".format(it) }
+        } catch (e: Exception) {
+            Logger.e("Failed to calculate hash for string: ${e.message}", e)
+            throw e
+        }
+    }
 
     companion object {
 

@@ -5,6 +5,8 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
+import io.snabble.sdk.assetservice.AssetService
+import io.snabble.sdk.assetservice.assetServiceFactory
 import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.codes.templates.CodeTemplate
@@ -34,6 +36,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.logging.HttpLoggingInterceptor
 import org.apache.commons.lang3.LocaleUtils
 import java.io.File
 import java.math.RoundingMode
@@ -357,6 +360,9 @@ class Project internal constructor(
     lateinit var assets: Assets
         private set
 
+    lateinit var assetService: AssetService
+        private set
+
     var appTheme: AppTheme? = null
         private set
 
@@ -548,6 +554,7 @@ class Project internal constructor(
             .newBuilder()
             .addInterceptor(SnabbleAuthorizationInterceptor(this))
             .addInterceptor(AcceptedLanguageInterceptor())
+            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .build()
 
         _shoppingCart.tryEmit(ShoppingCart(this))
@@ -567,6 +574,8 @@ class Project internal constructor(
 
         assets = Assets(this)
 
+        assetService = assetServiceFactory(project = this, context = Snabble.application)
+
         googlePayHelper = paymentMethodDescriptors
             .mapNotNull { it.paymentMethod }
             .firstOrNull { it == PaymentMethod.GOOGLE_PAY }
@@ -579,7 +588,6 @@ class Project internal constructor(
             coupons.setProjectCoupons(couponList)
         }
         coupons.update()
-
         notifyUpdate()
     }
 
