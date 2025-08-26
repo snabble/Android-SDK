@@ -27,6 +27,12 @@ enum class CheckoutState {
     VERIFYING_PAYMENT_METHOD,
 
     /**
+     * The payment need further authentication.
+     * Use the paymentRedirect link provided for further authentication.
+     */
+    AUTHENTICATING,
+
+    /**
      * Age needs to be verified
      */
     REQUEST_VERIFY_AGE,

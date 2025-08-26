@@ -214,6 +214,8 @@ class CheckoutActivity : FragmentActivity() {
                 }
             }
 
+            CheckoutState.AUTHENTICATING -> R.id.snabble_nav_authentication
+
             CheckoutState.DEPOSIT_RETURN_REDEMPTION_FAILED,
             CheckoutState.PAYMENT_ABORTED -> {
                 finish()

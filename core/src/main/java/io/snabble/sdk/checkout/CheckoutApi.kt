@@ -119,6 +119,7 @@ enum class CheckState {
     @SerializedName("unauthorized") UNAUTHORIZED,
     @SerializedName("pending") PENDING,
     @SerializedName("processing")  PROCESSING,
+    @SerializedName("authenticating") AUTHENTICATING,
     @SerializedName("successful") SUCCESSFUL,
     @SerializedName("transferred") TRANSFERRED,
     @SerializedName("failed") FAILED
@@ -385,6 +386,9 @@ data class CheckoutProcessResponse(
 
     val authorizePaymentLink: String?
         get() = links?.get("authorizePayment")?.href
+
+    val paymentRedirect: String?
+        get() = links?.get("paymentRedirect")?.href
 
     val originCandidateLink: String?
         get() = paymentResult?.originCandidateLink
