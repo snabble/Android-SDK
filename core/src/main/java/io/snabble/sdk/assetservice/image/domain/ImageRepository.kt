@@ -1,4 +1,4 @@
-package io.snabble.sdk.assetservice.domain
+package io.snabble.sdk.assetservice.image.domain
 
 import android.graphics.Bitmap
 

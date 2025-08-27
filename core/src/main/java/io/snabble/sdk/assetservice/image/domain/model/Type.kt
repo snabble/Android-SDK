@@ -1,4 +1,4 @@
-package io.snabble.sdk.assetservice.domain.model
+package io.snabble.sdk.assetservice.image.domain.model
 
 /**
  * Enum class for describing the image type

@@ -6,8 +6,8 @@ import io.snabble.sdk.assetservice.assets.data.source.dto.AssetDto
 import io.snabble.sdk.assetservice.assets.data.source.dto.ManifestDto
 import io.snabble.sdk.assetservice.assets.domain.AssetsRepository
 import io.snabble.sdk.assetservice.assets.domain.model.Asset
-import io.snabble.sdk.assetservice.domain.model.Type
-import io.snabble.sdk.assetservice.domain.model.UiMode
+import io.snabble.sdk.assetservice.image.domain.model.Type
+import io.snabble.sdk.assetservice.image.domain.model.UiMode
 import io.snabble.sdk.utils.Logger
 import org.apache.commons.io.FilenameUtils
 

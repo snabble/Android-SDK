@@ -1,9 +1,9 @@
-package io.snabble.sdk.assetservice.data
+package io.snabble.sdk.assetservice.image.data
 
 import android.graphics.Bitmap
-import io.snabble.sdk.assetservice.data.local.image.LocalDiskDataSource
-import io.snabble.sdk.assetservice.data.local.image.LocalMemoryDataSource
-import io.snabble.sdk.assetservice.domain.ImageRepository
+import io.snabble.sdk.assetservice.image.data.local.image.LocalDiskDataSource
+import io.snabble.sdk.assetservice.image.data.local.image.LocalMemoryDataSource
+import io.snabble.sdk.assetservice.image.domain.ImageRepository
 import io.snabble.sdk.utils.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

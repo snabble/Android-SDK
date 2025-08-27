@@ -1,4 +1,4 @@
-package io.snabble.sdk.assetservice.data.local.image
+package io.snabble.sdk.assetservice.image.data.local.image
 
 import android.graphics.Bitmap
 import android.util.LruCache
