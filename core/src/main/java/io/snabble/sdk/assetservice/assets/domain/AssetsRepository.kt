@@ -1,6 +1,6 @@
-package io.snabble.sdk.assetservice.domain
+package io.snabble.sdk.assetservice.assets.domain
 
-import io.snabble.sdk.assetservice.data.dto.AssetDto
+import io.snabble.sdk.assetservice.assets.data.source.dto.AssetDto
 import io.snabble.sdk.assetservice.domain.model.Type
 import io.snabble.sdk.assetservice.domain.model.UiMode
 

@@ -1,12 +1,12 @@
-package io.snabble.sdk.assetservice.data.remote
+package io.snabble.sdk.assetservice.assets.data.source
 
 import com.google.gson.JsonSyntaxException
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.assetservice.data.dto.AssetDto
-import io.snabble.sdk.assetservice.data.dto.AssetVariantDto
-import io.snabble.sdk.assetservice.data.dto.ManifestDto
-import io.snabble.sdk.assetservice.data.dto.VariantDto
+import io.snabble.sdk.assetservice.assets.data.source.dto.AssetDto
+import io.snabble.sdk.assetservice.assets.data.source.dto.AssetVariantDto
+import io.snabble.sdk.assetservice.assets.data.source.dto.ManifestDto
+import io.snabble.sdk.assetservice.assets.data.source.dto.VariantDto
 import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +33,7 @@ interface RemoteAssetsSource {
     /**
      * Downloads the manifest containing metadata info for the Assets (e.g. name of the assets and the variant)
      */
-    suspend fun downloadManifestForProject(): ManifestDto?
+    suspend fun downloadManifest(): ManifestDto?
 
     /**
      * Downloads the assets (e.g the bytes) for each asset variant provided.
@@ -46,7 +46,7 @@ class RemoteAssetsSourceImpl(
     private val project: Project
 ) : RemoteAssetsSource {
 
-    override suspend fun downloadManifestForProject(): ManifestDto? =
+    override suspend fun downloadManifest(): ManifestDto? =
         with(Dispatchers.IO) {
             suspendCancellableCoroutine { continuation: Continuation<ManifestDto?> ->
                 val assetsUrl = project.assetsUrl ?: return@suspendCancellableCoroutine

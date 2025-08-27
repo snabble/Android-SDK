@@ -1,4 +1,4 @@
-package io.snabble.sdk.assetservice.data.dto
+package io.snabble.sdk.assetservice.assets.data.source.dto
 
 import com.google.gson.annotations.SerializedName
 
