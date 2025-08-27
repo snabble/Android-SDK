@@ -16,6 +16,7 @@ import io.snabble.sdk.assetservice.data.local.image.LocalDiskDataSourceImpl
 import io.snabble.sdk.assetservice.data.local.image.LocalMemorySourceImpl
 import io.snabble.sdk.assetservice.assets.data.source.RemoteAssetsSourceImpl
 import io.snabble.sdk.assetservice.assets.domain.AssetsRepository
+import io.snabble.sdk.assetservice.assets.domain.model.Asset
 import io.snabble.sdk.assetservice.domain.ImageRepository
 import io.snabble.sdk.assetservice.domain.model.Type
 import io.snabble.sdk.assetservice.domain.model.UiMode
@@ -81,7 +82,7 @@ class AssetServiceImpl(
     private suspend fun createBitmap(name: String, type: Type, uiMode: UiMode): Bitmap? {
         "create Bitmap"
         val cachedAsset =
-            assetRepository.loadAsset(name = name, type = type, uiMode = uiMode).xx("loaded Asset") ?: return null
+            assetRepository.loadAsset(name = name, type = type, uiMode = uiMode) ?: return null
         return when (type) {
             Type.SVG -> createSVGBitmap(cachedAsset.data)
             Type.JPG,
@@ -89,7 +90,7 @@ class AssetServiceImpl(
         }
     }
 
-    private suspend fun updateAssetsAndRetry(name: String, type: Type, uiMode: UiMode): AssetDto? {
+    private suspend fun updateAssetsAndRetry(name: String, type: Type, uiMode: UiMode): Asset? {
         assetRepository.updateAllAssets()
         return assetRepository.loadAsset(name = name, type = type, uiMode = uiMode)
     }

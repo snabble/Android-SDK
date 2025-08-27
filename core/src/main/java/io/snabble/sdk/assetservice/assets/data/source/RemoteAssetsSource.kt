@@ -102,7 +102,7 @@ class RemoteAssetsSourceImpl(
             }
         }
 
-        Logger.e("Filtered valid assets: $assetsUrls")
+        Logger.d("Filtered valid assets: $assetsUrls")
 
         val semaphore = Semaphore(MAX_CONCURRENT_REQUESTS)
 
@@ -120,7 +120,7 @@ class RemoteAssetsSourceImpl(
     private suspend fun loadAsset(project: Project, url: String, assetName: String): AssetDto? =
         withContext(Dispatchers.IO) {
             suspendCancellableCoroutine { continuation ->
-                Logger.e("Loading asset for $url")
+                Logger.d("Loading asset for $url")
                 val request = Request.Builder()
                     .url(Snabble.absoluteUrl(url))
                     .get()

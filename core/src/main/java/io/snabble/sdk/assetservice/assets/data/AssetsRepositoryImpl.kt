@@ -5,6 +5,7 @@ import io.snabble.sdk.assetservice.assets.data.source.RemoteAssetsSource
 import io.snabble.sdk.assetservice.assets.data.source.dto.AssetDto
 import io.snabble.sdk.assetservice.assets.data.source.dto.ManifestDto
 import io.snabble.sdk.assetservice.assets.domain.AssetsRepository
+import io.snabble.sdk.assetservice.assets.domain.model.Asset
 import io.snabble.sdk.assetservice.domain.model.Type
 import io.snabble.sdk.assetservice.domain.model.UiMode
 import io.snabble.sdk.utils.Logger
@@ -32,7 +33,6 @@ class AssetsRepositoryImpl(
 
         Logger.d("Saving new assets $assets locally...")
         localAssetDataSource.saveMultipleAssets(assets = assets)
-
     }
 
     private suspend fun removeDeletedAssets(manifest: ManifestDto) {
@@ -46,8 +46,8 @@ class AssetsRepositoryImpl(
         if (it == null) Logger.e("Manifest couldn't be loaded")
     }
 
-    override suspend fun loadAsset(name: String, type: Type, uiMode: UiMode): AssetDto? =
-        getLocalAsset(filename = name.createFileName(type, uiMode))
+    override suspend fun loadAsset(name: String, type: Type, uiMode: UiMode): Asset? =
+        getLocalAsset(filename = name.createFileName(type, uiMode))?.toModel()
 
     private suspend fun getLocalAsset(filename: String): AssetDto? = localAssetDataSource.loadAsset(filename)
 
@@ -56,3 +56,5 @@ class AssetsRepositoryImpl(
         return "$cleanedName${uiMode.value}${type.value}"
     }
 }
+
+private fun AssetDto.toModel() = Asset(name = name, hash = hash, data = data)
