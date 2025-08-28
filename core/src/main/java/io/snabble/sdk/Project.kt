@@ -36,7 +36,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.logging.HttpLoggingInterceptor
 import org.apache.commons.lang3.LocaleUtils
 import java.io.File
 import java.math.RoundingMode
@@ -554,7 +553,6 @@ class Project internal constructor(
             .newBuilder()
             .addInterceptor(SnabbleAuthorizationInterceptor(this))
             .addInterceptor(AcceptedLanguageInterceptor())
-            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
             .build()
 
         _shoppingCart.tryEmit(ShoppingCart(this))
