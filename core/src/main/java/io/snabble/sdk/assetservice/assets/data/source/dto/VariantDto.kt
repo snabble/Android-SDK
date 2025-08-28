@@ -2,7 +2,7 @@ package io.snabble.sdk.assetservice.assets.data.source.dto
 
 import com.google.gson.annotations.SerializedName
 
-enum class VariantDto(var factor: String?, var density: Float) {
+internal enum class VariantDto(var factor: String?, var density: Float) {
     @SerializedName("1x")
     MDPI(factor = "1x", density = 1.0f),
 

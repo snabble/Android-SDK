@@ -11,7 +11,7 @@ import io.snabble.sdk.assetservice.image.domain.model.UiMode
 import io.snabble.sdk.utils.Logger
 import org.apache.commons.io.FilenameUtils
 
-class AssetsRepositoryImpl(
+internal class AssetsRepositoryImpl(
     private val remoteAssetsSource: RemoteAssetsSource,
     private val localAssetDataSource: LocalAssetDataSource
 ) : AssetsRepository {

@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 
-interface LocalMemoryDataSource {
+internal interface LocalMemoryDataSource {
 
     val evictedItems: Flow<Pair<String, Bitmap>?>
     suspend fun getBitmap(key: String): Bitmap?
@@ -20,7 +20,7 @@ interface LocalMemoryDataSource {
     fun clearCache()
 }
 
-class LocalMemorySourceImpl : LocalMemoryDataSource {
+internal class LocalMemorySourceImpl : LocalMemoryDataSource {
 
     private val memoryCache: LruCache<String, Bitmap>
 

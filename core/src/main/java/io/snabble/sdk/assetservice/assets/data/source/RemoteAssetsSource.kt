@@ -28,7 +28,7 @@ import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.time.Duration.Companion.seconds
 
-interface RemoteAssetsSource {
+internal interface RemoteAssetsSource {
 
     /**
      * Downloads the manifest containing metadata info for the Assets (e.g. name of the assets and the variant)
@@ -42,7 +42,7 @@ interface RemoteAssetsSource {
     suspend fun downloadAllAssets(files: List<AssetVariantDto>): List<AssetDto>
 }
 
-class RemoteAssetsSourceImpl(
+internal class RemoteAssetsSourceImpl(
     private val project: Project
 ) : RemoteAssetsSource {
 

@@ -13,7 +13,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 
-interface LocalAssetDataSource {
+internal interface LocalAssetDataSource {
 
     suspend fun loadAsset(name: String): AssetDto?
     suspend fun saveMultipleAssets(assets: List<AssetDto>)
@@ -23,7 +23,7 @@ interface LocalAssetDataSource {
     suspend fun cleanupOrphanedFiles()
 }
 
-class LocalAssetDataSourceImpl(
+internal class LocalAssetDataSourceImpl(
     private val project: Project,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : LocalAssetDataSource {

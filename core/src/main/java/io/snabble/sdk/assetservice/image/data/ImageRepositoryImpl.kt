@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ImageRepositoryImpl(
+internal class ImageRepositoryImpl(
     private val localMemoryDataSource: LocalMemoryDataSource,
     private val localDiskDataSource: LocalDiskDataSource
 ) : ImageRepository {

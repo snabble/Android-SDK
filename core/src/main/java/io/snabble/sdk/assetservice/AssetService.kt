@@ -1,3 +1,5 @@
+@file:Suppress("TooGenericExceptionCaught")
+
 package io.snabble.sdk.assetservice
 
 import android.content.Context
@@ -9,13 +11,12 @@ import android.util.DisplayMetrics
 import com.caverock.androidsvg.SVG
 import io.snabble.sdk.Project
 import io.snabble.sdk.assetservice.assets.data.AssetsRepositoryImpl
-import io.snabble.sdk.assetservice.image.data.ImageRepositoryImpl
 import io.snabble.sdk.assetservice.assets.data.source.LocalAssetDataSourceImpl
-import io.snabble.sdk.assetservice.image.data.local.image.LocalDiskDataSourceImpl
-import io.snabble.sdk.assetservice.image.data.local.image.LocalMemorySourceImpl
 import io.snabble.sdk.assetservice.assets.data.source.RemoteAssetsSourceImpl
 import io.snabble.sdk.assetservice.assets.domain.AssetsRepository
-import io.snabble.sdk.assetservice.assets.domain.model.Asset
+import io.snabble.sdk.assetservice.image.data.ImageRepositoryImpl
+import io.snabble.sdk.assetservice.image.data.local.image.LocalDiskDataSourceImpl
+import io.snabble.sdk.assetservice.image.data.local.image.LocalMemorySourceImpl
 import io.snabble.sdk.assetservice.image.domain.ImageRepository
 import io.snabble.sdk.assetservice.image.domain.model.Type
 import io.snabble.sdk.assetservice.image.domain.model.UiMode
@@ -30,24 +31,39 @@ interface AssetService {
     suspend fun loadAsset(name: String, type: Type, uiMode: UiMode): Bitmap?
 }
 
-class AssetServiceImpl(
+internal class AssetServiceImpl(
     private val displayMetrics: DisplayMetrics,
     private val assetRepository: AssetsRepository,
     private val imageRepository: ImageRepository,
 ) : AssetService {
 
+    /**
+     * Updates all assets and safes them locally
+     */
     override suspend fun updateAllAssets() {
         assetRepository.updateAllAssets()
     }
 
+    /**
+     * Loads an asset and returns it converted as [Bitmap].
+     * Bitmap type can be any of these [Type].
+     * To define the [UiMode] use the helper function [Context.getUiMode] or set it directly if needed.
+     */
     override suspend fun loadAsset(name: String, type: Type, uiMode: UiMode): Bitmap? {
         val bitmap = when (val bitmap = imageRepository.getBitmap(key = name)) {
             null -> createBitmap(name, type, uiMode)
             else -> bitmap
-        } ?: return null
+        }
 
-        //Save converted bitmap
-        imageRepository.putBitmap(name, bitmap)
+        if (bitmap == null) {
+            val newBitmap = updateAssetsAndRetry(name, type, uiMode)
+            return newBitmap?.also {
+                imageRepository.putBitmap(name, it)
+            }
+        } else {
+            //Save converted bitmap
+            imageRepository.putBitmap(name, bitmap)
+        }
 
         return bitmap
     }
@@ -78,7 +94,6 @@ class AssetServiceImpl(
     }
 
     private suspend fun createBitmap(name: String, type: Type, uiMode: UiMode): Bitmap? {
-        "create Bitmap"
         val cachedAsset =
             assetRepository.loadAsset(name = name, type = type, uiMode = uiMode) ?: return null
         return when (type) {
@@ -88,9 +103,9 @@ class AssetServiceImpl(
         }
     }
 
-    private suspend fun updateAssetsAndRetry(name: String, type: Type, uiMode: UiMode): Asset? {
+    private suspend fun updateAssetsAndRetry(name: String, type: Type, uiMode: UiMode): Bitmap? {
         assetRepository.updateAllAssets()
-        return assetRepository.loadAsset(name = name, type = type, uiMode = uiMode)
+        return createBitmap(name, type, uiMode)
     }
 }
 

@@ -1,3 +1,5 @@
+@file:Suppress("TooGenericExceptionCaught")
+
 package io.snabble.sdk.assetservice.image.data.local.image
 
 import android.graphics.Bitmap
@@ -13,15 +15,16 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
 
-interface LocalDiskDataSource {
+internal interface LocalDiskDataSource {
 
     suspend fun getBitmap(key: String): Bitmap?
     suspend fun saveToDisk(key: String, bitmap: Bitmap): Any
     suspend fun clearCache()
 }
 
-class LocalDiskDataSourceImpl(
+internal class LocalDiskDataSourceImpl(
     private val storageDirectory: File,
 ) : LocalDiskDataSource {
 
@@ -79,7 +82,7 @@ class LocalDiskDataSourceImpl(
 
         try {
             FileOutputStream(cacheFile).use { outputStream ->
-                if (bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)) {
+                if (bitmap.compress(Bitmap.CompressFormat.PNG, PNG_COMPRESSION_QUALITY, outputStream)) {
                     Logger.d("Saved image to disk: $key")
                 } else {
                     cacheFile.delete()
@@ -105,14 +108,14 @@ class LocalDiskDataSourceImpl(
             val totalSize = files.sumOf { it.length() }
 
             if (totalSize > MAX_DISK_CACHE_SIZE) {
-                Logger.d("Cleaning disk cache: ${totalSize / (1024 * 1024)}MB")
+                Logger.d("Cleaning disk cache: ${totalSize / (BYTES_TO_MB)}MB")
 
                 // Sort by last modified (oldest first)
                 val sortedFiles = files.sortedBy { it.lastModified() }
                 var currentSize = totalSize
 
                 for (file in sortedFiles) {
-                    if (currentSize <= MAX_DISK_CACHE_SIZE * 0.8) break // Keep 80% of max size
+                    if (currentSize <= MAX_DISK_CACHE_SIZE * CACHE_CLEANUP_TARGET_RATIO) break // Keep 80% of max size
 
                     currentSize -= file.length()
                     file.delete()
@@ -127,10 +130,14 @@ class LocalDiskDataSourceImpl(
     private fun String.toMD5(): String {
         return try {
             val digest = MessageDigest.getInstance("MD5")
-            digest.update(this.toByteArray())
+            digest.update(toByteArray())
             digest.digest().joinToString("") { "%02x".format(it) }
-        } catch (e: Exception) {
-            this.hashCode().toString()
+        } catch (e: NoSuchAlgorithmException) {
+            Logger.e("MD5 algorithm not available", e)
+            hashCode().toString()
+        } catch (e: OutOfMemoryError) {
+            Logger.e("Out of memory creating MD5", e)
+            hashCode().toString()
         }
     }
 
@@ -140,5 +147,8 @@ class LocalDiskDataSourceImpl(
         private const val DISK_CACHE_SUBDIR = "assets/"
         private const val MAX_DISK_CACHE_SIZE = 50 * 1024 * 1024L // 50MB
         private const val CACHE_FILE_EXTENSION = ".cache"
+        private const val PNG_COMPRESSION_QUALITY = 100
+        private const val BYTES_TO_MB = 1024 * 1024
+        private const val CACHE_CLEANUP_TARGET_RATIO = 0.8
     }
 }
