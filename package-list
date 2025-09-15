@@ -5,6 +5,8 @@ module:accessibility-toolbox
 io.snabble.accessibility
 module:core
 io.snabble.sdk
+io.snabble.sdk.assetservice
+io.snabble.sdk.assetservice.image.domain.model
 io.snabble.sdk.auth
 io.snabble.sdk.auth.useragent
 io.snabble.sdk.checkin
