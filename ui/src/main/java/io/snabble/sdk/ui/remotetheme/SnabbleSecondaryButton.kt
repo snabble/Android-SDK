@@ -41,7 +41,7 @@ class SnabbleSecondaryButton @JvmOverloads constructor(
     private fun setRippleColor(project: Project?) {
         val highlightColor = MaterialColors.getColor(
             context,
-            com.google.android.material.R.attr.colorControlHighlight,
+            R.attr.colorControlHighlight,
             Color.TRANSPARENT
         )
 
