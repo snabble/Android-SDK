@@ -882,6 +882,14 @@ class ShoppingCart(
         }
     }
 
+    fun notifyOnlinePriceUpdate(list: ShoppingCart) {
+        Dispatch.mainThread {
+            listeners?.forEach { listener ->
+                listener.onOnlinePricesUpdated(list)
+            }
+        }
+    }
+
     private fun notifyTaxationChanged(list: ShoppingCart, taxation: Taxation) {
         Dispatch.mainThread {
             listeners?.forEach { listener ->

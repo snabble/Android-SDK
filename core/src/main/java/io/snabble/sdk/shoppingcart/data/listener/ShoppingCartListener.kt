@@ -15,6 +15,7 @@ interface ShoppingCartListener {
     fun onItemRemoved(cart: ShoppingCart, item: ShoppingCart.Item, pos: Int)
     fun onProductsUpdated(cart: ShoppingCart)
     fun onPricesUpdated(cart: ShoppingCart)
+    fun onOnlinePricesUpdated(cart: ShoppingCart)
     fun onCheckoutLimitReached(cart: ShoppingCart)
     fun onOnlinePaymentLimitReached(cart: ShoppingCart)
     fun onTaxationChanged(cart: ShoppingCart, taxation: Taxation)

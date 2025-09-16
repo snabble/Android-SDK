@@ -177,6 +177,7 @@ internal class ShoppingCartUpdater(
             invalidItemIds = null
             checkLimits()
             notifyPriceUpdate(this)
+            notifyOnlinePriceUpdate(this)
         }
     }
 
