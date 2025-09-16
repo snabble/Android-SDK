@@ -263,6 +263,7 @@ data class LineItem(
 data class PriceModifier(
     val name: String? = null,
     val price: Int = 0,
+    val action: String? = null
 )
 
 data class ExitToken(

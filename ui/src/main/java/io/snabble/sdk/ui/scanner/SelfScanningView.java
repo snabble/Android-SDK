@@ -8,6 +8,8 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.os.Vibrator;
 import android.text.InputType;
@@ -601,6 +603,13 @@ public class SelfScanningView extends FrameLayout {
         public void onQuantityChanged(@NonNull ShoppingCart cart, ShoppingCart.Item item) {
             showScanMessage(item.getProduct(), false);
         }
+
+        @Override
+        public void onOnlinePricesUpdated(@NonNull ShoppingCart cart) {
+            Handler infoHandler = new Handler(Looper.getMainLooper());
+            infoHandler.postDelayed(() -> resumeBarcodeScanner(), 500);
+        }
+
 
         @Override
         public void onChanged(@NonNull ShoppingCart cart) {

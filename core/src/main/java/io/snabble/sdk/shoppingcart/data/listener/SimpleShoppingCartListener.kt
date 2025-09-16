@@ -20,6 +20,8 @@ abstract class SimpleShoppingCartListener : ShoppingCartListener {
 
     override fun onPricesUpdated(cart: ShoppingCart) = onChanged(cart)
 
+    override fun onOnlinePricesUpdated(cart: ShoppingCart) = onChanged(cart)
+
     override fun onTaxationChanged(cart: ShoppingCart, taxation: Taxation) = onChanged(cart)
 
     override fun onCheckoutLimitReached(cart: ShoppingCart) {}
