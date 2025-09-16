@@ -8,6 +8,11 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.82.2]
+### Fixed
+* Unlock frozen camera after scan
+* Wrong applied price modifiers
+* 
 ## [0.82.1]
 ### Changed
 * Dependency updates
