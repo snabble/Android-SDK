@@ -143,6 +143,7 @@ class ScannerBottomSheetView @JvmOverloads constructor(
 
     override fun onProductsUpdated(cart: ShoppingCart) {}
     override fun onPricesUpdated(cart: ShoppingCart) = checkSaleStop()
+    override fun onOnlinePricesUpdated(cart: ShoppingCart) {}
     override fun onCheckoutLimitReached(cart: ShoppingCart) {}
     override fun onOnlinePaymentLimitReached(cart: ShoppingCart) {}
     override fun onTaxationChanged(cart: ShoppingCart, taxation: Taxation) {}

@@ -5,6 +5,8 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
+import io.snabble.sdk.assetservice.AssetService
+import io.snabble.sdk.assetservice.assetServiceFactory
 import io.snabble.sdk.auth.SnabbleAuthorizationInterceptor
 import io.snabble.sdk.checkout.Checkout
 import io.snabble.sdk.codes.templates.CodeTemplate
@@ -357,6 +359,9 @@ class Project internal constructor(
     lateinit var assets: Assets
         private set
 
+    lateinit var assetService: AssetService
+        private set
+
     var appTheme: AppTheme? = null
         private set
 
@@ -567,6 +572,8 @@ class Project internal constructor(
 
         assets = Assets(this)
 
+        assetService = assetServiceFactory(project = this, context = Snabble.application)
+
         googlePayHelper = paymentMethodDescriptors
             .mapNotNull { it.paymentMethod }
             .firstOrNull { it == PaymentMethod.GOOGLE_PAY }
@@ -579,7 +586,6 @@ class Project internal constructor(
             coupons.setProjectCoupons(couponList)
         }
         coupons.update()
-
         notifyUpdate()
     }
 

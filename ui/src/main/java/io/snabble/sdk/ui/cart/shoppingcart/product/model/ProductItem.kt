@@ -42,7 +42,8 @@ internal data class ProductItem(
                 .sumOf { it.price * quantity }
                 .let(::abs)
         }
-        return totalPrice + depositPrice + sumOfModifierPriceDiscounts
+        return if (item.lineItem?.priceModifiers?.firstOrNull()?.action == "replace") item.lineItem?.price
+            ?: 0 else totalPrice + depositPrice + sumOfModifierPriceDiscounts
     }
 
     fun getPriceWithDiscountsApplied(): Int {

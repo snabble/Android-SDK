@@ -24,6 +24,8 @@ interface DefaultShoppingCartListener : ShoppingCartListener {
     override fun onPricesUpdated(cart: ShoppingCart) {
     }
 
+    override fun onOnlinePricesUpdated(cart: ShoppingCart) {}
+
     override fun onCheckoutLimitReached(cart: ShoppingCart) {
     }
 
