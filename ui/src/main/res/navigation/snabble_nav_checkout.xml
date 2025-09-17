@@ -38,6 +38,11 @@
         android:label="@string/Snabble.Checkout.title" />
 
     <fragment
+        android:id="@+id/snabble_nav_authentication"
+        android:name="io.snabble.sdk.ui.checkout.AuthenticationFragment"
+        android:label="@string/Snabble.Checkout.title" />
+
+    <fragment
         android:id="@+id/snabble_nav_payment_payone_sepa_mandate"
         android:name="io.snabble.sdk.ui.payment.payone.sepa.mandate.PayoneSepaMandateFragment"
         android:label="@string/Snabble.Checkout.title" />

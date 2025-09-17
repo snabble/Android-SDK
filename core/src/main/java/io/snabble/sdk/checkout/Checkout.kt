@@ -3,14 +3,18 @@ package io.snabble.sdk.checkout
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
-import io.snabble.sdk.*
+import io.snabble.sdk.FulfillmentState
+import io.snabble.sdk.MutableAccessibleLiveData
+import io.snabble.sdk.PaymentMethod
+import io.snabble.sdk.Product
+import io.snabble.sdk.Project
+import io.snabble.sdk.Snabble
 import io.snabble.sdk.Snabble.instance
 import io.snabble.sdk.payment.PaymentCredentials
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.utils.Dispatch
 import io.snabble.sdk.utils.Logger
 import java.io.File
-import java.util.*
 import java.util.concurrent.Future
 
 class Checkout @JvmOverloads constructor(
@@ -499,6 +503,7 @@ class Checkout @JvmOverloads constructor(
             || state == CheckoutState.PAYMENT_PROCESSING
             || (state == CheckoutState.PAYMENT_APPROVED && !areAllFulfillmentsClosed())
             || state == CheckoutState.PAYONE_SEPA_MANDATE_REQUIRED
+            || state == CheckoutState.AUTHENTICATING
         ) {
             scheduleNextPoll()
         }
@@ -578,6 +583,10 @@ class Checkout @JvmOverloads constructor(
 
                 CheckState.PROCESSING -> {
                     notifyStateChanged(CheckoutState.PAYMENT_PROCESSING)
+                }
+
+                CheckState.AUTHENTICATING -> {
+                    notifyStateChanged(CheckoutState.AUTHENTICATING)
                 }
 
                 CheckState.SUCCESSFUL -> {
