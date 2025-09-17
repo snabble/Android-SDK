@@ -3,16 +3,17 @@ All notable changes to this project will be documented in this file.
 
 ## UNRELEASED
 ### Added
-
 ### Changed
 ### Removed
 ### Fixed
 
 ## [0.82.2]
+### Added
+* ui: Add new authentication fragment to handle new checkout state
 ### Fixed
-* Unlock frozen camera after scan
-* Wrong applied price modifiers
-* 
+* ui: Unlock frozen camera after scan
+* ui/core: Handle wrong applied price modifiers
+
 ## [0.82.1]
 ### Changed
 * Dependency updates
