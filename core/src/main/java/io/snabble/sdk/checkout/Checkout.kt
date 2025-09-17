@@ -503,6 +503,7 @@ class Checkout @JvmOverloads constructor(
             || state == CheckoutState.PAYMENT_PROCESSING
             || (state == CheckoutState.PAYMENT_APPROVED && !areAllFulfillmentsClosed())
             || state == CheckoutState.PAYONE_SEPA_MANDATE_REQUIRED
+            || state == CheckoutState.AUTHENTICATING
         ) {
             scheduleNextPoll()
         }

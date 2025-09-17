@@ -1,26 +1,20 @@
 package io.snabble.sdk.ui.checkout
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.webkit.CookieManager
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.fragment.app.Fragment
 import io.snabble.sdk.Snabble
+import io.snabble.sdk.ui.BaseFragment
 import io.snabble.sdk.ui.R
 import io.snabble.sdk.utils.Logger
 
-class AuthenticationFragment : Fragment() {
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.snabble_fragment_authentication, container, false)
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+class AuthenticationFragment : BaseFragment(R.layout.snabble_fragment_authentication) {
+    override fun onActualViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onActualViewCreated(view, savedInstanceState)
 
         val currentCheckout = Snabble.checkedInProject.value?.checkout
 
@@ -53,8 +47,8 @@ class AuthenticationFragment : Fragment() {
                     SUCCESS,
                     ERROR,
                     BACK -> {
-                        // Check if the we need to do something, since the checkout activity is observing the state and should handle redirects itself
-                        // If not we need something like popBackstack and maybe notify the user with a toast
+                        // No need to pop it since we're polling for the checkout state in the activity
+                        // and navigate away as soon the get an update state
                         return true
                     }
                 }

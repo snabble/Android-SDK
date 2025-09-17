@@ -22,6 +22,7 @@ val CheckoutState.isCheckoutState: Boolean
         CheckoutState.WAIT_FOR_GATEKEEPER,
         CheckoutState.WAIT_FOR_APPROVAL,
         CheckoutState.PAYMENT_PROCESSING,
+        CheckoutState.AUTHENTICATING,
         CheckoutState.PAYMENT_APPROVED,
         CheckoutState.DENIED_TOO_YOUNG,
         CheckoutState.DENIED_BY_PAYMENT_PROVIDER,
