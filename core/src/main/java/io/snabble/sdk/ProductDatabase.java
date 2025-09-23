@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
@@ -1133,6 +1134,49 @@ public class ProductDatabase {
 
         return getFirstProductAndClose(cursor);
     }
+
+    /**
+     * Finds products by its prefix or the name itself. Matching is normalized, so "Apple" finds also "apple".
+     *
+     * @param namePrefix The name of the product.
+     * @return The firsts product matching, otherwise empty list if no product was found.
+     */
+    public List<Product> findByNamePrefix(String namePrefix) {
+        if (namePrefix == null || namePrefix.isEmpty() || namePrefix.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        String normalizedPrefix = StringNormalizer.normalize(namePrefix);
+
+        // Simple direct query on products table
+        String sql = "SELECT sku, name FROM products WHERE LOWER(name) LIKE ? ORDER BY name";
+        String[] args = {normalizedPrefix.toLowerCase() + "%"};
+
+        Cursor cursor = null;
+        List<Product> products = new ArrayList<>();
+
+        try {
+            cursor = db.rawQuery(sql, args);
+
+            while (cursor.moveToNext()) {
+                String sku = cursor.getString(0);
+                String name = cursor.getString(1);
+
+                // Create minimal Product object or however you construct them
+                Product product = new Product.Builder().setName(name).setSku(sku).build();
+                products.add(product);
+            }
+        } catch (Exception e) {
+            Logger.e("PRODUCT_SEARCH", "Error searching products", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return products;
+    }
+
 
     private void exec(String sql) {
         Cursor cursor = rawQuery(sql, null, null);

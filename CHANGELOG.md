@@ -9,6 +9,10 @@ All notable changes to this project will be documented in this file.
 
 ## [0.82.2]
 ### Added
+* core: Add function to search for products by a prefix 
+
+## [0.82.2]
+### Added
 * ui: Add new authentication fragment to handle new checkout state
 ### Fixed
 * ui: Unlock frozen camera after scan
