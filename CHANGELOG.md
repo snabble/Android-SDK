@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.82.3]
+### Fixed
+* ui: Show replace Modifiers as negative discount
+
 ## [0.82.2]
 ### Added
 * core: Add function to search for products by a prefix 

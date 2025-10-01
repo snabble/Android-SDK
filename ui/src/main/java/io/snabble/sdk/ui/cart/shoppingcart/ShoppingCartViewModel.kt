@@ -198,19 +198,24 @@ class ShoppingCartViewModel : ViewModel() {
                     val name = priceModifier.name.orEmpty()
                     val weightUnit = item.item.lineItem?.weightUnit
                     val referenceUnit = item.item.lineItem?.referenceUnit
-                    val modifiedPrice = if (weightUnit != null && referenceUnit != null) {
-                        priceModifier
-                            .convertPriceModifier(
-                                amount = item.quantity,
-                                weightedUnit = weightUnit,
-                                referencedUnit = referenceUnit
-                            )
-                            .let { priceFormatter?.format(it).orEmpty() }
-                    } else {
-                        (priceModifier.price * item.quantity).let {
-                            priceFormatter?.format(it).orEmpty()
+                    val modifiedPrice =
+                        if (priceModifier.action == "replace") {
+                            priceFormatter?.format(
+                                (item.item.lineItem?.price ?: 0) - priceModifier.price
+                            ).orEmpty()
+                        } else if (weightUnit != null && referenceUnit != null) {
+                            priceModifier
+                                .convertPriceModifier(
+                                    amount = item.quantity,
+                                    weightedUnit = weightUnit,
+                                    referencedUnit = referenceUnit
+                                )
+                                .let { priceFormatter?.format(it).orEmpty() }
+                        } else {
+                            (priceModifier.price * item.quantity).let {
+                                priceFormatter?.format(it).orEmpty()
+                            }
                         }
-                    }
                     // Set this to zero because the backend already subtracted the discount from the total price:
                     val discountValue = 0
                     modifiedPrice.let {
@@ -218,7 +223,8 @@ class ShoppingCartViewModel : ViewModel() {
                             DiscountItem(
                                 name = name,
                                 discount = modifiedPrice,
-                                discountValue = discountValue
+                                discountValue = discountValue,
+                                useNegativeValue = priceModifier.action == "replace"
                             )
                         )
                     }

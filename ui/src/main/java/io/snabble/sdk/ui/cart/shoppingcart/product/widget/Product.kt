@@ -90,7 +90,7 @@ private fun DiscountItemWidget(it: DiscountItem) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            it.discount,
+            if (it.useNegativeValue) "-${it.discount}" else it.discount,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface
         )
