@@ -4,13 +4,20 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 ### Added
 ### Changed
-* Dependency updates
 ### Removed
 ### Fixed
 
-## [0.82.3]
+## [0.82.5]
+### Changed
+* Dependency updates
+
+## [0.82.4]
 ### Fixed
 * ui: Show replace Modifiers as negative discount
+
+## [0.82.3]
+### Fixed
+* core: Add new search function for products inside the db
 
 ## [0.82.2]
 ### Added
