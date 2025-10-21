@@ -16,10 +16,6 @@ All notable changes to this project will be documented in this file.
 * ui: Show replace Modifiers as negative discount
 
 ## [0.82.3]
-### Fixed
-* core: Add new search function for products inside the db
-
-## [0.82.2]
 ### Added
 * core: Add function to search for products by a prefix 
 
