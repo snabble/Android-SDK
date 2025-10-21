@@ -33,13 +33,11 @@ android {
 
     buildTypes {
         release {
-            postprocessing {
-                isRemoveUnusedCode = false
-                isRemoveUnusedResources = false
-                isObfuscate = false
-                isOptimizeCode = false
-                proguardFile("proguard-rules.pro")
-            }
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 
@@ -76,6 +74,7 @@ android {
             it.useJUnitPlatform()
         }
     }
+
 }
 
 dependencies {
@@ -102,6 +101,7 @@ dependencies {
     implementation(libs.bundles.compose)
     implementation(libs.androidx.swiperefreshlayout)
     debugImplementation(libs.bundles.compose.debug)
+    implementation("androidx.compose.material:material-icons-core:1.7.8")
 
     implementation(libs.bundles.koin)
 

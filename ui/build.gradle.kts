@@ -33,13 +33,11 @@ android {
 
     buildTypes {
         release {
-            postprocessing {
-                isRemoveUnusedCode = false
-                isRemoveUnusedResources = false
-                isObfuscate = false
-                isOptimizeCode = false
-                proguardFile("proguard-rules.pro")
-            }
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 
@@ -103,6 +101,7 @@ dependencies {
     implementation(libs.snabble.phoneAuth.countryCodePicker)
     implementation(libs.bundles.camera)
     implementation(libs.bundles.navigation)
+    implementation("androidx.compose.material:material-icons-core:1.7.8")
 
     implementation(libs.bundles.compose)
     debugImplementation(libs.bundles.compose.debug)
