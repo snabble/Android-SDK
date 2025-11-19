@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.82.6]
+### Fixed
+* ui: Fix missing container selection
+
 ## [0.82.5]
 ### Changed
 * Dependency updates
