@@ -47,7 +47,7 @@ class SelectBundleDialog {
         listOfProducts.add(product);
 
         for (Product p : bundles) {
-            if (p.getListPrice() != 0 && p.getAvailability() != Product.Availability.NOT_AVAILABLE) {
+            if (p.getAvailability() != Product.Availability.NOT_AVAILABLE) {
                 listOfProducts.add(p);
             }
         }
