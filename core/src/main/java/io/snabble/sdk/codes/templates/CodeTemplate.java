@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import io.snabble.sdk.codes.ScannedCode;
@@ -195,7 +196,7 @@ public class CodeTemplate {
                         break;
                     default:
                         if (type.startsWith("_")) {
-                            if (length == 0) {
+                            if (length == 0 && !Objects.equals(subType, "*")) {
                                 length = type.length();
                             }
                             group = new IgnoreGroup(this, length);
@@ -306,6 +307,14 @@ public class CodeTemplate {
 
         if (matchedCode != null) {
             reset();
+
+            if (groups.stream().noneMatch(g -> g instanceof WildcardGroup) &&
+                    groups.stream().noneMatch(g -> g.length() == 0) &&
+                    groups.stream().mapToInt(Group::length).sum() != matchedCode.length()) {
+                matchedCode = null;
+                reset();
+                return null;
+            }
 
             int start = 0;
             for (int i = 0; i < groups.size(); i++) {

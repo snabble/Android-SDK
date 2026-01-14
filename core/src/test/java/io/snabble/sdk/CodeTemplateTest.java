@@ -110,6 +110,8 @@ public class CodeTemplateTest {
 
         Assert.assertEquals("999", newCodeTemplate("123{_:5}{code:3}").match("12345678999").buildCode().getLookupCode());
         Assert.assertEquals("21", newCodeTemplate("{code=21}{_:10}{ec}").match("2134743747736").buildCode().getLookupCode());
+        Assert.assertEquals("4006229710214", newCodeTemplate("97{code:ean13}{price:6}{_}").match("9740062297102140000994").buildCode().getLookupCode());
+        Assert.assertNotNull(newCodeTemplate("voucher_{_:*}").match("voucher_valid").buildCode());
 
         // invalid matches
         Assert.assertNull(newCodeTemplate("{code:ean13}").match("0000000000001").buildCode());
@@ -118,7 +120,11 @@ public class CodeTemplateTest {
         Assert.assertNull(newCodeTemplate("{code:ean8}").match("87654320").buildCode());
         Assert.assertNull(newCodeTemplate("96{code:ean13}{embed:6}{price:5}{_}").match("970000000000000111111222223").buildCode());
         Assert.assertNull(newCodeTemplate("123{_:5}").match("55545678").buildCode());
+        Assert.assertNull(newCodeTemplate("123{_:5}").match("12345").buildCode());
+        Assert.assertNull(newCodeTemplate("123{_:5}").match("123456789").buildCode());
         Assert.assertNull(newCodeTemplate("9{_:14}").match("9123451234512").buildCode());
+        Assert.assertNull(newCodeTemplate("97{code:ean8}{price:6}{_}").match("9740062297102140000994").buildCode());
+
     }
 
     @Test

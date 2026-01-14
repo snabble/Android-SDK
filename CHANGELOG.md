@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 ### Removed
 ### Fixed
+* core: Fix missing code template validation
 
 ## [0.82.6]
 ### Fixed
