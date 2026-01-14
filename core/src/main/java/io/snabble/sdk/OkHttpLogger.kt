@@ -41,7 +41,7 @@ internal class OkHttpLogger @JvmOverloads constructor(
 
         val tookMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNs)
 
-        val responseBody = response.body!!
+        val responseBody = response.body
         val contentLength = responseBody.contentLength()
         var bodySize = if (contentLength != -1L) "$contentLength-byte" else "unknown-length"
         if (response.networkResponse == null) {

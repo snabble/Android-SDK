@@ -74,7 +74,7 @@ internal class PayoneSepaMandateRepositoryImpl(
                 override fun onResponse(call: Call, response: Response) {
                     Logger.d(
                         "PAYONE SEPA mandate accept request successful. " +
-                                "HTTP-STATUS<${response.code}>: ${response.body?.string()}"
+                                "HTTP-STATUS<${response.code}>: ${response.body.string()}"
                     )
                     if (isActive) {
                         continuation.resume(true)
