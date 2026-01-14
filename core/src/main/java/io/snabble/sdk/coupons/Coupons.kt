@@ -80,7 +80,7 @@ class Coupons (
 
                 override fun onResponse(call: Call, response: Response) {
                     if (response.isSuccessful) {
-                        val responseBody = response.body?.string()
+                        val responseBody = response.body.string()
                         val localizedResponse = GsonBuilder().create()
                             .fromJson(responseBody, CouponResponse::class.java)
                         postValue(localizedResponse.coupons.filter { coupon ->

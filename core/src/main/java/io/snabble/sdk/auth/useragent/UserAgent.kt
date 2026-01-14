@@ -57,4 +57,4 @@ private fun Context.getVersionNumber(): String = try {
     "Unknown"
 }
 
-private fun Context.getMajorVersion(): String = getVersionNumber()?.split(".")?.firstOrNull() ?: "Unknown"
+private fun Context.getMajorVersion(): String = getVersionNumber().split(".").firstOrNull() ?: "Unknown"

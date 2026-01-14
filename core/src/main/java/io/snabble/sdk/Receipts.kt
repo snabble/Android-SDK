@@ -100,7 +100,7 @@ class Receipts internal constructor() {
             override fun onResponse(call: Call, response: Response) {
                 if (response.isSuccessful) {
                     val fos = FileOutputStream(file)
-                    IOUtils.copy(response.body?.byteStream(), fos)
+                    IOUtils.copy(response.body.byteStream(), fos)
                     callback?.success(file)
                 } else {
                     callback?.failure()
