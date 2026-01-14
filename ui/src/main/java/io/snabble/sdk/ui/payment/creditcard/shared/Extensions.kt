@@ -29,7 +29,7 @@ internal suspend inline fun <reified T> OkHttpClient.post(request: Request, gson
         override fun onResponse(call: Call, response: Response) {
             when {
                 response.isSuccessful -> {
-                    val body = response.body?.string()
+                    val body = response.body.string()
                     val typeToken = object : TypeToken<T>() {}.type
                     val data: T? = try {
                         gson.fromJson<T>(body, typeToken)
@@ -48,7 +48,7 @@ internal suspend inline fun <reified T> OkHttpClient.post(request: Request, gson
                 }
 
                 else -> {
-                    val body = response.body?.string()
+                    val body = response.body.string()
                     Log.e("Payment", body ?: "Unkown cause")
                     it.resume(Result.failure(Exception(response.message)))
                 }

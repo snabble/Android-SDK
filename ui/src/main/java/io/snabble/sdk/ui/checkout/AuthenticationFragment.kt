@@ -31,9 +31,6 @@ class AuthenticationFragment : BaseFragment(R.layout.snabble_fragment_authentica
             setSupportZoom(true)
             builtInZoomControls = true
             displayZoomControls = false
-
-            // Additional cookie-related settings
-            databaseEnabled = true
             cacheMode = WebSettings.LOAD_DEFAULT
         }
 

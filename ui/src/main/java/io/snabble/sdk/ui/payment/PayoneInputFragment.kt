@@ -31,7 +31,7 @@ open class PayoneInputFragment : BaseFragment(
         super.onCreate(savedInstanceState)
 
         projectId = requireNotNull(arguments?.getString(ARG_PROJECT_ID, null))
-        paymentMethod = requireNotNull(arguments?.serializableExtra(ARG_PAYMENT_TYPE) as? PaymentMethod)
+        paymentMethod = requireNotNull(arguments?.serializableExtra(ARG_PAYMENT_TYPE))
         saveCredentials = arguments?.getBoolean(ARG_SAVE_PAYMENT_CREDENTIALS, true) ?: true
         tokenizationData = requireNotNull(arguments?.parcelableExtra(ARG_TOKEN_DATA))
         formPrefillData = arguments?.parcelableExtra(ARG_FORM_PREFILL_DATA)
