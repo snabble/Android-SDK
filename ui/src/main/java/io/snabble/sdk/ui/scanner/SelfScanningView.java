@@ -273,6 +273,7 @@ public class SelfScanningView extends FrameLayout {
             DepositReturnVoucherHelper.insertDepositReturnVoucherItem(shoppingCart, codeTemplateScannedCodePair.getFirst(), codeTemplateScannedCodePair.getSecond());
             showInfo(getResources().getString(R.string.Snabble_Scanner_DepositReturnVoucher_Added));
         }
+        showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_unknownBarcode)));
     }
 
     private Boolean handleCoupon(List<ScannedCode> scannedCodes) {
