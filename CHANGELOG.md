@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.82.8]
+### Fixed
+* ui: fix missing warning dialog on unknown products
+
 ## [0.82.7]
 ### Fixed
 * core: Fix missing code template validation
