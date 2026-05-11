@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 ### Added
 ### Changed
+* ui: hide image of a product if its image url cant be resolved 
 ### Removed
 ### Fixed
 
