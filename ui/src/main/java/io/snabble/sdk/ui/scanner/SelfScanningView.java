@@ -223,20 +223,21 @@ public class SelfScanningView extends FrameLayout {
                     }
                 })
                 .setOnProductNotFoundListener(() -> {
-                    final Boolean couponAdded = handleCoupon(scannedCodes);
+                    final boolean couponAdded = handleCoupon(scannedCodes);
                     if (!couponAdded) {
-                        handleReturnDepositVoucher(scannedCodes);
-                    } else {
-                        showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_unknownBarcode)));
+                        final boolean voucherAdded = handleReturnDepositVoucher(scannedCodes);
+                        if (!voucherAdded) {
+                            showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_unknownBarcode)));
+                        }
                     }
                 })
-                .setOnNetworkErrorListener(() ->
-                {
-                    final Boolean couponAdded = handleCoupon(scannedCodes);
+                .setOnNetworkErrorListener(() -> {
+                    final boolean couponAdded = handleCoupon(scannedCodes);
                     if (!couponAdded) {
-                        handleReturnDepositVoucher(scannedCodes);
-                    } else {
-                        showWarning(getResources().getString(R.string.Snabble_Scanner_networkError));
+                        final boolean voucherAdded = handleReturnDepositVoucher(scannedCodes);
+                        if (!voucherAdded) {
+                            showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_networkError)));
+                        }
                     }
                 })
                 .setOnShelfCodeScannedListener(() ->
@@ -267,13 +268,14 @@ public class SelfScanningView extends FrameLayout {
                 .resolve();
     }
 
-    private void handleReturnDepositVoucher(List<ScannedCode> scannedCodes) {
+    private boolean handleReturnDepositVoucher(List<ScannedCode> scannedCodes) {
         final kotlin.Pair<CodeTemplate, String> codeTemplateScannedCodePair = DepositReturnVoucherHelper.getDrvCodeTemplateWithScannedCode(project, scannedCodes);
         if (codeTemplateScannedCodePair != null) {
             DepositReturnVoucherHelper.insertDepositReturnVoucherItem(shoppingCart, codeTemplateScannedCodePair.getFirst(), codeTemplateScannedCodePair.getSecond());
             showInfo(getResources().getString(R.string.Snabble_Scanner_DepositReturnVoucher_Added));
+            return true;
         }
-        showWarning(getResources().getString(I18nUtils.getIdentifier(getResources(), R.string.Snabble_Scanner_unknownBarcode)));
+        return false;
     }
 
     private Boolean handleCoupon(List<ScannedCode> scannedCodes) {
