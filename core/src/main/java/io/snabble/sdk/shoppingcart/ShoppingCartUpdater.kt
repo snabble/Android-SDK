@@ -201,7 +201,8 @@ internal class ShoppingCartUpdater(
     private fun addCartDiscounts(cartDiscountItems: List<LineItem>) {
         val totalCartDiscount = cartDiscountItems.sumOf { it.totalPrice }
         val cartDiscounts = cartDiscountItems.mapNotNull { it.name }
-        addCartDiscountLineItem(totalCartDiscount, cartDiscounts)
+        val discount = cartDiscountItems.firstOrNull{ it.discountRuleID != null}
+        addCartDiscountLineItem(totalCartDiscount, cartDiscounts,discount?.discountRuleID)
     }
 
     private fun deserializedCheckoutInfo(
@@ -238,13 +239,14 @@ internal class ShoppingCartUpdater(
         }
     }
 
-    private fun addCartDiscountLineItem(discounts: Int, cartDiscounts: List<String>) {
+    private fun addCartDiscountLineItem(discounts: Int, cartDiscounts: List<String>, discountRuleId: String?) {
         if (discounts != 0) {
             val lineItem = LineItem(
                 id = UUID.randomUUID().toString(),
                 amount = 1,
                 discountType = "cart",
-                name = cartDiscounts.first(),
+                name = cartDiscounts.firstOrNull(),
+                discountRuleID =discountRuleId,
                 price = discounts,
                 totalPrice = discounts,
                 type = LineItemType.DISCOUNT

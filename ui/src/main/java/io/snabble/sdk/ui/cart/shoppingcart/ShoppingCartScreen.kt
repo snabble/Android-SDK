@@ -11,7 +11,6 @@ import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import io.snabble.sdk.Product
 import io.snabble.sdk.checkout.LineItem
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.CartDiscount
@@ -47,6 +46,9 @@ fun ShoppingCartScreen(
             },
             onQuantityChanged = { item, quantity ->
                 viewModel.onEvent(UpdateQuantity(item, quantity))
+            },
+            onDeleteDiscount = {item, discountId ->
+                viewModel.onEvent(DeleteDiscount(item, discountId))
             }
         )
     }
@@ -57,7 +59,8 @@ private fun ShoppingCartScreen(
     uiState: UiState,
     modifier: Modifier = Modifier,
     onItemDeleted: (ShoppingCart.Item) -> Unit,
-    onQuantityChanged: (ShoppingCart.Item, Int) -> Unit
+    onQuantityChanged: (ShoppingCart.Item, Int) -> Unit,
+    onDeleteDiscount: (ShoppingCart.Item, String) -> Unit,
 ) {
 
     LazyColumn(
@@ -72,6 +75,9 @@ private fun ShoppingCartScreen(
                         onItemDeleted = { onItemDeleted(cartItem.item) },
                         onQuantityChanged = { quantity ->
                             onQuantityChanged(cartItem.item, quantity)
+                        },
+                        onDeleteDiscount = {
+                            onDeleteDiscount(cartItem.item, it)
                         }
                     )
                 }
@@ -84,7 +90,8 @@ private fun ShoppingCartScreen(
                 is CartDiscountItem -> {
                     CartDiscount(
                         modifier = Modifier.fillMaxWidth(),
-                        item = cartItem
+                        item = cartItem,
+                        onDelete = onItemDeleted
                     )
                 }
             }
@@ -128,7 +135,8 @@ private fun CardWithDefaultItems() {
     ShoppingCartScreen(
         uiState = uiState,
         onItemDeleted = {},
-        onQuantityChanged = { _, _ -> }
+        onQuantityChanged = { _, _ -> },
+        onDeleteDiscount = {_,_ ->}
     )
 }
 
@@ -146,9 +154,11 @@ private fun CardWithDiscountItem() {
                 quantityText = "1",
                 discounts = listOf(
                     DiscountItem(
+                        id = null,
                         name = "5€ Discount",
                         discount = "-5,00€",
-                        discountValue = -500
+                        discountValue = -500,
+                        isCoupon = true
                     )
                 ),
                 discountedPrice = "4,99€",
@@ -163,7 +173,8 @@ private fun CardWithDiscountItem() {
     ShoppingCartScreen(
         uiState = uiState,
         onItemDeleted = {},
-        onQuantityChanged = { _, _ -> }
+        onQuantityChanged = { _, _ -> },
+        onDeleteDiscount = {_,_ -> }
     )
 }
 
@@ -197,7 +208,8 @@ private fun CardWithDeposit() {
     ShoppingCartScreen(
         uiState = uiState,
         onItemDeleted = {},
-        onQuantityChanged = { _, _ -> }
+        onQuantityChanged = { _, _ -> },
+        onDeleteDiscount = {_,_ -> }
     )
 }
 
@@ -229,6 +241,7 @@ private fun CardWithCartDiscount() {
     ShoppingCartScreen(
         uiState = uiState,
         onItemDeleted = {},
-        onQuantityChanged = { _, _ -> }
+        onQuantityChanged = { _, _ -> },
+        onDeleteDiscount = {_,_ -> }
     )
 }

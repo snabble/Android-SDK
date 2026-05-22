@@ -2,10 +2,14 @@ package io.snabble.sdk.ui.cart.shoppingcart.cartdiscount
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -19,6 +23,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import io.snabble.sdk.checkout.LineItem
 import io.snabble.sdk.shoppingcart.ShoppingCart
+import io.snabble.sdk.ui.cart.shoppingcart.CartItem
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.model.CartDiscountItem
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.widget.DiscountDescription
 
@@ -26,24 +31,27 @@ import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.widget.DiscountDescripti
 internal fun CartDiscount(
     modifier: Modifier,
     item: CartDiscountItem,
+    onDelete: (ShoppingCart.Item) -> Unit
 ) {
-    Row(
-        modifier = modifier.padding(vertical = 8.dp, horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    Card(
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary
+        )
     ) {
-        Image(
-            modifier = Modifier.size(44.dp),
-            painter = painterResource(id = item.imageResId),
-            contentDescription = stringResource(id = item.title),
-            contentScale = ContentScale.Fit,
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
-        )
-        DiscountDescription(
-            title = stringResource(item.title),
-            description = item.name,
-            discount = item.discount
-        )
+        Row(
+            modifier = modifier.padding(vertical = 8.dp, horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            DiscountDescription(
+                title = stringResource(item.title),
+                description = item.name,
+                discount = item.discount,
+                onDelete = {onDelete(item.item)}
+            )
+        }
     }
 }
 
@@ -57,7 +65,8 @@ private fun Preview() {
                 item = ShoppingCart.Item(ShoppingCart(), LineItem(id = "", amount = 1)),
                 discount = "7.00",
                 name = "SUPER DUPER RABATT"
-            )
+            ),
+            onDelete = {}
         )
     }
 }

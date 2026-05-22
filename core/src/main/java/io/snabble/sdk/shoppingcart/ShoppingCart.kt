@@ -17,6 +17,7 @@ import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.codes.templates.CodeTemplate
 import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.coupons.CouponType
+import io.snabble.sdk.extensions.xx
 import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.shoppingcart.data.cart.BackendCart
 import io.snabble.sdk.shoppingcart.data.cart.BackendCartCustomer
@@ -207,6 +208,19 @@ class ShoppingCart(
      * Removed a cart item from the cart by its index
      */
     fun remove(index: Int) {
+        data = data.copy(modCount = modCount.inc())
+        generateNewUUID()
+        val removedItem = data.items.removeAt(index)
+        checkLimits()
+        updatePrices(debounce = size() != 0)
+        invalidateOnlinePrices()
+        notifyItemRemoved(this, removedItem, index)
+    }
+
+    /**
+     * Removed a cart item from the cart by its index
+     */
+    fun removeDiscount(index: Int, discountId: String) {
         data = data.copy(modCount = modCount.inc())
         generateNewUUID()
         val removedItem = data.items.removeAt(index)
@@ -449,6 +463,12 @@ class ShoppingCart(
 
     fun removeCoupon(coupon: Coupon) {
         val index = indexOfFirst { it?.coupon?.id == coupon.id }
+        if (index != -1) remove(index)
+    }
+
+    fun removeCoupon(id: String) {
+        val asd = id.replace("_", "-")
+        val index = indexOfFirst { it?.coupon?.id.xx("cur") == asd.xx("remo")}.xx("index")
         if (index != -1) remove(index)
     }
 
