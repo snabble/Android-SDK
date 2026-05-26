@@ -4,11 +4,14 @@ import android.text.SpannableStringBuilder
 import android.text.style.URLSpan
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.Mockito.any
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.whenever
+import org.robolectric.RobolectricTestRunner
 
+@RunWith(RobolectricTestRunner::class)
 class LinkParserTest {
     private data class SpanData(
         val start: Int,

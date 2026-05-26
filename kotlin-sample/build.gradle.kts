@@ -2,7 +2,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id(libs.plugins.androidApplication.get().pluginId)
-    id(libs.plugins.kotlin.android.get().pluginId)
     alias(libs.plugins.snabbleSetup)
     alias(libs.plugins.compose.compiler)
 }
@@ -30,6 +29,7 @@ android {
         release {
             signingConfig = signingConfigs.getByName("debug")
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
@@ -40,17 +40,18 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlin {
-        compilerOptions {
-            jvmTarget = JvmTarget.JVM_17
-            freeCompilerArgs.addAll(
-                "-Xjvm-default=all"
-            )
-        }
-    }
 
     buildFeatures {
         buildConfig = true
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_17
+        freeCompilerArgs.addAll(
+            "-jvm-default=enable"
+        )
     }
 }
 

@@ -2,7 +2,7 @@
 compileSdk = "36"
 targetSdk = "36"
 minSdk = "24"
-gradlePlugin = "8.13.2"
+gradlePlugin = "9.2.1"
 kotlin = "2.3.0"
 navigation = "2.9.6"
 snabbleSdk = "0.69.6"
@@ -155,7 +155,7 @@ dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-snabbleSetup = "io.snabble.setup:1.0.1"
+snabbleSetup = "io.snabble.setup:1.0.2"
 unmock = "de.mobilej.unmock:0.7.9"
 benManesVersions = "com.github.ben-manes.versions:0.53.0"
 versionCatalogUpdate = "nl.littlerobots.version-catalog-update:1.0.1"
