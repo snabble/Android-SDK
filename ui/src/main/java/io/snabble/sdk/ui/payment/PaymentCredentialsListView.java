@@ -152,15 +152,6 @@ public class PaymentCredentialsListView extends FrameLayout implements PaymentCr
         }
     }
 
-    private static class EmptyStateViewHolder extends RecyclerView.ViewHolder {
-        View add;
-
-        EmptyStateViewHolder(View itemView) {
-            super(itemView);
-            add = itemView.findViewById(R.id.add);
-        }
-    }
-
     private static class EntryViewHolder extends RecyclerView.ViewHolder {
         TextView text;
         TextView validTo;

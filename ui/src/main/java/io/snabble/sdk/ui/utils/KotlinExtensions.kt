@@ -18,7 +18,7 @@ import io.snabble.sdk.ui.R
 import io.snabble.sdk.utils.StringNormalizer
 import kotlin.math.absoluteValue
 import kotlin.math.max
-
+import com.google.android.material.R as MaterialR
 
 fun CharSequence?.isNotNullOrBlank() = !isNullOrBlank()
 
@@ -53,17 +53,19 @@ fun Snackbar.setBackgroundColor(@ColorRes color: Int) = apply {
 }
 
 fun Snackbar.setPriority(@UIUtils.InfoLevel level: Int) = apply {
-    val textView = view.findViewById(R.id.snackbar_text) as TextView
+    val textView = view.findViewById(MaterialR.id.snackbar_text) as TextView
     (view.layoutParams as? CoordinatorLayout.LayoutParams)?.gravity = Gravity.TOP
     when (level) {
         UIUtils.INFO_NEUTRAL -> {
             view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.snabble_info_color))
             textView.setTextColor(ContextCompat.getColor(view.context, R.color.snabble_info_text_color))
         }
+
         UIUtils.INFO_WARNING -> {
             view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.snabble_info_color_warning))
             textView.setTextColor(ContextCompat.getColor(view.context, R.color.snabble_info_text_color_warning))
         }
+
         UIUtils.INFO_POSITIVE -> {
             view.setBackgroundColor(ContextCompat.getColor(view.context, R.color.snabble_info_color_positive))
             textView.setTextColor(ContextCompat.getColor(view.context, R.color.snabble_info_text_color_positive))
@@ -88,7 +90,10 @@ fun Snackbar.setGravity(gravity: Int) = apply {
                 val tmp = Space(view.context)
                 actionBar.customView = tmp
                 val parent = tmp.parent as View
-                val y = max(parent.y, parent.y + parent.translationY + (parent.parent as View).translationY + actionBar.height)
+                val y = max(
+                    parent.y,
+                    parent.y + parent.translationY + (parent.parent as View).translationY + actionBar.height
+                )
                 actionBar.customView = null
                 actionBar.displayOptions = orgOptions
                 y
