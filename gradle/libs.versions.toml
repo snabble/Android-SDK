@@ -155,7 +155,7 @@ dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-snabbleSetup = "io.snabble.setup:1.0.2"
+snabbleSetup = "io.snabble.setup:1.0.3"
 unmock = "de.mobilej.unmock:0.7.9"
 benManesVersions = "com.github.ben-manes.versions:0.53.0"
 versionCatalogUpdate = "nl.littlerobots.version-catalog-update:1.0.1"

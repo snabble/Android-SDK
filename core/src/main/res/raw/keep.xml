@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-    Prevents shrinkResources from removing the snabble Gradle plugin-generated config and
-    metadata raw resources. These are only referenced via getIdentifier() (a dynamic string
-    lookup), so the resource shrinker cannot trace the dependency automatically.
--->
-<resources xmlns:tools="http://schemas.android.com/tools"
-    tools:keep="@raw/snabble_*" />
