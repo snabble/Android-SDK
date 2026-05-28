@@ -15,14 +15,6 @@
 #
 ## Picasso
 #-dontwarn com.squareup.okhttp.**
-#
-## Gson
-#-keepattributes Signature
-#-keepattributes *Annotation*
-#-dontwarn sun.misc.**
-#-keep class * implements com.google.gson.TypeAdapterFactory
-#-keep class * implements com.google.gson.JsonSerializer
-#-keep class * implements com.google.gson.JsonDeserializer
 
 # Gson: keep any field annotated with @SerializedName so R8 cannot rename or remove it.
 # This is the single rule that makes all @SerializedName annotations work under R8 strict mode.
