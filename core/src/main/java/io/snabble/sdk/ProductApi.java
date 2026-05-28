@@ -1,5 +1,7 @@
 package io.snabble.sdk;
 
+import androidx.annotation.Keep;
+
 import com.google.gson.annotations.SerializedName;
 
 import io.snabble.sdk.codes.ScannedCode;
@@ -13,26 +15,27 @@ import okhttp3.Request;
 /**
  * Class for interfacing with the snabble product API
  */
+@Keep
 class ProductApi {
     private static class ApiProduct {
-        String sku;
-        ApiProductType productType;
-        String name;
-        String description;
-        String subtitle;
-        String referenceUnit;
-        String encodingUnit;
-        String imageUrl;
-        String scanMessage;
-        ApiPrice price;
-        boolean saleStop;
-        boolean notForSale;
-        ApiScannableCode[] codes;
-        Product.SaleRestriction saleRestriction = Product.SaleRestriction.NONE;
-        ApiAvailability availability;
+        @SerializedName("sku") String sku;
+        @SerializedName("productType") ApiProductType productType;
+        @SerializedName("name") String name;
+        @SerializedName("description") String description;
+        @SerializedName("subtitle") String subtitle;
+        @SerializedName("referenceUnit") String referenceUnit;
+        @SerializedName("encodingUnit") String encodingUnit;
+        @SerializedName("imageUrl") String imageUrl;
+        @SerializedName("scanMessage") String scanMessage;
+        @SerializedName("price") ApiPrice price;
+        @SerializedName("saleStop") boolean saleStop;
+        @SerializedName("notForSale") boolean notForSale;
+        @SerializedName("codes") ApiScannableCode[] codes;
+        @SerializedName("saleRestriction") Product.SaleRestriction saleRestriction = Product.SaleRestriction.NONE;
+        @SerializedName("availability") ApiAvailability availability;
 
-        ApiProduct deposit;
-        ApiProduct[] bundles;
+        @SerializedName("deposit") ApiProduct deposit;
+        @SerializedName("bundles") ApiProduct[] bundles;
     }
 
     private enum ApiAvailability {
@@ -45,10 +48,10 @@ class ProductApi {
     }
 
     private static class ApiPrice {
-        int listPrice;
-        int discountedPrice;
-        int customerCardPrice;
-        String basePrice;
+        @SerializedName("listPrice") int listPrice;
+        @SerializedName("discountedPrice") int discountedPrice;
+        @SerializedName("customerCardPrice") int customerCardPrice;
+        @SerializedName("basePrice") String basePrice;
     }
 
     private enum ApiProductType {
@@ -61,13 +64,13 @@ class ProductApi {
     }
 
     private static class ApiScannableCode {
-        String code;
-        String template;
-        String transmissionCode;
-        String transmissionTemplate;
-        String encodingUnit;
-        boolean isPrimary;
-        int specifiedQuantity;
+        @SerializedName("code") String code;
+        @SerializedName("template") String template;
+        @SerializedName("transmissionCode") String transmissionCode;
+        @SerializedName("transmissionTemplate") String transmissionTemplate;
+        @SerializedName("encodingUnit") String encodingUnit;
+        @SerializedName("isPrimary") boolean isPrimary;
+        @SerializedName("specifiedQuantity") int specifiedQuantity;
     }
 
     private final Project project;

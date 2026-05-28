@@ -144,13 +144,13 @@ enum class RoutingTarget {
 }
 
 data class Href(
-    val href: String? = null,
+    @SerializedName("href") val href: String? = null,
 ) : Serializable
 
 data class SignedCheckoutInfo(
-    val checkoutInfo: JsonObject? = null,
-    val signature: String? = null,
-    val links: Map<String, Href>? = null,
+    @SerializedName("checkoutInfo") val checkoutInfo: JsonObject? = null,
+    @SerializedName("signature") val signature: String? = null,
+    @SerializedName("links") val links: Map<String, Href>? = null,
 ) {
     val checkoutProcessLink: String?
         get() = links?.get("checkoutProcess")?.href
@@ -209,15 +209,15 @@ data class SignedCheckoutInfo(
 }
 
 data class CheckoutInfo(
-    val price: Price? = null,
-    val lineItems: List<LineItem> = emptyList(),
-    val violations: List<Violation> = emptyList(),
+    @SerializedName("price") val price: Price? = null,
+    @SerializedName("lineItems") val lineItems: List<LineItem> = emptyList(),
+    @SerializedName("violations") val violations: List<Violation> = emptyList(),
 )
 
 data class Violation(
-    val type: ViolationType? = null,
-    val refersTo: String? = null,
-    val message: String? = null,
+    @SerializedName("type") val type: ViolationType? = null,
+    @SerializedName("refersTo") val refersTo: String? = null,
+    @SerializedName("message") val message: String? = null,
 )
 
 enum class ViolationType {
@@ -238,103 +238,102 @@ enum class ViolationType {
 }
 
 data class LineItem(
-    val id: String? = null,
-    val amount: Int = 0,
-    @SerializedName("couponID")
-    val couponId: String? = null,
-    val discountID: String? = null,
-    val discountRuleID: String? = null,
-    val discountType: String? = null,
-    val listPrice: Int = 0,
-    val name: String? = null,
-    val price: Int = 0,
-    val priceModifiers: List<PriceModifier>? = null,
-    val redeemed: Boolean = false,
-    val refersTo: String? = null,
-    val referenceUnit: String? = null,
-    val scannedCode: String? = null,
-    val sku: String? = null,
-    val totalPrice: Int = 0,
-    val type: LineItemType? = null,
-    val units: Int? = null,
-    val weight: Int? = null,
-    val weightUnit: String? = null,
+    @SerializedName("id") val id: String? = null,
+    @SerializedName("amount") val amount: Int = 0,
+    @SerializedName("couponID") val couponId: String? = null,
+    @SerializedName("discountID") val discountID: String? = null,
+    @SerializedName("discountRuleID") val discountRuleID: String? = null,
+    @SerializedName("discountType") val discountType: String? = null,
+    @SerializedName("listPrice") val listPrice: Int = 0,
+    @SerializedName("name") val name: String? = null,
+    @SerializedName("price") val price: Int = 0,
+    @SerializedName("priceModifiers") val priceModifiers: List<PriceModifier>? = null,
+    @SerializedName("redeemed") val redeemed: Boolean = false,
+    @SerializedName("refersTo") val refersTo: String? = null,
+    @SerializedName("referenceUnit") val referenceUnit: String? = null,
+    @SerializedName("scannedCode") val scannedCode: String? = null,
+    @SerializedName("sku") val sku: String? = null,
+    @SerializedName("totalPrice") val totalPrice: Int = 0,
+    @SerializedName("type") val type: LineItemType? = null,
+    @SerializedName("units") val units: Int? = null,
+    @SerializedName("weight") val weight: Int? = null,
+    @SerializedName("weightUnit") val weightUnit: String? = null,
 )
 
 data class PriceModifier(
-    val name: String? = null,
-    val price: Int = 0,
-    val action: String? = null
+    @SerializedName("name") val name: String? = null,
+    @SerializedName("price") val price: Int = 0,
+    @SerializedName("action") val action: String? = null
 )
 
 data class ExitToken(
-    val value: String? = null,
-    val format: String? = null,
+    @SerializedName("value") val value: String? = null,
+    @SerializedName("format") val format: String? = null,
 )
 
 data class Price(
-    val price: Int = 0,
-    val netPrice: Int = 0,
+    @SerializedName("price") val price: Int = 0,
+    @SerializedName("netPrice") val netPrice: Int = 0,
 )
 
 data class PaymentInformation(
-    val qrCodeContent: String? = null,
-    val encryptedOrigin: String? = null,
-    val originType: String? = null,
-    val validUntil: String? = null,
-    val cardNumber: String? = null,
-    val deviceID: String? = null,
-    val deviceName: String? = null,
-    val deviceFingerprint: String? = null,
-    val deviceIPAddress: String? = null,
-    val handoverInformation: String? = null,
-    val subject: String? = null
+    @SerializedName("qrCodeContent") val qrCodeContent: String? = null,
+    @SerializedName("encryptedOrigin") val encryptedOrigin: String? = null,
+    @SerializedName("originType") val originType: String? = null,
+    @SerializedName("validUntil") val validUntil: String? = null,
+    @SerializedName("cardNumber") val cardNumber: String? = null,
+    @SerializedName("deviceID") val deviceID: String? = null,
+    @SerializedName("deviceName") val deviceName: String? = null,
+    @SerializedName("deviceFingerprint") val deviceFingerprint: String? = null,
+    @SerializedName("deviceIPAddress") val deviceIPAddress: String? = null,
+    @SerializedName("handoverInformation") val handoverInformation: String? = null,
+    @SerializedName("subject") val subject: String? = null
 )
 
 data class CheckoutProcessRequest(
-    val signedCheckoutInfo: SignedCheckoutInfo? = null,
-    val paymentMethod: PaymentMethod? = null,
-    val paymentInformation: PaymentInformation? = null,
-    val finalizedAt: String? = null,
-    val processedOffline: Boolean? = null,
+    @SerializedName("signedCheckoutInfo") val signedCheckoutInfo: SignedCheckoutInfo? = null,
+    @SerializedName("paymentMethod") val paymentMethod: PaymentMethod? = null,
+    @SerializedName("paymentInformation") val paymentInformation: PaymentInformation? = null,
+    @SerializedName("finalizedAt") val finalizedAt: String? = null,
+    @SerializedName("processedOffline") val processedOffline: Boolean? = null,
 )
 
 data class PaymentMethodInfo(
-    val id: String? = null,
-    val isTesting: Boolean = false,
-    val acceptedOriginTypes: List<String> = emptyList()
+    @SerializedName("id") val id: String? = null,
+    @SerializedName("isTesting") val isTesting: Boolean = false,
+    @SerializedName("acceptedOriginTypes") val acceptedOriginTypes: List<String> = emptyList()
 )
 
 data class PaymentResult(
-    val originCandidateLink: String? = null,
-    val failureCause: String? = null,
+    @SerializedName("originCandidateLink") val originCandidateLink: String? = null,
+    @SerializedName("failureCause") val failureCause: String? = null,
 )
 
 data class AuthorizePaymentRequest(
-    val encryptedOrigin: String? = null,
-    val name: String? = null,
-    val countryCode: String? = null,
-    val state: String? = null
+    @SerializedName("encryptedOrigin") val encryptedOrigin: String? = null,
+    @SerializedName("name") val name: String? = null,
+    @SerializedName("countryCode") val countryCode: String? = null,
+    @SerializedName("state") val state: String? = null
 )
 
 data class Check(
-    val id: String? = null,
-    val links: Map<String, Href>? = null,
-    val type: CheckType? = null,
-    val requiredAge: Int? = null,
-    val performedBy: Performer? = null,
-    val state: CheckState? = null,
+    @SerializedName("id") val id: String? = null,
+    @SerializedName("links") val links: Map<String, Href>? = null,
+    @SerializedName("type") val type: CheckType? = null,
+    @SerializedName("requiredAge") val requiredAge: Int? = null,
+    @SerializedName("performedBy") val performedBy: Performer? = null,
+    @SerializedName("state") val state: CheckState? = null,
 ) {
     val selfLink: String?
         get() = links?.get("self")?.href
 }
 
 data class Fulfillment(
-    val id: String? = null,
-    val type: String? = null,
-    val state: FulfillmentState? = null,
-    val refersTo: List<String> = emptyList(),
-    val links: Map<String, Href>? = null,
+    @SerializedName("id") val id: String? = null,
+    @SerializedName("type") val type: String? = null,
+    @SerializedName("state") val state: FulfillmentState? = null,
+    @SerializedName("refersTo") val refersTo: List<String> = emptyList(),
+    @SerializedName("links") val links: Map<String, Href>? = null,
 ) {
     val selfLink: String?
         get() = links?.get("self")?.href
@@ -365,22 +364,20 @@ enum class DepositReturnVoucherState {
 }
 
 data class CheckoutProcessResponse(
-    val links: Map<String, Href>? = null,
-    val checks: List<Check> = emptyList(),
-    @SerializedName("orderID")
-    val orderId: String? = null,
-    @SerializedName("depositReturnVouchers")
-    val depositReturnVouchers: List<DepositReturnVoucher>? = null,
-    val aborted: Boolean = false,
-    val paymentMethod: PaymentMethod? = null,
-    val paymentInformation: PaymentInformation? = null,
-    val paymentPreauthInformation: JsonObject? = null,
-    val exitToken: ExitToken? = null,
-    val paymentState: CheckState? = null,
-    val pricing: Pricing? = null,
-    val routingTarget: RoutingTarget? = null,
-    val paymentResult: PaymentResult? = null,
-    val fulfillments: List<Fulfillment> = emptyList(),
+    @SerializedName("links") val links: Map<String, Href>? = null,
+    @SerializedName("checks") val checks: List<Check> = emptyList(),
+    @SerializedName("orderID") val orderId: String? = null,
+    @SerializedName("depositReturnVouchers") val depositReturnVouchers: List<DepositReturnVoucher>? = null,
+    @SerializedName("aborted") val aborted: Boolean = false,
+    @SerializedName("paymentMethod") val paymentMethod: PaymentMethod? = null,
+    @SerializedName("paymentInformation") val paymentInformation: PaymentInformation? = null,
+    @SerializedName("paymentPreauthInformation") val paymentPreauthInformation: JsonObject? = null,
+    @SerializedName("exitToken") val exitToken: ExitToken? = null,
+    @SerializedName("paymentState") val paymentState: CheckState? = null,
+    @SerializedName("pricing") val pricing: Pricing? = null,
+    @SerializedName("routingTarget") val routingTarget: RoutingTarget? = null,
+    @SerializedName("paymentResult") val paymentResult: PaymentResult? = null,
+    @SerializedName("fulfillments") val fulfillments: List<Fulfillment> = emptyList(),
 ) {
     val selfLink: String?
         get() = links?.get("self")?.href
@@ -396,5 +393,5 @@ data class CheckoutProcessResponse(
 }
 
 data class Pricing(
-    val price: Price? = null,
+    @SerializedName("price") val price: Price? = null,
 )

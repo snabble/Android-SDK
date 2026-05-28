@@ -24,6 +24,20 @@
 #-keep class * implements com.google.gson.JsonSerializer
 #-keep class * implements com.google.gson.JsonDeserializer
 
+# Gson: keep any field annotated with @SerializedName so R8 cannot rename or remove it.
+# This is the single rule that makes all @SerializedName annotations work under R8 strict mode.
+-keepclassmembers,allowobfuscation class * {
+    @com.google.gson.annotations.SerializedName <fields>;
+}
+
+# Gson needs generic type signatures to deserialize parameterized types (e.g. List<Foo>).
+-keepattributes Signature
+-keepattributes *Annotation*
+
+# Retain TypeToken so Gson can resolve generic types at runtime.
+-keep,allowobfuscation,allowshrinking class com.google.gson.reflect.TypeToken
+-keep,allowobfuscation,allowshrinking class * extends com.google.gson.reflect.TypeToken
+
 # SDK
 # Keep enum values()/valueOf() for Gson @SerializedName resolution.
 # Keep public static final fields so .name() returns the declared constant name,

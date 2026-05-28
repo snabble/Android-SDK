@@ -32,6 +32,7 @@ import io.snabble.sdk.shoppingcart.data.listener.ShoppingCartListener;
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener;
 import io.snabble.sdk.ui.R;
 import io.snabble.sdk.ui.payment.PaymentMethodMetaDataHelper;
+import com.google.gson.annotations.SerializedName;
 import io.snabble.sdk.utils.GsonHolder;
 
 public class PaymentSelectionHelper {
@@ -42,13 +43,13 @@ public class PaymentSelectionHelper {
     }
 
     public static class Entry implements Serializable {
-        String text;
-        String hint;
+        @SerializedName("text") String text;
+        @SerializedName("hint") String hint;
         public transient int iconResId;
-        public PaymentCredentials paymentCredentials;
-        public PaymentMethod paymentMethod;
-        boolean isAvailable;
-        boolean isAdded = true;
+        @SerializedName("paymentCredentials") public PaymentCredentials paymentCredentials;
+        @SerializedName("paymentMethod") public PaymentMethod paymentMethod;
+        @SerializedName("isAvailable") boolean isAvailable;
+        @SerializedName("isAdded") boolean isAdded = true;
     }
 
     private final Application application;

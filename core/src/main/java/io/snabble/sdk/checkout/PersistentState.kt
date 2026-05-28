@@ -1,6 +1,7 @@
 package io.snabble.sdk.checkout
 
 import androidx.annotation.Keep
+import com.google.gson.annotations.SerializedName
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Product
 import io.snabble.sdk.coupons.Coupon
@@ -15,17 +16,17 @@ import java.io.File
 data class PersistentState(
     @Transient
     var file: File,
-    var cartId: String? = null,
-    var checkoutProcess: CheckoutProcessResponse? = null,
-    var selectedPaymentMethod: PaymentMethod? = null,
-    var priceToPay: Int = 0,
-    var codes: List<String> = mutableListOf(),
-    var invalidProducts: List<Product>? = null,
-    var invalidItems: List<ShoppingCart.Item>? = null,
-    var redeemedCoupons: List<Coupon> = emptyList(),
-    var state: CheckoutState = CheckoutState.NONE,
-    var fulfillmentState: List<Fulfillment>? = null,
-    var signedCheckoutInfo: SignedCheckoutInfo? = null
+    @SerializedName("cartId") var cartId: String? = null,
+    @SerializedName("checkoutProcess") var checkoutProcess: CheckoutProcessResponse? = null,
+    @SerializedName("selectedPaymentMethod") var selectedPaymentMethod: PaymentMethod? = null,
+    @SerializedName("priceToPay") var priceToPay: Int = 0,
+    @SerializedName("codes") var codes: List<String> = mutableListOf(),
+    @SerializedName("invalidProducts") var invalidProducts: List<Product>? = null,
+    @SerializedName("invalidItems") var invalidItems: List<ShoppingCart.Item>? = null,
+    @SerializedName("redeemedCoupons") var redeemedCoupons: List<Coupon> = emptyList(),
+    @SerializedName("state") var state: CheckoutState = CheckoutState.NONE,
+    @SerializedName("fulfillmentState") var fulfillmentState: List<Fulfillment>? = null,
+    @SerializedName("signedCheckoutInfo") var signedCheckoutInfo: SignedCheckoutInfo? = null
 ) {
 
     fun save() {
