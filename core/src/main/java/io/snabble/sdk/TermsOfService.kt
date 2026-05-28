@@ -1,14 +1,15 @@
 package io.snabble.sdk
 
+import com.google.gson.annotations.SerializedName
 import java.util.*
 
 /**
  * Class for describing our terms of service.
  */
 data class TermsOfService(
-    val updatedAt: String,
-    val version: String,
-    val variants: List<Variant> = emptyList()
+    @SerializedName("updatedAt") val updatedAt: String,
+    @SerializedName("version") val version: String,
+    @SerializedName("variants") val variants: List<Variant> = emptyList()
 ) {
     /**
      * Gets a link to a downloadable html in the current system language or a default if no
@@ -34,45 +35,24 @@ data class TermsOfService(
             } else null
         }
 
-    /**
-     * A variant of the terms of service document
-     */
+    /** A variant of the terms of service document */
     data class Variant(
-        /**
-         * True if this is the default terms of service to display if
-         * a language specific one is not available
-         */
-        val isDefault: Boolean = false,
-        /**
-         * The iso2 language of the document
-         */
-        val language: String,
-        /**
-         * Link to the html document
-         */
-        val links: Links
+        @SerializedName("isDefault") val isDefault: Boolean = false,
+        @SerializedName("language") val language: String,
+        @SerializedName("links") val links: Links
     ) {
-        /**
-         * The relative url of the html document
-         */
+        /** The relative url of the html document */
         val url: String
             get() = links.content.href
     }
 
-    /**
-     * Class for link encapsulation
-     */
+    /** Class for link encapsulation */
     data class Links(
-        val content: Content
+        @SerializedName("content") val content: Content
     )
 
-    /**
-     * Class for link encapsulation
-     */
+    /** Class for link encapsulation */
     data class Content(
-        /**
-         * The relative url of the html document
-         */
-        val href: String
+        @SerializedName("href") val href: String
     )
 }

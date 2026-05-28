@@ -3,6 +3,7 @@ package io.snabble.sdk;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -23,6 +24,7 @@ import io.snabble.sdk.utils.GsonHolder;
 /**
  * Class that holds all of the product information.
  */
+@Keep
 public class Product implements Serializable, Parcelable {
     public enum Type {
         /**

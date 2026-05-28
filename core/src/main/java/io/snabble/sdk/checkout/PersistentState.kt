@@ -1,5 +1,6 @@
 package io.snabble.sdk.checkout
 
+import androidx.annotation.Keep
 import io.snabble.sdk.PaymentMethod
 import io.snabble.sdk.Product
 import io.snabble.sdk.coupons.Coupon
@@ -10,6 +11,7 @@ import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.Logger
 import java.io.File
 
+@Keep
 data class PersistentState(
     @Transient
     var file: File,

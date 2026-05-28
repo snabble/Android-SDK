@@ -1,5 +1,7 @@
 package io.snabble.sdk
 
+import com.google.gson.annotations.SerializedName
+
 /**
  * A class describing a payment method
  */
@@ -7,20 +9,20 @@ data class PaymentMethodDescriptor(
     /**
      * Unique identifier of the payment method
      */
-    val id: String,
+    @SerializedName("id") val id: String,
     /**
      * Various links for getting web forms or approval links
      */
-    val links: Map<String, Link>?,
+    @SerializedName("links") val links: Map<String, Link>?,
     /**
      * The name of the underlying payment provider (e.g. telecash, payOne, googlePay)
      */
-    val providerName: String,
+    @SerializedName("providerName") val providerName: String,
     /**
      * List of origin types that are accepted for this payment method (to match with locally saved
      * payment credentials)
      */
-    val acceptedOriginTypes: List<String>?
+    @SerializedName("acceptedOriginTypes") val acceptedOriginTypes: List<String>?
 ) {
 
     /**
@@ -35,5 +37,5 @@ data class PaymentMethodDescriptor(
  * Data class for a link
  */
 data class Link(
-    val href: String
+    @SerializedName("href") val href: String
 )
