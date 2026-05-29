@@ -49,7 +49,7 @@ public class Shop implements Serializable, Parcelable {
      * Class describing a link
      */
     public static class Href {
-        private final String href;
+        @SerializedName("href") private final String href;
 
         public Href(String href) {
             this.href = href;
@@ -75,9 +75,9 @@ public class Shop implements Serializable, Parcelable {
      * Class describing when a shop opens and closes
      */
     public static class OpeningHourSpecification {
-        private final String closes;
-        private final String opens;
-        private final String dayOfWeek;
+        @SerializedName("closes") private final String closes;
+        @SerializedName("opens") private final String opens;
+        @SerializedName("dayOfWeek") private final String dayOfWeek;
 
         OpeningHourSpecification(String closes, String opens, String dayOfWeek) {
             this.closes = closes;
@@ -121,7 +121,7 @@ public class Shop implements Serializable, Parcelable {
      * Class describing a potentially available wifi network in the shop
      */
     public static class CustomerNetwork {
-        private final String ssid;
+        @SerializedName("ssid") private final String ssid;
 
         CustomerNetwork(String ssid) {
             this.ssid = ssid;
@@ -142,29 +142,25 @@ public class Shop implements Serializable, Parcelable {
         }
     }
 
-    private String id;
-    private String externalId;
-    private String name;
-    private Service[] services;
-    private String street;
-    @SerializedName("zip")
-    private String zipCode;
-    private String city;
-    private String country;
-    private String state;
-    private String phone;
-    private String email;
-    private boolean isPreLaunch;
-    private Map<String, Href> links;
-    @SerializedName("lat")
-    private double latitude;
-    @SerializedName("lon")
-    private double longitude;
-    private CustomerNetwork[] customerNetworks;
-    private OpeningHourSpecification[] openingHoursSpecification;
-    private JsonElement external;
-    @SerializedName("shopServices")
-    private ShopServices[] shopServices;
+    @SerializedName("id") private String id;
+    @SerializedName("externalId") private String externalId;
+    @SerializedName("name") private String name;
+    @SerializedName("services") private Service[] services;
+    @SerializedName("street") private String street;
+    @SerializedName("zip") private String zipCode;
+    @SerializedName("city") private String city;
+    @SerializedName("country") private String country;
+    @SerializedName("state") private String state;
+    @SerializedName("phone") private String phone;
+    @SerializedName("email") private String email;
+    @SerializedName("isPreLaunch") private boolean isPreLaunch;
+    @SerializedName("links") private Map<String, Href> links;
+    @SerializedName("lat") private double latitude;
+    @SerializedName("lon") private double longitude;
+    @SerializedName("customerNetworks") private CustomerNetwork[] customerNetworks;
+    @SerializedName("openingHoursSpecification") private OpeningHourSpecification[] openingHoursSpecification;
+    @SerializedName("external") private JsonElement external;
+    @SerializedName("shopServices") private ShopServices[] shopServices;
 
     Shop() {
         // for gson

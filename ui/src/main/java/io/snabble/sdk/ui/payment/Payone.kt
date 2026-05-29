@@ -2,6 +2,7 @@ package io.snabble.sdk.ui.payment
 
 import android.os.Parcelable
 import android.widget.Toast
+import androidx.annotation.Keep
 import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentActivity
 import com.google.gson.annotations.SerializedName
@@ -29,26 +30,26 @@ object Payone {
     @Serializable
     @Parcelize
     data class PayoneTokenizationData(
-        val merchantID: String,
-        val isTesting: Boolean,
-        val portalID: String,
-        val accountID: String,
-        val hash: String,
-        val preAuthInfo: PreAuthInfo,
-        val links: Map<String, Link>
+        @SerializedName("merchantID") val merchantID: String?,
+        @SerializedName("isTesting") val isTesting: Boolean,
+        @SerializedName("portalID") val portalID: String?,
+        @SerializedName("accountID") val accountID: String?,
+        @SerializedName("hash") val hash: String?,
+        @SerializedName("preAuthInfo") val preAuthInfo: PreAuthInfo,
+        @SerializedName("links") val links: Map<String, Link>
     ) : Parcelable
 
     @Serializable
     @Parcelize
     data class PreAuthInfo(
-        val amount: Int?,
-        val currency: String?
+        @SerializedName("amount") val amount: Int?,
+        @SerializedName("currency") val currency: String?
     ) : Parcelable
 
     @Serializable
     @Parcelize
     data class Link(
-        val href: String?
+        @SerializedName("href") val href: String?
     ) : Parcelable
 
     data class PreAuthRequest(
@@ -68,13 +69,16 @@ object Payone {
     }
 
     data class PreAuthResponse(
-        val status: AuthStatus,
-        val userID: String,
-        val links: Map<String, Link>
+        @SerializedName("status") val status: AuthStatus,
+        @SerializedName("userID") val userID: String,
+        @SerializedName("links") val links: Map<String, Link>
     )
 
+    @Keep
     enum class AuthStatus {
-        pending, successful, failed
+        @SerializedName("pending") pending,
+        @SerializedName("successful") successful,
+        @SerializedName("failed") failed
     }
 
     @JvmStatic

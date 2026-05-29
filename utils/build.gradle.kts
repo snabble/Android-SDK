@@ -4,14 +4,10 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id(libs.plugins.androidLibrary.get().pluginId)
-    id(libs.plugins.kotlin.android.get().pluginId)
     id(libs.plugins.dokka.get().pluginId)
-    id(libs.plugins.unmock.get().pluginId)
 }
 
-apply {
-    from("../scripts/maven.gradle")
-}
+apply(from = "../scripts/maven.gradle")
 
 description = "Snabble Utils: Util collection for the Snabble SDK integration"
 
@@ -42,21 +38,27 @@ android {
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     kotlin {
         compilerOptions {
-            jvmTarget = JvmTarget.JVM_17
+            jvmTarget = JvmTarget.JVM_21
             freeCompilerArgs.addAll(
-                "-Xjvm-default=all"
+                "-jvm-default=enable"
             )
         }
     }
 
     buildFeatures {
         buildConfig = true
+    }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
     }
 }
 
@@ -74,11 +76,7 @@ dependencies {
     // for testing
     testImplementation(libs.junit)
     testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.roboletric)
     androidTestImplementation(libs.test.ext.junit)
     androidTestImplementation(libs.test.espressoCore)
-    unmock(libs.roboletric.androidAll)
-}
-
-unMock {
-    keep("android.text.style.URLSpan")
 }

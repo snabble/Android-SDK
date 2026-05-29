@@ -28,7 +28,11 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener
 import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import io.snabble.accessibility.isTalkBackActive
 import io.snabble.accessibility.setClickDescription
@@ -54,7 +58,10 @@ import kotlinx.coroutines.launch
 import java.text.DateFormatSymbols
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Collections
+import java.util.GregorianCalendar
+import java.util.Locale
+import io.snabble.sdk.ui.R as UiR
 
 /**
  * Displays the details of the selected shop.
@@ -370,7 +377,7 @@ open class ShopDetailsFragment : Fragment() {
         }
 
         val startScanner = view.findViewById<Button>(R.id.start_scanner)
-        val startScannerTitle = resources.getText(R.string.Snabble_Scanner_start)
+        val startScannerTitle = resources.getText(UiR.string.Snabble_Scanner_start)
 
         locationManager.location.removeObserver(locationObserver)
 

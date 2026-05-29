@@ -46,6 +46,7 @@ import io.snabble.sdk.widgets.snabble.purchase.viewmodel.Loading
 import io.snabble.sdk.widgets.snabble.purchase.viewmodel.PurchaseViewModel
 import io.snabble.sdk.widgets.snabble.purchase.viewmodel.ShowPurchases
 import org.koin.core.component.get
+import io.snabble.sdk.ui.R as UiR
 
 @Composable
 internal fun PurchaseWidget(
@@ -88,9 +89,9 @@ fun Purchases(
     ) {
         val (title, more, purchases) = createRefs()
         val lastPurchasesTitleStringRes = if (isSinglePurchase) {
-            R.string.Snabble_DynamicView_lastPurchase
+            UiR.string.Snabble_DynamicView_lastPurchase
         } else {
-            R.string.Snabble_DynamicView_lastPurchases
+            UiR.string.Snabble_DynamicView_lastPurchases
         }
         Text(
             text = stringResource(id = lastPurchasesTitleStringRes),
@@ -124,7 +125,7 @@ fun Purchases(
                 }
         ) {
             Text(
-                text = stringResource(id = R.string.Snabble_DynamicView_LastPurchases_all),
+                text = stringResource(id = UiR.string.Snabble_DynamicView_LastPurchases_all),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.inversePrimary,
                 textAlign = TextAlign.Center,

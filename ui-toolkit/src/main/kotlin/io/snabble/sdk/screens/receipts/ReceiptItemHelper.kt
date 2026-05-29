@@ -10,8 +10,10 @@ import io.snabble.sdk.widgets.snabble.purchase.RelativeTimeStringFormatterImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import kotlin.time.Duration.Companion.days
+import io.snabble.sdk.ui.R as UiR
 
 internal class ReceiptItemHelper(
     private val context: Context,
@@ -50,7 +52,7 @@ internal class ReceiptItemHelper(
 
             newLineTimestamp -> DATE_FORMAT_NEW_LINE.format(past)
 
-            else -> "${DATE_FORMAT.format(past)} ${context.getString(R.string.Snabble_Receipts_oClock)}"
+            else -> "${DATE_FORMAT.format(past)} ${context.getString(UiR.string.Snabble_Receipts_oClock)}"
         }
     }
 

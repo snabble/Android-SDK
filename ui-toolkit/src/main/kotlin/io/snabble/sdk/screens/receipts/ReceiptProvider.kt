@@ -25,6 +25,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
 import kotlin.coroutines.coroutineContext
 import kotlin.coroutines.resumeWithException
+import io.snabble.sdk.ui.R as UiR
 
 class ReceiptProvider(
     private val context: Context,
@@ -59,7 +60,7 @@ class ReceiptProvider(
                 receiptInfo()
                     ?.let { getReceipts(it) }
             } catch (e: DownloadFailedException) {
-                showSnackBar(view, R.string.Snabble_Receipt_errorDownload)
+                showSnackBar(view, UiR.string.Snabble_Receipt_errorDownload)
                 null
             } finally {
                 dialogJob.cancel()
@@ -68,7 +69,7 @@ class ReceiptProvider(
                 try {
                     show(receipt)
                 } catch (e: MissingPdfReaderException) {
-                    showSnackBar(view, R.string.Snabble_Receipt_pdfReaderUnavailable)
+                    showSnackBar(view, UiR.string.Snabble_Receipt_pdfReaderUnavailable)
                 }
             }
         }

@@ -201,13 +201,13 @@ enum class PaymentMethod(
         fun fromIdAndOrigin(id: String, origin: List<String>): PaymentMethod? {
             entries.forEach { pm ->
                 if (pm.id == id && pm.id == TEGUT_EMPLOYEE_CARD.id) {
-                    when (origin[0]) {
-                        "tegutEmployeeID" -> return TEGUT_EMPLOYEE_CARD
-                        "contactPersonCredentials" -> return EXTERNAL_BILLING
+                    return when (origin.firstOrNull()) {
+                        "tegutEmployeeID" -> TEGUT_EMPLOYEE_CARD
+                        "contactPersonCredentials" -> EXTERNAL_BILLING
+                        else -> null
                     }
                 } else if (pm.id == id && pm.id == PAYONE_SEPA.id) {
-                    //needed for deserialization
-                    return when (origin[0]) {
+                    return when (origin.firstOrNull()) {
                         "payoneSepaData" -> PAYONE_SEPA
                         else -> DE_DIRECT_DEBIT
                     }

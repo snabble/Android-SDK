@@ -1,5 +1,7 @@
 package io.snabble.sdk
 
+import androidx.annotation.Keep
+
 /**
  * Mutable LiveData with the current (possible not yet published) value. You
  * can observe changes like with regular MutableLiveData, just not inherited.
@@ -12,6 +14,7 @@ package io.snabble.sdk
  * You can directly compare the value with the LiveData's value directly as
  * syntactic sugar.
  */
+@Keep
 class MutableAccessibleLiveData<T>: AccessibleLiveData<T> {
     constructor() : super()
     constructor(initialValue: T) : super(initialValue)

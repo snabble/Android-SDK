@@ -1,5 +1,6 @@
 package io.snabble.sdk.shoppingcart
 
+import androidx.annotation.Keep
 import androidx.annotation.RestrictTo
 import io.snabble.sdk.PriceFormatter
 import io.snabble.sdk.Product
@@ -947,6 +948,7 @@ class ShoppingCart(
     /**
      * Class describing a shopping cart item
      */
+    @Keep
     class Item {
 
         /**

@@ -95,17 +95,17 @@ public class Assets {
     }
 
     private class ApiAsset {
-        String name;
-        Map<Variant, String> variants;
+        @SerializedName("name") String name;
+        @SerializedName("variants") Map<Variant, String> variants;
     }
 
     private class ApiManifest {
-        ApiAsset[] files;
+        @SerializedName("files") ApiAsset[] files;
     }
 
     private class Asset {
-        public String filePath;
-        public String hash;
+        @SerializedName("filePath") public String filePath;
+        @SerializedName("hash") public String hash;
 
         public Asset(String filePath, String hash) {
             this.filePath = filePath;
@@ -114,7 +114,7 @@ public class Assets {
     }
 
     private class Manifest {
-        Map<String, Asset> assets;
+        @SerializedName("assets") Map<String, Asset> assets;
     }
 
     private interface DownloadCallback {

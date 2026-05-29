@@ -2,9 +2,12 @@ package io.snabble.sdk.payment;
 
 import android.util.Base64;
 
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
+
+import com.google.gson.annotations.SerializedName;
 
 import java.io.InputStream;
 import java.security.cert.CertPath;
@@ -50,6 +53,7 @@ import io.snabble.sdk.utils.Utils;
 /**
  * Class for storing encrypting payment credentials
  */
+@Keep
 public class PaymentCredentials {
     /**
      * Enum describing the type of the payment credentials
@@ -136,26 +140,26 @@ public class PaymentCredentials {
     }
 
     private static class SepaData {
-        private String name;
-        private String iban;
+        @SerializedName("name") private String name;
+        @SerializedName("iban") private String iban;
     }
 
     private static class CreditCardData {
-        private String hostedDataID;
-        private String schemeTransactionID;
-        private String projectID;
-        private String hostedDataStoreID;
-        private String cardType;
+        @SerializedName("hostedDataID") private String hostedDataID;
+        @SerializedName("schemeTransactionID") private String schemeTransactionID;
+        @SerializedName("projectID") private String projectID;
+        @SerializedName("hostedDataStoreID") private String hostedDataStoreID;
+        @SerializedName("cardType") private String cardType;
     }
 
     private static class DatatransData {
-        private String alias;
-        private String expiryMonth;
-        private String expiryYear;
+        @SerializedName("alias") private String alias;
+        @SerializedName("expiryMonth") private String expiryMonth;
+        @SerializedName("expiryYear") private String expiryYear;
     }
 
     private static class TegutEmployeeCard {
-        private String cardNumber;
+        @SerializedName("cardNumber") private String cardNumber;
     }
 
     private String obfuscatedId;

@@ -1,6 +1,7 @@
 package io.snabble.sdk.screens.onboarding.data
 
 import android.os.Parcelable
+import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 /**
@@ -20,11 +21,11 @@ import kotlinx.parcelize.Parcelize
  */
 @Parcelize
 data class OnboardingItem(
-    val imageSource: String?,
-    val title: String?,
-    val text: String?,
-    val footer: String?,
-    val customButtonTitle: String?,
-    val termsButtonTitle: String?,
-    val link: String?
+    @SerializedName ("imageSource") val imageSource: String?,
+    @SerializedName ("title")val title: String?,
+    @SerializedName ("text")val text: String?,
+    @SerializedName ("footer")val footer: String?,
+    @SerializedName ("customButtonTitle")val customButtonTitle: String?,
+    @SerializedName ("termsButtonTitle")val termsButtonTitle: String?,
+    @SerializedName ("link")val link: String?
 ) : Parcelable

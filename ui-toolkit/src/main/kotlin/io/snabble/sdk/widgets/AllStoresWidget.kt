@@ -19,7 +19,7 @@ import io.snabble.sdk.dynamicview.domain.model.SeeStoresItem
 import io.snabble.sdk.dynamicview.domain.model.toPaddingValues
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
 import io.snabble.sdk.dynamicview.viewmodel.DynamicAction
-import io.snabble.sdk.ui.toolkit.R
+import io.snabble.sdk.ui.R as UiR
 
 @Composable
 fun AllStoresWidget(
@@ -36,7 +36,7 @@ fun AllStoresWidget(
                     .then(modifier),
                 widget = model,
                 padding = model.padding,
-                text = stringResource(id = R.string.Snabble_DynamicView_Shop_show),
+                text = stringResource(id = UiR.string.Snabble_DynamicView_Shop_show),
                 onAction = onAction
             )
         } else {
@@ -52,7 +52,7 @@ fun AllStoresWidget(
             ) {
                 Text(
                     modifier = Modifier.align(Alignment.Center),
-                    text = stringResource(id = R.string.Snabble_DynamicView_Shop_show),
+                    text = stringResource(id = UiR.string.Snabble_DynamicView_Shop_show),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.primary
                 )

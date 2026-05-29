@@ -1,11 +1,13 @@
 package io.snabble.sdk.payment.data
 
+import com.google.gson.annotations.SerializedName
+
 data class GiropayAuthorizationData(
-    @JvmField val id: String,
-    @JvmField val name: String,
-    @JvmField val ipAddress: String,
-    @JvmField val fingerprint: String,
-    @JvmField val redirectUrlAfterSuccess: String,
-    @JvmField val redirectUrlAfterCancellation: String,
-    @JvmField val redirectUrlAfterFailure: String
+    @JvmField @SerializedName("id") val id: String,
+    @JvmField @SerializedName("name") val name: String,
+    @JvmField @SerializedName("ipAddress") val ipAddress: String,
+    @JvmField @SerializedName("fingerprint") val fingerprint: String,
+    @JvmField @SerializedName("redirectUrlAfterSuccess") val redirectUrlAfterSuccess: String,
+    @JvmField @SerializedName("redirectUrlAfterCancellation") val redirectUrlAfterCancellation: String,
+    @JvmField @SerializedName("redirectUrlAfterFailure") val redirectUrlAfterFailure: String
 )

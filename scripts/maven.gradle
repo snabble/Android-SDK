@@ -1,6 +1,12 @@
 version = project.sdkVersion
 group = 'io.snabble.sdk'
 
+android {
+    publishing {
+        singleVariant("release")
+    }
+}
+
 afterEvaluate {
     publishing {
         publications {
