@@ -176,7 +176,7 @@
   <string name="Snabble.Scanner.serverError">Le produit n’a pas pu être demandé.</string>
   <string name="Snabble.Scanner.start">Démarrer le scanner</string>
   <string name="Snabble.Scanner.torchButton">Lumière</string>
-  <string name="Snabble.Scanner.unknownBarcode">Aucune information de prix n’est malheureusement disponible pour ce produit.</string>
+  <string name="Snabble.Scanner.unknownBarcode">AucuLe code-barres n\'a pas été trouvé.</string>
   <string name="Snabble.Scanner.updateCart">Actualiser le panier</string>
   <plurals name="Snabble.Shop.Finder.storeCount">
     <item quantity="zero">No stores</item>

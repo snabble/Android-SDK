@@ -4,9 +4,21 @@ All notable changes to this project will be documented in this file.
 ## UNRELEASED
 ### Added
 ### Changed
-* ui: hide image of a product if its image url cant be resolved 
 ### Removed
 ### Fixed
+
+## [0.83.2]
+### Changed
+* ui: update unknown barcode message
+* 
+## [0.83.1]
+### Changed
+* all: reset source and target jvm version
+
+## [0.83.0]
+### Changed
+* all: migrate to Gradle 9
+* ui: hide image of a product if its image url cant be resolved
 
 ## [0.82.8]
 ### Fixed
