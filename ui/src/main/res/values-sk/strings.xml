@@ -279,7 +279,7 @@
   <string name="Snabble.Scanner.start">Spusti skener</string>
   <string name="Snabble.Scanner.title">Skener</string>
   <string name="Snabble.Scanner.torchButton">Svetlo</string>
-  <string name="Snabble.Scanner.unknownBarcode">Informácie o cene tohto produktu nie sú k dispozícii</string>
+  <string name="Snabble.Scanner.unknownBarcode">Čiarový kód nebol nájdený.</string>
   <string name="Snabble.Scanner.updateCart">Aktualizovať košík</string>
   <string name="Snabble.Shop.Address.accessibility">%1$s v %2$s %3$s</string>
   <string name="Snabble.Shop.Detail.Phonenumber.accessibility">Telefónne číslo %s</string>

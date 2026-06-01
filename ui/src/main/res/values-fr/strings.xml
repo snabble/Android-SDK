@@ -242,7 +242,7 @@
   <string name="Snabble.Scanner.start">Commencer à scanner</string>
   <string name="Snabble.Scanner.title">Scanner</string>
   <string name="Snabble.Scanner.torchButton">Lumière</string>
-  <string name="Snabble.Scanner.unknownBarcode">Désolé, aucune information de prix n\'est disponible pour ce produit.</string>
+  <string name="Snabble.Scanner.unknownBarcode">Le code-barres n\'a pas été trouvé.</string>
   <string name="Snabble.Scanner.updateCart">Actualiser le panier d\'achat</string>
   <string name="Snabble.Shop.Address.accessibility">%1$s à %2$s %3$s</string>
   <string name="Snabble.Shop.Detail.Phonenumber.accessibility">Numéro de téléphone %s</string>

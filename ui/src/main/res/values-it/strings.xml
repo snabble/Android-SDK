@@ -182,7 +182,7 @@
   <string name="Snabble.Scanner.serverError">Non è stato possibile richiedere il prodotto.</string>
   <string name="Snabble.Scanner.start">Avvia scanner</string>
   <string name="Snabble.Scanner.torchButton">Luce</string>
-  <string name="Snabble.Scanner.unknownBarcode">Purtroppo non sono disponibili informazioni di prezzo per questo prodotto.</string>
+  <string name="Snabble.Scanner.unknownBarcode">Il codice a barre non è stato trovato.</string>
   <string name="Snabble.Scanner.updateCart">Aggiorna carrello</string>
   <string name="Snabble.ShoppingCart.title">Carrello</string>
   <string name="Snabble.ShoppingList.AddItem.viaScan">Scansiona prodotti</string>
