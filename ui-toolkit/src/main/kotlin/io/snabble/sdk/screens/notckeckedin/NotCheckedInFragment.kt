@@ -32,6 +32,7 @@ import androidx.fragment.app.Fragment
 import io.snabble.sdk.SnabbleUiToolkit
 import io.snabble.sdk.dynamicview.theme.ThemeWrapper
 import io.snabble.sdk.ui.toolkit.R
+import io.snabble.sdk.ui.R as UiR
 
 class NotCheckedInFragment : Fragment() {
 
@@ -53,18 +54,21 @@ fun NotCheckedInScreen() {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally)
+        horizontalAlignment = Alignment.CenterHorizontally
+    )
     {
         Image(
             modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 16.dp),
             painter = painterResource(id = R.drawable.snabble_offline_shop),
             colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.primary),
-            contentDescription = "Store")
+            contentDescription = "Store"
+        )
         Text(
             modifier = Modifier.padding(16.dp, 16.dp, 16.dp, 8.dp),
             text = stringResource(id = R.string.Snabble_Scanner_notCheckedIn),
             color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Center)
+            textAlign = TextAlign.Center
+        )
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -80,7 +84,7 @@ fun NotCheckedInScreen() {
         ) {
             Text(
                 modifier = Modifier.align(Alignment.Center),
-                text = stringResource(id = R.string.Snabble_DynamicView_Shop_show),
+                text = stringResource(id = UiR.string.Snabble_DynamicView_Shop_show),
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.primary
             )

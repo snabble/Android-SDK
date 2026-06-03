@@ -1,10 +1,12 @@
 package io.snabble.sdk
 
+import androidx.annotation.Keep
 import io.snabble.sdk.checkout.ViolationType
 
 /**
  * A notification that a violation occurred
  */
+@Keep
 data class ViolationNotification(
     /** The name of the affected violation item, e.g. a coupon **/
     val name: String?,

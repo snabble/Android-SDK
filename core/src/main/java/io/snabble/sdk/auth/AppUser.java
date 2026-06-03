@@ -1,10 +1,11 @@
 package io.snabble.sdk.auth;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 
 public class AppUser {
-    public final String id;
-    public final String secret;
+    @SerializedName("id") public final String id;
+    @SerializedName("secret") public final String secret;
 
     public AppUser(String id, String secret) {
         this.id = id;

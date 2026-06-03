@@ -3,11 +3,10 @@ pluginManagement {
         mavenLocal()
         gradlePluginPortal()
     }
-    plugins {
-        id("org.jetbrains.dokka") version "1.8.10"
-        id("com.android.application") version "7.4.1"
-        id("org.jetbrains.kotlin.android") version "1.8.10"
-    }
+}
+
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 include(

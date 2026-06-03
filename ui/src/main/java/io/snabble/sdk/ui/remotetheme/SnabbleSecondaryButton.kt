@@ -9,7 +9,6 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.ui.R
 
 /**
  * A default Materialbutton which automatically sets the primary color from the remote theme
@@ -20,7 +19,7 @@ import io.snabble.sdk.ui.R
 class SnabbleSecondaryButton @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = R.attr.buttonStyle,
+    defStyleAttr: Int = android.R.attr.buttonStyle,
 ) : MaterialButton(context, attrs, defStyleAttr) {
 
     init {
@@ -41,7 +40,7 @@ class SnabbleSecondaryButton @JvmOverloads constructor(
     private fun setRippleColor(project: Project?) {
         val highlightColor = MaterialColors.getColor(
             context,
-            R.attr.colorControlHighlight,
+            android.R.attr.colorControlHighlight,
             Color.TRANSPARENT
         )
 
@@ -67,5 +66,4 @@ class SnabbleSecondaryButton @JvmOverloads constructor(
 
         setTextColor(ColorStateList(states, colors))
     }
-
 }

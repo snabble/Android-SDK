@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 
+import androidx.annotation.Keep;
 import androidx.annotation.RestrictTo;
 
 import com.google.gson.Gson;
@@ -30,6 +31,7 @@ import io.snabble.sdk.utils.security.KeyStoreCipher;
  * Class for managing and storing payment credentials.
  */
 public class PaymentCredentialsStore {
+    @Keep
     private class Data {
         private List<PaymentCredentials> credentialsList;
         private String id;

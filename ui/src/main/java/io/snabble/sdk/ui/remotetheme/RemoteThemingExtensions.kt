@@ -7,16 +7,17 @@ import android.graphics.Color
 import androidx.appcompat.app.AlertDialog
 import com.google.gson.annotations.SerializedName
 import io.snabble.sdk.Project
-import io.snabble.sdk.ui.R
 import io.snabble.sdk.utils.GsonHolder
 import io.snabble.sdk.utils.getColorByAttribute
+import androidx.appcompat.R as AppCompatR
+import com.google.android.material.R as MaterialR
 
 fun Context.getPrimaryColorForProject(project: Project?): Int {
     val lightColor = project?.appTheme?.lightModeColors?.primaryColor?.asColor()
     val darkColor = project?.appTheme?.darkModeColors?.primaryColor?.asColor()
     return when {
-        isDarkMode() -> darkColor ?: lightColor ?: getColorByAttribute(R.attr.colorPrimary)
-        else -> lightColor ?: getColorByAttribute(R.attr.colorPrimary)
+        isDarkMode() -> darkColor ?: lightColor ?: getColorByAttribute(AppCompatR.attr.colorPrimary)
+        else -> lightColor ?: getColorByAttribute(AppCompatR.attr.colorPrimary)
     }
 }
 
@@ -25,8 +26,8 @@ fun Context.primaryColorForProject(project: Project?, action: ((Int) -> Unit)? =
     val lightColor = project?.appTheme?.lightModeColors?.primaryColor?.asColor()
     val darkColor = project?.appTheme?.darkModeColors?.primaryColor?.asColor()
     return when {
-        isDarkMode() -> darkColor ?: lightColor ?: getColorByAttribute(R.attr.colorPrimary)
-        else -> lightColor ?: getColorByAttribute(R.attr.colorPrimary)
+        isDarkMode() -> darkColor ?: lightColor ?: getColorByAttribute(AppCompatR.attr.colorPrimary)
+        else -> lightColor ?: getColorByAttribute(AppCompatR.attr.colorPrimary)
     }.also { action?.invoke(it) }
 }
 
@@ -35,8 +36,8 @@ fun Context.onPrimaryColorForProject(project: Project?, action: ((Int) -> Unit)?
     val lightColor = project?.appTheme?.lightModeColors?.onPrimaryColor?.asColor()
     val darkColor = project?.appTheme?.darkModeColors?.onPrimaryColor?.asColor()
     return when {
-        isDarkMode() -> darkColor ?: lightColor ?: getColorByAttribute(R.attr.colorOnPrimary)
-        else -> lightColor ?: getColorByAttribute(R.attr.colorOnPrimary)
+        isDarkMode() -> darkColor ?: lightColor ?: getColorByAttribute(MaterialR.attr.colorOnPrimary)
+        else -> lightColor ?: getColorByAttribute(MaterialR.attr.colorOnPrimary)
     }.also { action?.invoke(it) }
 }
 
@@ -44,8 +45,8 @@ fun Context.secondaryColorForProject(project: Project?, action: ((Int) -> Unit)?
     val lightColor = project?.appTheme?.lightModeColors?.secondaryColor?.asColor()
     val darkColor = project?.appTheme?.darkModeColors?.secondaryColor?.asColor()
     return when {
-        isDarkMode() -> darkColor ?: lightColor ?: getColorByAttribute(R.attr.colorSecondary)
-        else -> lightColor ?: getColorByAttribute(R.attr.colorSecondary)
+        isDarkMode() -> darkColor ?: lightColor ?: getColorByAttribute(MaterialR.attr.colorSecondary)
+        else -> lightColor ?: getColorByAttribute(MaterialR.attr.colorSecondary)
     }.also { action?.invoke(it) }
 }
 
@@ -53,8 +54,8 @@ fun Context.onSecondaryColorForProject(project: Project?, action: ((Int) -> Unit
     val lightColor = project?.appTheme?.lightModeColors?.onSecondaryColor?.asColor()
     val darkColor = project?.appTheme?.darkModeColors?.onSecondaryColor?.asColor()
     return when {
-        isDarkMode() -> darkColor ?: lightColor ?: getColorByAttribute(R.attr.colorOnSecondary)
-        else -> lightColor ?: getColorByAttribute(R.attr.colorOnSecondary)
+        isDarkMode() -> darkColor ?: lightColor ?: getColorByAttribute(MaterialR.attr.colorOnSecondary)
+        else -> lightColor ?: getColorByAttribute(MaterialR.attr.colorOnSecondary)
     }.also { action?.invoke(it) }
 }
 

@@ -1,6 +1,7 @@
 package io.snabble.sdk
 
 import android.content.Context
+import androidx.annotation.Keep
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
@@ -19,6 +20,7 @@ import java.util.concurrent.TimeUnit
 /**
  * Configuration of the snabble SDK.
  */
+@Keep
 data class Config (
     /**
      * The endpoint url of the snabble backend. For example "https://api.snabble.io" for the Production environment.

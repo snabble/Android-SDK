@@ -36,6 +36,7 @@ import io.snabble.sdk.screens.receipts.showDetails
 import io.snabble.sdk.widgets.snabble.devsettings.login.ui.DevSettingsLoginFragment
 import io.snabble.sdk.widgets.snabble.devsettings.login.viewmodel.DevSettingsLoginViewModel
 import kotlinx.coroutines.launch
+import io.snabble.sdk.ui.toolkit.R as UiToolkitR
 
 class MainActivity : AppCompatActivity() {
 
@@ -97,7 +98,7 @@ class MainActivity : AppCompatActivity() {
                 SnabbleUiToolkit.executeAction(
                     context = this@MainActivity,
                     SnabbleUiToolkit.Event.SHOW_ONBOARDING,
-                    bundleOf(getString(R.string.bundle_key_model) to model)
+                    bundleOf(getString(UiToolkitR.string.bundle_key_model) to model)
                 )
             }
         }
@@ -133,6 +134,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+
             else -> Unit
         }
     }
@@ -149,6 +151,7 @@ class MainActivity : AppCompatActivity() {
                     DevSettingsLoginFragment().show(supportFragmentManager, "DevSettingsPasswordDialog")
                 }
             }
+
             else -> Unit
         }
     }
@@ -160,12 +163,15 @@ class MainActivity : AppCompatActivity() {
                     "io.snabble.environment.production" -> {
                         Environment.PRODUCTION
                     }
+
                     "io.snabble.environment.staging" -> {
                         Environment.STAGING
                     }
+
                     "io.snabble.environment.testing" -> {
                         Environment.TESTING
                     }
+
                     else -> return
                 }
                 if (environment != Snabble.environment) {

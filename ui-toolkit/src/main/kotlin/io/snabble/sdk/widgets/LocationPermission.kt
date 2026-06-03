@@ -9,7 +9,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import io.snabble.sdk.dynamicview.domain.model.LocationPermissionItem
 import io.snabble.sdk.dynamicview.domain.model.Padding
 import io.snabble.sdk.dynamicview.ui.OnDynamicAction
-import io.snabble.sdk.ui.toolkit.R
+import io.snabble.sdk.ui.R as UiR
 
 @Composable
 fun LocationPermission(
@@ -22,7 +22,7 @@ fun LocationPermission(
             modifier = modifier.fillMaxWidth(),
             widget = model,
             padding = model.padding,
-            text = stringResource(id = R.string.Snabble_DynamicView_LocationPermission_Button_notDetermined),
+            text = stringResource(id = UiR.string.Snabble_DynamicView_LocationPermission_Button_notDetermined),
             onAction = onAction,
         )
     }

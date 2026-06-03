@@ -1,19 +1,14 @@
-@file:Suppress("UnstableApiUsage")
-
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id(libs.plugins.androidLibrary.get().pluginId)
-    id(libs.plugins.kotlin.android.get().pluginId)
     id(libs.plugins.dokka.get().pluginId)
     id(libs.plugins.kotlin.parcelize.get().pluginId)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
 }
 
-apply {
-    from("../scripts/maven.gradle")
-}
+apply(from = "../scripts/maven.gradle")
 
 description = "Snabble UI: The Android User Interface Snabble SDK"
 
@@ -51,7 +46,7 @@ android {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_17
             freeCompilerArgs.addAll(
-                "-Xjvm-default=all"
+                "-jvm-default=enable"
             )
         }
     }
@@ -65,6 +60,10 @@ android {
             it.useJUnitPlatform()
         }
     }
+}
+
+kotlin {
+    jvmToolchain(21)
 }
 
 dependencies {

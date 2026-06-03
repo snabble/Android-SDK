@@ -10,10 +10,12 @@ import android.view.ViewGroup
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import io.snabble.sdk.ui.toolkit.R
 import io.snabble.sdk.utils.getColorByAttribute
-import androidx.core.net.toUri
+import androidx.appcompat.R as AppCompatR
+import com.google.android.material.R as MaterialR
 
 /** Displays any given HTML in a [WebView] */
 abstract class RawHtmlFragment : Fragment() {
@@ -33,7 +35,7 @@ abstract class RawHtmlFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         webView = view.findViewById(R.id.web_view)
-        webView.setBackgroundColor(requireContext().getColorByAttribute(R.attr.colorSurface))
+        webView.setBackgroundColor(requireContext().getColorByAttribute(MaterialR.attr.colorSurface))
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) =
                 shouldOverrideUrlLoading(request.url)
@@ -60,7 +62,7 @@ abstract class RawHtmlFragment : Fragment() {
             else -> ""
         }
 
-        val attrs = intArrayOf(R.attr.colorPrimary)
+        val attrs = intArrayOf(AppCompatR.attr.colorPrimary)
         val arr = requireContext().obtainStyledAttributes(attrs)
         val primaryColor = arr.getColor(0, -1)
         arr.recycle()

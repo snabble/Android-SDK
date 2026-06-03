@@ -52,6 +52,8 @@ import io.snabble.sdk.ui.utils.requireFragmentActivity
 import io.snabble.sdk.ui.utils.setOneShotClickListener
 import io.snabble.sdk.utils.Logger
 import io.snabble.sdk.utils.getColorByAttribute
+import androidx.appcompat.R as AppCompatR
+import com.google.android.material.R as MaterialR
 
 open class CheckoutBar @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -197,9 +199,9 @@ open class CheckoutBar @JvmOverloads constructor(
             priceSum.text = project.priceFormatter.format(price)
             priceSum.setTextColor(
                 if (price < 0) {
-                    context.getColorByAttribute(R.attr.colorError)
+                    context.getColorByAttribute(AppCompatR.attr.colorError)
                 } else {
-                    context.getColorByAttribute(R.attr.colorOnSurface)
+                    context.getColorByAttribute(MaterialR.attr.colorOnSurface)
                 }
             )
 
@@ -325,6 +327,7 @@ open class CheckoutBar @JvmOverloads constructor(
                         PaymentMethod.TEGUT_EMPLOYEE_CARD -> {
                             project.checkout.pay(entry.paymentMethod, entry.paymentCredentials)
                         }
+
                         PaymentMethod.EXTERNAL_BILLING -> {
                             SubjectAlertDialog(context, maxSubjectLength = getMaxSubjectLength())
                                 .addMessageClickListener { message ->
@@ -342,6 +345,7 @@ open class CheckoutBar @JvmOverloads constructor(
                                 }
                                 .show()
                         }
+
                         else -> {
                             Keyguard.unlock(UIUtils.getHostFragmentActivity(context), object : Keyguard.Callback {
                                 override fun success() {

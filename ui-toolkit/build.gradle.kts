@@ -1,19 +1,14 @@
-@file:Suppress("UnstableApiUsage")
-
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id(libs.plugins.androidLibrary.get().pluginId)
-    id(libs.plugins.kotlin.android.get().pluginId)
     id(libs.plugins.dokka.get().pluginId)
     id(libs.plugins.kotlin.parcelize.get().pluginId)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
 }
 
-apply {
-    from("../scripts/maven.gradle")
-}
+apply(from = "../scripts/maven.gradle")
 
 description = "Snabble UI-Toolkit: Additional views for simple and sample apps using the Snabble SDK"
 
@@ -41,12 +36,6 @@ android {
         }
     }
 
-    sourceSets {
-        getByName("main").java.srcDirs("src/main/kotlin")
-        getByName("test").java.srcDirs("src/test/kotlin")
-        getByName("androidTest").java.srcDirs("src/androidTest/kotlin")
-    }
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -56,7 +45,7 @@ android {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_17
             freeCompilerArgs.addAll(
-                "-Xjvm-default=all"
+                "-jvm-default=enable"
             )
         }
     }
@@ -75,6 +64,10 @@ android {
         }
     }
 
+}
+
+kotlin {
+    jvmToolchain(21)
 }
 
 dependencies {

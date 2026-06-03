@@ -25,25 +25,24 @@ import okhttp3.Request;
 public class ReceiptsApi {
     /** Data class for api receipts **/
     public static class ApiReceipt {
-        public ApiOrder[] orders;
+        @SerializedName("orders") public ApiOrder[] orders;
     }
 
     /** Data class for api orders **/
     public static class ApiOrder {
-        public String id;
-        public String project;
-        public String date;
-        @SerializedName("shopID")
-        public String shopId;
-        public String shopName;
-        public int price;
-        public Map<String, ApiLink> links;
-        public boolean isSuccessful;
+        @SerializedName("id") public String id;
+        @SerializedName("project") public String project;
+        @SerializedName("date") public String date;
+        @SerializedName("shopID") public String shopId;
+        @SerializedName("shopName") public String shopName;
+        @SerializedName("price") public int price;
+        @SerializedName("links") public Map<String, ApiLink> links;
+        @SerializedName("isSuccessful") public boolean isSuccessful;
     }
 
     /** Data class for api links **/
     public static class ApiLink {
-        public String href;
+        @SerializedName("href") public String href;
     }
 
     /**

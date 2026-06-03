@@ -1,5 +1,6 @@
 package io.snabble.sdk.codes
 
+import androidx.annotation.Keep
 import io.snabble.sdk.Project
 import io.snabble.sdk.Unit
 import java.io.Serializable
@@ -10,6 +11,7 @@ import java.math.BigDecimal
 /**
  * Class representing a scanned code, including its potentially embedded data
  */
+@Keep
 class ScannedCode private constructor() : Serializable {
 
     private var _embeddedData: Int? = null

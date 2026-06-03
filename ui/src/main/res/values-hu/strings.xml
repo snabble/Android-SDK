@@ -272,7 +272,7 @@
   <string name="Snabble.Scanner.start">Szkenner indítása</string>
   <string name="Snabble.Scanner.title">Szkenner</string>
   <string name="Snabble.Scanner.torchButton">Fény</string>
-  <string name="Snabble.Scanner.unknownBarcode">Ehhez a termékhez sajnos nem érhető el árinformáció.</string>
+  <string name="Snabble.Scanner.unknownBarcode">A vonalkódot nem sikerült megtalálni.</string>
   <string name="Snabble.Scanner.updateCart">Kosár frissítése</string>
   <string name="Snabble.Shop.Address.accessibility">%1$s %2$s %3$s-ban</string>
   <string name="Snabble.Shop.Detail.Phonenumber.accessibility">Telefonszám %s</string>

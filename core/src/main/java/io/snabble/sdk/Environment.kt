@@ -1,9 +1,13 @@
 package io.snabble.sdk
 
+import androidx.annotation.Keep
+
 /**
  * Enum describing the environment the app is using
  */
+@Keep
 enum class Environment(val domain: String) {
+
     TESTING("snabble-testing.io"),
     STAGING("snabble-staging.io"),
     PRODUCTION("snabble.io");
@@ -19,6 +23,7 @@ enum class Environment(val domain: String) {
     val wildcardUrl: String = "*.$domain"
 
     companion object {
+
         /**
          * Determine the environment by a url string
          */

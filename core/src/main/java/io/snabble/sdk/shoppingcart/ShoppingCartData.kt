@@ -1,11 +1,13 @@
 package io.snabble.sdk.shoppingcart
 
+import androidx.annotation.Keep
 import io.snabble.sdk.Product
 import io.snabble.sdk.ViolationNotification
 import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.utils.GsonHolder
 import java.util.UUID
 
+@Keep
 data class ShoppingCartData @JvmOverloads constructor(
     val id: String = UUID.randomUUID().toString(),
     val uuid: String = UUID.randomUUID().toString(),

@@ -308,7 +308,7 @@
   <string name="Snabble.Scanner.start">Start scanner</string>
   <string name="Snabble.Scanner.title">Scanner</string>
   <string name="Snabble.Scanner.torchButton">Torch</string>
-  <string name="Snabble.Scanner.unknownBarcode">No price information available for this product.</string>
+  <string name="Snabble.Scanner.unknownBarcode">Barcode not found.</string>
   <string name="Snabble.Scanner.updateCart">Update cart</string>
   <string name="Snabble.Shop.Address.accessibility">%1$s in %2$s %3$s</string>
   <string name="Snabble.Shop.Detail.Phonenumber.accessibility">Phonenumber %s</string>
@@ -414,7 +414,7 @@
   <string name="Snabble.Shoppingcart.Accessibility.quantity">Quantity</string>
   <string name="Snabble.Shoppingcart.Accessibility.selected">Selected</string>
   <string name="Snabble.Shoppingcart.BuyProducts.now">Pay now</string>
-  <string name="Snabble.Shoppingcart.BuyProducts.one">Buy %1$d product for %2$s</string>1
+  <string name="Snabble.Shoppingcart.BuyProducts.one">Buy %1$d product for %2$s</string>
   <string name="Snabble.Shoppingcart.BuyProducts.selectPaymentMethod">Select payment method</string>
   <string name="Snabble.Shoppingcart.EmptyState.buttonTitle">Scan now</string>
   <string name="Snabble.Shoppingcart.EmptyState.description">Visit a store that supports Snabble and scan the barcodes of products you wish to purchase.</string>

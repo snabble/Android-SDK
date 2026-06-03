@@ -55,7 +55,7 @@ public class SEPALegalInfoHelper {
         Spannable spannable = new SpannableString(shortText);
 
         if (startIndex != -1 && endIndex != -1) {
-            int color = UIUtils.getColorByAttribute(context, R.attr.colorPrimary);
+            int color = UIUtils.getColorByAttribute(context, androidx.appcompat.R.attr.colorPrimary);
 
             spannable.setSpan(new ClickableSpan() {
                 @Override

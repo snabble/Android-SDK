@@ -359,9 +359,6 @@ class Project internal constructor(
     lateinit var assets: Assets
         private set
 
-    lateinit var assetService: AssetService
-        private set
-
     var appTheme: AppTheme? = null
         private set
 
@@ -571,8 +568,6 @@ class Project internal constructor(
         events = Events(this, shoppingCartFlow.value)
 
         assets = Assets(this)
-
-        assetService = assetServiceFactory(project = this, context = Snabble.application)
 
         googlePayHelper = paymentMethodDescriptors
             .mapNotNull { it.paymentMethod }

@@ -1,16 +1,11 @@
-@file:Suppress("UnstableApiUsage")
-
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id(libs.plugins.androidLibrary.get().pluginId)
-    id(libs.plugins.kotlin.android.get().pluginId)
     id(libs.plugins.dokka.get().pluginId)
 }
 
-apply {
-    from("../scripts/maven.gradle")
-}
+apply(from = "../scripts/maven.gradle")
 
 description = "ML Kit Scanner Engine: The ML Kit scanner engine implementation for the Snabble SDK"
 
@@ -47,7 +42,7 @@ android {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_17
             freeCompilerArgs.addAll(
-                "-Xjvm-default=all"
+                "-jvm-default=enable"
             )
         }
     }
@@ -56,6 +51,10 @@ android {
     lint {
         abortOnError = false
     }
+}
+
+kotlin {
+    jvmToolchain(21)
 }
 
 dependencies {
