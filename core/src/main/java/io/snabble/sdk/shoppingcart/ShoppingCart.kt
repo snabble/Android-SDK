@@ -469,8 +469,7 @@ class ShoppingCart(
     }
 
     fun removeCoupon(id: String) {
-        val asd = id.replace("_", "-")
-        val index = indexOfFirst { it?.coupon?.id == asd }
+        val index = indexOfFirst { it?.coupon?.id == id }
         if (index != -1) remove(index)
     }
 

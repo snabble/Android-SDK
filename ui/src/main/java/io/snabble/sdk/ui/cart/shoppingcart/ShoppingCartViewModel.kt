@@ -283,21 +283,20 @@ class ShoppingCartViewModel : ViewModel() {
             val name = item.displayName.orEmpty()
             val value = item.totalPrice
 
-            firstOrNull { it.item.id == item.lineItem?.refersTo }
-                ?.let {
-                    remove(it)
-                    val product = it as? ProductItem ?: return@forEach
-                    add(
-                        product.copy(
-                            discounts = it.discounts + DiscountItem(
-                                id = item.id,
-                                name = name,
-                                discount = discount,
-                                discountValue = value,
-                            )
-                        )
+            val index = indexOfFirst { it.item.id == item.lineItem?.refersTo }
+            if (index == -1) return@forEach
+            val product = getOrNull(index) as? ProductItem ?: return@forEach
+            set(
+                index,
+                product.copy(
+                    discounts = product.discounts + DiscountItem(
+                        id = item.id,
+                        name = name,
+                        discount = discount,
+                        discountValue = value,
                     )
-                }
+                )
+            )
         }
     }
 
