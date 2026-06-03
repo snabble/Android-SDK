@@ -275,6 +275,7 @@ class ProductResolver private constructor(private val context: Context, private 
                 project.shoppingCart.add(cartItem)
                 project.shoppingCart.updatePrices(false)
                 checkMinAge(product)
+                onDismissListener?.onDismiss()
             }
         }
     }
