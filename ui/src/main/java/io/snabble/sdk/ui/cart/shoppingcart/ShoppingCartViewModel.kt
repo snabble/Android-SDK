@@ -6,11 +6,11 @@ import androidx.lifecycle.viewModelScope
 import io.snabble.sdk.PriceFormatter
 import io.snabble.sdk.Project
 import io.snabble.sdk.Snabble
-import io.snabble.sdk.extensions.xx
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.model.CartDiscountItem
+import io.snabble.sdk.ui.cart.shoppingcart.product.model.CouponItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DepositItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DepositReturnItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DiscountItem
@@ -84,6 +84,7 @@ class ShoppingCartViewModel : ViewModel() {
             is RemoveItem -> removeItemFromCart(event.item, event.onSuccess)
             is UpdateQuantity -> updateQuantity(event.item, event.quantity)
             is DeleteDiscount -> deleteDiscountFromItem(event.item, event.discountId)
+            is DeleteCoupon -> deleteCoupon(event.id)
         }
     }
 
@@ -101,6 +102,10 @@ class ShoppingCartViewModel : ViewModel() {
         }
     }
 
+    private fun deleteCoupon(id: String) {
+        currentCart?.removeCoupon(id)
+    }
+
     private fun deleteDiscountFromItem(item: ShoppingCart.Item?, discountId: String) {
         currentCart?.removeItem(discountId)
     }
@@ -114,22 +119,20 @@ class ShoppingCartViewModel : ViewModel() {
         val cartItems: MutableList<CartItem> = mutableListOf()
         with(cart.filterNotNull()) {
             filter { it.type == ItemType.PRODUCT }.let { cartItems.addProducts(it) }
-            filter { it.type == ItemType.DEPOSIT_RETURN_VOUCHER }.let {
-                cartItems.addDepositReturnItems(
-                    it
-                )
+            filter { it.type == ItemType.DEPOSIT_RETURN_VOUCHER }.let { cartItems.addDepositReturnItems(it) }
+            filter { it.type == ItemType.COUPON }.let { cartItems.addCouponItems(it) }
+
+            filter {
+                it.isDiscount && (it.lineItem?.discountType != "cart" || it.lineItem?.refersTo != currentCart?.id)
+            }.let {
+                cartItems.addDiscountsToProducts(it)
+            }
+            filter {
+                it.isDiscount && it.lineItem?.discountType == "cart" && it.lineItem?.refersTo == currentCart?.id
+            }.let {
+                cartItems.addCartDiscount(it)
             }
 
-            filter { it.isDiscount && it.lineItem?.discountType != "cart" }.let {
-                cartItems.addDiscountsToProducts(
-                    it
-                )
-            }
-            filter { it.isDiscount && it.lineItem?.discountType == "cart" }.let {
-                cartItems.addCartDiscount(
-                    it
-                )
-            }
         }
         cartItems.addPriceModifiersAsDiscountsProducts()
 
@@ -137,6 +140,19 @@ class ShoppingCartViewModel : ViewModel() {
         cartItems.sortCartDiscountsToBottom()
 
         _uiState.update { it.copy(items = cartItems, totalCartPrice = currentCart?.totalPrice) }
+    }
+
+    private fun MutableList<CartItem>.addCouponItems(items: List<ShoppingCart.Item>) {
+        items.forEach { item ->
+            add(
+                CouponItem(
+                    item = item,
+                    couponId = item.lineItem?.couponId ?: item.coupon?.id,
+                    name = item.lineItem?.name ?: item.coupon?.name,
+                    areRequirementsMet = item.lineItem?.redeemed ?: item.coupon?.isRedeemed ?: false
+                )
+            )
+        }
     }
 
     private fun MutableList<CartItem>.addDepositReturnItems(items: List<ShoppingCart.Item>) {
@@ -278,7 +294,6 @@ class ShoppingCartViewModel : ViewModel() {
                                 name = name,
                                 discount = discount,
                                 discountValue = value,
-                                isCoupon = item.type == ItemType.COUPON
                             )
                         )
                     )
@@ -315,6 +330,10 @@ internal data class UpdateQuantity(
 internal data class DeleteDiscount(
     val item: ShoppingCart.Item,
     val discountId: String
+) : Event
+
+internal data class DeleteCoupon(
+    val id: String
 ) : Event
 
 data class UiState(

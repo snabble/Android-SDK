@@ -470,7 +470,7 @@ class ShoppingCart(
 
     fun removeCoupon(id: String) {
         val asd = id.replace("_", "-")
-        val index = indexOfFirst { it?.coupon?.id.xx("cur") == asd.xx("remo")}.xx("index")
+        val index = indexOfFirst { it?.coupon?.id == asd }
         if (index != -1) remove(index)
     }
 
@@ -992,7 +992,7 @@ class ShoppingCart(
         var lineItem: LineItem? = null
             set(value) {
                 field = value
-                value?.let { lastPrice= it.totalPrice }
+                value?.let { lastPrice = it.totalPrice }
             }
 
         /**
@@ -1031,7 +1031,7 @@ class ShoppingCart(
          * Returns the deposit associated with the shopping cart item.
          */
         @SerializedName("deposit")
-        var deposit : Deposit? = null
+        var deposit: Deposit? = null
 
         // The local generated UUID of a coupon which which will be used by the backend
         @SerializedName("backendCouponId")
@@ -1229,6 +1229,7 @@ class ShoppingCart(
 
         @SerializedName("lastPrice")
         private var lastPrice: Int = 0
+
         /**
          * Gets the total price of the items, ignoring the backend response
          */

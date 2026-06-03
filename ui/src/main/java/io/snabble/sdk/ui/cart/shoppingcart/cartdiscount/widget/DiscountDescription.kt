@@ -1,11 +1,7 @@
 package io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.widget
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DeleteOutline
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,7 +15,6 @@ internal fun DiscountDescription(
     title: String,
     description: String,
     discount: String,
-    onDelete: () -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -38,11 +33,6 @@ internal fun DiscountDescription(
             text = description,
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.End
-        )
-        Icon(
-            Icons.Outlined.DeleteOutline,
-            modifier = Modifier.clickable(onClick = onDelete),
-            contentDescription = null
         )
     }
 }

@@ -29,6 +29,8 @@ internal fun ProductImage(
     isAgeRestricted: Boolean,
     age: Int
 ) {
+    if (imageUrl == null && !showPlaceholder && !(isAgeRestricted && age > 0)) return
+
     Box(modifier = Modifier.wrapContentSize()) {
         if (imageUrl != null) {
             var hasFailed by remember(imageUrl) { mutableStateOf(false) }

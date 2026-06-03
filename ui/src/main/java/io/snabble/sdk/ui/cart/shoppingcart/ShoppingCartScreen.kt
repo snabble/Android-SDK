@@ -15,8 +15,10 @@ import io.snabble.sdk.checkout.LineItem
 import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.CartDiscount
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.model.CartDiscountItem
+import io.snabble.sdk.ui.cart.shoppingcart.coupon.Coupon
 import io.snabble.sdk.ui.cart.shoppingcart.depositreturn.DepositReturn
 import io.snabble.sdk.ui.cart.shoppingcart.product.DeletableProduct
+import io.snabble.sdk.ui.cart.shoppingcart.product.model.CouponItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DepositItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DepositReturnItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DiscountItem
@@ -47,8 +49,11 @@ fun ShoppingCartScreen(
             onQuantityChanged = { item, quantity ->
                 viewModel.onEvent(UpdateQuantity(item, quantity))
             },
-            onDeleteDiscount = {item, discountId ->
+            onDeleteDiscount = { item, discountId ->
                 viewModel.onEvent(DeleteDiscount(item, discountId))
+            },
+            onCouponDeleted = { couponId ->
+                viewModel.onEvent(DeleteCoupon(couponId))
             }
         )
     }
@@ -59,12 +64,13 @@ private fun ShoppingCartScreen(
     uiState: UiState,
     modifier: Modifier = Modifier,
     onItemDeleted: (ShoppingCart.Item) -> Unit,
+    onCouponDeleted: (String) -> Unit,
     onQuantityChanged: (ShoppingCart.Item, Int) -> Unit,
     onDeleteDiscount: (ShoppingCart.Item, String) -> Unit,
 ) {
 
     LazyColumn(
-        modifier = modifier.nestedScroll(rememberNestedScrollInteropConnection())
+        modifier = modifier.nestedScroll(rememberNestedScrollInteropConnection()),
     ) {
         itemsIndexed(items = uiState.items, key = { _, item -> item.hashCode() }) { index, cartItem ->
             when (cartItem) {
@@ -87,15 +93,16 @@ private fun ShoppingCartScreen(
                     DepositReturn(item = cartItem, showHint = showHint, onDeleteClick = onItemDeleted)
                 }
 
+                is CouponItem -> Coupon(couponItem = cartItem, onDelete = onCouponDeleted)
+
                 is CartDiscountItem -> {
                     CartDiscount(
                         modifier = Modifier.fillMaxWidth(),
                         item = cartItem,
-                        onDelete = onItemDeleted
                     )
                 }
             }
-            if (index != uiState.items.lastIndex) HorizontalDivider()
+            if (index < uiState.items.lastIndex) HorizontalDivider()
         }
     }
 }
@@ -136,8 +143,8 @@ private fun CardWithDefaultItems() {
         uiState = uiState,
         onItemDeleted = {},
         onQuantityChanged = { _, _ -> },
-        onDeleteDiscount = {_,_ ->}
-    )
+        onDeleteDiscount = { _, _ -> },
+        onCouponDeleted = {})
 }
 
 @Preview
@@ -158,7 +165,6 @@ private fun CardWithDiscountItem() {
                         name = "5€ Discount",
                         discount = "-5,00€",
                         discountValue = -500,
-                        isCoupon = true
                     )
                 ),
                 discountedPrice = "4,99€",
@@ -174,7 +180,8 @@ private fun CardWithDiscountItem() {
         uiState = uiState,
         onItemDeleted = {},
         onQuantityChanged = { _, _ -> },
-        onDeleteDiscount = {_,_ -> }
+        onDeleteDiscount = { _, _ -> },
+        onCouponDeleted = {}
     )
 }
 
@@ -209,7 +216,8 @@ private fun CardWithDeposit() {
         uiState = uiState,
         onItemDeleted = {},
         onQuantityChanged = { _, _ -> },
-        onDeleteDiscount = {_,_ -> }
+        onDeleteDiscount = { _, _ -> },
+        onCouponDeleted = {}
     )
 }
 
@@ -242,6 +250,7 @@ private fun CardWithCartDiscount() {
         uiState = uiState,
         onItemDeleted = {},
         onQuantityChanged = { _, _ -> },
-        onDeleteDiscount = {_,_ -> }
+        onDeleteDiscount = { _, _ -> },
+        onCouponDeleted = {}
     )
 }

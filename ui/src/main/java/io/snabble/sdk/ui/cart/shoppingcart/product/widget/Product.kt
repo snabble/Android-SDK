@@ -1,31 +1,21 @@
 package io.snabble.sdk.ui.cart.shoppingcart.product.widget
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import io.snabble.sdk.ui.R
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DiscountItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.ProductItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.widget.description.ProductDescription
@@ -78,7 +68,7 @@ internal fun Product(
                 }
             }
             if (cartItem.discounts.isNotEmpty()) {
-                Discounts(cartItem.discounts, onDeleteDiscount =onDeleteDiscount)
+                Discounts(cartItem.discounts, onDeleteDiscount = onDeleteDiscount)
             }
         }
     }
@@ -88,65 +78,30 @@ internal fun Product(
 private fun Discounts(discounts: List<DiscountItem>, onDeleteDiscount: (String) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         discounts.forEach {
-            if (it.isCoupon) {
-                Card(
-                    shape = RoundedCornerShape(8.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
+            Card(
+                shape = RoundedCornerShape(8.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                Row(
+                    modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        modifier = Modifier.padding(all = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            if (it.useNegativeValue) "-${it.discount}" else it.discount,
-                            style = MaterialTheme.typography.bodySmall,
-                        )
-                        Text(
-                            it.name,
-                            modifier = Modifier.weight(1f),
-                            textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.bodySmall,
-                        )
-                        Icon(
-                            Icons.Outlined.DeleteOutline,
-                            modifier = Modifier.clickable{ if(it.id != null) onDeleteDiscount(it.id) },
-                            contentDescription = null
-                        )
-                    }
+                    Text(
+                        if (it.useNegativeValue) "-${it.discount}" else it.discount,
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                    Text(
+                        it.name,
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.End,
+                    )
                 }
-
-            } else {
-                DiscountItemWidget(it)
             }
         }
-    }
-}
-
-@Composable
-private fun DiscountItemWidget(it: DiscountItem) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            if (it.useNegativeValue) "-${it.discount}" else it.discount,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Spacer(Modifier.weight(1f))
-        Text(
-            it.name,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Image(
-            modifier = Modifier.size(18.dp),
-            painter = painterResource(R.drawable.discount_badge),
-            contentDescription = ""
-        )
     }
 }
