@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.83.3]
+### Changed
+* ui: show coupons as part of the shopping cart and change discount design
+
 ## [0.83.2]
 ### Changed
 * ui: update unknown barcode message
