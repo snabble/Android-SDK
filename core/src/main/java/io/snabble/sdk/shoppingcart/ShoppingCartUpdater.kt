@@ -160,7 +160,7 @@ internal class ShoppingCartUpdater(
             addCartDiscounts(filter { it.type == LineItemType.DISCOUNT && it.discountType == "cart" })
             addLineItemsAsCartItems(filter { it.type == LineItemType.DISCOUNT && it.discountType != "cart" })
 
-            addLineItemsAsCartItems(filter { it.type == LineItemType.COUPON })
+            addCouponLineItems(filter { it.type == LineItemType.COUPON })
             addDepositToItem(filter { it.type == LineItemType.DEPOSIT })
             addDepositReturnsToVoucher(filter { it.type == LineItemType.DEPOSIT_RETURN })
         }
@@ -199,9 +199,17 @@ internal class ShoppingCartUpdater(
     }
 
     private fun addCartDiscounts(cartDiscountItems: List<LineItem>) {
-        val totalCartDiscount = cartDiscountItems.sumOf { it.totalPrice }
-        val cartDiscounts = cartDiscountItems.mapNotNull { it.name }
-        addCartDiscountLineItem(totalCartDiscount, cartDiscounts)
+        val cartLevelDiscounts = cartDiscountItems.filter { it.refersTo == cart.id }
+        val itemLevelDiscounts = cartDiscountItems.filter { it.refersTo != cart.id }
+
+        if (cartLevelDiscounts.isNotEmpty()) {
+            val totalCartDiscount = cartLevelDiscounts.sumOf { it.totalPrice }
+            val cartDiscounts = cartLevelDiscounts.mapNotNull { it.name }
+            val discount = cartLevelDiscounts.firstOrNull { it.discountRuleID != null }
+            addCartDiscountLineItem(totalCartDiscount, cartDiscounts, discount?.discountRuleID)
+        }
+
+        addLineItemsAsCartItems(itemLevelDiscounts)
     }
 
     private fun deserializedCheckoutInfo(
@@ -238,13 +246,30 @@ internal class ShoppingCartUpdater(
         }
     }
 
-    private fun addCartDiscountLineItem(discounts: Int, cartDiscounts: List<String>) {
+    private fun addCouponLineItems(couponLineItems: List<LineItem>) {
+        couponLineItems.forEach { lineItem ->
+            val existing = cart.firstOrNull { it?.coupon?.id == lineItem.couponId }
+            if (existing != null) {
+                existing.lineItem = lineItem
+                existing.coupon?.isRedeemed = lineItem.redeemed
+            } else {
+                val newItem = cart.newItem(lineItem)
+                val coupon = project.coupons.get()?.find { it.id == lineItem.couponId }
+                coupon?.isRedeemed = lineItem.redeemed
+                newItem.coupon = coupon
+                cart.insert(newItem, cart.size(), false)
+            }
+        }
+    }
+
+    private fun addCartDiscountLineItem(discounts: Int, cartDiscounts: List<String>, discountRuleId: String?) {
         if (discounts != 0) {
             val lineItem = LineItem(
                 id = UUID.randomUUID().toString(),
                 amount = 1,
                 discountType = "cart",
-                name = cartDiscounts.first(),
+                name = cartDiscounts.firstOrNull(),
+                discountRuleID = discountRuleId,
                 price = discounts,
                 totalPrice = discounts,
                 type = LineItemType.DISCOUNT

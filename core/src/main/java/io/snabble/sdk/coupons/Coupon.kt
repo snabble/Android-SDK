@@ -25,6 +25,7 @@ data class Coupon(
     @SerializedName("disclaimer") val disclaimer: String?,
     @SerializedName("colors") val colors: Map<String, String>?,
 ) : Parcelable {
+
     val isValid: Boolean
         get() = when (type) {
             CouponType.DIGITAL -> image != null
@@ -39,6 +40,9 @@ data class Coupon(
     @IgnoredOnParcel
     val validUntil: ZonedDateTime?
         get() = _validUntil?.let { ZonedDateTime.parse(_validUntil) }
+
+    @IgnoredOnParcel
+    var isRedeemed: Boolean = false
 
     @IgnoredOnParcel
     val backgroundColor
@@ -60,6 +64,7 @@ data class CouponImage(
     @SerializedName("name") val name: String?,
     @SerializedName("formats") val formats: List<CouponImageFormats>,
 ) : Parcelable {
+
     val bestResolutionUrl: String
         get() {
             val res = Snabble.application.resources
@@ -98,7 +103,10 @@ data class CouponImageFormats(
 ) : Parcelable
 
 enum class CouponType {
-    @SerializedName("manual") MANUAL,
-    @SerializedName("printed") PRINTED,
-    @SerializedName("digital") DIGITAL,
+    @SerializedName("manual")
+    MANUAL,
+    @SerializedName("printed")
+    PRINTED,
+    @SerializedName("digital")
+    DIGITAL,
 }

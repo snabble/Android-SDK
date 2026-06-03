@@ -10,6 +10,7 @@ import io.snabble.sdk.shoppingcart.ShoppingCart
 import io.snabble.sdk.shoppingcart.data.item.ItemType
 import io.snabble.sdk.shoppingcart.data.listener.SimpleShoppingCartListener
 import io.snabble.sdk.ui.cart.shoppingcart.cartdiscount.model.CartDiscountItem
+import io.snabble.sdk.ui.cart.shoppingcart.product.model.CouponItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DepositItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DepositReturnItem
 import io.snabble.sdk.ui.cart.shoppingcart.product.model.DiscountItem
@@ -82,16 +83,31 @@ class ShoppingCartViewModel : ViewModel() {
         when (event) {
             is RemoveItem -> removeItemFromCart(event.item, event.onSuccess)
             is UpdateQuantity -> updateQuantity(event.item, event.quantity)
+            is DeleteDiscount -> deleteDiscountFromItem(event.item, event.discountId)
+            is DeleteCoupon -> deleteCoupon(event.id)
         }
     }
 
     private fun removeItemFromCart(item: ShoppingCart.Item?, onSuccess: (index: Int) -> Unit) {
         val index = currentCart?.indexOf(item) ?: return
+        item?.lineItem?.discountRuleID?.let {
+            currentCart?.removeCoupon(it)
+            return
+        }
         if (index != -1) {
             currentCart?.remove(index)
+
             Telemetry.event(Telemetry.Event.DeletedFromCart, item?.product)
             onSuccess(index)
         }
+    }
+
+    private fun deleteCoupon(id: String) {
+        currentCart?.removeCoupon(id)
+    }
+
+    private fun deleteDiscountFromItem(item: ShoppingCart.Item?, discountId: String) {
+        currentCart?.removeItem(discountId)
     }
 
     private fun updateQuantity(item: ShoppingCart.Item, quantity: Int) {
@@ -104,9 +120,19 @@ class ShoppingCartViewModel : ViewModel() {
         with(cart.filterNotNull()) {
             filter { it.type == ItemType.PRODUCT }.let { cartItems.addProducts(it) }
             filter { it.type == ItemType.DEPOSIT_RETURN_VOUCHER }.let { cartItems.addDepositReturnItems(it) }
+            filter { it.type == ItemType.COUPON }.let { cartItems.addCouponItems(it) }
 
-            filter { it.isDiscount && it.lineItem?.discountType != "cart" }.let { cartItems.addDiscountsToProducts(it) }
-            filter { it.isDiscount && it.lineItem?.discountType == "cart" }.let { cartItems.addCartDiscount(it) }
+            filter {
+                it.isDiscount && (it.lineItem?.discountType != "cart" || it.lineItem?.refersTo != currentCart?.id)
+            }.let {
+                cartItems.addDiscountsToProducts(it)
+            }
+            filter {
+                it.isDiscount && it.lineItem?.discountType == "cart" && it.lineItem?.refersTo == currentCart?.id
+            }.let {
+                cartItems.addCartDiscount(it)
+            }
+
         }
         cartItems.addPriceModifiersAsDiscountsProducts()
 
@@ -114,6 +140,19 @@ class ShoppingCartViewModel : ViewModel() {
         cartItems.sortCartDiscountsToBottom()
 
         _uiState.update { it.copy(items = cartItems, totalCartPrice = currentCart?.totalPrice) }
+    }
+
+    private fun MutableList<CartItem>.addCouponItems(items: List<ShoppingCart.Item>) {
+        items.forEach { item ->
+            add(
+                CouponItem(
+                    item = item,
+                    couponId = item.lineItem?.couponId ?: item.coupon?.id,
+                    name = item.lineItem?.name ?: item.coupon?.name,
+                    areRequirementsMet = item.lineItem?.redeemed ?: item.coupon?.isRedeemed ?: false
+                )
+            )
+        }
     }
 
     private fun MutableList<CartItem>.addDepositReturnItems(items: List<ShoppingCart.Item>) {
@@ -147,7 +186,8 @@ class ShoppingCartViewModel : ViewModel() {
                 val price = item.calculateTotalPrice()
                 // Since the total price can be null as we invalidate the online prices,
                 // we need to use the price text instead to display the product price without an changed instead
-                val priceText = if (price == 0) item.priceText else priceFormatter?.format(price).orEmpty()
+                val priceText =
+                    if (price == 0) item.priceText else priceFormatter?.format(price).orEmpty()
 
                 item.copy(
                     totalPriceText = priceText,
@@ -221,6 +261,7 @@ class ShoppingCartViewModel : ViewModel() {
                     modifiedPrice.let {
                         discounts.add(
                             DiscountItem(
+                                id = null,
                                 name = name,
                                 discount = modifiedPrice,
                                 discountValue = discountValue,
@@ -242,12 +283,20 @@ class ShoppingCartViewModel : ViewModel() {
             val name = item.displayName.orEmpty()
             val value = item.totalPrice
 
-            firstOrNull { it.item.id == item.lineItem?.refersTo }
-                ?.let {
-                    remove(it)
-                    val product = it as? ProductItem ?: return@forEach
-                    add(product.copy(discounts = it.discounts + DiscountItem(name, discount, value)))
-                }
+            val index = indexOfFirst { it.item.id == item.lineItem?.refersTo }
+            if (index == -1) return@forEach
+            val product = getOrNull(index) as? ProductItem ?: return@forEach
+            set(
+                index,
+                product.copy(
+                    discounts = product.discounts + DiscountItem(
+                        id = item.id,
+                        name = name,
+                        discount = discount,
+                        discountValue = value,
+                    )
+                )
+            )
         }
     }
 
@@ -275,6 +324,15 @@ internal data class RemoveItem(
 internal data class UpdateQuantity(
     val item: ShoppingCart.Item,
     val quantity: Int
+) : Event
+
+internal data class DeleteDiscount(
+    val item: ShoppingCart.Item,
+    val discountId: String
+) : Event
+
+internal data class DeleteCoupon(
+    val id: String
 ) : Event
 
 data class UiState(

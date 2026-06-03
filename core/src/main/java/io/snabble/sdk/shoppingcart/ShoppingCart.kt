@@ -2,6 +2,7 @@ package io.snabble.sdk.shoppingcart
 
 import androidx.annotation.Keep
 import androidx.annotation.RestrictTo
+import com.google.gson.annotations.SerializedName
 import io.snabble.sdk.PriceFormatter
 import io.snabble.sdk.Product
 import io.snabble.sdk.Product.Type
@@ -18,6 +19,7 @@ import io.snabble.sdk.codes.ScannedCode
 import io.snabble.sdk.codes.templates.CodeTemplate
 import io.snabble.sdk.coupons.Coupon
 import io.snabble.sdk.coupons.CouponType
+import io.snabble.sdk.extensions.xx
 import io.snabble.sdk.shoppingcart.data.Taxation
 import io.snabble.sdk.shoppingcart.data.cart.BackendCart
 import io.snabble.sdk.shoppingcart.data.cart.BackendCartCustomer
@@ -208,6 +210,19 @@ class ShoppingCart(
      * Removed a cart item from the cart by its index
      */
     fun remove(index: Int) {
+        data = data.copy(modCount = modCount.inc())
+        generateNewUUID()
+        val removedItem = data.items.removeAt(index)
+        checkLimits()
+        updatePrices(debounce = size() != 0)
+        invalidateOnlinePrices()
+        notifyItemRemoved(this, removedItem, index)
+    }
+
+    /**
+     * Removed a cart item from the cart by its index
+     */
+    fun removeDiscount(index: Int, discountId: String) {
         data = data.copy(modCount = modCount.inc())
         generateNewUUID()
         val removedItem = data.items.removeAt(index)
@@ -450,6 +465,11 @@ class ShoppingCart(
 
     fun removeCoupon(coupon: Coupon) {
         val index = indexOfFirst { it?.coupon?.id == coupon.id }
+        if (index != -1) remove(index)
+    }
+
+    fun removeCoupon(id: String) {
+        val index = indexOfFirst { it?.coupon?.id == id }
         if (index != -1) remove(index)
     }
 
@@ -954,28 +974,34 @@ class ShoppingCart(
         /**
          * Returns the product associated with the shopping cart item.
          */
+        @SerializedName("product")
         var product: Product? = null
 
         /**
          * Returns the scanned code which was used when scanning the product and adding it to the shopping cart
          */
+        @SerializedName("scannedCode")
         var scannedCode: ScannedCode? = null
             private set
 
+        @SerializedName("quantity")
         var quantity = 0
 
+        @SerializedName("lineItem")
         var lineItem: LineItem? = null
             set(value) {
                 field = value
-                value?.let { lastPrice= it.totalPrice }
+                value?.let { lastPrice = it.totalPrice }
             }
 
         /**
          * Returns the id of the shopping cart item
          */
+        @SerializedName("id")
         var id: String? = null
             private set
 
+        @SerializedName("isUsingSpecifiedQuantity")
         private var isUsingSpecifiedQuantity = false
 
         @Transient
@@ -985,24 +1011,29 @@ class ShoppingCart(
          * Sets or Returns true  if a manual coupon (coupon applied by the user after scanning) is applied
          */
         @JvmField
+        @SerializedName("isManualCouponApplied")
         var isManualCouponApplied = false
 
         /**
          * Gets the user associated coupon of this item
          */
+        @SerializedName("coupon")
         var coupon: Coupon? = null
 
         /**
          * Returns the depositReturnVoucher associated with the shopping cart item.
          */
+        @SerializedName("depositReturnVoucher")
         var depositReturnVoucher: DepositReturnVoucher? = null
 
         /**
          * Returns the deposit associated with the shopping cart item.
          */
-        var deposit : Deposit? = null
+        @SerializedName("deposit")
+        var deposit: Deposit? = null
 
         // The local generated UUID of a coupon which which will be used by the backend
+        @SerializedName("backendCouponId")
         var backendCouponId: String? = null
 
         constructor(cart: ShoppingCart, coupon: Coupon, scannedCode: ScannedCode?) {
@@ -1195,7 +1226,9 @@ class ShoppingCart(
         val totalPrice: Int
             get() = lineItem?.totalPrice ?: localTotalPrice
 
+        @SerializedName("lastPrice")
         private var lastPrice: Int = 0
+
         /**
          * Gets the total price of the items, ignoring the backend response
          */

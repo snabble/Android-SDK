@@ -10,7 +10,8 @@ internal fun DeletableProduct(
     modifier: Modifier,
     item: ProductItem,
     onItemDeleted: () -> Unit,
-    onQuantityChanged: (Int) -> Unit
+    onQuantityChanged: (Int) -> Unit,
+    onDeleteDiscount: (String) -> Unit
 ) {
 
     SwipeToDeleteContainer(
@@ -20,7 +21,8 @@ internal fun DeletableProduct(
         Product(
             cartItem = item,
             onDeleteItem = onItemDeleted,
-            onQuantityChanged = onQuantityChanged
+            onQuantityChanged = onQuantityChanged,
+            onDeleteDiscount = onDeleteDiscount
         )
     }
 }
