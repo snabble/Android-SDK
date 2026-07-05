@@ -324,10 +324,6 @@ open class CheckoutBar @JvmOverloads constructor(
                 if (entry.paymentCredentials != null) {
                     progressDialog.dismiss()
                     when (entry.paymentMethod) {
-                        PaymentMethod.TEGUT_EMPLOYEE_CARD -> {
-                            project.checkout.pay(entry.paymentMethod, entry.paymentCredentials)
-                        }
-
                         PaymentMethod.EXTERNAL_BILLING -> {
                             SubjectAlertDialog(context, maxSubjectLength = getMaxSubjectLength())
                                 .addMessageClickListener { message ->

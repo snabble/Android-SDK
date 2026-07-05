@@ -65,7 +65,6 @@ public class PaymentCredentials {
         CREDIT_CARD(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
         CREDIT_CARD_PSD2(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
         GIROPAY(null, false, Collections.singletonList(PaymentMethod.GIROPAY)),
-        TEGUT_EMPLOYEE_CARD("tegutEmployeeID", false, Collections.singletonList(PaymentMethod.TEGUT_EMPLOYEE_CARD)),
         DATATRANS("datatransAlias", true, Arrays.asList(PaymentMethod.TWINT, PaymentMethod.POST_FINANCE_CARD)),
         DATATRANS_CREDITCARD("datatransCreditCardAlias", true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
         PAYONE_CREDITCARD(null, true, Arrays.asList(PaymentMethod.VISA, PaymentMethod.MASTERCARD, PaymentMethod.AMEX)),
@@ -529,46 +528,6 @@ public class PaymentCredentials {
     }
 
     /**
-     * Encrypts and stores a tegut employee card.
-     */
-    public static PaymentCredentials fromTegutEmployeeCard(String obfuscatedId, String cardNumber, String projectId) {
-        if (cardNumber == null || cardNumber.length() != 19
-                || (!cardNumber.startsWith("9280001621")
-                && !cardNumber.startsWith("9280001620"))) {
-            return null;
-        }
-
-        PaymentCredentials pc = new PaymentCredentials();
-        pc.generateId();
-        pc.type = Type.TEGUT_EMPLOYEE_CARD;
-
-        List<X509Certificate> certificates = Snabble.getInstance().getPaymentCertificates();
-        if (certificates.size() == 0) {
-            return null;
-        }
-
-        pc.obfuscatedId = obfuscatedId;
-
-        X509Certificate certificate = certificates.get(0);
-
-        TegutEmployeeCard data = new TegutEmployeeCard();
-        data.cardNumber = cardNumber;
-        String json = GsonHolder.get().toJson(data, TegutEmployeeCard.class);
-
-        pc.rsaEncryptedData = pc.rsaEncrypt(certificate, json.getBytes());
-        pc.signature = pc.sha256Signature(certificate);
-        pc.brand = Brand.UNKNOWN;
-        pc.appId = Snabble.getInstance().getConfig().appId;
-        pc.projectId = projectId;
-
-        if (pc.rsaEncryptedData == null) {
-            return null;
-        }
-
-        return pc;
-    }
-
-    /**
      * Returns the type of the payment credentials
      */
     @Nullable
@@ -858,8 +817,6 @@ public class PaymentCredentials {
             return PaymentMethod.DE_DIRECT_DEBIT;
         } else if (getType() == Type.PAYONE_SEPA) {
             return PaymentMethod.PAYONE_SEPA;
-        } else if (type == Type.TEGUT_EMPLOYEE_CARD) {
-            return PaymentMethod.TEGUT_EMPLOYEE_CARD;
         } else if (type == Type.GIROPAY) {
             return PaymentMethod.GIROPAY;
         } else if (type == Type.EXTERNAL_BILLING) {
