@@ -15,7 +15,6 @@ import io.snabble.sdk.PaymentMethod.PAYONE_SEPA
 import io.snabble.sdk.PaymentMethod.POST_FINANCE_CARD
 import io.snabble.sdk.PaymentMethod.QRCODE_OFFLINE
 import io.snabble.sdk.PaymentMethod.QRCODE_POS
-import io.snabble.sdk.PaymentMethod.TEGUT_EMPLOYEE_CARD
 import io.snabble.sdk.PaymentMethod.TWINT
 import io.snabble.sdk.PaymentMethod.VISA
 import io.snabble.sdk.ui.R.drawable.snabble_ic_external_billing
@@ -27,7 +26,6 @@ import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_pos
 import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_postfinance
 import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_sco
 import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_sepa
-import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_tegut
 import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_twint
 import io.snabble.sdk.ui.R.drawable.snabble_ic_payment_select_visa
 import io.snabble.sdk.ui.R.string.Snabble_Giropay_title
@@ -51,7 +49,6 @@ class PaymentMethodMetaDataHelper(
         PAYONE_SEPA withMeta ("SEPA-Lastschrift" to snabble_ic_payment_select_sepa),
         GATEKEEPER_TERMINAL withMeta (Snabble_Payment_payAtSCO.resolved to snabble_ic_payment_select_sco),
         EXTERNAL_BILLING withMeta (Snabble_Payment_ExternalBilling_title.resolved to snabble_ic_external_billing),
-        TEGUT_EMPLOYEE_CARD withMeta ("Tegut... Mitarbeiterkarte" to snabble_ic_payment_select_tegut),
         CUSTOMERCARD_POS withMeta (Snabble_Payment_payAtCashDesk.resolved to snabble_ic_payment_select_pos),
         QRCODE_POS withMeta (Snabble_Payment_payAtCashDesk.resolved to snabble_ic_payment_select_pos),
         QRCODE_OFFLINE withMeta (Snabble_Payment_payAtCashDesk.resolved to snabble_ic_payment_select_pos),

@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 ### Removed
 ### Fixed
 
+## [0.83.4]
+### Removed
+* core/ui: remove tegut employee card as payment method
+
 ## [0.83.3]
 ### Changed
 * ui: show coupons as part of the shopping cart and change discount design

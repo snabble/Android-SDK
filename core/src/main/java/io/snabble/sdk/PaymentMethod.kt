@@ -88,15 +88,6 @@ enum class PaymentMethod(
         needsAbortConfirmation = true
     ),
 
-    @SerializedName("externalBilling")
-    TEGUT_EMPLOYEE_CARD(
-        id = "externalBilling",
-        isOfflineMethod = false,
-        isRequiringCredentials = true,
-        isShowOnlyIfCredentialsArePresent = true,
-        needsAbortConfirmation = true
-    ),
-
     @SerializedName("customerCardPOS")
     CUSTOMERCARD_POS(
         id = "customerCardPOS",
@@ -200,9 +191,8 @@ enum class PaymentMethod(
         @JvmStatic
         fun fromIdAndOrigin(id: String, origin: List<String>): PaymentMethod? {
             entries.forEach { pm ->
-                if (pm.id == id && pm.id == TEGUT_EMPLOYEE_CARD.id) {
+                if (pm.id == id && pm.id == EXTERNAL_BILLING.id) {
                     return when (origin.firstOrNull()) {
-                        "tegutEmployeeID" -> TEGUT_EMPLOYEE_CARD
                         "contactPersonCredentials" -> EXTERNAL_BILLING
                         else -> null
                     }
