@@ -37,6 +37,7 @@ internal fun Product(
     ) {
         ProductImage(
             imageUrl = cartItem.imageUrl,
+            name = cartItem.name,
             contentDescription = cartItem.name,
             showPlaceholder = cartItem.showPlaceHolder,
             isAgeRestricted = cartItem.isAgeRestricted,
