@@ -2,7 +2,7 @@
 compileSdk = "36"
 targetSdk = "36"
 minSdk = "24"
-gradlePlugin = "9.2.1"
+gradlePlugin = "9.4.1"
 kotlin = "2.3.0"
 navigation = "2.9.6"
 snabbleSdk = "0.69.6"
@@ -65,7 +65,7 @@ compose-uiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", 
 compose-uiUtil = { module = "androidx.compose.ui:ui-util", version.ref = "androidx-compose-ui" }
 compose-uiViewBinding = { module = "androidx.compose.ui:ui-viewbinding", version.ref = "androidx-compose-ui" }
 commonsIo = "commons-io:commons-io:2.21.0"
-datatrans-androidSdk = "ch.datatrans:android-sdk:3.10.0"
+datatrans-androidSdk = "ch.datatrans:android-sdk:3.11.2"
 desugarJdkLibsNio = "com.android.tools:desugar_jdk_libs_nio:2.1.5"
 glide-compose = "com.github.bumptech.glide:compose:1.0.0-beta01"
 googlePlayServices-maps = "com.google.android.gms:play-services-maps:19.2.0"
